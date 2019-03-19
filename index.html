@@ -2239,7 +2239,6 @@
 						if ( included[index].key === character[hash] ) { break }
 					}
 					
-					console.log("chosen " + index + " of " + list.length + " === " + included.length + " for " + hash + " = " + character[hash])
 					list[index % list.length] = list[index % list.length].replace('hidden', 'chosen')
 					
 					node.innerHTML = beginTag + list.join(" ") + closeTag
