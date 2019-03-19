@@ -2217,6 +2217,7 @@
 				var items = dnd[optionSet.dnd]
 				var node = _element(element)
 				var hash = optionSet.hash
+				
 				if ( !( node && hash && items && items.length > 0 ) ) { return }
 				
 				//	cycle, radio, checkbox, list
@@ -2234,10 +2235,11 @@
 					var included = optionSet.exclude ? items.filter(i => optionSet.exclude.indexOf(i.key) < 0) : items
 					var list = included.map((item) => replaceKeys(templateList, item))
 					
-					for ( index = 0 ; index < list.length ; ++index ) {
-						if ( list[index].key === character[hash] ) { break }
+					for ( index = 0 ; index < included.length ; ++index ) {
+						if ( included[index].key === character[hash] ) { break }
 					}
 					
+					console.log("chosen " + index + " of " + list.length + " === " + included.length + " for " + hash + " = " + character[hash])
 					list[index % list.length] = list[index % list.length].replace('hidden', 'chosen')
 					
 					node.innerHTML = beginTag + list.join(" ") + closeTag
@@ -2315,8 +2317,8 @@
 				
 				lookup.optionHash = []
 				
-				for ( var crass in dnd.classes ) {
-					for ( var feature in crass.features ) {
+				for ( var crass of dnd.classes ) {
+					for ( var feature of crass.features ) {
 						if ( feature.options && feature.options.hash && lookup.optionHash.indexOf(feature.options.hash) < 0 ) {
 							lookup.optionHash.push(feature.options.hash)
 						}

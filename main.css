@@ -78,7 +78,7 @@ td.score.increase, td.score.pending { cursor:pointer; }
 
 table.attacks { padding:0; margin:0; border-spacing:0; }
 table.attacks tr.attacks:not(.equipment) { opacity:0.5; }
-td.name { white-space:nowrap; }
+td.name, td.range { white-space:nowrap; }
 tr.attacks > th { font-size:60%; text-align:left; }
 tr.attacks > td { padding-right:1em; }
 tr.attacks.melee > td.range { visibility:hidden; }
@@ -89,8 +89,8 @@ tr.attacks.disadvantage > td.name { color:red; }
 tr.attacks.disadvantage > td.hit { color:red; }
 tr.attacks > td.type { font-size:80%; }
 td.attacks.hit, td.attacks.damage, td.attacks.rate { text-align:right; }
-tr.attacks.reckless > td.hit { color:orange; }
-tr.attacks.reckless > td { color:purple; }
+tr.attacks.reckless > td.hit { color:#F60; }
+tr.attacks.reckless > td.name, tr.attacks.reckless > td.damage { color:#093; }
 input#toggle-all-attacks:not(:checked) + label + p#attacks tr.attacks:not(.equipment) { display:none; }
 input#toggle-all-attacks:not(:checked) + label + p#attacks td.rate { display:none; }
 input#toggle-all-attacks { visibility:hidden; }
@@ -100,7 +100,7 @@ input#toggle-all-attacks:not(:checked) + label:after { content:"▶"; color:#CCC
 
 
 table.features { padding:0; margin:0; border-spacing:0; }
-tr.features > td { padding-right:0.5em; }
+tr.features > td { padding-right:0.5em; vertical-align:top; }
 tr.features.spell > td.name { color:#447; }
 tr.features.action > td.name { color:#000; }
 tr.features.reaction > td.name { font-style:oblique; }
@@ -124,10 +124,10 @@ br.tall + * { margin-top:1.5em; }
 .caption + p { margin-top:0; }
 
 .advances { display:inline-block; text-align:center; cursor:pointer; }
-.advances.tall { line-height:2.0; min-width:8em; }
-.advances.narrow { line-height:1.5; min-width:6em; }
+.advances.tall { line-height:2.0; min-width:7em; }
+.advances.narrow { line-height:1.5; min-width:4em; }
 .listable { display:inline-block; min-width:6em; text-align:center; line-height:1.5; }
-span.advances { position:relative; }
+span.advances { position:relative; padding:0 1em; }
 span.advances::before { content:"◀︎︎"; opacity:0.125; position:absolute; left:0; top:0; }
 span.advances::after { content:"▶"; opacity:0.125; position:absolute; right:0; top:0; }
 
