@@ -50,6 +50,8 @@ var dnd = {
 		{"key":"celestial", "name":"Celestial"},
 		{"key":"sylvan", "name":"Sylvan"},
 		{"key":"undercommon", "name":"Undercommon"},
+		{"key":"aarakocra", "name":"Aarakocra", "hidden":true},
+		{"key":"auran", "name":"Auran", "hidden":true},
 		{"key":"druidic", "name":"Druidic", "hidden":true},
 		{"key":"thieves", "name":"Thieves' Cant", "hidden":true}
 	],
