@@ -1,0 +1,2442 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Characters</title>
+		<meta name="author" content="Eric Cole">
+		<meta name="version" content="0.8">
+		<meta name="keywords" content="dnd,5e,dungeons,dragons,character">
+		<meta name="description" content="Character Generator">
+		<link rel="stylesheet" href="main.css">
+		<script src="dnd.js"></script>
+		
+		<script lang="javascript">
+			var lookup = {};
+			var checkboxRules = {};
+			
+			var defaults = {
+				"rolls": [15, 14, 13, 12, 10, 8],
+				"race":"human",
+				"increase":0,
+				"maximumAbility":20,
+				"effectivenessArmorclass":16,
+			};
+			
+			var character = {
+				"rolls":defaults.rolls,
+				"race":defaults.race,
+				"archetype":new Object(),
+			};
+			
+			// MARK: Utility
+			
+			function _element(id) {
+				if ( id && Node.ELEMENT_NODE === id.nodeType ) return id;
+				else if ( 'body' === id || 'head' === id ) return document[id];
+				else return document.getElementById(id);
+			}
+			
+			function _elements(elements) {
+				var result;
+				
+				if ( !elements ) {
+					result = [];
+				} else if ( Node.ELEMENT_NODE === elements.nodeType ) {
+					result = Array.prototype.slice(arguments, 0);
+				} else if ( 'function' === typeof elements.search ) {
+					var parent = arguments.length > 1 && arguments[1];
+					if ( !( parent && ( Node.ELEMENT_NODE === parent.nodeType ) ) ) parent = document;
+					
+					if ( elements.search(/[^-\w]/) < 0 ) result = parent.getElementsByClassName(elements);
+					else result = parent.querySelectorAll(elements);
+				} else if ( elements.length > 0 ) {
+					result = elements;
+				} else {
+					result = [];
+				}
+				
+				return result;
+			}
+			
+			function _hasClass(element, c) {
+				if ( element.classList && 'function' === typeof element.classList.contains ) {
+					return element.classList.contains(c)
+				} else if ( element.className && 'function' === typeof element.className.search ) {
+					var pattern = new RegExp('(^|\\s+)'+c+'(\\s+|$)');
+					
+					return !(element.className.search(pattern) < 0)
+				} else {
+					return false
+				}
+			}
+			
+			function _assignClass(element, c) {
+				var result = 0;
+				var action = ( arguments.length > 2 ) ? arguments[2] || 0 : 1
+				
+				if ( element.classList && 'function' === typeof element.classList.contains ) {
+					if ( !(action > 0 || action < 0) ) {
+						result = element.classList.toggle(c) ? 1 : -1
+					} else if ( element.classList.contains(c) ) {
+						result = !( action > 0 ) ? element.classList.remove(c) || -1 : 0
+					} else {
+						result = !( action < 0 ) ? element.classList.add(c) || 1 : 0
+					}
+				} else if ( element.className && 'function' === typeof element.className.search ) {
+					var pattern = new RegExp('(^|\\s+)'+c+'(\\s+|$)');
+					
+					if ( element.className.search(pattern) < 0 ) {
+						if ( !(action < 0) ) {
+							element.className = element.className !== "" ? element.className + " " + c : c
+							result = 1
+						}
+					} else {
+						if ( !(action > 0) ) {
+							element.className = element.className.replace(pattern, " ").trim()
+							result = -1
+						}
+					}
+				} else if ( !(action < 0) ) {
+					element.className = c
+					result = 1
+				}
+				
+				return result;
+			}
+			
+			function _flatten() {
+				var result = []
+				var index, count = arguments.length
+				var array
+				
+				for ( index = 0 ; index < count ; ++index ) {
+					array = arguments[index]
+					
+					if ( array && array.length > 0 ) {
+						result.push.apply(result, array)
+					}
+				}
+				
+				return result
+			}
+			
+			function _unique() {
+				var result = []
+				var index, count = arguments.length
+				var array
+				
+				for ( index = 0 ; index < count ; ++index ) {
+					array = arguments[index]
+					
+					if ( array && array.length > 0 ) {
+						for ( element of array ) {
+							if ( result.indexOf(element) < 0 ) {
+								result.push(element)
+							}
+						}
+					}
+				}
+				
+				return result
+			}
+			
+			// MARK: Character
+			
+			function Character(character, compute) {
+				if ( character ) {
+					this.inflate(character)
+					
+					if ( compute || arguments.length < 2 ) { this.compute() }
+				}
+			}
+			
+			Character.prototype.abilitiesFromRolls = function Character_abilitiesFromRolls(rolls, ordered) {
+				var order = this.archetype.order || this.crass.order
+				var abilities = new Object()
+				var index
+				
+				if ( order && !ordered && order.length === dnd.abilities.length ) {
+					for ( index = 0 ; index < order.length ; ++index ) {
+						abilities[order[index]] = rolls[index]
+					}
+				} else {
+					for ( index = 0 ; index < dnd.abilities.length ; ++index ) {
+						abilities[dnd.abilities[index].key] = rolls[index]
+					}
+				}
+				
+				return abilities
+			}
+			
+			Character.prototype.inflate = function Character_inflate(character) {
+				var empty = new Object()
+				var options = new Object()
+				var crass = lookup.classes[character.crass] || empty
+				var race = lookup.races[character.race] || empty
+				var feats = []
+				var key, hash, value
+				
+				if ( character.feats ) {
+					for ( key of character.feats ) {
+						if ( lookup.feats[key] ) {
+							feats.push(lookup.feats[key])
+						}
+					}
+				}
+				
+				if ( character.options ) {
+					for ( hash of character.options ) {
+						if ( character[hash] ) {
+							options[hash] = character[hash]
+						}
+					}
+				}
+				
+				this.crass = crass
+				this.race = race
+				this.level = character.level || 1
+				this.archetype = (character.archetype && lookup.archetypes[character.archetype[crass.key]]) || empty
+				this.background = lookup.backgrounds[character.background] || empty
+				this.sex = lookup.sex[character.sex] || empty
+				this.alignment = lookup.alignment[character.alignment] || empty
+				this.abilities = this.abilitiesFromRolls(character.rolls, character.ordered)
+				this.size = lookup.size[race.size] || empty
+				this.feats = feats
+				this.options = options
+				this.increases = character.increases
+				
+				this.character = {
+					'rolls':character.rolls,
+					'skills':character.skills,
+					'languages':character.languages,
+					'ordered':character.ordered,
+					'height':character.height,
+					'weight':character.weight,
+					'trait':character.trait || [],
+					'ideal':character.ideal | 0,
+					'flaw':character.flaw,
+					'bond':character.bond,
+				}
+			}
+			
+			Character.prototype.compute = function Character_compute() {
+				this.computeFeatures()
+				this.computeProficiencies()
+				this.computeAbilities()
+				this.computeCharacteristics()
+				this.computeEssentials()
+				
+				var crass = this.crass
+				var archetype = this.archetype
+				var background = this.background
+				var equipment = archetype.equipment_default || crass.equipment_default || crass.equipment || []
+				
+				this.computeResistances()
+				this.computeArmor()
+				
+				this.effectivenessArmorclass = defaults.effectivenessArmorclass
+				this.computeWeapons(equipment)
+				this.computeCantrips()
+				this.attacks = _flatten(this.weapons, this.cantrips).sort((a, b) => b.effectiveness - a.effectiveness)
+				this.equipmentNames = _flatten(equipmentNames(equipment), background.equipment || [])
+			}
+			
+			Character.prototype.computeFeatures = function Character_computeFeatures() {
+				var option, feature
+				var level = this.level
+				var race = this.race
+				var crass = this.crass
+				var archetype = this.archetype
+				var background = this.background
+				var character = this.character
+				var features = _flatten(race.features, crass.features, archetype.features, background.features)
+				var activeFeatures = features.filter(f => f.level <= level)
+				
+				for ( feature of activeFeatures ) {
+					if ( !feature.options || !dnd[feature.options.dnd] ) { continue }
+					
+					if ( this.options[feature.options.hash] ) {
+						for ( option of dnd[feature.options.dnd] ) {
+							if ( option.key === this.options[feature.options.hash] ) {
+								activeFeatures.push(option)
+								break
+							}
+						}
+					} else {
+						option = dnd[feature.options.dnd][0]
+						
+						if ( option ) {
+							this.options[feature.options.hash] = option.hash
+							activeFeatures.push(option)
+						}
+					}
+				}
+				
+				var sources = _flatten([character, race, crass, background, archetype], activeFeatures)
+				
+				features.sort((a, b) => (a.level - b.level) || (a.name > b.name ? 1 : -1))
+				
+				this.features = features
+				this.activeFeatures = activeFeatures
+				this.sources = sources
+			}
+			
+			Character.prototype.computeEssentials = function Character_computeEssentials() {
+				var sources = this.sources
+				var modifiers = this.modifiers
+				var spellcasting = this.spellcasting
+				var level = this.level
+				var race = this.race
+				var crass = this.crass
+				
+				var hitdie = crass.hd || 8
+				var pb = Math.floor((level - 1) / 4) + 2
+				var averageHitpoints = Math.floor(hitdie / 2) + 1
+				var toughness = sources.reduce((t, f) => t + (f.toughness || 0), 0)
+				var hitpointsPerLevel = averageHitpoints + toughness + (modifiers['constitution'] | 0)
+				var hitpoints = hitpointsPerLevel * level + (hitdie - averageHitpoints)
+				var attacksPerAction = sources.reduce((t, f) => t + (f.attacks || 0), 0) + 1
+				
+				this.proficiencyBonus = pb
+				this.toughness = toughness
+				this.hitdie = hitdie
+				this.hitpoints = hitpoints
+				this.speed = sources.reduce((t, f) => t + (f.speed || 0), 0)
+				this.criticalDice = sources.reduce((t, f) => t + (f.criticaldice | 0), 0) + 0
+				this.criticalRange = sources.reduce((t, f) => t + (f.criticalrange | 0), 0) + 1
+				this.initiative = modifiers['dexterity']
+				this.darkvision = race.darkvision
+				this.attacksPerAction = attacksPerAction
+				this.difficultyClass = 8 + pb + (modifiers[spellcasting] | 0)
+				this.passivePerception = 10 + (modifiers['wisdom'] | 0) + (this.proficiencies.skills.indexOf('preception') < 0 ? 0 : pb)
+			}
+			
+			Character.prototype.computeProficiencies = function Character_computeProficiencies() {
+				var sources = this.sources
+				
+				var proficiencies = {
+					'languages': _flatten.apply(null, sources.map(s => s.languages)),
+					'skills': _flatten.apply(null, sources.map(s => s.skills)),
+					'saves': _flatten.apply(null, sources.map(s => s.saves)),
+					'tools': _flatten.apply(null, sources.map(s => s.tools)),
+					'armor': _flatten.apply(null, sources.map(s => s.armor)),
+					'weapons': _flatten.apply(null, sources.map(s => s.weapons)),
+				}
+				
+				this.proficiencyNames = {
+					'languages': proficiencies.languages.map(key => lookup.languages[key] && lookup.languages[key].name),
+					'skills': proficiencies.skills.map(key => lookup.skills[key] && lookup.skills[key].name),
+					'saves': proficiencies.saves.map(key => lookup.abilities[key] && lookup.abilities[key].name),
+					'tools': proficiencies.tools.map(key => lookup.tools[key] && lookup.tools[key].name),
+					'armor': proficiencyNames(proficiencies.armor, 'armors'),
+					'weapons': proficiencyNames(proficiencies.weapons, 'weapons'),
+				}
+				
+				this.proficiencies = proficiencies
+			}
+			
+			Character.prototype.computeCharacteristics = function Character_computeCharacteristics() {
+				var character = this.character
+				var background = this.background
+				
+				if ( background.trait ) {
+					this.traits = character.trait.map(t => background.trait[t | 0])
+					this.ideal = background.ideal[character.ideal | 0]
+					this.bond = background.bond[character.bond | 0]
+					this.flaw = background.flaw[character.flaw | 0]
+				}
+			}
+			
+			Character.prototype.computeResistances = function Character_computeResistances() {
+				var sources = this.sources
+				
+				this.immunities = _unique.apply(null, sources.map(f => f.immunities))
+				this.resistance = _unique.apply(null, sources.map(f => f.resistance))
+				this.saveAdvantage = _unique.apply(null, sources.map(f => f.advantage_on_saves))
+				//this.advantage = _unique.apply(null, sources.map(f => f.advantage))
+				
+				this.immunityNames = this.immunities.map(r => lookup.resistances[r].name).sort()
+				this.resistanceNames = this.resistance.map(r => lookup.resistances[r].name).sort()
+				this.saveAdvantageNames = this.saveAdvantage.map(r => lookup.resistances[r].name).sort()
+			}
+			
+			Character.prototype.computeAbilities = function Character_computeAbilities(distribute) {
+				var maximum = defaults.maximumAbility
+				var crass = this.crass
+				var archetype = this.archetype
+				var scores = new Object()
+				var modifiers = new Object()
+				var rolls = this.abilities
+				var increases = this.increases
+				var abilities, index, key, keys = dnd.abilities.map(a => a.key)
+				var order = archetype.order || crass.order || []
+				var spellcasting = archetype.spellcasting || crass.spellcasting || ''
+				var saves = this.proficiencies.saves
+				
+				var any = 0, increased = 0, increase = defaults.increase || 0
+				var feature, styles
+				var abilitiesWithLimits = []
+				var abilitiesWithIncreases = new Object()
+				var abilitiesAlreadyIncreased = new Object()
+				
+				for ( key of keys ) {
+					scores[key] = rolls[key]
+				}
+				
+				for ( feature of this.sources ) {
+					if ( feature.increase > 0 ) { increase += feature.increase }
+					
+					abilities = feature.abilities
+					
+					if ( !abilities ) { continue }
+					
+					if ( abilities.any > 0 ) {
+						any += abilities.any
+						
+						for ( key of keys ) { abilitiesAlreadyIncreased[key] = (abilitiesAlreadyIncreased[key] | 0) + (abilities[key] | 0) }
+					}
+					
+					if ( abilities.limit > 0 ) {
+						featuresWithLimits.push(abilities)
+						continue
+					}
+					
+					for ( key of keys ) { scores[key] += abilities[key] | 0 }
+				}
+				
+				if ( increases && increases.length > 0 ) {
+					for ( abilities of abilitiesWithLimits ) {
+						for ( index = 0 ; index < keys.length ; ++index ) {
+							if ( abilities[keys[index]] > 0 && abilities[keys[index]] <= this.increases[index] ) {
+								scores[keys[index]] += abilities[keys[index]]
+								increased -= abilities[keys[index]]
+								break
+							}
+						}
+						
+						if ( index < keys.length ) { break }
+						
+						for ( key of keys ) {
+							abilitiesWithIncreases[key] += abilities[key] || 0
+						}
+					}
+					
+					for ( index = 0 ; index < keys.length ; ++index ) {
+						increased += increases[index] | 0
+						scores[keys[index]] += increases[index] | 0
+					}
+				}
+				
+				for ( key of keys ) {
+					modifiers[key] = modifierForAbility(scores[key])
+				}
+				
+				this.scores = scores
+				this.modifiers = modifiers
+				this.spellcasting = spellcasting
+				this.increaseLimit = any + increase
+				this.increaseByOne = any > increased ? any - increased : 0
+				this.increase = any + increase > increased ? any + increase - increased : 0
+				this.abilitiesAlreadyIncreased = abilitiesAlreadyIncreased
+				
+				var abilityItems = []
+				
+				for ( index = 0 ; index < dnd.abilities.length ; ++index ) {
+					ability = dnd.abilities[index]
+					key = ability.key
+					styles = []
+					
+					if ( spellcasting === key ) { styles.push('spellcasting') }
+					if ( saves.indexOf(key) >= 0 ) { styles.push('proficient') }
+					
+					if ( scores[key] < maximum ) {
+						if ( abilitiesWithIncreases[key] > 0 ) {
+							styles.push('pending')
+						} else if ( increased < any ) {
+							if ( !(increases && increases[index] > 0 || abilitiesAlreadyIncreased[key] > 0) ) {
+								styles.push('pending')
+							}
+						} else if ( increased < increase + any ) {
+							styles.push('increase')
+						}
+					}
+					
+					abilityItems.push({
+						'key':key,
+						'name':ability.name,
+						'roll':rolls[key],
+						'score':scores[key],
+						'modifier':modifiers[key],
+						'styles':styles.join(" "),
+					})
+				}
+				
+				this.abilityItems = abilityItems
+			}
+			
+			Character.prototype.computeArmor = function Character_computeArmor() {
+				var modifiers = this.modifiers
+				var equipment = this.crass.equipment
+				var features = this.sources
+				var dexterityModifier = modifiers['dexterity'] | 0
+				var armors = armorFromEquipment(equipment, dexterityModifier, this.proficiencies.armor)
+				
+				var armored = 0
+				var unarmored = dexterityModifier
+				
+				for ( var armorIndex = 0 ; armorIndex < armors.length ; ++armorIndex ) {
+					var armor = armors[armorIndex]
+					
+					if ( armor.type === 'shield' ) {
+						armored += armor.armor | 0
+						unarmored += armor.armor | 0
+					} else {
+						armored += armor.armor | 0
+						
+						if ( (armor.dexteritylimit > 0 || armor.dexteritylimit === 0) && armor.dexteritylimit < dexterityModifier ) {
+							armored += armor.dexteritylimit | 0
+						} else {
+							armored += dexterityModifier
+						}
+					}
+				}
+				
+				for ( featureIndex = 0 ; featureIndex < features.length ; ++featureIndex ) {
+					var feature = features[featureIndex]
+					
+					if ( feature.armorclass ) {
+						if ( feature.requirement === 'unarmored' ) {
+							unarmored += (modifiers[feature.armorclass] || feature.armorclass) | 0
+						}
+						
+						if ( feature.requirement === 'armored' ) {
+							armored += feature.armorclass | 0
+						}
+					}
+				}
+				
+				this.armorclass = 10 + (armored > unarmored ? armored : unarmored)
+			}
+			
+			Character.prototype.weaponItem = function Character_weaponItem(context, weapon, versatile, reckless) {
+				var medium = 3, small = 2
+				var disadvantage, modifier, hit, roll, die, feature, damage, average, effectiveness
+				
+				if ( context.size < small ) { disadvantage = !weapon.light }
+				else if ( context.size < medium ) { disadvantage = weapon.heavy || (weapon.versatile && !versatile) }
+				else { disadvantage = false }
+				
+				var isSkilled = !(context.proficient.indexOf(weapon.key) < 0)
+				var isOwned = !(context.equipment.indexOf(weapon.key) < 0)
+				var isFinesse = weapon.finesse
+				var isRanged = weapon.ranged || weapon.ammunition || false
+				var isMonk = weapon.martial ? weapon.key === 'shortsword' : !isRanged
+				
+				die = versatile ? weapon.versatile : weapon.damage.die
+				
+				if ( context.monkWeaponDamageDie > 0 && isMonk ) {
+					if ( die < context.monkWeaponDamageDie ) { die = context.monkWeaponDamageDie }
+					isFinesse = true
+				}
+				
+				var attributes = []
+				attributes.push(weapon.range > 10 ? 'ranged' : 'melee')
+				attributes.push(weapon.martial ? 'martial' : 'simple')
+				if ( isOwned ) { attributes.push('equipment') }
+				if ( isSkilled ) { attributes.push('proficient') }
+				if ( isFinesse ) { attributes.push('finesse') }
+				if ( weapon.light ) { attributes.push('light') }
+				if ( weapon.heavy ) { attributes.push('heavy') }
+				if ( weapon.reach ) { attributes.push('reach') }
+				if ( weapon.thrown ) { attributes.push('thrown') }
+				if ( weapon.versatile ) { attributes.push('versatile') }
+				if ( weapon.twohanded || versatile ) { attributes.push('twohanded') }
+				if ( weapon.loading ) { attributes.push('loading') }
+				if ( weapon.ammunition ) { attributes.push('ammunition') }
+				if ( disadvantage ) { attributes.push('disadvantage') }
+				if ( reckless ) { attributes.push('reckless') }
+				
+				if ( weapon.range > 10 && !weapon.thrown ) { modifier = context.rangeModifier }
+				else if ( isFinesse && context.rangeModifier > context.meleeModifier ) { modifier = context.rangeModifier }
+				else { modifier = context.meleeModifier }
+				
+				modifier = modifier | 0
+				hit = (isSkilled ? context.proficiencyBonus : 0) + modifier
+				roll = weapon.damage.count > 1 ? weapon.damage.count : 1
+				
+				for ( feature of context.activeSources ) {
+					if ( feature.requirement === 'ammunition' && !isRanged ) { continue }
+					if ( feature.requirement === 'melee-one-handed' && (weapon.twohanded || versatile || isRanged) ) { continue }
+					
+					if ( feature.hit ) { hit += feature.hit | 0 }
+					if ( feature.damage ) { modifier += feature.damage | 0 }
+				}
+				
+				if ( reckless ) {
+					hit -= 5
+					modifier += 10
+				}
+				
+				damage = (roll > 1 ? roll : "") + "d" + die
+				average = roll * (die + 1) / 2
+				
+				var attacks = weapon.loading ? 1 : context.attacks
+				var chanceToHit = (21 - Math.min(Math.max(2, context.armorClass - hit), 20)) / 20
+				var chanceToCritical = (21 - Math.min(Math.max(21 - context.criticalRange, context.armorClass - hit), 20)) / 20
+				var criticalRoll = !weapon.ammunition ? roll + context.criticalDice : roll
+				
+// 				if ( advantage ) {
+// 					chanceToHit = 1 - (1 - chanceToHit) * (1 - chanceToHit)
+// 					chanceToCritical = 1 - (1 - chanceToCritical) * (1 - chanceToCritical)
+// 				}
+				
+				if ( disadvantage ) {
+					chanceToHit = chanceToHit * chanceToHit
+					chanceToCritical = chanceToCritical * chanceToCritical
+				}
+				
+				effectiveness = ((chanceToHit * roll + chanceToCritical * criticalRoll) * (die + 1) / 2 + modifier) * attacks
+				effectiveness += ((weapon.twohanded || versatile ? -1 : 0) / 100.0) + ((weapon.range | 0) / 3000.0) + ((weapon.common | 0) / 1000.0)
+				
+				return {
+					'key':weapon.key,
+					'name':weapon.name,
+					'attributes':attributes.join(" "),
+					'hit':hit < 0 ? hit : ("+" + hit),
+					'damage':damage + (modifier > 0 ? "+" + modifier : modifier || ""),
+					'average':Math.round(average + modifier),
+					'effectiveness':effectiveness,
+					'rate':Math.max(effectiveness, 0).toFixed(1),
+					'type':weapon.type,
+					'ranged':weapon.ranged || weapon.ammunition || false,
+					'martial':weapon.martial || false,
+					'twohanded':weapon.twohanded || versatile || false,
+					'versatile':weapon.versatile || 0,
+					'range':!(versatile && weapon.thrown) ? weapon.longrange > 0 ? weapon.range + " / " + weapon.longrange : (weapon.range || "") : "",
+					'proficient':isSkilled,
+					'owned':isOwned,
+					'summary':''
+				}
+			}
+			
+			Character.prototype.computeWeapons = function Character_computeWeapons(equipment) {
+				var proficiencies = this.proficiencies.weapons
+				var sources = this.sources
+				var size = this.size
+				var activeSources = []
+				var result = []
+				var owned = []
+				var skilled = []
+				var weaponTypes = new Object()
+				var index, key, row, item, weapon, attributes, feature
+				var medium = 3, small = 2
+				var monkWeaponDamageDie = 0
+				var hasShield = false
+				var reckless = []
+				
+				for ( index = 0 ; index < sources.length ; ++index ) {
+					feature = sources[index]
+					
+					if ( feature.hit || feature.damage ) {
+						activeSources.push(feature)
+					}
+					
+					if ( feature.monkweapondamagedie > monkWeaponDamageDie ) {
+						monkWeaponDamageDie = feature.monkweapondamagedie
+					}
+					
+					if ( feature.reckless ) {
+						reckless.push(feature.reckless)
+					}
+				}
+				
+				for ( index = 0 ; index < proficiencies.length ; ++index ) {
+					key = proficiencies[index]
+					row = lookup.proficiencies[key]
+					
+					if ( row && row.weapons ) {
+						skilled.push.apply(skilled, row.weapons)
+					} else if ( lookup.weapons[key] ) {
+						skilled.push(key)
+					}
+				}
+				
+				for ( index = 0 ; index < equipment.length ; ++index ) {
+					row = equipment[index]
+					
+					if ( row.weapon ) {
+						owned.push(row.weapon)
+					} else if ( row.armor ) {
+						if ( lookup.armors[row.armor].type === 'shield' ) { hasShield = true }
+					} else if ( row.weapontype ) {
+						weaponTypes[row.weapontype] = (weaponTypes[row.weapontype] | 0) + 1
+					} else if ( lookup.weapons[row] ) {
+						owned.push(row)
+					} else if ( row.length > 0 ) {
+						for ( item of row[0] ) {
+							if ( item.weapon ) {
+								weapon = lookup.weapons[item.weapon]
+								
+								//	use small variant for heavy weapons from class equipment options
+								if ( size.relative < medium && weapon.heavy && weapon.small ) {
+									weapon = lookup.weapons[weapon.small]
+								}
+								
+								owned.push(weapon.key)
+							} else if ( item.weapontype ) {
+								weaponTypes[item.weapontype] = (weaponTypes[item.weapontype] | 0) + 1
+							} else if ( item.armor ) {
+								if ( lookup.armors[item.armor].type === 'shield' ) { hasShield = true }
+							} else if ( lookup.weapons[item] ) {
+								owned.push(item)
+							}
+						}
+					}
+				}
+				
+				var modifiers = this.modifiers
+				var weapons = _flatten(owned, skilled)
+				
+				var context = {
+					'armorClass':this.effectivenessArmorclass,
+					'size':size.relative,
+					'proficient':skilled,
+					'equipment':owned,
+					'meleeModifier':modifiers['strength'] || 0,
+					'rangeModifier':modifiers['dexterity'] || 0,
+					'proficiencyBonus':this.proficiencyBonus,
+					'activeSources':activeSources,
+					'criticalDice':Math.max(this.criticalDice | 0, 1),
+					'criticalRange':Math.max(this.criticalRange | 0, 1),
+					'monkWeaponDamageDie':monkWeaponDamageDie,
+					'attacks':this.attacksPerAction
+				}
+				
+				for ( index = 0 ; index < weapons.length ; ++index ) {
+					key = weapons[index]
+					weapon = lookup.weapons[key]
+					
+					if ( weapons.indexOf(key) < index ) { continue }
+					if ( !weapon ) { continue }
+					if ( weapon.heavy && size.relative < small ) { continue }
+					
+					result.push(this.weaponItem(context, weapon, false))
+					
+					if ( weapon.versatile > weapon.damage.die ) {
+						result.push(this.weaponItem(context, weapon, true))
+					}
+					
+					if ( reckless.length > 0 ) {
+						var check = false
+						
+						if ( weapon.ranged || weapon.ammunition ) {
+							check = 'ranged'
+						} else if ( weapon.heavy ) {
+							check = 'heavy'
+						}
+						
+						if ( !( reckless.indexOf(check) < 0 ) ) {
+							result.push(this.weaponItem(context, weapon, false, true))
+						}
+					}
+				}
+				
+				result.sort((a, b) => b.effectiveness - a.effectiveness)
+				
+				//	choose the most effective weapon for weapon type equipment options
+				for ( index = 0 ; index < result.length ; ++index ) {
+					item = result[index]
+					
+					if ( item.owned || !item.proficient ) {
+						continue
+					} else if ( hasShield && item.twohanded ) {
+						continue
+					} else if ( weaponTypes['simplemelee'] > 0 && !item.martial && !item.ranged ) {
+						weaponTypes['simplemelee'] -= 1
+					} else if ( weaponTypes['simple'] > 0 && !item.martial ) {
+						weaponTypes['simple'] -= 1
+					} else if ( weaponTypes['martialmelee'] > 0 && !item.ranged ) {
+						weaponTypes['martialmelee'] -= 1
+					} else if ( weaponTypes['martial'] > 0 ) {
+						weaponTypes['martial'] -= 1
+					} else {
+						continue
+					}
+					
+					item.owned = true
+					item.attributes += ' equipment'
+					
+					if ( item.versatile ) {
+						for ( row = 0 ; row < result.length ; ++row ) {
+							if ( result[row].owned || result[row].key !== item.key ) { continue }
+							
+							result[row].owned = true
+							result[row].attributes += ' equipment'
+						}
+					}
+				}
+				
+				this.weapons = result
+			}
+			
+			Character.prototype.computeCantrips = function Character_computeCantrips() {
+				var crass = this.crass
+				var level = this.level | 0
+				var power = Math.floor((level + 7) / 6)
+				var index, feature, cantrip, ability, modifier, attributes
+				var hit, die, roll, damage, average, attacks, chanceToHit
+				var features = this.sources
+				var modifiers = this.modifiers
+				var pb = this.proficiencyBonus
+				var armorclass = this.effectivenessArmorclass
+				var classes = new Object()
+				var cantrips = []
+				var result = []
+				
+				for ( feature of features ) {
+					if ( feature.key === 'spellcasting' ) {
+						classes[crass.key] = (classes[crass.key] | 0) + (feature.cantrips | 0)
+					} else if ( feature.cantrip && feature.cantrip.crass ) {
+						classes[feature.cantrip.crass] = (classes[feature.cantrip.crass] | 0) + (feature.cantrip.count || 1)
+					} else if ( feature.cantrip && feature.cantrip.key && lookup.cantrips[feature.cantrip.key] ) {
+						ability = feature.ability
+						modifier = modifiers[ability] | 0
+						cantrips.push({'cantrip':lookup.cantrips[feature.cantrip.key], 'ability':ability, 'modifier':modifier})
+					}
+				}
+				
+				for ( cantrip of dnd.cantrips ) {
+					for ( var caster of cantrip.classes ) {
+						if ( classes[caster] > 0 ) {
+							ability = lookup.classes[caster].spellcasting
+							modifier = modifiers[ability] | 0
+							cantrips.push({'crass':caster, 'cantrip':cantrip, 'ability':ability, 'modifier':modifier})
+						}
+					}
+				}
+				
+				for ( feature of cantrips ) {
+					cantrip = feature.cantrip
+					modifier = feature.modifier
+					
+					if ( cantrip.save ) {
+						hit = pb + modifier
+					} else {
+						hit = pb + modifier
+					}
+					
+					attributes = ['cantrip']
+					attributes.push(cantrip.range > 0 ? 'ranged' : 'melee')
+					
+					die = cantrip.damage.die
+					roll = cantrip.damage.count === '*' ? power : cantrip.damage.count | 0
+					damage = ( roll > 1 ? roll : "" ) + "d" + cantrip.damage.die
+					average = ( roll > 1 ? roll : 1 ) * ( die + 1 ) / 2
+					
+					if ( level > 1 && modifier > 0 && cantrip.key === 'eldritchblast' && crass.key === 'warlock' ) {
+						average += modifier // assume Agonizing Blast
+						damage += "+" + modifier
+					}
+					
+					attacks = ( cantrip.targets === '*' ) ? power : 1
+					chanceToHit = (21 - Math.min(Math.max(2, armorclass - hit), 20)) / 20
+					chanceToCritical = cantrip.save ? 0 : 1 / 20
+					effectiveness = (chanceToHit + chanceToCritical) * average * attacks
+					effectiveness += ((cantrip.range | 0) / 3000.0)
+					
+					result.push({
+						'key':cantrip.key,
+						'name':cantrip.name,
+						'summary':cantrip.summary,
+						'range':cantrip.range,
+						'type':cantrip.type,
+						'attributes':attributes.join(" "),
+						'hit':!cantrip.save ? (hit < 0 ? hit : ( "+" + hit )) : "",
+						'damage':damage,
+						'rate':Math.max(effectiveness, 0).toFixed(1),
+						'effectiveness':effectiveness,
+					})
+				}
+				
+				result.sort((a, b) => b.effectiveness - a.effectiveness)
+				
+// 				for ( index = 0 ; index < result.length ; ++index ) {
+// 					feature = result[index]
+// 					cantrip = lookup.cantrips[feature.key]
+// 					if ( feature.isOwned ) { continue }
+// 					
+// 					for ( key of cantrip.classes ) {
+// 						if ( classes[key] > 0 ) {
+// 							classes[key] -= 2
+// 							feature.isOwned = true
+// 							feature.attributes += ' equipment'
+// 							break
+// 						}
+// 					}
+// 				}
+				
+				this.cantrips = result
+			}
+			
+			Character.prototype.deflate = function Character_deflate() {
+				var character = {
+					'level':this.level,
+					'sex':this.sex,
+					'alignment':this.alignment,
+					'race':this.race.key,
+					'crass':this.crass.key,
+					'background':this.background.key,
+					'archetype':new Object(),
+					'feats':this.feats.map(f => f.key),
+					'rolls':this.character.rolls,
+					'ordered':this.character.ordered,
+					'increases':this.increases,
+					'height':this.character.height,
+					'weight':this.character.weight,
+					'skills':this.character.skills,
+					'languages':this.character.languages,
+					'trait':this.character.trait,
+					'ideal':this.character.ideal,
+					'flaw':this.character.flaw,
+					'bond':this.character.bond,
+				}
+				
+				character.archetype[this.crass.key] = this.archetype.key
+				
+				var options = []
+				
+				for ( var hash of lookup.optionHash ) {
+					if ( this.options[hash] ) {
+						options.push(hash)
+						character[hash] = this.options[hash]
+					}
+				}
+				
+				character.options = options
+				
+				return character
+			}
+			
+			Character.prototype.assignValue = function Character_assignValue(key, value) {
+				var needsCompute = false
+				
+				switch ( key ) {
+				case 'level':
+					if ( this.level !== value ) {
+						this.level = value || 1
+						needsCompute = true
+					}
+					break
+				case 'crass':
+					if ( this.crass.key !== value ) {
+						this.crass = lookup.classes[value]
+						this.character.ordered = false
+						needsCompute = true
+						
+						if ( !this.background.key && this.crass.background_default ) {
+							this.background = lookup.backgrounds[this.crass.background_default]
+							
+							if ( (this.character.trait && this.character.trait.length) !== 2 ) {
+								this.character.trait = [0, 1]
+							}
+						}
+					}
+					break
+				case 'race':
+					if ( this.race.key !== value ) {
+						this.race = lookup.races[value]
+						needsCompute = true
+						
+						delete this.weight
+						delete this.height
+					}
+					break
+				case 'background':
+					if ( this.background.key !== value ) {
+						this.background = lookup.backgrounds[value]
+						needsCompute = true
+					}
+					break
+				case 'archetype':
+					if ( this.archetype.key !== value ) {
+						this.archetype = lookup.archetypes[value]
+						needsCompute = true
+					}
+					break
+				case 'sex':
+					if ( this.sex.key !== value ) {
+						this.sex = lookup.sex[value]
+					}
+					break
+				case 'alignment':
+					if ( this.alignment.key !== value ) {
+						this.alignment = lookup.alignment[value]
+					}
+					break
+				case 'rolls':
+					this.character.rolls = value
+					this.character.ordered = false
+					needsCompute = true
+					break
+				case 'skills':
+					if ( this.character.skills !== value ) {
+						this.character.skills = value
+						needsCompute = true
+					}
+					break
+				case 'feats':
+					this.feats = []
+					for ( key of value ) { if ( lookup.feats[key] ) { this.feats.push(lookup.feats[key]) } }
+					needsCompute = true
+					break
+				case 'languages':
+					this.character.languages = value
+					break
+				case 'ordered':
+					if ( this.character.ordered !== value ) {
+						this.character.ordered = value
+						needsCompute = true
+					}
+					break
+				case 'trait':
+					this.character.trait = value
+					break
+				case 'ideal':
+					this.character.ideal = value
+					break
+				case 'flaw':
+					this.character.flaw = value
+					break
+				case 'bond':
+					this.character.bond = value
+					break
+				}
+				
+				if ( needsCompute ) {
+					this.compute()
+				}
+				
+				return needsCompute
+			}
+			
+			Character.prototype.checkboxRulesForLanguages = function Character_checkboxRulesForLanguages() {
+				var values = _flatten.apply(null, this.sources.slice(1).map(s => s.languages))
+				var limit = this.sources.reduce((l, s) => l + (s.extra_language | 0), 0)
+				
+				return {'required':values, 'limit':limit}
+			}
+			
+			Character.prototype.checkboxRulesForSkills = function Character_checkboxRulesForSkills() {
+				var values = _flatten.apply(null, this.sources.slice(1).map(s => s.skills))
+				var options, limit = 0
+				
+				for ( source of this.sources ) {
+					if ( !( source.skill_options && source.skill_options.limit > 0 ) ) { continue }
+					
+					if ( !options && source.skill_options.list ) {
+						options = source.skill_options
+					} else {
+						limit += source.skill_options.limit
+					}
+				}
+				
+				return {'required':values, 'limit':limit, 'options':options}
+			}
+			
+			// MARK: Templates
+			
+			function replaceKeysLookup(object, key) {
+				var value = object[key]
+				
+				if ( undefined === value ) {
+					return "-"
+				} else if ( Array.isArray(value) ) {
+					if ( value.length === 0 ) {
+						return "-"
+					} else if ( lookup[key] ) {
+						var map = lookup[key]
+						return value.map((item) => (map[item] && map[item].name) || item).join(", ")
+					} else {
+						return value.join(", ")
+					}
+				} else {
+					if ( lookup[key] ) {
+						var map = lookup[key]
+						return (map[value] && map[value].name) || value
+					}
+				}
+				
+				return value
+			}
+			
+			function replaceKeys(template, object) {
+				var pattern = RegExp("({[^ }]+})", "g")
+				
+				return template.replace(pattern, (match) => replaceKeysLookup(object, match.slice(1, -1)))
+			}
+			
+			// MARK: Dice
+			
+			function dieRoll(sides) {
+				return 1 + Math.floor(Math.random() * sides)
+			}
+			
+			function diceRoll(sides, diceToRoll, diceToKeep) {
+				var rolls = []
+				
+				for ( var index = 0 ; index < diceToRoll ; ++index ) {
+					rolls.push(dieRoll(sides))
+				}
+				
+				if ( diceToKeep > 0 && diceToKeep < diceToRoll ) {
+					rolls = rolls.sort((a, b) => a - b).slice(diceToRoll - diceToKeep)
+				}
+				
+				return rolls
+			}
+			
+			function abilityRoll(diceToRoll) {
+				return diceRoll(6, diceToRoll >= 3 ? diceToRoll : 4, 3).reduce((a, b) => a + b)
+			}
+			
+			function abilitiesRoll(diceToRoll) {
+				return dnd.abilities.map((a) => abilityRoll(diceToRoll))
+			}
+			
+			// MARK: History
+			
+			function inflateHash(string, keyMap) {
+				if ( string.charAt(0) === "#" ) { string = string.slice(1) }
+				
+				var parts = string.split("|")
+				var object = new Object()
+				
+				for ( var index = 0 ; index < parts.length ; ++index ) {
+					var part = parts[index]
+					var equals = part.indexOf("=")
+					if ( equals < 1 ) { continue }
+					
+					var key = part.slice(0, equals)
+					if ( keyMap && keyMap[key] ) { key = keyMap[key] }
+					
+					object[key] = part.slice(equals + 1)
+				}
+				
+				return object
+			}
+			
+			function characterIntoHash(character) {
+				var separator = "."
+				var archetype = ""
+				var traits = ""
+				
+				if ( character.crass && character.archetype && character.archetype[character.crass] ) {
+					archetype = separator + character.archetype[character.crass]
+				}
+				
+				if ( character.background && character.trait ) {
+					traits = separator + character.trait.concat([character.ideal || 0, character.bond || 0, character.flaw || 0]).join(separator)
+				}
+				
+				var values = []
+				
+				if ( character.rolls ) {
+					if ( character.ordered ) {
+						values.push("a=" + character.rolls.join(separator))
+					} else {
+						values.push("d=" + character.rolls.sort((a, b) => b - a).join(separator))
+					}
+				}
+				
+				if ( character.race ) { values.push("r=" + character.race) }
+				if ( character.crass ) { values.push("c=" + character.crass + archetype) }
+				if ( character.background ) { values.push("b=" + character.background + traits) }
+				if ( character.level > 1 ) { values.push("l=" + character.level) }
+				if ( character.skills && character.skills.length > 0 ) { values.push("s=" + character.skills.join(separator)) }
+				if ( character.languages && character.languages.length > 0 ) { values.push("t=" + character.languages.join(separator)) }
+				if ( character.feats && character.feats.length > 0 ) { values.push("f=" + character.feats.join(separator)) }
+				if ( character.alignment ) { values.push("n=" + character.alignment) }
+				if ( character.sex ) { values.push("x=" + character.sex) }
+				if ( character.height > 0 && character.weight > 0 ) { values.push("h=" + character.height + separator + character.weight) }
+				if ( character.increases && character.increases.length > 0 ) { values.push("i=" + character.increases.join(separator)) }
+				
+				var options = character.options
+				
+				if ( options ) {
+					for ( var index = 0 ; index < options.length ; ++index ) {
+						if ( character[options[index]] ) {
+							values.push(options[index] + "=" + character[options[index]])
+						}
+					}
+				}
+				
+				var hash = values.join("|")
+				if ( hash === location.hash ) { return }
+				
+				if ( history.pushState ) {
+					history.pushState(null, null, "#" + hash)
+				} else {
+					location.hash = hash
+				}
+			}
+			
+			function characterFromHash(hash) {
+				var separator = "."
+				var object = inflateHash(hash || location.hash)
+				var character = {'archetype':{}, 'options':[]}
+				
+				if ( object['a'] ) {
+					character.rolls = object['a'].split(separator).map(r => r | 0)
+					character.ordered = true
+				} else if ( object['d'] ) {
+					character.rolls = object['d'].split(separator).map(r => r | 0).sort((a, b) => b - a)
+				}
+				
+				if ( (character.rolls && character.rolls.length) !== 6 ) {
+					character.rolls = defaults.rolls
+					character.ordered = false
+				}
+				
+				if ( object['b'] ) {
+					var ba = object['b'].split(separator)
+					
+					character.background = ba[0]
+					
+					if ( ba.length > 5 ) {
+						character.trait = ba.slice(1, 3)
+						character.ideal = ba[3]
+						character.bond = ba[4]
+						character.flaw = ba[5]
+					}
+				}
+				
+				if ( object['c'] ) {
+					var ca = object['c'].split(separator)
+					
+					character.crass = ca[0]
+					character.archetype[ca[0]] = ca[1]
+				}
+				
+				if ( object['h'] ) {
+					var hw = object['h'].split(separator)
+					
+					character.height = hw[0]
+					character.weight = hw[1]
+				}
+				
+				if ( object['f'] ) { character.feats = object['f'].split(separator) }
+				if ( object['i'] ) { character.increases = object['i'].split(separator) }
+				if ( object['l'] ) { character.level = object['l'] }
+				if ( object['r'] ) { character.race = object['r'] }
+				if ( object['s'] ) { character.skills = object['s'].split(separator) }
+				if ( object['t'] ) { character.languages = object['t'].split(separator) }
+				if ( object['n'] ) { character.alignment = object['n'] }
+				if ( object['x'] ) { character.sex = object['x'] }
+				
+				for ( var hash of lookup.optionHash ) {
+					if ( object[hash] ) {
+						character[hash] = object[hash]
+						character.options.push(hash)
+					}
+				}
+				
+				return character
+			}
+			
+			// MARK: Names
+			
+			function modifierForAbility(score) {
+				var modifier = Math.floor(score / 2) - 5.0
+				
+				return modifier > 0 ? "+" + modifier : modifier
+			}
+			
+			function proficiencyNames(proficiencies, type) {
+				var groupKeys = []
+				var itemsKeysInGroups = []
+				var groupNames = []
+				var itemKeys = []
+				
+				for ( var index = 0 ; index < proficiencies.length ; ++index ) {
+					var key = proficiencies[index]
+					var group = lookup.proficiencies[key]
+					
+					if ( group ) {
+						if ( groupKeys.indexOf(key) < 0 ) {
+							groupKeys.push(key)
+							groupNames.push(group.name)
+							itemsKeysInGroups.push.apply(itemsKeysInGroups, group[type])
+						}
+					} else {
+						if ( itemKeys.indexOf(key) < 0 ) {
+							itemKeys.push(key)
+						}
+					}
+				}
+				
+				var itemKeysOutsideGroups = itemKeys.filter(key => itemsKeysInGroups.indexOf(key) < 0)
+				var itemNames = itemKeysOutsideGroups.map(key => lookup[type][key].name)
+				
+				return groupNames.concat(itemNames.sort())
+			}
+			
+			function equipmentNames(equipment) {
+				var names = []
+				var items = []
+				var index, row, item, suffix, details
+				
+				for ( index = 0 ; index < equipment.length ; ++index ) {
+					row = equipment[index]
+					
+					if ( row.length > 0 ) {
+						items.push.apply(items, row[0])
+					} else {
+						items.push(row)
+					}
+				}
+				
+				for ( index = 0 ; index < items.length ; ++index ) {
+					item = items[index]
+					suffix = item.quantity > 1 ? " x" + item.quantity : ""
+					
+					if ( item.armor ) {
+						details = lookup.armors[item.armor]
+						
+						if ( details ) { names.push("a" + details.name + suffix) }
+					} else if ( item.weapon ) {
+						details = lookup.weapons[item.weapon]
+						
+						if ( details ) { names.push("w" + details.name + suffix) }
+					} else if ( item.weapontype ) {
+						continue
+					} else if ( item.item || item.pack ) {
+						details = lookup.equipment[item.item || item.pack]
+						
+						if ( details ) { names.push("z" + details.name + suffix) }
+					} else {
+						continue
+					}
+				}
+				
+				return names.sort().map(n => n.slice(1))
+			}
+			
+			function armorFromEquipment(equipment, dexterityModifier, armorProfiences) {
+				var armors = []
+				var best
+				var highest = dexterityModifier
+				
+				equipment = equipment || []
+				armorProfiences = armorProfiences || []
+				
+				for ( var rowIndex = 0 ; rowIndex < equipment.length ; ++rowIndex ) {
+					var choices = equipment[rowIndex]
+					
+					for ( var choiceIndex = 0 ; choiceIndex < choices.length ; ++choiceIndex ) {
+						var items = choices[choiceIndex]
+						
+						for ( var itemIndex = 0 ; itemIndex < items.length ; ++itemIndex ) {
+							var item = items[itemIndex]
+							var armorKey = item.armor
+							
+							if ( armorKey && !(item.requires && armorProfiences.indexOf(item.requires) < 0) ) {
+								var armor = lookup.armors[armorKey]
+								
+								if ( !armor ) {
+									continue
+								} else if ( armor.type === 'shield' ) {
+									armors.push(armor)
+								} else {
+									var armorclass = armor.armor
+									
+									if ( (armor.dexteritylimit > 0 || armor.dexteritylimit === 0) && armor.dexteritylimit < dexterityModifier ) {
+										armorclass += armor.dexteritylimit
+									} else {
+										armorclass += dexterityModifier
+									}
+									
+									if ( armorclass > highest ) {
+										highest = armorclass
+										best = armor
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				if ( best ) {
+					armors.push(best)
+				}
+				
+				return armors
+			}
+			
+			// MARK: Changes
+			
+			function hashChanged(event) {
+				var character = characterFromHash()
+				
+				if ( character.rolls ) {
+					window.character = character
+					renderCharacter(character, false, true)
+				}
+			}
+			
+			function valueChanged(key, value) {
+				if ( key === 'race' && character.race !== value ) {
+					delete character.height
+					delete character.weight
+					delete character.increases
+				}
+				
+				if ( key === 'crass' && character.crass !== value ) {
+					delete character.increases
+					character.ordered = false
+					
+					if ( !character.background ) {
+						var crass = lookup.classes[value]
+						var background = crass && crass.background_default
+						
+						if ( background ) {
+							character.background = background
+							_element('character-form').background.value = background
+							
+							if ( (character.trait && character.trait.length) !== 2 ) {
+								character.trait = [0, 1]
+							}
+						}
+					}
+				}
+				
+				if ( key === 'rolls' ) {
+					character.ordered = false
+				}
+				
+				if ( key.indexOf('-archetype') > 0 && lookup.archetypes[value].order ) {
+					character.ordered = false
+				}
+			}
+			
+			// MARK: Forms
+			
+			function applyRadioValue(prefix) {
+				var form = _element('character-form')
+				var value = form[prefix].value
+				var parts = prefix.split('-')
+				
+				valueChanged(prefix, value)
+				
+				if ( parts.length === 2 ) {
+					character[parts[1]][parts[0]] = value
+				} else {
+					character[prefix] = value
+				}
+				
+				return value
+			}
+			
+			function applyCheckboxValue(prefix) {
+				var form = _element('character-form')
+				var elements = _elements('[name='+prefix+']', form)
+				var index, count = elements.length
+				var element
+				var value = []
+				var rules = checkboxRules[prefix]
+				var required = rules && rules.required
+				var options = rules && rules.options
+				var limit = (rules && rules.limit) || 0
+				var optionsLimit = (options && options.limit) || 0
+				var optionsChosen = 0
+				var valuesChosen = 0
+				
+				for ( index = 0 ; index < count ; ++index ) {
+					element = elements[index]
+					
+					if ( required && required.indexOf(element.value) >= 0 ) {
+						element.checked = true
+						element.disabled = true
+					} else if ( element.checked && element.disabled ) {
+						element.checked = false
+						element.disabled = false
+					} else if ( element.checked ) {
+						if ( options && optionsChosen < options.limit && options.list.indexOf(element.value) >= 0 ) {
+							optionsChosen += 1
+						} else if ( valuesChosen < limit ) {
+							valuesChosen += 1
+						} else {
+							element.checked = false
+							continue
+						}
+						
+						value.push(element.value)
+					}
+				}
+				
+				for ( index = 0 ; index < count ; ++index ) {
+					element = elements[index]
+					if ( element.checked ) { continue }
+					
+					element.disabled = !( valuesChosen < limit ) && !( options && optionsChosen < options.limit && options.list.indexOf(element.value) >= 0 )
+				}
+				
+				valueChanged(prefix, value)
+				character[prefix] = value
+				
+				return value
+			}
+			
+			// MARK: Actions
+			
+			function normalizeX(event) {
+				var target = event && event.target
+				if ( !target ) return 0
+				
+				var bounds = target.getBoundingClientRect()
+				if ( !bounds ) return 0
+				
+				var x = (event.clientX - bounds.left) / (bounds.right - bounds.left)
+				
+				return 2 * x - 1
+			}
+			
+			function randomInteger(count) {
+				return Math.floor(Math.random() * Math.floor(count)) | 0
+			}
+			
+			function randomElements(array, count) {
+				if ( count >= array.length ) { return array }
+				
+				var i, result = []
+				
+				for ( var index = 0 ; index < count ; ++index ) {
+					i = randomInteger(array.length)
+					result.push(array[i])
+					array.splice(i, 1)
+				}
+				
+				return result
+			}
+			
+			function randomCharacter() {
+				var crass, classKey
+				var background = dnd.backgrounds[randomInteger(dnd.backgrounds.length)]
+				var race = dnd.races[randomInteger(dnd.races.length)]
+				var raceKey = race.key
+				
+				if ( Math.random() < 0.5 ) {
+					classKey = race.classes[randomInteger(race.classes.length)]
+					crass = lookup.classes[classKey]
+				} else {
+					crass = dnd.classes[randomInteger(dnd.classes.length)]
+					classKey = crass.key
+				}
+				
+				if ( Math.random() < 0.5 && crass.background_default ) {
+					background = lookup.backgrounds[crass.background_default] || background
+				}
+				
+				var archetypeKey = crass.archetypes[randomInteger(crass.archetypes.length)]
+				var archetype = lookup.archetypes[archetypeKey]
+				
+				if ( !character.archetype ) { character.archetype = new Object() }
+				
+				character.height = 0
+				character.weight = 0
+				character.ordered = false
+				character.crass = classKey
+				character.race = raceKey
+				character.archetype[classKey] = archetypeKey
+				character.background = background.key
+				character.sex = dnd.sex[randomInteger(dnd.sex.length)].key
+				
+				if ( Math.random() < 0.5 && race.alignment_default ) {
+					character.alignment = race.alignment_default
+				} else {
+					character.alignment = dnd.alignment[randomInteger(dnd.alignment.length)].key
+				}
+				
+				character.trait = [randomInteger(background.trait.length), randomInteger(background.trait.length)]
+				character.ideal = randomInteger(background.ideal.length)
+				character.bond = randomInteger(background.bond.length)
+				character.flaw = randomInteger(background.flaw.length)
+				
+				if ( character.trait[0] === character.trait[1] ) { character.trait[1] ^= 5 }
+				
+				var level = character.level || 1
+				var features = _flatten(race.features, crass.features, archetype.features).sort((a, b) => a.level - b.level)
+				var sources = _flatten([race, crass, background, archetype], features)
+				var index, key, feature, hash, value, items
+				
+				var increase = 0
+				var exclude = new Object()
+				var abilities = new Object()
+				var givenAbilities = []
+				var knownLanguages = []
+				var extraLanguages = 0
+				var knownSkills = []
+				var givenSkills = []
+				var otherSkills = []
+				var extraSkills = 0
+				var skills = []
+				
+				character.options = []
+				
+				for ( var source of sources ) {
+					feature = source
+					
+					if ( feature.options && feature.options.hash && dnd[feature.options.dnd] ) {
+						key = feature.options.dnd
+						hash = feature.options.hash
+						items = dnd[key]
+						value = false
+						
+						if ( feature.options.exclude ) {
+							items = items.filter(i => feature.options.exclude.indexOf(i.key) < 0)
+						}
+						
+						if ( exclude[key] ) {
+							items = items.filter(i => exclude[key].indexOf(i.key) < 0)
+						} else {
+							exclude[key] = []
+						}
+						
+						if ( feature.options.limit > 0 ) {
+							value = randomElements(items, feature.options.limit).map(item => item.key)
+							
+							exclude[key].push.apply(exclude[key], value)
+						} else {
+							index = (key === 'feats' && Math.random() < 0.75) ? 0 : randomInteger(items.length)
+							feature = items[index]
+							value = feature.key
+							
+							if ( !feature.multiple ) { exclude[key].push(value) }
+						}
+						
+						character[hash] = value
+						character.options.push(hash)
+					}
+					
+					if ( source.level > level ) { continue }
+					if ( feature.increase > 0 ) { increase += feature.increase | 0 }
+					if ( feature.abilities ) { givenAbilities.push(abilities) }
+					if ( feature.languages ) { knownLanguages.push.apply(knownLanguages, feature.languages) }
+					if ( feature.extra_language > 0 ) { extraLanguages += feature.extra_language | 0 }
+					if ( feature.skills ) { knownSkills.push.apply(knownSkills, feature.skills) }
+					
+					if ( feature.skill_options && feature.skill_options.limit > 0 ) {
+						if ( feature.skill_options.list ) {
+							givenSkills.push(feature.skill_options)
+						} else {
+							extraSkills += feature.skill_options.limit | 0
+						}
+					}
+				}
+				
+				var otherLanguages = dnd.languages.filter(item => !item.hidden).map(item => item.key).filter(key => knownLanguages.indexOf(key) < 0)
+				character.languages = randomElements(otherLanguages, extraLanguages)
+				
+				for ( feature of givenSkills ) {
+					value = randomElements(feature.list.filter(key => knownSkills.indexOf(key) < 0), feature.limit | 0)
+					
+					skills.push.apply(skills, value)
+					knownSkills.push.apply(knownSkills, value)
+				}
+				
+				var otherSkills = dnd.skills.map(item => item.key).filter(key => knownSkills.indexOf(key) < 0)
+				character.skills = skills.concat(randomElements(otherSkills, extraSkills))
+				
+				for ( feature of givenAbilities ) {
+					
+				}
+				
+				advanceHeight()
+				renderCharacter(character, 'random', true)
+			}
+			
+			function clearCharacter() {
+				character = {'rolls':defaults.rolls, 'archetype':{}}
+				
+				_element('character-form').reset()
+				renderCharacter(character, 'reset', true)
+			}
+			
+			function clearAbilities() {
+				delete character.increases
+				delete character.ordered
+				
+				character.rolls.sort((a, b) => b - a)
+				renderCharacter(character, 'decrease', true)
+			}
+			
+			function standard() {
+				var rolls = [15, 14, 13, 12, 10, 8]
+				valueChanged('rolls', rolls)
+				character.rolls = rolls
+				character.rollsType = 'standard'
+				
+				renderCharacter(character, 'rolls', true)
+			}
+			
+			function arenaRolls() {
+				var rolls = [18, 16, 14, 12, 10, 8]
+				valueChanged('rolls', rolls)
+				character.rolls = rolls
+				character.rollsType = 'arena'
+				
+				renderCharacter(character, 'rolls', true)
+			}
+			
+			function randomRolls(diceCount) {
+				var rolls = abilitiesRoll(diceCount).sort((a, b) => b - a)
+				valueChanged('rolls', rolls)
+				character.rolls = rolls
+				character.rollsType = 'random'
+				character.rollsMade = (character.rollsMade || 0) + 1
+				
+				renderCharacter(character, 'rolls', true)
+			}
+			
+			function optionChanged(prefix, hash, key) {
+				valueChanged(prefix, key)
+				character[hash] = key
+				renderCharacter(character, prefix, false)
+			}
+			
+			function handleRadioChange(prefix) {
+				applyRadioValue(prefix)
+				renderCharacter(character, prefix, false)
+			}
+			
+			function handleCheckboxChange(prefix) {
+				applyCheckboxValue(prefix)
+				renderCharacter(character, prefix, false)
+			}
+			
+			function handleCycleOptionSet(prefix) {
+				var element = _element(prefix)
+				var chosen = element.getElementsByClassName('chosen')
+				var current = chosen && chosen[0]
+				var sibling = current && current.nextElementSibling
+				var next = sibling || element.firstElementChild
+				
+				optionChanged(prefix, element.dataset.hash, next.dataset.key)
+			}
+			
+			function advanceLevel(event) {
+				var x = event ? normalizeX(event) : 1
+				var level = (character.level | 0) || 1
+				
+				if ( x < 0 ) { level = level > 1 ? level - 1 : 20 }
+				else { level = level < 20 ? level + 1 : 1 }
+				
+				valueChanged('level', level)
+				character.level = level
+				renderCharacter(character, 'level', false)
+			}
+			
+			function advanceRace(event) {
+				var x = event ? normalizeX(event) : 1
+				if ( _assignClass(_element('races'), 'hidden', Math.abs(x) > 0.5 ? character.race ? 1 : -1 : 0) ) { return }
+				
+				var key = character.race
+				var index = dnd.races.map(item => item.key).indexOf(key)
+				
+				if ( x < 0 ) { index = index > 0 ? index - 1 : dnd.races.length - 1 }
+				else { index = index + 1 < dnd.races.length ? index + 1 : 0 }
+				
+				key = dnd.races[index].key
+				valueChanged('race', key)
+				character.race = key
+				_element('character-form').race.value = key
+				renderCharacter(character, 'race', false)
+			}
+			
+			function advanceArchetype(event) {
+				var x = event ? normalizeX(event) : 1
+				if ( _assignClass(_element('classes'), 'hidden', Math.abs(x) > 0.5 ? character.crass ? 1 : -1 : 0) ) { return }
+				if ( !character.crass ) { return }
+				
+				var classKey = character.crass
+				var crass = lookup.classes[classKey]
+				var key = character.archetype[classKey]
+				var index = crass.archetypes.indexOf(key)
+				
+				if ( x < 0 ) { index = index > 0 ? index - 1 : crass.archetypes.length - 1 }
+				else { index = index + 1 < crass.archetypes.length ? index + 1 : 0 }
+				
+				key = crass.archetypes[index]
+				valueChanged(classKey + '-archetype', key)
+				character.archetype[classKey] = key
+				_element('character-form')[classKey + '-archetype'].value = key
+				renderCharacter(character, 'archetype', false)
+				_assignClass(_element('classes'), 'hidden', 1)
+			}
+			
+			function advanceClass(event) {
+				var x = event ? normalizeX(event) : 1
+				if ( _assignClass(_element('classes'), 'hidden', Math.abs(x) > 0.5 ? character.crass ? 1 : -1 : 0) ) { return }
+				
+				var key = character.crass
+				var index = dnd.classes.map(item => item.key).indexOf(key)
+				
+				if ( x < 0 ) { index = index > 0 ? index - 1 : dnd.classes.length - 1 }
+				else { index = index + 1 < dnd.classes.length ? index + 1 : 0 }
+				
+				key = dnd.classes[index].key
+				valueChanged('crass', key)
+				character.crass = key
+				_element('character-form').crass.value = key
+				
+				if ( character.archetype[key] ) {
+					renderCharacter(character, 'crass', false)
+				} else {
+					advanceArchetype()
+				}
+			}
+			
+			function advanceBackground(event) {
+				var x = event ? normalizeX(event) : 1
+				if ( _assignClass(_element('backgrounds'), 'hidden', Math.abs(x) > 0.5 ? character.background ? 1 : -1 : 0) ) { return }
+				
+				var key = character.background
+				var index = dnd.backgrounds.map(item => item.key).indexOf(key)
+				
+				if ( x < 0 ) { index = index > 0 ? index - 1 : dnd.backgrounds.length - 1 }
+				else { index = index + 1 < dnd.backgrounds.length ? index + 1 : 0 }
+				
+				key = dnd.backgrounds[index].key
+				valueChanged('background', key)
+				character.background = key
+				_element('character-form').background.value = key
+				renderCharacter(character, 'background', false)
+			}
+			
+			function advanceAlignment(event) {
+				var x = event ? normalizeX(event) : 1
+				var key = character.alignment
+				var index = dnd.alignment.map(item => item.key).indexOf(key)
+				
+				if ( x < 0 ) { index = index > 0 ? index - 1 : dnd.alignment.length - 1 }
+				else { index = index + 1 < dnd.alignment.length ? index + 1 : 0 }
+				
+				key = dnd.alignment[index].key
+				valueChanged('alignment', key)
+				character.alignment = key
+				//_element('character-form').alignment.value = key
+				renderCharacter(character, 'alignment', false)
+			}
+			
+			function advanceSex(event) {
+				var x = event ? normalizeX(event) : 1
+				var key = character.sex
+				var index = dnd.sex.map(item => item.key).indexOf(key)
+				index = index + 1 < dnd.sex.length ? index + 1 : 0
+				key = dnd.sex[index].key
+				valueChanged('sex', key)
+				character.sex = key
+				//_element('character-form').sex.value = key
+				renderCharacter(character, 'sex', false)
+			}
+			
+			function advanceHeight(event, w) {
+				var height, plusHeight, weight, plusWeight, minimum, maximum
+				var race = lookup.races[character.race]
+				
+				if ( !race ) {
+					return
+				}
+				
+				var isValid = (character.height > race.height.base && character.weight > race.weight.base)
+				
+				if ( arguments.length === 0 && isValid ) {
+					height = character.height
+					weight = character.weight
+				} else {
+					var x = event ? normalizeX(event) : 1
+					
+					if ( Math.abs(x) > 0.5 && isValid ) {
+						plusHeight = character.height - race.height.base
+						timesWeight = Math.floor((character.weight - race.weight.base) / plusHeight)
+						
+						if ( w ) {
+							minimum = race.weight.times.roll || 1
+							maximum = race.weight.times.die * minimum
+							
+							if ( x < 0 ) { timesWeight = timesWeight > minimum ? timesWeight - 1 : maximum }
+							else { timesWeight = timesWeight < maximum ? timesWeight + 1 : minimum }
+						} else {
+							minimum = race.height.plus.roll || 1
+							maximum = race.height.plus.die * minimum
+							
+							if ( x < 0 ) { plusHeight = plusHeight > minimum ? plusHeight - 1 : maximum }
+							else { plusHeight = plusHeight < maximum ? plusHeight + 1 : minimum }
+						}
+					} else {
+						plusHeight = diceRoll(race.height.plus.die, race.height.plus.roll || 1).reduce((a, b) => a + b, 0)
+						timesWeight = diceRoll(race.weight.times.die, race.weight.times.roll || 1).reduce((a, b) => a + b, 0)
+					}
+					
+					height = race.height.base + plusHeight
+					weight = race.weight.base + plusHeight * timesWeight
+					
+					character.height = height
+					character.weight = weight
+					
+					characterIntoHash(character)
+				}
+				
+				_element('height').innerHTML = Math.floor(height / 12) + "’ " + (height % 12) + "”"
+				_element('weight').innerHTML = weight + "lb"
+			}
+			
+			function advanceCharacteristic(characteristic, index) {
+				if ( !character.background ) { return }
+				
+				var value, background = lookup.backgrounds[character.background]
+				
+				if ( arguments.length < 2 ) {
+					value = character[characteristic] | 0
+					character[characteristic] = value + 1 < background[characteristic].length ? value + 1 : 0
+				} else if ( character[characteristic] ) {
+					value = character[characteristic][index] | 0
+					character[characteristic][index] = value + 1 < background[characteristic].length ? value + 1 : 0
+				} else {
+					character[characteristic] = [1, 0]
+				}
+				
+				renderCharacter(character, characteristic, false)
+			}
+			
+			function advanceTrait(index) {
+				advanceCharacteristic('trait', index)
+			}
+			
+			function advanceIdeal() {
+				advanceCharacteristic('ideal')
+			}
+			
+			function advanceBond() {
+				advanceCharacteristic('bond')
+			}
+			
+			function advanceFlaw() {
+				advanceCharacteristic('flaw')
+			}
+			
+			function toggleHidden(element) {
+				_assignClass(_element(element), 'hidden', 0)
+			}
+			
+			function toggleEquipment(element) {
+				if ( !_element('toggle-all-attacks').checked ) { return }
+				_assignClass(_element(element), 'equipment', 0)
+			}
+			
+			function increaseAbility(ability) {
+				var maximum = defaults.maximumAbility
+				var element = _element(ability + '-score')
+				var c = new Character(character, false)
+				
+				c.computeFeatures()
+				c.computeProficiencies()
+				c.computeAbilities()
+				
+				var index = dnd.abilities.map(a => a.key).indexOf(ability)
+				
+				//	TODO: handle increases to maximum like barbarian primal champion
+				if ( index < 0 ) { return }
+				if ( !( c.scores[ability] < maximum && c.increase > 0 ) ) { return }
+				
+				if ( (character.increases && character.increases.length) !== 6 ) {
+					character.increases = [0, 0, 0, 0, 0, 0]
+				}
+				
+				if ( c.increaseByOne > 0 && (character.increases[index] > 0 || c.abilitiesAlreadyIncreased[ability] > 0) ) { return }
+				
+				character.increases[index] = (character.increases[index] | 0) + 1
+				renderCharacter(character, ability, false)
+			}
+			
+			function orderAbility(key) {
+				var roll = _element(key + '-roll')
+				var swap = document.querySelector('.roll.reorder')
+				
+				if ( swap ) {
+					_assignClass(swap, 'reorder', -1)
+					
+					var abilityKeys = dnd.abilities.map(a => a.key)
+					var fromKey = swap.id.slice(0, -5)
+					var toIndex = abilityKeys.indexOf(key)
+					var fromIndex = abilityKeys.indexOf(fromKey)
+					
+					if ( toIndex < 0 || fromIndex < 0 || toIndex === fromIndex ) {
+						return
+					}
+					
+					valueChanged('ordered', true)
+					
+					if ( !character.ordered ) {
+						var crass = character.crass && lookup.classes[character.crass]
+						var archetype = crass && character.archetype && character.archetype[crass.key] && lookup.archetypes[character.archetype[crass.key]]
+						var order = (archetype && archetype.order) || (crass && crass.order)
+						var index, rolls = new Object()
+						var sorted = (character.rolls || defaults.rolls).sort((a, b) => b - a)
+						
+						if ( order ) {
+							for ( index = 0 ; index < order.length ; ++index ) {
+								rolls[order[index]] = sorted[index]
+							}
+							
+							character.rolls = abilityKeys.map(key => rolls[key] | 0)
+						} else {
+							character.rolls = sorted
+						}
+						
+						character.ordered = true
+					}
+					
+					var t = character.rolls[toIndex]
+					character.rolls[toIndex] = character.rolls[fromIndex]
+					character.rolls[fromIndex] = t
+					
+					renderCharacter(character, 'abilities', false)
+				} else {
+					_assignClass(roll, 'reorder')
+				}
+			}
+			
+			// MARK: Render
+			
+			function placeholder(text) {
+				return "<span class='placeholder'>" + text + "</span>"
+			}
+			
+			function renderRolls(rolls) {
+				var element = _element("rolled")
+				var integerRolls = rolls.map((r) => (r | 0))
+				var sum = integerRolls.reduce((a, b) => a + b)
+				var average = Math.floor(sum / 6) + ["", " 1/6", " 1/3", " 1/2", " 2/3", " 5/6"][sum % 6]
+				var counter = ""
+				
+				if ( character.rollsType === 'random' && character.rollsMade > 1 ) {
+					counter = " rolls: " + character.rollsMade
+				}
+				
+				element.innerHTML = "<span>" + integerRolls.sort((a, b) => b - a).join(" • ") + "</span> <span class='tiny'> (" + average + ")" + counter + "</span>"
+			}
+			
+			function renderCharacterView(details) {
+				var abilitiesTableTemplate = "<table class='abilities' id='abilities-table'><tr class='abilities'><th>Ability</th><th>Roll</th><th>Score</th><th>Modifier</th></tr>{rows}</table>"
+				var abilitiesRowTemplate = "<tr id='{key}-row' class='abilities'><td id='{key}-name' class='name {styles}'>{name}</td><td id='{key}-roll' class='roll number' onclick='orderAbility(\"{key}\")'>{roll}</td><td id='{key}-score' class='score number action {styles}' onclick='increaseAbility(\"{key}\")'>{score}</td><td id='{key}-modifier' class='modifier number'>{modifier}</td></tr>"
+				var featuresTableTemplate = "<table class='features' id='features-table'>{rows}</table>"
+				var featuresRowTemplate = "<tr class='features {type}'><td class='feature level'>{level}</td><td class='feature name'>{name}</td><td id='feature-{key}-{level}-summary' class='feature summary'>{summary}</td></tr><tr id='feature-{key}-{level}-drawer' class='features drawer hidden'><td id='feature-{key}-{level}-options' colspan='3'></td></tr>"
+				var featuresRows = details.features.map(f => replaceKeys(featuresRowTemplate, f))
+				var featuresHTML = replaceKeys(featuresTableTemplate, {"rows":featuresRows.join(" ")})
+				var abilitiesRows = details.abilityItems.map(item => replaceKeys(abilitiesRowTemplate, item))
+				var abilitiesHTML = replaceKeys(abilitiesTableTemplate, {"rows":abilitiesRows.join(" ")})
+				var proficiencies = [details.proficiencyNames.saves, details.proficiencyNames.armor, details.proficiencyNames.weapons, details.proficiencyNames.tools]
+				var proficienciesHTML = proficiencies.filter(p => p && p.length > 0).map(p => p.join(", ")).join("<br/>")
+				var empty = "&nbsp;"
+				var weaponsTableTemplate = "<table class='attacks' id='attacks-table'><tr class='attacks equipment'><th>Weapon</th><th>Hit</th><th>Damage</th><td class='rate'></td><th>Type</th><th>Range</th><th></th></tr>{rows}</table>"
+				var weaponsRowTemplate = "<tr id='attacks-row-{key}' class='attacks {type} {attributes} toggle' onclick='toggleEquipment(\"attacks-row-{key}\")'><td class='attacks name'>{name}</td><td class='attacks hit'>{hit}</td><td class='attacks damage'>{damage}</td><td class='attacks rate'>{rate}</td><td class='attacks type'>{type}</td><td class='attacks range'>{range}</td><td>{summary}</td></tr>"
+				var weaponsRows = details.attacks.map(weapon => replaceKeys(weaponsRowTemplate, weapon))
+				var weaponsHTML = replaceKeys(weaponsTableTemplate, {"rows":weaponsRows.join(" ")})
+				var resistances = []
+				
+				if ( details.immunityNames.length > 0 ) { resistances.push("Immunities: " + details.immunityNames.join(", ")) }
+				if ( details.resistanceNames.length > 0 ) { resistances.push("Resistances: " + details.resistanceNames.join(", ")) }
+				if ( details.saveAdvantageNames.length > 0 ) { resistances.push("Advantage on Saves: " + details.saveAdvantageNames.join(", ")) }
+				
+				//	advantages
+				//	equipment
+				//	cantrips
+				//	spells
+				//	eldritch invocations | sorcerous metamagic | battle maneuvers
+				
+				_element('level').innerHTML = "Level " + details.level
+				_element('race').innerHTML = details.race.name || placeholder("Race")
+				_element('crass').innerHTML = details.crass.name || placeholder("Class")
+				_element('archetype').innerHTML = details.archetype.name || placeholder("Archetype")
+				_element('alignment').innerHTML = details.alignment.name || placeholder("Alignment")
+				_element('sex').innerHTML = details.sex.name || placeholder("Sex")
+				_element('background').innerHTML = details.background.name || placeholder("Background")
+				_element('armor-class').innerHTML = "AC " + details.armorclass
+				_element('hit-points').innerHTML = "HP " + details.hitpoints
+				_element('proficiency-bonus').innerHTML = "PB +" + details.proficiencyBonus
+				_element('difficulty-class').innerHTML = "DC " + details.difficultyClass
+				_element('size').innerHTML = "Size " + (details.size.name || "-")
+				_element('speed').innerHTML = "Speed " + details.speed
+				_element('darkvision').innerHTML = "Darkvision " + (details.darkvision || "-")
+				_element('initiative').innerHTML = "Initiative " + (details.initiative || "+0")
+				_element('attacks-per-action').innerHTML = "Attacks " + details.attacksPerAction
+				_element('criticals').innerHTML = details.criticalDice > 0 ? ("Critical + " + details.criticalDice + "d") : "Critical on " + (21 - (details.criticalRange | 0))
+				_element('abilities').innerHTML = abilitiesHTML
+				_element('attacks').innerHTML = weaponsHTML
+				_element('trait-0').innerHTML = (details.traits && details.traits[0]) || placeholder("Trait")
+				_element('trait-1').innerHTML = (details.traits && details.traits[1]) || placeholder("Trait")
+				_element('ideal').innerHTML = details.ideal || placeholder("Ideal")
+				_element('bond').innerHTML = details.bond || placeholder("Bond")
+				_element('flaw').innerHTML = details.flaw || placeholder("Flaw")
+				_element('skill').innerHTML = details.proficiencyNames.skills.sort().join(", ")
+				_element('proficiency').innerHTML = proficienciesHTML
+				_element('language').innerHTML = details.proficiencyNames.languages.sort().join(", ")
+				_element('equipment').innerHTML = details.equipmentNames.join("<br/>")
+				_element('resistances').innerHTML = resistances.length > 0 ? resistances.join("<br/>") : placeholder("None")
+				_element('feature').innerHTML = featuresHTML
+				_element('raw-character').innerHTML = "<pre>" + JSON.stringify(character, null, 2) + "</pre>"
+				
+				if ( character.height > 0 && character.weight > 0 ) {
+					advanceHeight()
+				} else {
+					_element('height').innerHTML = placeholder("Height")
+					_element('weight').innerHTML = placeholder("Weight")
+				}
+				
+				details.features.forEach(populateFeatureOptionSet)
+			}
+			
+			function renderCharacter(character, prefix, applyToForm) {
+				var details = new Character(character)
+				
+				if ( applyToForm ) {
+					var form = _element('character-form')
+					
+					form.race.value = character.race
+					form.crass.value = character.crass
+					form.background.value = character.background
+					
+					if ( character.crass && character.archetype ) {
+						form[character.crass + '-archetype'].value = character.archetype[character.crass]
+					}
+					
+					var languages = character.languages || []
+					var skills = character.skills || []
+					
+					for ( var e of _elements('[name=languages]', form) ) {
+						e.checked = !(languages.indexOf(e.value) < 0)
+						e.disabled = 0
+					}
+					
+					for ( var e of _elements('[name=skills]', form) ) {
+						e.checked = !(skills.indexOf(e.value) < 0)
+						e.disabled = 0
+					}
+					
+					renderRolls(character.rolls)
+				}
+				
+				if ( prefix ) {
+					checkboxRules['languages'] = details.checkboxRulesForLanguages()
+					details.character.languages = applyCheckboxValue('languages')
+					
+					checkboxRules['skills'] = details.checkboxRulesForSkills()
+					details.character.skills = applyCheckboxValue('skills')
+					
+					characterIntoHash(character)
+				}
+				
+				renderCharacterView(details)
+			}
+			
+			// MARK: Populate
+			
+			function populateStyles(styles) {
+				var element = _element("form-styles")
+				
+				if ( element ) {
+					element.innerHTML += "\n" + styles.join("\n")
+				} else {
+					element = document.createElement('style')
+					element.id = "form-styles"
+					element.innerHTML = styles.join("\n")
+					document.head.appendChild(element)
+				}
+			}
+			
+			function populateCheckboxItems(element, items, prefix, templateContent) {
+				var templateStyles = "#"+prefix+"-{key}:not(:checked) ~ #"+prefix+"-{key}-content { display:none; }"
+				var templateList = "<input type='checkbox' id='"+prefix+"-{key}' name='"+prefix+"' value='{key}' onchange='handleCheckboxChange(\""+prefix+"\")' class='option' /><label for='"+prefix+"-{key}' class='option {style}'>{name}</label>"
+				
+				var list = items.map((item) => replaceKeys(templateList, item))
+				var beginTag = "<div class='"+prefix+"-list checkbox' id='"+prefix+"-list'>"
+				var closeTag = "</div><hr/>"
+				
+				if ( templateContent ) {
+					var styles = items.map((item) => replaceKeys(templateStyles, item))
+					var content = items.map((item) => replaceKeys(templateContent, item))
+					
+					populateStyles(styles)
+					element.innerHTML = beginTag + list.join(" ") + " " + content.join(" ") + closeTag
+				} else {
+					element.innerHTML = beginTag + list.join(" ") + closeTag
+				}
+			}
+			
+			function populateRadioItems(element, items, prefix, inside, templateContent) {
+				var templateStyles = "#"+prefix+"-{key}:not(:checked) ~ #"+prefix+"-{key}-content { display:none; }"
+				var templateList = "<input type='radio' id='"+prefix+"-{key}' name='"+prefix+"' value='{key}' onchange='handleRadioChange(\""+prefix+"\")' class='option' /><label for='"+prefix+"-{key}' class='option {style}'>{name}</label>"
+				
+				var list = items.map((item) => replaceKeys(templateList, item))
+				var beginTag = "<div class='"+prefix+"-list radio' id='"+prefix+"-list'>"
+				var closeTag = "</div>"
+				
+				if ( !inside ) {
+					closeTag = closeTag + "<hr/>"
+				}
+				
+				if ( templateContent ) {
+					var styles = items.map((item) => replaceKeys(templateStyles, item))
+					var content = items.map((item) => replaceKeys(templateContent, item))
+					
+					populateStyles(styles)
+					element.innerHTML = beginTag + list.join(" ") + " " + content.join(" ") + closeTag
+				} else {
+					element.innerHTML = beginTag + list.join(" ") + closeTag
+				}
+			}
+			
+			function populateCheckbox(key, prefix, templateContent) {
+				populateCheckboxItems(_element(key), dnd[key].filter(item => !item.hidden), prefix, templateContent)
+			}
+			
+			function populateRadio(key, prefix, templateContent) {
+				populateRadioItems(_element(key), dnd[key], prefix, false, templateContent)
+			}
+			
+			function populateOptionSet(element, optionSet, level) {
+				var index
+				var items = dnd[optionSet.dnd]
+				var node = _element(element)
+				var hash = optionSet.hash
+				if ( !( node && items && hash ) ) { return }
+				
+				//	cycle, radio, checkbox, list
+				var style = 'set-' + optionSet.dnd
+				var prefix = 'set-' + optionSet.dnd + '-' + level
+				var layout = optionSet.layout || (optionSet.limit > 0 ? 'checkbox' : 'cycle')
+				
+				if ( !character.options ) { character.options = [hash] }
+				else if ( character.options.indexOf(hash) < 0 ) { character.options.push(hash) }
+				
+				if ( layout === 'cycle' ) {
+					var beginTag = "<div id='"+prefix+"' data-dnd='"+optionSet.dnd+"' data-hash='"+hash+"' class='"+style+"' onclick='handleCycleOptionSet(\""+prefix+"\")'>"
+					var closeTag = "</div>"
+					var templateList = "<span id='"+prefix+"-{key}' data-key='{key}' class='"+style+" "+prefix+" hidden toggle nose'><b>{name}</b>: {summary}</span>"
+					var included = optionSet.exclude ? items.filter(i => optionSet.exclude.indexOf(i.key) < 0) : items
+					var list = included.map((item) => replaceKeys(templateList, item))
+					
+					for ( index = 0 ; index < items.length ; ++index ) {
+						if ( items[index].key === character[hash] ) { break }
+					}
+					
+					list[index % items.length] = list[index % items.length].replace('hidden', 'chosen')
+					
+					node.innerHTML = beginTag + list.join(" ") + closeTag
+				}
+			}
+			
+			function populateFeatureOptionSet(feature) {
+				var optionSet = feature.options
+				
+				if ( !optionSet ) { return }
+				
+				var layout = optionSet.layout || (optionSet.limit > 0 ? 'checkbox' : 'cycle')
+				var suffix = (layout === 'cycle') ? '-summary' : '-options'
+				
+				populateOptionSet('feature-' + feature.key + '-' + feature.level + suffix, optionSet, feature.level)
+			}
+			
+			function populateRaces() {
+				var templateContent = "<div id='race-{key}-content'>Speed: {speed} • Size: {size} • Darkvision: {darkvision}<br/>{benefits}</div>"
+				
+				populateRadio("races", "race", "")
+			}
+			
+			function populateClasses() {
+				var templateContent = "<div id='crass-{key}-content'><p id='crass-{key}-archetypes'></p></div>"
+				
+				populateRadio("classes", "crass", templateContent)
+				
+				for ( var index = 0 ; index < dnd.classes.length ; ++index ) {
+					var crass = dnd.classes[index]
+					var id = 'crass-'+crass.key+'-archetypes'
+					var items = crass.archetypes.map((item) => lookup.archetypes[item] || {'key':item})
+					
+					populateRadioItems(_element(id), items, crass.key+'-archetype', 'crass')
+				}
+			}
+			
+			function populateBackgrounds() {
+				var templateContent = "<div id='background-{key}-content'>{gold}gp<br/>{skills}</div>"
+				
+				populateRadio("backgrounds", "background", "")
+			}
+			
+			function populateLanguages() {
+				populateCheckbox("languages", "languages", "")
+			}
+			
+			function populateSkills() {
+				populateCheckbox("skills", "skills", "")
+			}
+			
+			function populate() {
+				populateRaces()
+				populateClasses()
+				populateBackgrounds()
+				populateLanguages()
+				populateSkills()
+			}
+			
+			// MARK: Prepare
+			
+			function prepareLookup() {
+				var keys = [
+					'alignment', 'archetypes', 'armors', 'abilities', 'backgrounds',
+					'cantrips', 'classes', 'equipment', 'feats', 'fightingstyles',
+					'languages', 'proficiencies', 'races', 'resistances', 'sex',
+					'size', 'skills', 'spells', 'tools', 'weapons'
+				]
+				
+				for (var key of keys) {
+					lookup[key] = new Object()
+					
+					for (var value of dnd[key]) { lookup[key][value.key] = value }
+				}
+				
+				lookup.optionHash = []
+				
+				for ( var crass in dnd.classes ) {
+					for ( var feature in crass.features ) {
+						if ( feature.options && feature.options.hash && lookup.optionHash.indexOf(feature.options.hash) < 0 ) {
+							lookup.optionHash.push(feature.options.hash)
+						}
+					}
+				}
+			}
+			
+			function prepare() {
+				prepareLookup()
+				populate()
+				window.addEventListener('hashchange', hashChanged)
+				hashChanged()
+			}
+		</script>
+	</head>
+	<body>
+		<h4>Character Template</h4>
+		
+		<div id='character-view'><form id='character-form'>
+			<p id='randomize'>
+				<hr/>
+				<input id='abilities-standard' type='button' class='action' onclick='standard()' />
+				<label for='abilities-standard' class='action'>Standard</label>
+				<input id='abilities-roll-4d6' type='button' class='action' onclick='randomRolls()' />
+				<label for='abilities-roll-4d6' class='action'>Roll 4D6</label>
+				<input id='abilities-arena' type='button' class='action' onclick='arenaRolls()' />
+				<label for='abilities-arena' class='action'>Arena</label>
+				<span class='label-separator'>|</span>
+				<input id='random-character' type='button' class='action' onclick='randomCharacter()' />
+				<label for='random-character' class='action'>Randomize</label>
+				<input id='clear-character' type='button' class='action' onclick='clearCharacter()' />
+				<label for='clear-character' class='action'>Reset</label>
+			</p>
+			<p id="rolled"></p>
+			<hr/>
+			
+			<span id='level' class='advances tall' onclick='advanceLevel(event)'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='race' class='advances tall' onclick='advanceRace(event)'> </span>
+			<span class='bullet''>&bull;</span>
+			<span id='crass' class='advances tall' onclick='advanceClass(event)'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='archetype' class='advances tall' onclick='advanceArchetype(event)'> </span>
+			<p id='races' class='hidden'></p>
+			<p id='classes' class='hidden'></p>
+			
+			<br/>
+			<span id='alignment' class='advances tall' onclick='advanceAlignment(event)'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='sex' class='advances tall' onclick='advanceSex(event)'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='background' class='advances tall' onclick='advanceBackground(event)'> </span>
+			<p id='backgrounds' class='hidden'></p>
+			
+			<br class='tall'/>
+			<span id='armor-class' class='listable'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='hit-points' class='listable'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='proficiency-bonus' class='listable'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='difficulty-class' class='listable'> </span>
+			
+			<br/>
+			<span id='attacks-per-action' class='listable'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='criticals' class='listable'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='initiative' class='listable'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='darkvision' class='listable'> </span>
+			
+			<br/>
+			<span id='speed' class='listable'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='size' class='listable'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='height' class='advances narrow' onclick='advanceHeight(event, false)'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='weight' class='advances narrow' onclick='advanceHeight(event, true)'> </span>
+			
+			<br class='tall'/>
+			<p><span class='caption'>Abilities</span>
+			<span id='clear-abilities' class='action tiny toggle' onclick='clearAbilities()'>(Reset)</span></p>
+			<p id='abilities'></p>
+			
+			<span class='caption'>Attacks</span>
+			<input id='toggle-all-attacks' class='toggle' type='checkbox' />
+			<label for='toggle-all-attacks' class='toggle'></label>
+			<p id='attacks'> </p>
+			
+			<span class='caption'>Skills</span>
+			<p id='skill' class='toggle' onclick='toggleHidden("skills")'> </p>
+			<p id='skills' class='hidden'></p>
+			
+			<span class='caption'>Proficiencies</span>
+			<p id='proficiency' class='small'> </p>
+			
+			<span class='caption'>Languages</span>
+			<p id='language' class='toggle' onclick='toggleHidden("languages")'> </p>
+			<p id='languages' class='hidden'></p>
+			
+			<span class='caption'>Equipment</span>
+			<p id='equipment' class='small'> </p>
+			
+			<span class='caption'>Resistances</span>
+			<p id='resistances' class='normal'> </p>
+			
+			<span class='caption'>Features</span>
+			<p id='feature'></p>
+			
+			<span class='caption'>Characteristics</span>
+			<p id='characteristics' class='small'>
+				<span id='trait-0' class='characteristic' onclick='advanceTrait(0)'> </span><br/>
+				<span id='trait-1' class='characteristic' onclick='advanceTrait(1)'> </span><br/>
+				<span id='ideal' class='characteristic' onclick='advanceIdeal()'> </span><br/>
+				<span id='bond' class='characteristic' onclick='advanceBond()'> </span><br/>
+				<span id='flaw' class='characteristic' onclick='advanceFlaw()'> </span>
+			</p>
+			
+			<hr onclick='toggleHidden("raw-character")'/>
+			<p id='raw-character' class='hidden'></p>
+		</form></div>
+		
+		<script lang="javascript">
+			prepare()
+		</script>
+	</body>
+</html>
