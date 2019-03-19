@@ -1154,8 +1154,8 @@
 				if ( character.crass ) { values.push("c=" + character.crass + archetype) }
 				if ( character.background ) { values.push("b=" + character.background + traits) }
 				if ( character.level > 1 ) { values.push("l=" + character.level) }
-				if ( character.skills && character.skills.length > 0 ) { values.push("s=" + character.skills.join(separator)) }
-				if ( character.languages && character.languages.length > 0 ) { values.push("t=" + character.languages.join(separator)) }
+				if ( character.skills && character.skills.length > 0 ) { values.push("s=" + character.skills.sort().join(separator)) }
+				if ( character.languages && character.languages.length > 0 ) { values.push("t=" + character.languages.sort().join(separator)) }
 				if ( character.feats && character.feats.length > 0 ) { values.push("f=" + character.feats.join(separator)) }
 				if ( character.alignment ) { values.push("n=" + character.alignment) }
 				if ( character.sex ) { values.push("x=" + character.sex) }
@@ -1164,7 +1164,9 @@
 				
 				var options = character.options
 				
-				if ( options ) {
+				if ( options && options.length > 0 ) {
+					options.sort()
+					
 					for ( var index = 0 ; index < options.length ; ++index ) {
 						if ( character[options[index]] ) {
 							values.push(options[index] + "=" + character[options[index]])
@@ -1173,7 +1175,11 @@
 				}
 				
 				var hash = values.join("|")
-				if ( hash === location.hash ) { return }
+				var current = location.hash
+				
+				if ( hash === (current.charAt(0) === "#" ? current.slice(1) : current) ) {
+					return
+				}
 				
 				if ( history.pushState ) {
 					history.pushState(null, null, "#" + hash)
@@ -2211,7 +2217,7 @@
 				var items = dnd[optionSet.dnd]
 				var node = _element(element)
 				var hash = optionSet.hash
-				if ( !( node && items && hash ) ) { return }
+				if ( !( node && hash && items && items.length > 0 ) ) { return }
 				
 				//	cycle, radio, checkbox, list
 				var style = 'set-' + optionSet.dnd
@@ -2228,11 +2234,11 @@
 					var included = optionSet.exclude ? items.filter(i => optionSet.exclude.indexOf(i.key) < 0) : items
 					var list = included.map((item) => replaceKeys(templateList, item))
 					
-					for ( index = 0 ; index < items.length ; ++index ) {
-						if ( items[index].key === character[hash] ) { break }
+					for ( index = 0 ; index < list.length ; ++index ) {
+						if ( list[index].key === character[hash] ) { break }
 					}
 					
-					list[index % items.length] = list[index % items.length].replace('hidden', 'chosen')
+					list[index % list.length] = list[index % list.length].replace('hidden', 'chosen')
 					
 					node.innerHTML = beginTag + list.join(" ") + closeTag
 				}
