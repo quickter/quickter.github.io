@@ -128,7 +128,7 @@ br.tall + * { margin-top:1.5em; }
 .characteristic { display:inline-block; cursor:pointer; margin-top:0.5em; }
 .characteristic:first-child { margin-top:0; }
 .caption { color:#888; font-size:60%; }
-.caption + p { margin-top:0; }
+.caption + p, .caption + input + label + p, .caption + input + label > p { margin-top:0.25em; }
 
 p#characteristics > span.characteristic::before { content:"↻ "; color:#CCC; }
 

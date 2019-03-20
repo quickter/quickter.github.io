@@ -2121,6 +2121,7 @@
 				_element('proficiency').innerHTML = proficienciesHTML
 				_element('language').innerHTML = details.proficiencyNames.languages.sort().join(", ")
 				_element('equipment').innerHTML = details.equipmentNames.join("<br/>")
+				_element('treasure').innerHTML = (details.background.gold || 0) + "gp"
 				_element('resistances').innerHTML = resistances.length > 0 ? resistances.join("<br/>") : placeholder("None")
 				_element('feature').innerHTML = featuresHTML
 				_element('raw-character').innerHTML = "<pre>" + JSON.stringify(character, null, 2) + "</pre>"
@@ -2467,6 +2468,9 @@
 			
 			<span class='caption'>Equipment</span>
 			<p id='equipment' class='small'> </p>
+			
+			<span class='caption'>Treasure</span>
+			<p id='treasure' class='small'> </p>
 			
 			<span class='caption'>Resistances</span>
 			<p id='resistances' class='normal'> </p>
