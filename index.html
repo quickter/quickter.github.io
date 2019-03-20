@@ -557,9 +557,9 @@
 				var isOwned = !(context.equipment.indexOf(weapon.key) < 0)
 				var isFinesse = weapon.finesse
 				var isRanged = weapon.ranged || weapon.ammunition || false
-				var isMonk = weapon.martial ? weapon.key === 'shortsword' : !isRanged
+				var isMonk = weapon.martial ? weapon.key === 'shortsword' : !(isRanged || weapon.twohanded || weapon.heavy)
 				
-				die = versatile ? weapon.versatile : weapon.damage.die
+				die = (versatile ? weapon.versatile : weapon.damage.die) | 0
 				
 				if ( context.monkWeaponDamageDie > 0 && isMonk ) {
 					if ( die < context.monkWeaponDamageDie ) { die = context.monkWeaponDamageDie }
@@ -622,7 +622,7 @@
 					chanceToCritical = chanceToCritical * chanceToCritical
 				}
 				
-				effectiveness = ((chanceToHit * roll + chanceToCritical * criticalRoll) * (die + 1) / 2 + modifier) * attacks
+				effectiveness = ((chanceToHit * (roll * (die + 1) / 2 + modifier)) + (chanceToCritical * criticalRoll * (die + 1) / 2)) * attacks
 				effectiveness += ((weapon.twohanded || versatile ? -1 : 0) / 100.0) + ((weapon.range | 0) / 3000.0) + ((weapon.common | 0) / 1000.0)
 				
 				return {
@@ -810,7 +810,7 @@
 				var crass = this.crass
 				var level = this.level | 0
 				var power = Math.floor((level + 7) / 6)
-				var index, feature, cantrip, ability, modifier, attributes
+				var index, feature, cantrip, ability, modifier, attributes, damageModifier
 				var hit, die, roll, damage, average, attacks, chanceToHit
 				var features = this.sources
 				var modifiers = this.modifiers
@@ -859,16 +859,17 @@
 					roll = cantrip.damage.count === '*' ? power : cantrip.damage.count | 0
 					damage = ( roll > 1 ? roll : "" ) + "d" + cantrip.damage.die
 					average = ( roll > 1 ? roll : 1 ) * ( die + 1 ) / 2
+					damageModifier = 0
 					
 					if ( level > 1 && modifier > 0 && cantrip.key === 'eldritchblast' && crass.key === 'warlock' ) {
-						average += modifier // assume Agonizing Blast
+						damageModifier = modifier  // assume Agonizing Blast
 						damage += "+" + modifier
 					}
 					
 					attacks = ( cantrip.targets === '*' ) ? power : 1
 					chanceToHit = (21 - Math.min(Math.max(2, armorclass - hit), 20)) / 20
 					chanceToCritical = cantrip.save ? 0 : 1 / 20
-					effectiveness = (chanceToHit + chanceToCritical) * average * attacks
+					effectiveness = (chanceToHit * (average + damageModifier) + chanceToCritical * average) * attacks
 					effectiveness += ((cantrip.range | 0) / 3000.0)
 					
 					result.push({
