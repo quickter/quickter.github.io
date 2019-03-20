@@ -206,6 +206,7 @@
 				this.feats = feats
 				this.options = options
 				this.increases = character.increases
+				this.effectivenessArmorclass = character.effectivenessArmorclass || defaults.effectivenessArmorclass
 				
 				this.character = {
 					'rolls':character.rolls,
@@ -237,7 +238,6 @@
 				this.computeResistances()
 				this.computeArmor()
 				
-				this.effectivenessArmorclass = defaults.effectivenessArmorclass
 				this.computeWeapons(equipment)
 				this.computeCantrips()
 				this.attacks = _flatten(this.weapons, this.cantrips).sort((a, b) => b.effectiveness - a.effectiveness)
@@ -1962,6 +1962,19 @@
 				advanceCharacteristic('flaw')
 			}
 			
+			function advanceEffectivenessArmorClass(event) {
+				var x = event ? normalizeX(event) : 1
+				var eac = character.effectivenessArmorclass || defaults.effectivenessArmorclass
+				var minimum = 6, maximum = 30
+				
+				if ( x < 0 ) { eac = eac > minimum ? eac - 1 : maximum }
+				else { eac = eac + 1 < maximum ? eac + 1 : minimum }
+				
+				character.effectivenessArmorclass = eac
+				
+				renderCharacter(character, false, false)
+			}
+			
 			function toggleHidden(element) {
 				_assignClass(_element(element), 'hidden', 0)
 			}
@@ -2076,10 +2089,10 @@
 				var proficiencies = [details.proficiencyNames.saves, details.proficiencyNames.armor, details.proficiencyNames.weapons, details.proficiencyNames.tools]
 				var proficienciesHTML = proficiencies.filter(p => p && p.length > 0).map(p => p.join(", ")).join("<br/>")
 				var empty = "&nbsp;"
-				var weaponsTableTemplate = "<table class='attacks' id='attacks-table'><tr class='attacks equipment'><th>Weapon</th><th>Hit</th><th>Damage</th><td class='rate'></td><th>Type</th><th>Range</th><th></th></tr>{rows}</table>"
-				var weaponsRowTemplate = "<tr id='attacks-row-{key}' class='attacks {type} {attributes} toggle' onclick='toggleEquipment(\"attacks-row-{key}\")'><td class='attacks name'>{name}</td><td class='attacks hit'>{hit}</td><td class='attacks damage'>{damage}</td><td class='attacks rate'>{rate}</td><td class='attacks type'>{type}</td><td class='attacks range'>{range}</td><td>{summary}</td></tr>"
-				var weaponsRows = details.attacks.map(weapon => replaceKeys(weaponsRowTemplate, weapon))
-				var weaponsHTML = replaceKeys(weaponsTableTemplate, {"rows":weaponsRows.join(" ")})
+				var attacksTableTemplate = "<table class='attacks' id='attacks-table'><tr class='attacks equipment'><th>Weapon</th><th>Hit</th><th>Damage</th><th class='rate toggled'>rate</th><th>Type</th><th>Range</th><th></th></tr>{rows}</table><span class='small toggled'>Hitting <span id='effectiveness-armor-class' class='advances' onclick='advanceEffectivenessArmorClass(event)'>AC {ac}</span></span>"
+				var attacksRowTemplate = "<tr id='attacks-row-{key}' class='attacks {type} {attributes} toggle' onclick='toggleEquipment(\"attacks-row-{key}\")'><td class='attacks name'>{name}</td><td class='attacks hit'>{hit}</td><td class='attacks damage'>{damage}</td><td class='attacks rate toggled'>{rate}</td><td class='attacks type'>{type}</td><td class='attacks range'>{range}</td><td>{summary}</td></tr>"
+				var attacksRows = details.attacks.map(weapon => replaceKeys(attacksRowTemplate, weapon))
+				var attacksHTML = replaceKeys(attacksTableTemplate, {"rows":attacksRows.join(" "), "ac":details.effectivenessArmorclass})
 				var resistances = []
 				
 				if ( details.immunityNames.length > 0 ) { resistances.push("Immunities: " + details.immunityNames.join(", ")) }
@@ -2112,7 +2125,7 @@
 				_element('attacks-per-action').innerHTML = "Attacks " + details.attacksPerAction
 				_element('criticals').innerHTML = details.criticalDice > 0 ? ("Critical + " + details.criticalDice + "d") : "Critical on " + (21 - (details.criticalRange | 0))
 				_element('abilities').innerHTML = abilitiesHTML
-				_element('attacks').innerHTML = weaponsHTML
+				_element('attacks').innerHTML = attacksHTML
 				_element('trait-0').innerHTML = (details.traits && details.traits[0]) || placeholder("Trait")
 				_element('trait-1').innerHTML = (details.traits && details.traits[1]) || placeholder("Trait")
 				_element('ideal').innerHTML = details.ideal || placeholder("Ideal")

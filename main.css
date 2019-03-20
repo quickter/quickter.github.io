@@ -93,7 +93,7 @@ tr.attacks.reckless > td.hit { color:#F60; }
 tr.attacks.reckless > td.name, tr.attacks.reckless > td.damage { color:#093; }
 
 input#toggle-all-attacks:not(:checked) + label + p#attacks tr.attacks:not(.equipment) { display:none; }
-input#toggle-all-attacks:not(:checked) + label + p#attacks td.rate { display:none; }
+input#toggle-all-attacks:not(:checked) + label + p#attacks .toggled { display:none; }
 input#toggle-all-attacks + label { position:relative; left:1em; top:0.2em; }
 
 p.toggle::after, label.toggle::after { color:#CCC; }
