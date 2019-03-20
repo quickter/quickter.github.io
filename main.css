@@ -91,13 +91,20 @@ tr.attacks > td.type { font-size:80%; }
 td.attacks.hit, td.attacks.damage, td.attacks.rate { text-align:right; }
 tr.attacks.reckless > td.hit { color:#F60; }
 tr.attacks.reckless > td.name, tr.attacks.reckless > td.damage { color:#093; }
+
 input#toggle-all-attacks:not(:checked) + label + p#attacks tr.attacks:not(.equipment) { display:none; }
 input#toggle-all-attacks:not(:checked) + label + p#attacks td.rate { display:none; }
-input#toggle-all-attacks { visibility:hidden; }
-input#toggle-all-attacks + label { position:relative; top:0.2em; }
-input#toggle-all-attacks:checked + label:after { content:"▼"; color:#CCC; }
-input#toggle-all-attacks:not(:checked) + label:after { content:"▶"; color:#CCC; }
+input#toggle-all-attacks + label { position:relative; left:1em; top:0.2em; }
 
+p.toggle::after, label.toggle::after { color:#CCC; }
+p.toggle.incomplete::after { color:#F99; }
+
+input.toggle { display:none; }
+input.toggle:not(:checked) + label + p.toggled { display:none; }
+input.toggle:checked + label.toggle:after { content:" ▲"; }
+input.toggle:not(:checked) + label.toggle:after { content:" ▼"; }
+input.toggle:checked + label > p.toggle:after { content:" ▲"; }
+input.toggle:not(:checked) + label > p.toggle:after { content:" ▼"; }
 
 table.features { padding:0; margin:0; border-spacing:0; }
 tr.features > td { padding-right:0.5em; vertical-align:top; }
@@ -122,6 +129,8 @@ br.tall + * { margin-top:1.5em; }
 .characteristic:first-child { margin-top:0; }
 .caption { color:#888; font-size:60%; }
 .caption + p { margin-top:0; }
+
+p#characteristics > span.characteristic::before { content:"↻ "; color:#CCC; }
 
 .advances { display:inline-block; text-align:center; cursor:pointer; }
 .advances.tall { line-height:2.0; min-width:7em; }

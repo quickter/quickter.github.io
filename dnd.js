@@ -215,7 +215,6 @@ var dnd = {
 		{"key":"thornwhip", "name":"Thorn Whip", "summary":"Pull target 10 feet closer if large or smaller", "range":30, "targets":1, "attack":true, "save":false, "damage":{"die":6, "count":"*"}, "type":"piercing", "classes":["druid"], "school":"transmutation", "actiontype":"action", "components":"vsm", "duration":0},
 		{"key":"viciousmockery", "name":"Vicious Mockery", "summary":"Target has disadvantage on next attack roll", "range":60, "targets":1, "attack":false, "save":"wisdom", "damage":{"die":4, "count":"*"}, "type":"psychic", "classes":["bard"], "school":"enchantment", "actiontype":"action", "components":"v", "duration":0},
 	],
-	"spells":[],
 	"skills":[
 		{"key":"acrobatics", "name":"Acrobatics", "ability":"dexterity", "style":"dexterity"},
 		{"key":"animals", "name":"Animal Handling", "ability":"wisdom", "style":"wisdom"},
@@ -239,7 +238,7 @@ var dnd = {
 	"fightingstyles":[
 		{"key":"archery", "name":"Archery", "summary":"+2 to hit with ranged weapons", "requirement":"ammunition", "hit":2},
 		{"key":"defense", "name":"Defense", "summary":"+1 to armor class when armored", "requirement":"armored", "armorclass":1},
-		{"key":"dueling", "name":"Dueling", "summary":"+2 to damage with single melee weapon", "requirement":"melee-one-handed", "damage":2},
+		{"key":"dueling", "name":"Dueling", "summary":"+2 to damage with single melee weapon", "requirement":"one-handed-melee", "damage":2},
 		{"key":"great", "name":"Great Weapon Fighting", "summary":"Improve damage of two handed melee weapon"},
 		{"key":"block", "name":"Protection", "summary":"Impose disadvantage on nearby attack with shield", "type":"reaction"},
 		{"key":"dual", "name":"Two Weapon Fighting", "summary":"Improve damage of melee weapon in second hand", "type":"bonusaction"}
@@ -355,6 +354,9 @@ var dnd = {
 		"archetypes":["lore", "valor"],
 		"archetype_default":"valor",
 		"background_default":"entertainer",
+		"spells_known":[4,5,6,7,8,9,10,11,12,14,15,15,16,18,19,19,20,22,22,22],
+		"spell_slots_gained":[[1,1,4,10], [1,1,2,3], [3,3,4], [5,5,6], [7,8,9], [9,10,18], [11,19], [13,20], [15], [17]],
+		"spells_prepared":"all",
 		"equipment":[
 			[[{"weapon":"rapier"}], [{"weapon":"longsword"}], [{"weapontype":"simple"}]],
 			[[{"item":"lute"}], [{"itemtype":"instrument"}]],
@@ -403,6 +405,9 @@ var dnd = {
 		"archetypes":["knowledge", "life", "light", "nature", "tempest", "trickery", "war"],
 		"archetype_default":"life",
 		"background_default":"acolyte",
+		"spells_known":"all",
+		"spells_prepared":"level+modifier",
+		"spell_slots_gained":[[1,1,1,4,10], [1,1,2,3], [3,3,4], [5,5,6], [7,8,9], [9,10,18], [11,19], [13,20], [15], [17]],
 		"equipment":[
 			[[{"weapon":"mace"}], [{"weapon":"warhammer", "requires":"martial"}]],
 			[[{"armor":"scalemail"}], [{"armor":"leatherarmor"}], [{"armor":"chainmail", "requires":"heavy"}]],
@@ -447,6 +452,9 @@ var dnd = {
 		"archetypes":["land", "moon"],
 		"archetype_default":"moon",
 		"background_default":"hermit",
+		"spells_known":"all",
+		"spells_prepared":"level+modifier",
+		"spell_slots_gained":[[1,1,4,10], [1,1,2,3], [3,3,4], [5,5,6], [7,8,9], [9,10,18], [11,19], [13,20], [15], [17]],
 		"equipment":[
 			[[{"armor":"woodenshield"}], [{"weapontype":"simple"}]],
 			[[{"weapon":"scimitar"}], [{"weapontype":"simplemelee"}]],
@@ -585,6 +593,9 @@ var dnd = {
 		"archetypes":["devotion", "ancients", "vengeance"],
 		"archetype_default":"devotion",
 		"background_default":"noble",
+		"spells_known":"all",
+		"spells_prepared":"level/2+modifier",
+		"spell_slots_gained":[[], [2,2,3,5], [5,5,7], [9,9,11], [13,15,17], [17,19], [], [], [], []],
 		"equipment_default":[{"weapon":"longsword"}, {"armor":"shield"}, {"weapon":"javelin", "quantity":5}, {"armor":"chainmail"}, {"item":"holysymbol"}, {"pack":"explorers"}],
 		"equipment":[
 			[[{"weapontype":"martial"}, {"armor":"shield"}], [{"weapontype":"martial"}, {"weapontype":"martial"}]],
@@ -629,6 +640,9 @@ var dnd = {
 		"archetypes":["hunter", "beast"],
 		"archetype_default":"hunter",
 		"background_default":"outlander",
+		"spells_known":[0,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11],
+		"spells_prepared":"all",
+		"spell_slots_gained":[[], [2,2,3,5], [5,5,7], [9,9,11], [13,15,17], [17,19], [], [], [], []],
 		"equipment":[
 			[[{"armor":"scalemail"}], [{"armor":"leatherarmor"}]],
 			[[{"weapon":"shortsword", "quantity":2}], [{"weapontype":"simplemelee"}, {"weapontype":"simplemelee"}]],
@@ -720,6 +734,9 @@ var dnd = {
 		"archetypes":["draconic", "wild"],
 		"archetype_default":"draconic",
 		"background_default":"hermit",
+		"spells_known":[2,3,4,5,6,7,8,9,10,11,12,12,13,13,14,14,15,15,15,15],
+		"spells_prepared":"all",
+		"spell_slots_gained":[[1,1,1,1,4,10], [1,1,2,3], [3,3,4], [5,5,6], [7,8,9], [9,10,18], [11,19], [13,20], [15], [17]],
 		"metamagic":[
 			{"key":"careful", "name":"Careful Spell", "summary":"Choose targets to succeed on savings throw", "cost":1},
 			{"key":"distant", "name":"Distant Spell", "summary":"Double range of spell", "cost":1},
@@ -769,6 +786,9 @@ var dnd = {
 		"archetypes":["archfey", "fiend", "old"],
 		"archetype_default":"archfey",
 		"background_default":"charlatan",
+		"spells_known":[2,3,4,5,6,7,8,9,10,10,11,11,12,12,13,13,14,14,15,15],
+		"spells_prepared":"all",
+		"invocations_known":[0,2,2,2,3,3,4,4,5,5,5,6,6,6,7,7,7,8,8,8],
 		"invocations":[
 			{"key":"agonizing", "name":"Agonizing Blast", "summary":"Increase Eldritch Blast damage by charisma modifier"},
 			{"key":"magearmor", "name":"Armor of Shadows", "summary":"Cast Magearmor at will"},
@@ -844,6 +864,9 @@ var dnd = {
 		"archetypes":["abjuration", "conjuration", "divination", "enchantment", "evocation", "illusion", "necromancy", "transmutation"],
 		"archetype_default":"abjuration",
 		"background_default":"sage",
+		"spells_known":"4+2*level+learned",
+		"spells_prepared":"level+modifier",
+		"spell_slots_gained":[[1,1,1,4,10], [1,1,2,3], [3,3,4], [5,5,6], [7,8,9], [9,10,18], [11,19], [13,20], [15], [17]],
 		"equipment":[
 			[[{"weapon":"dagger"}], [{"weapon":"staff"}]],
 			[[{"item":"arcanefocus"}], [{"item":"componentpouch"}]],
@@ -1123,6 +1146,7 @@ var dnd = {
 		"name":"School of Transmutation",
 		"features":[]
 	}],
+	
 	"races":[{
 		"key":"human",
 		"name":"Human",
@@ -1171,7 +1195,7 @@ var dnd = {
 	},{
 		"key":"dwarfmountain",
 		"name":"Mountain Dwarf",
-		"adjective":"Mountain Dawrven",
+		"adjective":"Mountain Dwarven",
 		"classes":["fighter", "barbarian", "wizard"],
 		"style":"strength",
 		"size":"medium",
@@ -1471,8 +1495,8 @@ var dnd = {
 		"abilities":{"wisdom":1, "dexterity":2},
 		"weapons":[],
 		"benefits":["Flight", "Talons"],
-		"height":{"base":57, "plus":{"roll":2, "die":8}},
-		"weight":{"base":110, "times":{"roll":2, "die":4}},
+		"height":{"base":54, "plus":{"roll":2, "die":6}},
+		"weight":{"base":75, "times":{"roll":1, "die":3}},
 		"alignment_default":"ng",
 		"resistance":[],
 		"features":[
@@ -2095,5 +2119,6 @@ var dnd = {
 			"People who can't take care of themselves get what they deserve.",
 		],
 	}],
+	"spells":[],
 	"the_end":true
 };

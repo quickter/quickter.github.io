@@ -209,15 +209,15 @@
 				
 				this.character = {
 					'rolls':character.rolls,
-					'skills':character.skills,
-					'languages':character.languages,
-					'ordered':character.ordered,
+					'skills':character.skills || [],
+					'languages':character.languages || [],
+					'ordered':character.ordered || false,
 					'height':character.height,
 					'weight':character.weight,
 					'trait':character.trait || [],
 					'ideal':character.ideal | 0,
-					'flaw':character.flaw,
-					'bond':character.bond,
+					'flaw':character.flaw | 0,
+					'bond':character.bond | 0,
 				}
 			}
 			
@@ -568,7 +568,7 @@
 				
 				for ( feature of context.activeSources ) {
 					if ( feature.requirement === 'ammunition' && !isRanged ) { continue }
-					if ( feature.requirement === 'melee-one-handed' && (weapon.twohanded || versatile || isRanged) ) { continue }
+					if ( feature.requirement === 'one-handed-melee' && (weapon.twohanded || versatile || isRanged) ) { continue }
 					
 					if ( feature.hit ) { hit += feature.hit | 0 }
 					if ( feature.damage ) { modifier += feature.damage | 0 }
@@ -1025,6 +1025,8 @@
 				var values = _flatten.apply(null, this.sources.slice(1).map(s => s.languages))
 				var limit = this.sources.reduce((l, s) => l + (s.extra_language | 0), 0)
 				
+				this.unchosenLanguages = limit > this.character.languages.length
+				
 				return {'required':values, 'limit':limit}
 			}
 			
@@ -1041,6 +1043,8 @@
 						limit += source.skill_options.limit
 					}
 				}
+				
+				this.unchosenSkills = limit + (options.limit | 0) > this.character.skills.length
 				
 				return {'required':values, 'limit':limit, 'options':options}
 			}
@@ -1847,7 +1851,7 @@
 				renderCharacter(character, 'sex', false)
 			}
 			
-			function advanceHeight(event, w) {
+			function advanceHeight(event, changeWeight) {
 				var height, plusHeight, weight, plusWeight, minimum, maximum
 				var race = lookup.races[character.race]
 				
@@ -1867,7 +1871,7 @@
 						plusHeight = character.height - race.height.base
 						timesWeight = Math.floor((character.weight - race.weight.base) / plusHeight)
 						
-						if ( w ) {
+						if ( changeWeight ) {
 							minimum = race.weight.times.roll || 1
 							maximum = race.weight.times.die * minimum
 							
@@ -2101,14 +2105,19 @@
 					_element('weight').innerHTML = placeholder("Weight")
 				}
 				
+				_assignClass(_element('language'), 'incomplete', details.unchosenLanguages > 0 ? 1 : -1)
+				_assignClass(_element('skill'), 'incomplete', details.unchosenSkills > 0 ? 1 : -1)
+				
 				details.features.forEach(populateFeatureOptionSet)
+				
+				_element('version').innerHTML = dnd.version || ""
 			}
 			
 			function renderCharacter(character, prefix, applyToForm) {
 				var details = new Character(character)
 				
 				if ( applyToForm ) {
-					var form = _element('character-form')
+					var element, form = _element('character-form')
 					
 					form.race.value = character.race
 					form.crass.value = character.crass
@@ -2121,26 +2130,28 @@
 					var languages = character.languages || []
 					var skills = character.skills || []
 					
-					for ( var e of _elements('[name=languages]', form) ) {
-						e.checked = !(languages.indexOf(e.value) < 0)
-						e.disabled = 0
+					for ( element of _elements('[name=languages]', form) ) {
+						element.checked = !(languages.indexOf(element.value) < 0)
+						element.disabled = 0
 					}
 					
-					for ( var e of _elements('[name=skills]', form) ) {
-						e.checked = !(skills.indexOf(e.value) < 0)
-						e.disabled = 0
+					for ( element of _elements('[name=skills]', form) ) {
+						element.checked = !(skills.indexOf(element.value) < 0)
+						element.disabled = 0
 					}
 					
 					renderRolls(character.rolls)
 				}
 				
-				if ( prefix ) {
+				if ( applyToForm || prefix ) {
 					checkboxRules['languages'] = details.checkboxRulesForLanguages()
 					details.character.languages = applyCheckboxValue('languages')
 					
 					checkboxRules['skills'] = details.checkboxRulesForSkills()
 					details.character.skills = applyCheckboxValue('skills')
-					
+				}
+				
+				if ( prefix ) {
 					characterIntoHash(character)
 				}
 				
@@ -2339,17 +2350,17 @@
 		<div id='character-view'><form id='character-form'>
 			<p id='randomize'>
 				<hr/>
+				<input id='random-character' type='button' class='action' onclick='randomCharacter()' />
+				<label for='random-character' class='action'>Randomize</label>
+				<input id='clear-character' type='button' class='action' onclick='clearCharacter()' />
+				<label for='clear-character' class='action'>Reset</label>
+				<span class='label-separator'>|</span>
 				<input id='abilities-standard' type='button' class='action' onclick='standard()' />
 				<label for='abilities-standard' class='action'>Standard</label>
 				<input id='abilities-roll-4d6' type='button' class='action' onclick='randomRolls()' />
 				<label for='abilities-roll-4d6' class='action'>Roll 4D6</label>
 				<input id='abilities-arena' type='button' class='action' onclick='arenaRolls()' />
 				<label for='abilities-arena' class='action'>Arena</label>
-				<span class='label-separator'>|</span>
-				<input id='random-character' type='button' class='action' onclick='randomCharacter()' />
-				<label for='random-character' class='action'>Randomize</label>
-				<input id='clear-character' type='button' class='action' onclick='clearCharacter()' />
-				<label for='clear-character' class='action'>Reset</label>
 			</p>
 			<p id="rolled"></p>
 			<hr/>
@@ -2406,19 +2417,21 @@
 			
 			<span class='caption'>Attacks</span>
 			<input id='toggle-all-attacks' class='toggle' type='checkbox' />
-			<label for='toggle-all-attacks' class='toggle'></label>
-			<p id='attacks'> </p>
+			<label for='toggle-all-attacks' class='toggle'> </label>
+			<p id='attacks' class='collapsed'> </p>
 			
 			<span class='caption'>Skills</span>
-			<p id='skill' class='toggle' onclick='toggleHidden("skills")'> </p>
-			<p id='skills' class='hidden'></p>
+			<input id='toggle-skills' class='toggle' type='checkbox' />
+			<label for='toggle-skills'><p id='skill' class='toggle'> </p></label>
+			<p id='skills' class='toggled'></p>
 			
 			<span class='caption'>Proficiencies</span>
 			<p id='proficiency' class='small'> </p>
 			
 			<span class='caption'>Languages</span>
-			<p id='language' class='toggle' onclick='toggleHidden("languages")'> </p>
-			<p id='languages' class='hidden'></p>
+			<input id='toggle-language' class='toggle' type='checkbox' />
+			<label for='toggle-language'><p id='language' class='toggle'> </p></label>
+			<p id='languages' class='toggled'></p>
 			
 			<span class='caption'>Equipment</span>
 			<p id='equipment' class='small'> </p>
@@ -2438,6 +2451,7 @@
 				<span id='flaw' class='characteristic' onclick='advanceFlaw()'> </span>
 			</p>
 			
+			<span id='version' class='caption'> </span>
 			<hr onclick='toggleHidden("raw-character")'/>
 			<p id='raw-character' class='hidden'></p>
 		</form></div>
