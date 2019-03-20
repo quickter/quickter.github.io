@@ -227,6 +227,7 @@
 				this.computeAbilities()
 				this.computeCharacteristics()
 				this.computeEssentials()
+				this.computeSpellcasting()
 				
 				var crass = this.crass
 				var archetype = this.archetype
@@ -311,6 +312,30 @@
 				this.attacksPerAction = attacksPerAction
 				this.difficultyClass = 8 + pb + (modifiers[spellcasting] | 0)
 				this.passivePerception = 10 + (modifiers['wisdom'] | 0) + (this.proficiencies.skills.indexOf('preception') < 0 ? 0 : pb)
+			}
+			
+			Character.prototype.computeSpellcasting = function Character_computeSpellcasting() {
+				var level = this.level
+				var modifiers = this.modifiers
+				var spellcasting = this.spellcasting
+				var spells = this.archetype.spells || this.crass.spells || new Object()
+				var spellsKnown = spells.known || 0
+				var spellsRatio = spells.ratio || 0
+				var slotsGained = this.archetype.spell_slots_gained || this.crass.spell_slots_gained || []
+				
+				if ( spellsRatio > 0 ) {
+					this.spellsPrepared = Math.floor(level / spellsRatio) + Math.max(modifiers[spellcasting] | 0, 1)
+				} else if ( spellsKnown && spellsKnown.length > 0 ) {
+					this.spellsPrepared = level > 0 ? spellsKnown[level - 1] : 0
+				} else {
+					this.spellsPrepared = 0
+				}
+				
+				if ( this.spellsPrepared > 0 && spells.slots ) {
+					this.slots = spells.slots.map(g => g.reduce((s, l) => s + (l > level ? 0 : 1), 0) || "_")
+					
+					if ( !this.slots[1] ) { this.spellsPrepared = 0 }
+				}
 			}
 			
 			Character.prototype.computeProficiencies = function Character_computeProficiencies() {
@@ -1044,7 +1069,7 @@
 					}
 				}
 				
-				this.unchosenSkills = limit + (options.limit | 0) > this.character.skills.length
+				this.unchosenSkills = limit + (options && options.limit | 0) > this.character.skills.length
 				
 				return {'required':values, 'limit':limit, 'options':options}
 			}
@@ -2076,9 +2101,11 @@
 				_element('armor-class').innerHTML = "AC " + details.armorclass
 				_element('hit-points').innerHTML = "HP " + details.hitpoints
 				_element('proficiency-bonus').innerHTML = "PB +" + details.proficiencyBonus
+				_element('passive-perception').innerHTML = "PP " + details.passivePerception
 				_element('difficulty-class').innerHTML = "DC " + details.difficultyClass
+				_element('spells-prepared').innerHTML = "Spells " + (details.spellsPrepared || "-")
 				_element('size').innerHTML = "Size " + (details.size.name || "-")
-				_element('speed').innerHTML = "Speed " + details.speed
+				_element('speed').innerHTML = "Speed " + (details.speed || "-")
 				_element('darkvision').innerHTML = "Darkvision " + (details.darkvision || "-")
 				_element('initiative').innerHTML = "Initiative " + (details.initiative || "+0")
 				_element('attacks-per-action').innerHTML = "Attacks " + details.attacksPerAction
@@ -2351,78 +2378,83 @@
 			<p id='randomize'>
 				<hr/>
 				<input id='random-character' type='button' class='action' onclick='randomCharacter()' />
-				<label for='random-character' class='action'>Randomize</label>
+				<label for='random-character' title='Generate a Random Character' class='action'>Randomize</label>
 				<input id='clear-character' type='button' class='action' onclick='clearCharacter()' />
-				<label for='clear-character' class='action'>Reset</label>
+				<label for='clear-character' title='Clear the Character' class='action'>Reset</label>
 				<span class='label-separator'>|</span>
 				<input id='abilities-standard' type='button' class='action' onclick='standard()' />
-				<label for='abilities-standard' class='action'>Standard</label>
+				<label for='abilities-standard' title='Use Standard Ability Rolls' class='action'>Standard</label>
 				<input id='abilities-roll-4d6' type='button' class='action' onclick='randomRolls()' />
-				<label for='abilities-roll-4d6' class='action'>Roll 4D6</label>
+				<label for='abilities-roll-4d6' title='Use Random Ability Rolls' class='action'>Roll 4D6</label>
 				<input id='abilities-arena' type='button' class='action' onclick='arenaRolls()' />
-				<label for='abilities-arena' class='action'>Arena</label>
+				<label for='abilities-arena' title='Use High Ability Rolls' class='action'>Arena</label>
 			</p>
 			<p id="rolled"></p>
 			<hr/>
 			
-			<span id='level' class='advances tall' onclick='advanceLevel(event)'> </span>
+			<span id='level' class='advances tall' title='Level' onclick='advanceLevel(event)'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='race' class='advances tall' onclick='advanceRace(event)'> </span>
+			<span id='race' class='advances tall' title='Race' onclick='advanceRace(event)'> </span>
 			<span class='bullet''>&bull;</span>
-			<span id='crass' class='advances tall' onclick='advanceClass(event)'> </span>
+			<span id='crass' class='advances tall' title='Class' onclick='advanceClass(event)'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='archetype' class='advances tall' onclick='advanceArchetype(event)'> </span>
+			<span id='archetype' class='advances tall' title='Archetype' onclick='advanceArchetype(event)'> </span>
 			<p id='races' class='hidden'></p>
 			<p id='classes' class='hidden'></p>
 			
 			<br/>
-			<span id='alignment' class='advances tall' onclick='advanceAlignment(event)'> </span>
+			<span id='alignment' class='advances tall' title='Alignment' onclick='advanceAlignment(event)'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='sex' class='advances tall' onclick='advanceSex(event)'> </span>
+			<span id='sex' class='advances tall' title='Sex' onclick='advanceSex(event)'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='background' class='advances tall' onclick='advanceBackground(event)'> </span>
+			<span id='background' class='advances tall' title='Background' onclick='advanceBackground(event)'> </span>
 			<p id='backgrounds' class='hidden'></p>
 			
 			<br class='tall'/>
-			<span id='armor-class' class='listable'> </span>
+			<span id='armor-class' title='Armor Class' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='hit-points' class='listable'> </span>
+			<span id='hit-points' title='Hit Points' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='proficiency-bonus' class='listable'> </span>
+			<span id='proficiency-bonus' title='Proficienct Bonus' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='difficulty-class' class='listable'> </span>
+			<span id='passive-perception' title='Passive Perception' class='listable'> </span>
 			
 			<br/>
-			<span id='attacks-per-action' class='listable'> </span>
+			<span id='attacks-per-action' title='Attacks' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='criticals' class='listable'> </span>
+			<span id='criticals' title='Critical Hit' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='initiative' class='listable'> </span>
+			<span id='initiative' title='Initiative' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='darkvision' class='listable'> </span>
+			<span id='darkvision' title='Darkvision' class='listable'> </span>
 			
 			<br/>
-			<span id='speed' class='listable'> </span>
+			<span id='speed' title='Walking Speed' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='size' class='listable'> </span>
+			<span id='size' title='Size Class' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='height' class='advances narrow' onclick='advanceHeight(event, false)'> </span>
+			<span id='height' title='Height' class='advances narrow' onclick='advanceHeight(event, false)'> </span>
 			<span class='bullet'>&bull;</span>
-			<span id='weight' class='advances narrow' onclick='advanceHeight(event, true)'> </span>
+			<span id='weight' title='Weight' class='advances narrow' onclick='advanceHeight(event, true)'> </span>
+			
+			<br/>
+			<span id='spells-prepared' title='Spells Prepared or Known' class='listable'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='difficulty-class' title='Difficulty Class' class='listable'> </span>
 			
 			<br class='tall'/>
 			<p><span class='caption'>Abilities</span>
-			<span id='clear-abilities' class='action tiny toggle' onclick='clearAbilities()'>(Reset)</span></p>
-			<p id='abilities'></p>
+			<span id='clear-abilities' title='Revert rolls to class order with only racial increases' class='action tiny toggle' onclick='clearAbilities()'>(Reset)</span></p>
+			<p id='abilities' title='Tap rolls to change order.  Tap scores to increase.'></p>
 			
 			<span class='caption'>Attacks</span>
 			<input id='toggle-all-attacks' class='toggle' type='checkbox' />
-			<label for='toggle-all-attacks' class='toggle'> </label>
+			<label for='toggle-all-attacks' title='Show attack effectiveness of proficient weapons and cantrips' class='toggle'> </label>
 			<p id='attacks' class='collapsed'> </p>
 			
 			<span class='caption'>Skills</span>
 			<input id='toggle-skills' class='toggle' type='checkbox' />
-			<label for='toggle-skills'><p id='skill' class='toggle'> </p></label>
+			<label for='toggle-skills'><p id='skill' title='Tap to show skill choices' class='toggle'> </p></label>
 			<p id='skills' class='toggled'></p>
 			
 			<span class='caption'>Proficiencies</span>
@@ -2430,7 +2462,7 @@
 			
 			<span class='caption'>Languages</span>
 			<input id='toggle-language' class='toggle' type='checkbox' />
-			<label for='toggle-language'><p id='language' class='toggle'> </p></label>
+			<label for='toggle-language'><p id='language' title='Tap to show language choices' class='toggle'> </p></label>
 			<p id='languages' class='toggled'></p>
 			
 			<span class='caption'>Equipment</span>
@@ -2444,11 +2476,11 @@
 			
 			<span class='caption'>Characteristics</span>
 			<p id='characteristics' class='small'>
-				<span id='trait-0' class='characteristic' onclick='advanceTrait(0)'> </span><br/>
-				<span id='trait-1' class='characteristic' onclick='advanceTrait(1)'> </span><br/>
-				<span id='ideal' class='characteristic' onclick='advanceIdeal()'> </span><br/>
-				<span id='bond' class='characteristic' onclick='advanceBond()'> </span><br/>
-				<span id='flaw' class='characteristic' onclick='advanceFlaw()'> </span>
+				<span id='trait-0' title='Trait' class='characteristic' onclick='advanceTrait(0)'> </span><br/>
+				<span id='trait-1' title='Trait' class='characteristic' onclick='advanceTrait(1)'> </span><br/>
+				<span id='ideal' title='Ideal' class='characteristic' onclick='advanceIdeal()'> </span><br/>
+				<span id='bond' title='Bond' class='characteristic' onclick='advanceBond()'> </span><br/>
+				<span id='flaw' title='Flaw' class='characteristic' onclick='advanceFlaw()'> </span>
 			</p>
 			
 			<span id='version' class='caption'> </span>
