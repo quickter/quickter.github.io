@@ -130,15 +130,19 @@ br.tall + * { margin-top:1.5em; }
 .caption { color:#888; font-size:60%; }
 .caption + p, .caption + input + label + p, .caption + input + label > p { margin-top:0.25em; }
 
-p#characteristics > span.characteristic::before { content:"↻ "; color:#CCC; }
+p#characteristics > span.characteristic::before { content:"↻ "; opacity:0.25; }
 
 .advances { display:inline-block; text-align:center; cursor:pointer; }
 .advances.tall { line-height:2.0; min-width:7em; }
 .advances.narrow { line-height:1.5; min-width:4em; }
 .listable { display:inline-block; min-width:6em; text-align:center; line-height:1.5; }
 span.advances { position:relative; padding:0 1em; }
-span.advances::before { content:"◀︎︎"; opacity:0.125; position:absolute; left:0; top:0; }
-span.advances::after { content:"▶"; opacity:0.125; position:absolute; right:0; top:0; }
+span.advances::before { content:"<︎︎"; opacity:0.25; position:absolute; left:0; top:0; }
+span.advances::after { content:">"; opacity:0.25; position:absolute; right:0; top:0; }
+
+.toggle, .roll, .advances, .action, .option, .characteristic {
+	-webkit-tap-highlight-color:transparent;
+}
 
 .nose, .toggle, .roll, .advances, .action, .option, .characteristic {
 	-webkit-touch-callout:none;
