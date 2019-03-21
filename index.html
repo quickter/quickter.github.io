@@ -2217,8 +2217,8 @@
 			}
 			
 			function attacksTableHTML(items, effectivenessArmorclass) {
-				var attacksTableTemplate = "<table class='attacks' id='attacks-table'><tr class='attacks equipment'><th>Weapon</th><th>Hit</th><th>Damage</th><th class='rate toggled'>rate</th><th>Type</th><th>Range</th><th></th></tr>{rows}</table><span class='small toggled'>Hitting <span id='effectiveness-armor-class' class='advances' onclick='advanceEffectivenessArmorClass(event)'>AC {ac}</span></span>"
-				var attacksRowTemplate = "<tr class='attacks {key} {type} {attributes} toggle' onclick='toggleEquipment(\"{key}\")'><td class='attacks name'>{name}</td><td class='attacks hit'>{hit}</td><td class='attacks damage'>{damage}</td><td class='attacks rate toggled'>{rate}</td><td class='attacks type'>{type}</td><td class='attacks range'>{range}</td><td>{summary}</td></tr>"
+				var attacksTableTemplate = "<table class='attacks' id='attacks-table'><tr class='attacks equipment'><th>Weapon</th><th>Hit</th><th>Damage</th><th class='rate toggled'>rate</th><th class='attacks type'>Type</th><th>Range</th><th class='attacks summary'></th></tr>{rows}</table><span class='small toggled'>Hitting <span id='effectiveness-armor-class' class='advances' onclick='advanceEffectivenessArmorClass(event)'>AC {ac}</span></span>"
+				var attacksRowTemplate = "<tr class='attacks {key} {type} {attributes} toggle' onclick='toggleEquipment(\"{key}\")'><td class='attacks name'>{name}</td><td class='attacks hit'>{hit}</td><td class='attacks damage'>{damage}</td><td class='attacks rate toggled'>{rate}</td><td class='attacks type'>{type}</td><td class='attacks range'>{range}</td><td class='attacks summary'>{summary}</td></tr>"
 				var attacksRows = items.map(weapon => replaceKeys(attacksRowTemplate, weapon))
 				var attacksHTML = replaceKeys(attacksTableTemplate, {"rows":attacksRows.join(" "), "ac":effectivenessArmorclass})
 				
@@ -2456,8 +2456,8 @@
 			<span id='crass' class='advances tall' title='Class' onclick='advanceClass(event)'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='archetype' class='advances tall' title='Archetype' onclick='advanceArchetype(event)'> </span>
-			<p id='races' class='hidden'></p>
-			<p id='classes' class='hidden'></p>
+			<p id='races' class='choices hidden'></p>
+			<p id='classes' class='choices hidden'></p>
 			
 			<br/>
 			<span id='alignment' class='advances tall' title='Alignment' onclick='advanceAlignment(event)'> </span>
@@ -2465,7 +2465,7 @@
 			<span id='sex' class='advances tall' title='Sex' onclick='advanceSex(event)'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='background' class='advances tall' title='Background' onclick='advanceBackground(event)'> </span>
-			<p id='backgrounds' class='hidden'></p>
+			<p id='backgrounds' class='choices hidden'></p>
 			
 			<br class='tall'/>
 			<span id='armor-class' title='Armor Class' class='listable'> </span>
@@ -2512,7 +2512,7 @@
 			<span class='caption'>Skills</span>
 			<input id='toggle-skills' class='toggle' type='checkbox' />
 			<label for='toggle-skills'><p id='skill' title='Tap to show skill choices' class='toggle'> </p></label>
-			<p id='skills' class='toggled'></p>
+			<p id='skills' class='choices toggled'></p>
 			
 			<span class='caption'>Proficiencies</span>
 			<p id='proficiency' class='small'> </p>
@@ -2520,7 +2520,7 @@
 			<span class='caption'>Languages</span>
 			<input id='toggle-language' class='toggle' type='checkbox' />
 			<label for='toggle-language'><p id='language' title='Tap to show language choices' class='toggle'> </p></label>
-			<p id='languages' class='toggled'></p>
+			<p id='languages' class='choices toggled'></p>
 			
 			<span class='caption'>Equipment</span>
 			<p id='equipment' class='small'> </p>

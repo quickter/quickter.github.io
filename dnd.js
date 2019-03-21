@@ -794,7 +794,7 @@ var dnd = {
 		"order":["charisma", "constitution", "dexterity", "strength", "wisdom", "intelligence"],
 		"skill_options":{limit:2, "list":["arcana", "deception", "history", "intimidation", "investigation", "nature", "religion"]},
 		"archetype_name":"Otherworldly Patron",
-		"archetypes":["archfey", "fiend", "old"],
+		"archetypes":["archfey", "fiend", "old", "hexblade"],
 		"archetype_default":"archfey",
 		"background_default":"charlatan",
 		"spells":{
