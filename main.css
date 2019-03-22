@@ -130,6 +130,7 @@ br.tall + * { margin-top:1.5em; }
 .characteristic:first-child { margin-top:0; }
 .caption { color:#888; font-size:60%; }
 .caption + p, .caption + input + label + p, .caption + input + label > p { margin-top:0.25em; }
+.caption { position:relative; left:-0.5em; }
 
 p#characteristics > span.characteristic::before { content:"↻ "; opacity:0.25; }
 
