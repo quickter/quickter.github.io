@@ -85,6 +85,7 @@ var dnd = {
 		{"key":"poison", "name":"Poison"},
 		{"key":"disease", "name":"Disease"},
 		{"key":"mental-magic", "name":"Mind Affecting Magical Effects"},
+		{"key":"spells", "name":"Damage from Spells"},
 		{"key":"aging", "name":"Magical Aging"},
 		{"key":"sleep", "name":"Magical Sleep"},
 		{"key":"acid", "name":"Acid"},
@@ -167,6 +168,7 @@ var dnd = {
 		{"key":"instrument", "name":"Musical Instrument"},
 		{"key":"artisan", "name":"Artisan Tools"},
 		{"key":"gaming", "name":"Gaming Sets"},
+		{"key":"poison", "name":"Poisoner's Kit"},
 		{"key":"vehicle", "name":"Land Vehicles"},
 		{"key":"watercraft", "name":"Water Vehicles"},
 	],
@@ -794,7 +796,7 @@ var dnd = {
 		"order":["charisma", "constitution", "dexterity", "strength", "wisdom", "intelligence"],
 		"skill_options":{limit:2, "list":["arcana", "deception", "history", "intimidation", "investigation", "nature", "religion"]},
 		"archetype_name":"Otherworldly Patron",
-		"archetypes":["archfey", "fiend", "old", "hexblade"],
+		"archetypes":["archfey", "fiend", "old", "celestial", "hexblade"],
 		"archetype_default":"archfey",
 		"background_default":"charlatan",
 		"spells":{
@@ -1022,11 +1024,25 @@ var dnd = {
 	},{
 		"key":"land",
 		"name":"Circle of the Land",
-		"features":[]
+		"features":[
+			{"level":2, "key":"cantrip", "name":"Bonus Cantrip", "summary":"Gain a druid cantrip"},
+			{"level":2, "key":"recovery", "name":"Natural Recovery", "summary":"1/day regain spell slots from short rest", "type":"rest"},
+			{"level":3, "key":"circle", "name":"Circle Spells", "summary":"Choose a terrain to expand spell list"},
+			{"level":6, "key":"stride", "name":"Land's Stride", "summary":"Unhindered by difficult terrain or plants"},
+			{"level":10, "key":"ward", "name":"Nature's Ward", "summary":"Immune to charm and fear by fey and elementals", "immunities":["poison", "disease"]},
+			{"level":14, "key":"sanctuary", "name":"Nature's Sanctuary", "summary":"Sanctuary from beasts and plants"},
+		]
 	},{
 		"key":"moon",
 		"name":"Circle of the Moon",
-		"features":[]
+		"features":[
+			{"level":2, "key":"combat", "name":"Combat Wild Shape", "summary":"Wild shape, heal as bonus actions", "type":"bonusaction"},
+			{"level":2, "key":"forms", "name":"Circle Forms", "summary":"Wild shape CR 1"},
+			{"level":6, "key":"forms", "name":"Circle Forms", "summary":"Wild shape CR level / 3"},
+			{"level":6, "key":"strike", "name":"Primal Strike", "summary":"Wild Shape attacks count as magical"},
+			{"level":10, "key":"elemental", "name":"Elemental Form", "summary":"Wild shape into an elemental"},
+			{"level":14, "key":"thousand", "name":"Thousand Forms", "summary":"Cast alter self at will", "type":"action"},
+		]
 	},{
 		"key":"champion",
 		"name":"Champion",
@@ -1040,15 +1056,39 @@ var dnd = {
 	},{
 		"key":"battle",
 		"name":"Battle Master",
-		"features":[]
+		"features":[
+			{"level":3, "key":"superiority", "name":"Combat Superiority (4d8)", "summary":"Choose combat maneuvers"},
+			{"level":3, "key":"student", "name":"Student of War", "summary":"Gain proficiency with artisan tools"},
+			{"level":7, "key":"enemy", "name":"Know Your Enemy", "summary":"Learn capabilities of adversary"},
+			{"level":7, "key":"superiority", "name":"Superiority Die (5d8)", "summary":"Gain another superiority die"},
+			{"level":7, "key":"maneuvers", "name":"Combat Maneuvers (5)", "summary":"Gain 2 combat maneuvers"},
+			{"level":10, "key":"superiority", "name":"Improved Combat Superiority (5d10)", "summary":"Superiority dice ar d10"},
+			{"level":10, "key":"maneuvers", "name":"Combat Maneuvers (7)", "summary":"Gain 2 combat maneuvers"},
+			{"level":15, "key":"relentless", "name":"Relentless", "summary":"Regain superiority die at initiative", "type":"initiative"},
+			{"level":15, "key":"maneuvers", "name":"Combat Maneuvers (9)", "summary":"Gain 2 combat maneuvers"},
+			{"level":15, "key":"superiority", "name":"Superiority Die (6d10)", "summary":"Gain another superiority die"},
+			{"level":18, "key":"superiority", "name":"Improved Combat Superiority (6d12)", "summary":"Superiority dice ar d12"},
+		]
 	},{
 		"key":"knight",
 		"name":"Eldritch Knight",
-		"features":[]
+		"features":[
+			{"level":3, "key":"spellcasting", "name":"Spellcasting", "summary":"Intelligence, 2 cantrips, abjuration and evocation"},
+			{"level":3, "key":"bond", "name":"Weapon Bond", "summary":"Teleport bonded weapon to hand, cannot be disarmed", "type":"bonusaction"},
+			{"level":7, "key":"magic", "name":"War Magic", "summary":"Attack as a bonus action after casting a cantrip", "type":"bonusaction"},
+			{"level":10, "key":"strike", "name":"Eldritch Strike", "summary":"Attacks impose disadvantage on spell saving throw"},
+			{"level":15, "key":"teleport", "name":"Arcane Charge", "summary":"Teleport 30 with Action Surge"},
+			{"level":18, "key":"improve", "name":"Improved War Magic", "summary":"Attack as a bonus action after casting a spell", "type":"bonusaction"},
+		]
 	},{
 		"key":"hand",
 		"name":"Way of the Open Hand",
-		"features":[]
+		"features":[
+			{"level":3, "key":"technique", "name":"Open Hand Technique", "summary":"Flurry of blows push, knock prone, or prevent reactions"},
+			{"level":6, "key":"body", "name":"Wholeness of Body", "summary":"1/day regain 3*level HP"},
+			{"level":11, "key":"sanctuary", "name":"Tranquility", "summary":"1/day Sanctuary"},
+			{"level":17, "key":"quivering", "name":"Quivering palm", "summary":"3ki with attack to start fatal vibrations", "type":"action"},
+		]
 	},{
 		"key":"shadow",
 		"name":"Way of Shadow",
@@ -1062,49 +1102,109 @@ var dnd = {
 	},{
 		"key":"elements",
 		"name":"Way of the Four Elements",
-		"features":[]
+		"features":[
+			{"level":3, "key":"discipline", "name":"Disciple of the Elements (1)", "summary":"Choose an Elemental Discipline"},
+			{"level":6, "key":"discipline", "name":"Disciple of the Elements (2)", "summary":"Choose an Elemental Discipline"},
+			{"level":11, "key":"discipline", "name":"Disciple of the Elements (3)", "summary":"Choose an Elemental Discipline"},
+			{"level":17, "key":"discipline", "name":"Disciple of the Elements (4)", "summary":"Choose an Elemental Discipline"},
+		]
 	},{
 		"key":"devotion",
 		"name":"Oath of Devotion",
-		"features":[]
+		"features":[
+			{"level":3, "key":"weapon", "name":"Channel Divinity: Sacred Weapon", "summary":"Charisma modifier attack bonus, weapon sheds light", "type":"action"},
+			{"level":3, "key":"turn", "name":"Channel Divinity: Turn the Unholy", "summary":"Turn undead and fiends", "type":"action"},
+			{"level":7, "key":"devotion", "name":"Aura of Devotion", "summary":"Immune to charm radius 10", "immunities":["charm"]},
+			{"level":15, "key":"purity", "name":"Purity of Spirit", "summary":"Continuous Protection from Evil and Good"},
+			{"level":20, "key":"nimbus", "name":"Holy Nimbus", "summary":"1/day aura of light deals 10 radiant damage", "type":"action"},
+		]
 	},{
 		"key":"ancients",
 		"name":"Oath of the Ancients",
-		"features":[]
+		"features":[
+			{"level":3, "key":"wrath", "name":"Channel Divinity: Nature's Wrath", "summary":"Entangle", "type":"action"},
+			{"level":3, "key":"turn", "name":"Channel Divinity: Turn the Faithless", "summary":"Turn fey and fiends", "type":"action"},
+			{"level":7, "key":"warding", "name":"Aura of Warding", "summary":"Resistance to spell damage radius 10", "resistance":["spells"]},
+			{"level":15, "key":"sentinel", "name":"Undying Sentinel", "summary":"1/day avoid death", "immunities":["aging"]},
+			{"level":20, "key":"elder", "name":"Elder Champion", "summary":"1/day heal, quick spells, impose disadvantage on saves"},
+		]
 	},{
 		"key":"vengeance",
 		"name":"Oath of Vengeance",
-		"features":[]
+		"features":[
+			{"level":3, "key":"abjure", "name":"Channel Divinity: Abjure Enemy", "summary":"Turn creature", "type":"action"},
+			{"level":3, "key":"enmity", "name":"Channel Divinity: Vow of Enmity", "summary":"Advantage on attacks", "type":"action"},
+			{"level":7, "key":"avenger", "name":"Relentless Avenger", "summary":"Move when opportunity attack hits"},
+			{"level":15, "key":"vengeance", "name":"Soul of Vengeance", "summary":"Vow of Enmity retaliate as reaction", "type":"reaction"},
+			{"level":20, "key":"angel", "name":"Avenging Angel", "summary":"1/day angels wings 1 hour, fly 60, menacing aura"},
+		]
 	},{
 		"key":"hunter",
 		"name":"Hunter",
-		"features":[]
+		"features":[
+			{"level":3, "key":"prey", "name":"Hunter's Prey", "summary":"Choose a tactic"},
+			{"level":7, "key":"tactics", "name":"Defensive Tactics", "summary":"Choose a tactic"},
+			{"level":11, "key":"multiattack", "name":"Multiattack", "summary":"Choose a tactic"},
+			{"level":15, "key":"defense", "name":"Superior Hunter's Defense", "summary":"Choose a defense"},
+		]
 	},{
 		"key":"beast",
 		"name":"Beast Master",
-		"features":[]
+		"features":[
+			{"level":3, "key":"companion", "name":"Ranger's Companion", "summary":"Gain beast companion up to CP 1/4"},
+			{"level":7, "key":"training", "name":"Exceptional Training", "summary":"Companion dash. dodge, help, diengage as bonus action", "type":"bonusaction"},
+			{"level":11, "key":"fury", "name":"Bestial Fury", "summary":"Companion attacks twice the the attack action"},
+			{"level":15, "key":"share", "name":"Share Spells", "summary":"Spells affecting self also affect companion"},
+		]
 	},{
 		"key":"thief",
 		"name":"Thief",
-		"features":[]
+		"features":[
+			{"level":3, "key":"hands", "name":"Fast Hands", "summary":"Cunning action includes sleight of hand, thieves tool or use item", "type":"bonusaction"},
+			{"level":3, "key":"climb", "name":"Second-Story Work", "summary":"unhindered while climbing, increase running jump"},
+			{"level":9, "key":"sneak", "name":"Supreme Sneak", "summary":"Gain advantage on stealth checks while slow"},
+			{"level":13, "key":"device", "name":"Use Magic Device", "summary":"Ignore class, race and level requirements of magic items"},
+			{"level":17, "key":"reflexes", "name":"Thief's Reflexes", "summary":"Second turn on first round of combat"},
+		]
 	},{
 		"key":"assassin",
 		"name":"Assassin",
-		"features":[]
+		"features":[
+			{"level":3, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain proficiency with poison and disguise kits", "tools":["disguise", "poison"]},
+			{"level":3, "key":"assassinate", "name":"Assassinate", "summary":"Advantage before first turn, Critical on surprise"},
+			{"level":9, "key":"infiltration", "name":"Infiltration Expertise", "summary":""},
+			{"level":13, "key":"imposter", "name":"Imposter", "summary":""},
+			{"level":17, "key":"strike", "name":"Death Strike", "summary":"Surprised targets save or take double damage"},
+		]
 	},{
 		"key":"trickster",
 		"name":"Arcane Trickster",
-		"features":[]
+		"features":[
+			{"level":3, "key":"spellcasting", "name":"Spellcasting", "summary":"Intelligence, 2 cantrips"},
+			{"level":3, "key":"hand", "name":"Mage Hand Legerdemain", "summary":""},
+			{"level":9, "key":"ambush", "name":"Magical Ambush", "summary":""},
+			{"level":13, "key":"trickster", "name":"Versatile Trickster", "summary":"", "type":"bonusaction"},
+			{"level":17, "key":"thief", "name":"Spell Thief", "summary":""},
+		]
 	},{
 		"key":"draconic",
 		"name":"Draconic Bloodline",
 		"features":[
-			{"level":1, "key":"resilience", "name":"Draconic Resilience", "summary":"Increase hit points by level", "requirement":"unarmored", "armorclass":3, "toughness":1},
+			{"level":1, "key":"resilience", "name":"Draconic Resilience", "summary":"AC +3, HP +level", "requirement":"unarmored", "armorclass":3, "toughness":1},
+			{"level":6, "key":"potent", "name":"Elemental Affinity", "summary":""},
+			{"level":14, "key":"wings", "name":"Dragon Wings", "summary":""},
+			{"level":18, "key":"presense", "name":"Draconic Presense", "summary":""},
 		]
 	},{
 		"key":"wild",
 		"name":"Wild Magic",
-		"features":[]
+		"features":[
+			{"level":1, "key":"surge", "name":"Wild Magic Surge", "summary":""},
+			{"level":1, "key":"tides", "name":"Tides of Chaos", "summary":""},
+			{"level":6, "key":"luck", "name":"Bend Luck", "summary":""},
+			{"level":14, "key":"chaos", "name":"Controlled Chaos", "summary":""},
+			{"level":18, "key":"bombardment", "name":"Spell Bombardment", "summary":""},
+		]
 	},{
 		"key":"archfey",
 		"name":"The Archfey",
