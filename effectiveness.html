@@ -915,6 +915,7 @@
 	<body>
 		<h4>Attack Effectiveness</h4>
 		
+		<span id='effectiveness-description' class='tiny'>hit / damage # attacks @ target</span><br/>
 		<input type='text' id='effectiveness-input' name='effectiveness' size='60' placeholder='+5 /d8+3s #2 @ 16' oninput='handleEffectiveness(event)'>
 		<p><span id='effectiveness-text'></span></p>
 		
@@ -976,7 +977,7 @@
 			<tr><td>Fighter 1: Longsword</td><td>+2+3/d8+3#1@12</td><td>Hit +5, damage d8+3, 1 attack, target AC 12</td></tr>
 			<tr><td>Warlock 20: Wand +3, Hex</td><td>+6+5+3/d10+5e+d6n#4</td><td>Hit +14, damage d10+d6+5, 4 attacks</td></tr>
 			<tr><td>Champion 20: Greatsword +3</td><td>c18+6+5+3-5/2d6+3m+5+10#4cb</td><td>Hit +9, critical on 18, damage 2d6+18, 4 attacks, bonus attack on critical</td></tr>
-			<tr><td>Fighter 20: Longbow +3, Bracers</td><td>+6+5+3+2-5+d8o/d8+3m+5+2+10#4</td><td>Hit +11, +d8 one time, damage d8 + 20, 4 attacks</td></tr>
+			<tr><td>Fighter 20: Longbow +3, Bracers</td><td>+6+5+3+2-5+d12o/d8+3m+5+2+10#4</td><td>Hit +11, +d12 one time, damage d8 + 20, 4 attacks</td></tr>
 			<tr><td>Barbarian 20: Greataxe +3</td><td>+6+7+3-5/d12+3m+7+10+4+c4d#2cb</td><td>Hit +11, damage d12+24, critical +4 dice, 2 attacks, bonus attack on critical</td></tr>
 			<tr><td colspan=3/></td></tr>
 		</table>
@@ -986,10 +987,21 @@
 			Chance to hit AC: <input type='number' id='chance-to-hit-input' name='advantage' size='40' placeholder='16' oninput='handleChanceToHit(event)'><br/>
 			<span id='chance-to-hit-text'> </span>
 		</p>
+		
 		<p>
 			<hr/>
 			Average of die roll: <input type='text' id='advantage-input' name='advantage' size='40' placeholder='4d6' oninput='handleAdvantage(event)'><br/>
 			<span id='advantage-text'> </span>
+		</p>
+		
+		<p>
+			<hr/>
+			
+			<span class='tiny'>There are several modifiers that only apply one time, and support for these is limited.
+			Modifiers that affect armor class one time, either attacker options or defensive reactions, are blindly applied to the first attack instead of being applied when needed.
+			Resistances and vulnerabilities that apply one time are treated as happening every time.
+			Disadvantage that applies until a successful hit is treated as applying all the time.
+			These limitations do not apply to the random rolls and may cause some disparity between the effectiveness rating and example rolls.</span>
 		</p>
 	</body>
 </html>

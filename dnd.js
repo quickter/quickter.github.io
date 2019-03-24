@@ -1057,17 +1057,17 @@ var dnd = {
 		"key":"battle",
 		"name":"Battle Master",
 		"features":[
-			{"level":3, "key":"superiority", "name":"Combat Superiority (4d8)", "summary":"Choose combat maneuvers"},
+			{"level":3, "key":"superiority", "name":"Combat Superiority (4d8)", "summary":"Choose 3 combat maneuvers"},
 			{"level":3, "key":"student", "name":"Student of War", "summary":"Gain proficiency with artisan tools"},
 			{"level":7, "key":"enemy", "name":"Know Your Enemy", "summary":"Learn capabilities of adversary"},
 			{"level":7, "key":"superiority", "name":"Superiority Die (5d8)", "summary":"Gain another superiority die"},
 			{"level":7, "key":"maneuvers", "name":"Combat Maneuvers (5)", "summary":"Gain 2 combat maneuvers"},
-			{"level":10, "key":"superiority", "name":"Improved Combat Superiority (5d10)", "summary":"Superiority dice ar d10"},
+			{"level":10, "key":"superiority", "name":"Improved Combat Superiority (5d10)", "summary":"Superiority dice are d10"},
 			{"level":10, "key":"maneuvers", "name":"Combat Maneuvers (7)", "summary":"Gain 2 combat maneuvers"},
 			{"level":15, "key":"relentless", "name":"Relentless", "summary":"Regain superiority die at initiative", "type":"initiative"},
 			{"level":15, "key":"maneuvers", "name":"Combat Maneuvers (9)", "summary":"Gain 2 combat maneuvers"},
 			{"level":15, "key":"superiority", "name":"Superiority Die (6d10)", "summary":"Gain another superiority die"},
-			{"level":18, "key":"superiority", "name":"Improved Combat Superiority (6d12)", "summary":"Superiority dice ar d12"},
+			{"level":18, "key":"superiority", "name":"Improved Combat Superiority (6d12)", "summary":"Superiority dice are d12"},
 		]
 	},{
 		"key":"knight",
