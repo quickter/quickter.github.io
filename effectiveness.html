@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Attack Effectiveness</title>
+		<meta name="author" content="Eric Cole">
+		<meta name="version" content="0.2">
+		<meta name="keywords" content="dnd,5e,dungeons,dragons,attack,effectiveness">
+		<meta name="description" content="Compute Effectiveness of Attacks">
+		<link rel="stylesheet" href="main.css">
+		<style>
+			input.toggle:not(:checked) + label + table.toggled { display:none; }
+			table#attack-examples td:nth-child(2) { white-space:nowrap; }
+			table#attack-examples td:nth-child(3) { font-size:60%; }
+		</style>
+		<script src="dnd.js"></script>
+		
+		<script lang="javascript">
+			var damageTypes = ['all', 'acid', 'bludgeoning', 'cold', 'force', 'fire', 'magic', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder']
+			var damageTypeMap = {
+				'':'all',
+				'a':'acid',
+				'b':'bludgeoning',
+				'bd':'bludgeoning',
+				'c':'cold',
+				'e':'force',
+				'fe':'force',
+				'f':'fire',
+				'fi':'fire',
+				'm':'magic', // magic weapon damage distinct from non magical bludgeoning, piercing, and slashing weapon damage
+				'n':'necrotic',
+				'p':'piercing',
+				'pi':'piercing',
+				'q':'poison',
+				'po':'poison',
+				'r':'radiant',
+				's':'slashing',
+				'sl':'slashing',
+				't':'thunder',
+				'y':'psychic',
+				'py':'psychic'
+			};
+			
+			function factorial(n) {
+				var result = 1.0
+				
+				for ( var i = 2 ; i <= n ; ++i ) { result *= i }
+				
+				return result
+			}
+			
+			function repeat(count, value) {
+				var r = []
+				
+				for ( var i = 0 ; i < count ; ++i ) { r[i] = value }
+				
+				return r
+			}
+			
+			function multiply(a, b) {
+				var p = []
+				var i, j
+				
+				for ( i = 0 ; i < a.length ; ++i ) {
+					for ( j = 0 ; j < b.length ; ++j ) {
+						p[i + j] = a[i] * b[j] + (p[i + j] || 0)
+					}
+				}
+				
+				return p
+			}
+			
+			function power(a, n) {
+				if ( !(n > 1 && a.length > 0) ) { return a }
+				if ( !(a.length > 1) ) { return [Math.pow(a[0], n)] }
+				
+				var b = [1]
+				
+				while ( n > 1 ) {
+					if ( n & 1 ) {
+						b = multiply(b, a)
+					}
+					
+					n = n >> 1
+					a = multiply(a, a)
+				}
+				
+				return b.length > 1 ? multiply(b, a) : a
+			}
+			
+			function binomialcoefficients(n) {
+				var result = [1]
+				if ( !( n > 0 ) ) { return result }
+				
+				var i, d = 1.0, c = n, k = n
+				
+				for ( i = 1 ; i < k ; ++i ) {
+					result.push(c)
+					c = c * --n / ++d
+				}
+				
+				result.push(1)
+				
+				return result
+			}
+			
+			function trinomialcoefficients(n) {
+				if ( !( n > 0 ) ) { return [1] }
+				
+				var result = []
+				var f, i, j, k, c
+				
+				f = 1
+				
+				for ( i = 0 ; i <= n ; ++i ) {
+					c = f
+					f = f * (n-i) / (i+1)
+					
+					for ( j = 0, k = n - i ; j <= n - i ; ++j, --k ) {
+						if ( j ) { c = c * (k+1) / j }
+						
+						result[j + 2 * k] = c + (result[j + 2 * k] | 0)
+					}
+				}
+				
+				return result
+			}
+			
+			function binomialcoefficient(n, k) {
+				/*
+					combinatorial number
+					n choose k -- ways to choose k elements from n elements
+					
+					 n       n!
+					( ) = --------
+					 k    k!(n-k)!
+				*/
+				
+				if ( k > 0 && k < n ) {
+					if ( k > n - k ) { k = n - k } // symmetric
+					
+					var i, d = 1.0, c = n
+					
+					for ( i = 1 ; i < k ; ++i ) {
+						c = c * --n / ++d
+					}
+					
+					return c
+				} else {
+					return ( k < 0 || k > n ) ? 0 : 1
+				}
+			}
+			
+			function diceCombinations(die, roll) {
+				/*
+					diceCombinations can be combined with multiply
+					
+					multiply(diceCombinations(6, 2), diceCombinations(8, 2))
+				*/
+				
+				if ( !(roll > 0 && die > 1) ) { return [1] }
+				if ( !(roll > 1) ) { return repeat(die, 1) }
+				if ( !(die > 2) ) { return binomialcoefficients(roll) }
+				
+				return power(repeat(die, 1), roll)
+			}
+			
+			function advantageAverageForDiceCombinations(c, roll) {
+				//	roll must be the total number of dice combined
+				var average = 0
+				var i, j, p
+				var sum = 0
+				
+				for ( i = 0 ; i < c.length ; ++i ) {
+					sum += c[i]
+					p = c[i]	// both rolls are the same
+					
+					for ( j = 0 ; j < i ; ++j ) {
+						p += 2 * c[j]	//	one roll was less
+					}
+					
+					average += p * c[i] * (i + roll)
+				}
+				
+				return average / (sum * sum)
+			}
+			
+			function advantageAverageForUniformDice(die, roll, disadvantage) {
+				if ( !(die > 1) ) {
+					return 1
+				}
+				
+				var average
+				
+				if ( roll > 1 ) {
+					var c = diceCombinations(die, roll)
+					
+					average = advantageAverageForDiceCombinations(c, roll)
+				} else {
+					//	∑ k(2k-1) / n² == (n+1)(4n-1)/(6n)
+					average = (die + 1)*(4*die - 1)/(6*die)
+				}
+				
+				return disadvantage ? (roll || 1) * (die + 1) - average : average
+			}
+			
+			function parseEffectivenessDamageType(string, result, key) {
+				if ( !result[key] ) { result[key] = new Object() }
+				
+				var once = string.slice(-1) === 'o'
+				var type = string.slice(1, once ? -1 : undefined)
+				var value = once ? 'once' : true
+				var index, letter, name = damageTypeMap[type]
+				
+				if ( name ) {
+					result[key][name] = value
+				} else if ( damageTypes.indexOf(type) < 0 ) {
+					for ( index = 0 ; index < type.length ; ++index ) {
+						letter = type.charAt(index)
+						result[key][damageTypeMap[letter] || letter] = value
+					}
+				} else {
+					result[key][type] = value
+				}
+			}
+			
+			function parseEffectiveness(string) {
+				var result = new Object()
+				
+				result.armorClass = 10
+				result.hit = []
+				result.damage = []
+				result.defense = []
+				result.reduction = []
+				string = string.toLowerCase().replace(/,•/g, " ")
+				
+				var match, index, found, value, roll, once, type, matched, length, item
+				var beginHit = 0
+				var beginDamage = string.indexOf('/', beginHit)
+				var beginAttacks = string.indexOf('#', beginDamage)
+				var beginDefense = string.indexOf('@', beginAttacks < 0 ? beginDamage : beginAttacks)
+				var closeAttacks = beginDefense < 0 ? undefined : beginDefense
+				var closeDamage = beginAttacks < 0 ? closeAttacks : beginAttacks
+				var closeHit = beginDamage < 0 ? closeDamage : beginDamage
+				
+				var stringDefense = beginDefense < 0 ? '10' : string.slice(beginDefense + 1)
+				var stringAttacks = beginAttacks < 0 ? '' : string.slice(beginAttacks + 1, closeAttacks)
+				var stringDamage = beginDamage < 0 ? '' : string.slice(beginDamage + 1, closeDamage)
+				var stringHit = string.slice(beginHit, closeHit)
+				
+				var patternHit = /([-+]\d*d?\d+o?|ao?|d[oh]?|c\d+)/g
+				var matchHit = stringHit.split(patternHit)
+				
+				for ( index = 0 ; index < matchHit.length ; ++index ) {
+					match = matchHit[index]
+					
+					if ( !( index & 1 ) ) {
+						if ( match.trim() ) { break } else { continue }
+					}
+					
+					if ( match === 'a' ) {
+						result.advantageHit = true
+					} else if ( match === 'ao' ) {
+						result.advantageHit = 'once'
+					} else if ( match === 'd' ) {
+						if ( result.hit.length > 0 ) { break }
+						result.disadvantageHit = true
+					} else if ( match === 'do' ) {
+						result.disadvantageHit = 'once'
+					} else if ( match === 'dh' ) {
+						result.disadvantageHit = 'hit'
+					} else if ( match.charAt(0) === 'c' ) {
+						result.criticalRoll = match.slice(1) | 0
+					} else {
+						found = match.indexOf('o')
+						
+						if ( !( found < 0 ) ) {
+							once = true
+							match = match.slice(0, found)
+						}
+						
+						found = match.indexOf('d')
+						
+						if ( found < 0 ) {
+							roll = false
+							value = match | 0
+						} else {
+							roll = match.slice(0, found) | 0
+							value = match.slice(found + 1) | 0
+							if ( !roll ) { roll = match.charAt(0) === '-' ? -1 : 1 }
+						}
+						
+						item = roll ? {'die':value, 'roll':roll} : {'modifier':value}
+						if ( once ) { item.once = true }
+						if ( value ) { result.hit.push(item) }
+					}
+				}
+				
+				var patternDiceModifierText = /([-+]?\d*)(d?)(\d+)([a-z]*)/
+				var patternDamage = /([-+]?\d*d?\d+[a-z]*|[+]c?\d+d?|\br\d+|\bao?)/g
+				var matchDamage = stringDamage.split(patternDamage)
+				
+				for ( index = 0 ; index < matchDamage.length ; ++index ) {
+					match = matchDamage[index]
+					
+					if ( !( index & 1 ) ) {
+						if ( match.trim() ) { break } else { continue }
+					}
+					
+					if ( match === 'a' ) {
+						result.advantageDamage = true
+					} else if ( match === 'ao' ) {
+						result.advantageDamage = 'once'
+					} else if ( match.charAt(0) === 'r' ) {
+						value = match.slice(1) | 0
+						if ( value > 0 ) { result.lowDamageReroll = value }
+					} else if ( match.slice(0, 2) === '+c' ) {
+						found = match.indexOf('d')
+						if ( found < 0 ) {
+							value = match.slice(2) | 0
+							result.criticalDamage = (value | 0) + (result.criticalDamage | 0)
+						} else {
+							value = match.slice(2, found) | 0
+							result.criticalDice = (value | 0) + (result.criticalDice | 0)
+						}
+					} else {
+						matched = match.match(patternDiceModifierText)
+						type = matched[4]
+						once = type.slice(-1) === 'o'
+						
+						if ( matched[2] === 'd' ) {
+							roll = matched[1] | 0
+							value = matched[3] | 0
+							if ( !roll ) { roll = matched[1].charAt(0) === '-' ? -1 : 1 }
+						} else {
+							roll = false
+							value = (matched[1] + matched[3]) | 0
+						}
+						
+						item = roll ? {'die':value, 'roll':roll} : {'modifier':value}
+						
+						if ( once ) {
+							item.once = true
+							type = type.slice(0, -1)
+						}
+						
+						//console.log("parseEffectivenessDamageType " + match + " => " + type + " => " + damageTypeMap[type])
+						
+						if ( type ) {
+							item.type = damageTypeMap[type] || type
+							length = result.damage.length
+							
+							if ( length > 0 && !roll && result.damage[length - 1].roll && !result.damage[length - 1].type ) {
+								result.damage[length - 1].type = item.type
+							}
+						}
+						
+						result.damage.push(item)
+					}
+				}
+				
+				var patternAttacks = /(\d+|cb|b|r)/g
+				var matchAttacks = stringAttacks.split(patternAttacks)
+				
+				for ( index = 0 ; index < matchAttacks.length ; ++index ) {
+					match = matchAttacks[index]
+					
+					if ( !( index & 1 ) ) {
+						if ( match.trim() ) { break } else { continue }
+					}
+					
+					if ( match === 'cb' ) {
+						result.criticalBonusAttack = true
+					} else if ( match === 'b' ) {
+						result.bonusAction = true
+					} else if ( match === 'r' ) {
+						result.reaction = true
+					} else {
+						value = match | 0
+						if ( value > 0 ) { result.attacks = value }
+					}
+				}
+				
+				var patternDefense = /(\d+|[-+]\d*d?\d+[mo]?|v[a-z]*|r[a-z]*|i[a-z]+)/g
+				var matchDefense = stringDefense.split(patternDefense)
+				
+				for ( index = 0 ; index < matchDefense.length ; ++index ) {
+					match = matchDefense[index]
+					
+					if ( !( index & 1 ) ) {
+						if ( match.trim() ) { break } else { continue }
+					}
+					
+					if ( match.charAt(0) === '+' ) {
+						matched = match.match(patternDiceModifierText)
+						
+						if ( matched[2] === 'd' ) {
+							roll = matched[1] | 0
+							value = matched[3] | 0
+							if ( !roll ) { roll = 1 }
+						} else {
+							roll = false
+							value = (matched[1] + matched[3]) | 0
+						}
+						
+						item = roll ? {'die':value, 'roll':roll} : {'modifier':value}
+						
+						if ( matched[4] === 'o' ) { item.once = true }
+						if ( matched[4] === 'm' ) { item.afterFirst = true }
+						
+						result.defense.push(item)
+					} else if ( match.charAt(0) === '-' ) {
+						matched = match.match(patternDiceModifierText)
+						
+						if ( matched[2] === 'd' ) {
+							roll = -matched[1] | 0
+							value = matched[3] | 0
+							if ( !roll ) { roll = 1 }
+						} else {
+							roll = 0
+							value = -(matched[1] + matched[3]) | 0
+						}
+						
+						item = roll ? {'die':value, 'roll':roll} : {'modifier':value}
+						
+						if ( matched[4] === 'o' ) { item.once = true }
+						
+						result.reduction.push(item)
+					} else if ( match.charAt(0) === 'v' ) {
+						parseEffectivenessDamageType(match, result, 'vulnerable')
+					} else if ( match.charAt(0) === 'r' ) {
+						parseEffectivenessDamageType(match, result, 'resistant')
+					} else if ( match.charAt(0) === 'i' ) {
+						parseEffectivenessDamageType(match, result, 'immune')
+					} else {
+						value = match | 0
+						if ( value > 0 ) { result.armorClass = value }
+					}
+				}
+				
+				if ( !result.attacks ) {
+					result.attacks = result.bonusAction || result.reaction ? 0 : 1
+				}
+				
+				return result
+			}
+			
+			function dieRoll(die) {
+				return 1 + Math.floor(Math.random() * die)
+			}
+			
+			function diceRoll(die, roll) {
+				var sum = 0
+				
+				for ( var index = 0 ; index < roll ; ++index ) {
+					sum += dieRoll(die)
+				}
+				
+				return sum
+			}
+			
+			function computeRandomEffectiveness(e) {
+				var effectiveness = 0
+				var asComputeAverage = e.asComputeAverage || false
+				var summary = []
+				var hasHit = false, hasBoosted = false, hasDefended = false
+				var hasBonus = true
+				var hasAdvantage, hasDisadvantage
+				var attack, attacks = Math.max(+e.attacks, 1)
+				var rolled, roll, die, toHit
+				var modifierHit, onceModifierHit
+				var armorClass, onceArmorClass, hit
+				var damageRolled, damageAdvantageRolled, damageModifier
+				var index, item
+				var isCritical
+				var advantageHit = e.advantageHit
+				var disadvantageHit = e.disadvantageHit
+				var advantageDamage = e.advantageDamage
+				var damageDice, dieForCritical
+				var damageScalar, immune, resistant, vulnerable
+				
+				for ( attack = 0 ; attack < attacks ; ++attack ) {
+					modifierHit = 0
+					onceModifierHit = 0
+					
+					for ( index = 0 ; index < e.hit.length ; ++index ) {
+						item = e.hit[index]
+						
+						if ( item.once ) {
+							if ( item.modifier ) { onceModifierHit += item.modifier }
+							if ( item.die ) { onceModifierHit += diceRoll(item.die, item.roll || 1) }
+						} else {
+							if ( item.modifier ) { modifierHit += item.modifier }
+							if ( item.die ) { modifierHit += diceRoll(item.die, item.roll || 1) }
+						}
+					}
+					
+					armorClass = e.armorClass || 10
+					onceArmorClass = 0
+					
+					for ( index = 0 ; index < e.defense.length ; ++index ) {
+						item = e.defense[index]
+						
+						if ( item.once ) {
+							if ( item.modifier ) { onceArmorClass += item.modifier }
+							if ( item.die ) { onceArmorClass += diceRoll(item.die, item.roll || 1) }
+						} else if ( !(item.afterFirst && !hasHit) ) {
+							if ( item.modifier ) { armorClass += item.modifier }
+							if ( item.die ) { armorClass += diceRoll(item.die, item.roll || 1) }
+						}
+					}
+					
+					toHit = dieRoll(20)
+					hasAdvantage = false
+					hasDisadvantage = false
+					
+					if ( disadvantageHit ) {
+						if ( disadvantageHit === 'once' ) { disadvantageHit = 0 }
+						if ( !advantageHit ) { hasDisadvantage = true; toHit = Math.min(dieRoll(20), toHit) }
+					}
+					
+					if ( advantageHit ) {
+						if ( !hasDisadvantage ) { hasAdvantage = true; toHit = Math.max(dieRoll(20), toHit) }
+						if ( advantageHit === 'once' ) { advantageHit = 0 }
+					}
+					
+					if ( asComputeAverage ) {
+						if ( !hasDefended ) {
+							hasDefended = true
+							armorClass += onceArmorClass
+						}
+						
+						if ( !hasBoosted ) {
+							hasBoosted = true
+							modifierHit += onceModifierHit
+						}
+					}
+					
+					if ( toHit < 2 ) {
+						summary.push("missed AC " + armorClass + " with 1")
+						continue
+					}
+					
+					if ( toHit < 20 ) {
+						hit = toHit + modifierHit - armorClass
+						
+						if ( !hasDefended && !(hit < 0) && hit < onceArmorClass ) {
+							hasDefended = true
+							armorClass += onceArmorClass
+							hit -= onceArmorClass
+						}
+						
+						if ( !hasBoosted && hit < 0 && !(hit + onceModifierHit < 0) ) {
+							hasBoosted = true
+							modifierHit += onceModifierHit
+							hit += onceModifierHit
+						}
+						
+						if ( !hasDefended && !(hit < 0) && hit < onceArmorClass ) {
+							hasDefended = true
+							armorClass += onceArmorClass
+							hit -= onceArmorClass
+						}
+					}
+					
+					if ( toHit < 20 && toHit + modifierHit < armorClass ) {
+						summary.push("missed AC " + armorClass + " with " + toHit + (modifierHit > 0 ? "+" + modifierHit : "") + (hasAdvantage ? " (advantage)": "") + (hasDisadvantage ? " (disadvantage)": ""))
+						continue
+					}
+					
+					if ( disadvantageHit === 'hit' ) {
+						disadvantageHit = 0
+					}
+					
+					damageRolled = 0
+					damageAdvantageRolled = 0
+					damageModifier = 0
+					dieForCritical = 0
+					damageDice = []
+					
+					for ( index = 0 ; index < e.damage.length ; ++index ) {
+						item = e.damage[index]
+						
+						damageScalar = 1
+						immune = e.immune && (e.immune['all'] || (item.type && e.immune[item.type]))
+						resistant = e.resistant && (e.resistant['all'] || (item.type && e.resistant[item.type]))
+						vulnerable = e.vulnerable && (e.vulnerable['all'] || (item.type && e.vulnerable[item.type]))
+						
+						if ( immune && !(!asComputeAverage && hasHit && immune === 'once') ) { continue }
+						if ( resistant && !(!asComputeAverage && hasHit && resistant === 'once') ) { damageScalar = 0.5 }
+						if ( vulnerable && !(!asComputeAverage && hasHit && vulnerable === 'once') ) { damageScalar *= 2.0 }
+						
+						if ( !(item.once && hasHit) ) {
+							if ( item.die > 0 ) { damageDice.push({'die':item.die, 'roll':item.roll, 'scalar':damageScalar}) }
+							if ( item.modifier ) { damageModifier += item.modifier * damageScalar }
+							if ( item.die > dieForCritical ) { dieForCritical = item.die }
+						}
+					}
+					
+					for ( index = 0 ; index < e.reduction.length ; ++index ) {
+						item = e.reduction[index]
+						
+						if ( !(item.once && hasHit) ) {
+							if ( item.die ) { damageModifier -= diceRoll(item.die, item.roll || 1) }
+							if ( item.modifier ) { damageModifier -= item.modifier }
+						}
+					}
+					
+					isCritical = !(toHit < (e.criticalRoll || 20))
+					
+					if ( isCritical ) {
+						damageDice = damageDice.concat(damageDice)
+						if ( e.criticalDamage ) { damageModifier += e.criticalDamage }
+						if ( e.criticalDice > 0 && dieForCritical ) { damageDice.push({'die':dieForCritical, 'roll':e.criticalDice, 'scalar':1}) }
+						if ( e.criticalBonusAttack && hasBonus ) { hasBonus = false; attacks += 1 }
+					}
+					
+					for ( index = 0 ; index < damageDice.length ; ++index ) {
+						item = damageDice[index]
+						damageRolled += diceRoll(item.die, item.roll || 1) * (item.scalar || 1)
+						damageAdvantageRolled += diceRoll(item.die, item.roll || 1) * (item.scalar || 1)
+					}
+					
+					hasHit = true
+					
+					if ( advantageDamage ) {
+						damageRolled = Math.max(damageRolled, damageAdvantageRolled)
+						if ( advantageDamage === 'once' ) { advantageDamage = 0 }
+					}
+					
+					summary.push((isCritical ? "critical " : "") + "hit AC " + armorClass + " with " + toHit + (modifierHit > 0 ? "+" + modifierHit : modifierHit || "") + (hasAdvantage ? " (advantage)": "") + (hasDisadvantage ? " (disadvantage)": "") + " doing " + damageRolled + (damageModifier > 0 ? "+" + damageModifier : damageModifier || "") + " HP")
+					
+					effectiveness += Math.floor(damageRolled + damageModifier)
+				}
+				
+				//console.log(summary)
+				
+				return effectiveness
+			}
+			
+			function computeAverageEffectiveness(e) {
+				/*
+				+	attacks - number of attacks per action
+				+	advantageHit - attack has advantage (all, once)
+				h	disadvantageHit - attack has disadvantage (all, once, until hit)
+				+	advantageDamage - reroll damage dice and use higher total (all, once)
+				+	hit - modifiers to chance to hit {die, roll, modifier, once}
+				t	damage - damage rolls and modifiers {die, roll, modifier, once, type}
+				+	armorClass - armor class of defender
+				+	defense - modifiers to armor class {die, roll, modifier, once, afterFirst}
+				+	reduction - damage reduction {die, roll, modifier, once}
+				+	criticalRoll - roll needed for critical
+				+	criticalBonusAttack - option for bonus attack after critical
+				+	criticalDamage - bonus damage on critical
+				+	criticalDice - bonus dice on critical
+				-	vulnerable - damage types that do double damage
+				-	resistant - damage types that do half damage
+				-	immune - damage types that do no damage
+				*/
+				
+				var index, item
+				
+				var attacks = Math.max(+e.attacks, 1)
+				var armorClass = e.armorClass || 10
+				var onceChanceToHit = 0
+				var onceChanceToCritical = 0
+				var manyChanceToHit = 0
+				var manyChanceToCritical = 0
+				var modifierHit = 0
+				var modifierDamage = 0
+				var diceDamage = 0
+				var reduceDamage = 0
+				var onceAttackDamage = 0
+				var manyAttackDamage = 0
+				var dieForCritical = 0
+				var damageForCritical = 0
+				var onceModifierHit = 0
+				var onceDiceDamage = 0
+				var onceModifierDamage = 0
+				var onceArmorClass = 0
+				var manyArmorClass = 0
+				var onceReduceDamage = 0
+				var damageDice = 0
+				var damageScalar = 0
+				var onceDamageDice = 0
+				var damageDiceCombination = [1]
+				var onceDamageDiceCombination = [1]
+				
+				for ( index = 0 ; index < e.hit.length ; ++index ) {
+					item = e.hit[index]
+					
+					if ( item.once ) {
+						if ( item.die ) { onceModifierHit += (item.roll || 1) * (1 + item.die) / 2 }
+						if ( item.modifier ) { onceModifierHit += item.modifier }
+					} else {
+						if ( item.die ) { modifierHit += (item.roll || 1) * (1 + item.die) / 2 }
+						if ( item.modifier ) { modifierHit += item.modifier }
+					}
+				}
+				
+				for ( index = 0 ; index < e.damage.length ; ++index ) {
+					item = e.damage[index]
+					damageScalar = 1
+					
+					if ( e.immune && (e.immune['all'] || item.type && e.immune[item.type]) ) { continue }
+					if ( e.resistant && (e.resistant['all'] || item.type && e.resistant[item.type]) ) { damageScalar = 0.5 }
+					if ( e.vulnerable && (e.vulnerable['all'] || item.type && e.vulnerable[item.type]) ) { damageScalar *= 2.0 }
+					
+					if ( item.once ) {
+						if ( item.die && e.advantageDamage ) { onceDamageDice += (item.roll || 1); onceDamageDiceCombination = multiply(diceCombinations(item.die, item.roll || 1), onceDamageDiceCombination) }
+						if ( item.die ) { onceDiceDamage += damageScalar * (item.roll || 1) * (1 + item.die) / 2 }
+						if ( item.modifier ) { onceModifierDamage += damageScalar * item.modifier }
+					} else {
+						if ( item.die && e.advantageDamage ) { damageDice += (item.roll || 1); damageDiceCombination = multiply(diceCombinations(item.die, item.roll || 1), damageDiceCombination) }
+						if ( item.die ) { diceDamage += damageScalar * (item.roll || 1) * (1 + item.die) / 2 }
+						if ( item.modifier ) { modifierDamage += damageScalar * item.modifier }
+						if ( item.die > dieForCritical ) { dieForCritical = item.die }
+					}
+				}
+				
+				for ( index = 0 ; index < e.defense.length ; ++index ) {
+					item = e.defense[index]
+					
+					if ( item.once ) {
+						if ( item.die ) { onceArmorClass += (item.roll || 1) * (1 + item.die) / 2 }
+						if ( item.modifier ) { onceArmorClass += item.modifier }
+					} else if ( item.afterFirst ) {
+						if ( item.die ) { manyArmorClass += (item.roll || 1) * (1 + item.die) / 2 }
+						if ( item.modifier ) { manyArmorClass += item.modifier }
+					} else {
+						if ( item.die ) { armorClass += (item.roll || 1) * (1 + item.die) / 2 }
+						if ( item.modifier ) { armorClass += item.modifier }
+					}
+				}
+				
+				for ( index = 0 ; index < e.reduction.length ; ++index ) {
+					item = e.reduction[index]
+					
+					if ( item.once ) {
+						if ( item.die ) { onceReduceDamage += (item.roll || 1) * (1 + item.die) / 2 }
+						if ( item.modifier ) { onceReduceDamage += item.modifier }
+					} else {
+						if ( item.die ) { reduceDamage += (item.roll || 1) * (1 + item.die) / 2 }
+						if ( item.modifier ) { reduceDamage += item.modifier }
+					}
+				}
+				
+				onceDiceDamage += diceDamage
+				onceModifierDamage += modifierDamage
+				onceReduceDamage += reduceDamage
+				damageForCritical = diceDamage + (e.criticalDice | 0) * (dieForCritical + 1) / 2
+				
+				if ( e.advantageDamage ) {
+					onceDamageDice += damageDice
+					onceDamageDiceCombination = multiply(onceDamageDiceCombination, damageDiceCombination)
+					onceDiceDamage = advantageAverageForDiceCombinations(onceDamageDiceCombination, onceDamageDice)
+					
+					if ( e.advantageDamage !== 'once' ) {
+						diceDamage = advantageAverageForDiceCombinations(damageDiceCombination, damageDice)
+						
+						if ( e.criticalDice > 0 ) {
+							var combination = multiply(diceCombinations(dieForCritical, e.criticalDice), damageDiceCombination)
+							damageForCritical = advantageAverageForDiceCombinations(combination, damageDice + e.criticalDice)
+						}
+					}
+				}
+				
+				damageForCritical += (e.criticalDamage | 0)
+				
+				// TODO: onceArmorClass should apply to first near hit instead of first hit
+				// TODO: onceModifierHit should apply to first near miss instead of first hit
+				onceChanceToHit = armorClass + onceArmorClass - modifierHit - onceModifierHit
+				manyChanceToHit = armorClass + manyArmorClass - modifierHit
+				onceChanceToCritical = (21 - Math.min(Math.max(e.criticalRoll || 20, onceChanceToHit), 20)) / 20
+				manyChanceToCritical = (21 - Math.min(Math.max(e.criticalRoll || 20, manyChanceToHit), 20)) / 20
+				onceChanceToHit = (21 - Math.min(Math.max(2, onceChanceToHit), 20)) / 20
+				manyChanceToHit = (21 - Math.min(Math.max(2, manyChanceToHit), 20)) / 20
+				
+				if ( e.advantageHit && !e.disadvantageHit ) {
+					onceChanceToHit = 1 - (1 - onceChanceToHit) * (1 - onceChanceToHit)
+					onceChanceToCritical = 1 - (1 - onceChanceToCritical) * (1 - onceChanceToCritical)
+					
+					if ( e.advantageHit !== 'once' ) {
+						manyChanceToHit = 1 - (1 - manyChanceToHit) * (1 - manyChanceToHit)
+						manyChanceToCritical = 1 - (1 - manyChanceToCritical) * (1 - manyChanceToCritical)
+					}
+				}
+				
+				// TODO: disadvantage until first hit : e.disadvantageHit === 'hit'
+				if ( e.disadvantageHit && !e.advantageHit ) {
+					onceChanceToHit = onceChanceToHit * onceChanceToHit
+					onceChanceToCritical = onceChanceToCritical * onceChanceToCritical
+					
+					if ( e.disadvantageHit !== 'once' ) {
+						manyChanceToHit = manyChanceToHit * manyChanceToHit
+						manyChanceToCritical = manyChanceToCritical * manyChanceToCritical
+					}
+				}
+				
+				if ( e.criticalBonusAttack ) {
+					attacks += 1 - (1 - onceChanceToCritical) * (attacks > 1 ? Math.pow(1 - manyChanceToCritical, Math.floor(attacks - 1)) : 1)
+				}
+				
+				if ( !(attacks > 1) ) {
+					if ( onceReduceDamage > onceDiceDamage + onceModifierDamage ) {
+						onceAttackDamage = onceChanceToCritical * (damageForCritical + onceDiceDamage + onceModifierDamage - onceReduceDamage)
+					} else {
+						onceAttackDamage = onceChanceToHit * (onceDiceDamage + onceModifierDamage - onceReduceDamage) + onceChanceToCritical * damageForCritical
+					}
+					
+					return onceAttackDamage
+				}
+				
+				chanceToMiss = (1 - onceChanceToHit) * (attacks > 1 ? Math.pow(1 - manyChanceToHit, Math.floor(attacks - 1)) : 1)
+				manyChanceToHit = onceChanceToHit + (attacks - 1) * manyChanceToHit
+				manyChanceToCritical = onceChanceToCritical + (attacks - 1) * manyChanceToCritical
+				
+				onceAttackDamage = (1 - chanceToMiss) * ((onceDiceDamage + onceModifierDamage - onceReduceDamage) - (diceDamage + modifierDamage - reduceDamage))
+				onceAttackDamage += (onceChanceToCritical - manyChanceToCritical) * damageForCritical
+				
+				if ( reduceDamage > diceDamage + modifierDamage ) {
+					manyAttackDamage = manyChanceToCritical * (damageForCritical + diceDamage + modifierDamage - reduceDamage)
+				} else {
+					manyAttackDamage = manyChanceToHit * (diceDamage + modifierDamage - reduceDamage) + manyChanceToCritical * damageForCritical
+				}
+				
+				return manyAttackDamage + onceAttackDamage
+			}
+			
+			function handleAdvantage(event) {
+				var input = document.getElementById('advantage-input')
+				var output = document.getElementById('advantage-text')
+				if ( !input.value ) { output.innerHTML = ""; return }
+				
+				var matched = input.value.match(/\d*d\d+/g)
+				if ( !(matched && matched.length > 0) ) { return }
+				
+				var rolling = ""
+				var dc = [1]
+				var dice = 0
+				var die, roll
+				var average = 0
+				var maximum = 0
+				
+				for ( match of matched ) {
+					var s = match.split("d")
+					
+					roll = s.length > 1 ? +s[0] : 0
+					die = s.length > 1 ? +s[1] : +s[0]
+					if ( !( die > 1 ) ) { continue }
+					if ( !( roll > 1 ) ) { roll = 1 }
+					
+					dc = multiply(dc, diceCombinations(die, roll))
+					dice += roll
+					maximum += roll * die
+					average += roll * (die + 1) / 2
+					rolling += roll + "d" + die + " "
+				}
+				
+				var advantage = advantageAverageForDiceCombinations(dc, dice)
+				
+				output.innerHTML = dice + "-" + maximum + " average " + average.toFixed(2) +
+					", with advantage " + advantage.toFixed(2) +
+					", with disadvantage " + (average * 2 - advantage).toFixed(2)
+			}
+			
+			function handleChanceToHit(event) {
+				var input = document.getElementById('chance-to-hit-input')
+				var output = document.getElementById('chance-to-hit-text')
+				if ( !input.value ) { output.innerHTML = ""; return }
+				
+				var armorClass = Math.max(+input.value, 0)
+				if ( !armorClass ) { return }
+				
+				var chanceToHit = (21 - Math.min(Math.max(2, armorClass), 20)) / 20
+				var chanceToCritical = (21 - Math.min(Math.max(20, armorClass), 20)) / 20
+				var advantageChanceToHit = 1 - (1 - chanceToHit) * (1 - chanceToHit)
+				var disadvantageChanceToHit = chanceToHit * chanceToHit
+				
+				output.innerHTML = "Chance " + (chanceToHit * 100).toFixed(1) + "%" +
+					", with advantage " + (advantageChanceToHit * 100).toFixed(1) + "%" + " (+" + Math.round((advantageChanceToHit - chanceToHit) * 20) + ")" +
+					", with disadvantage " + (disadvantageChanceToHit * 100).toFixed(1) + "%" + " (-" + Math.round((chanceToHit - disadvantageChanceToHit) * 20) + ")"
+			}
+			
+			function handleEffectiveness(event) {
+				var input = document.getElementById('effectiveness-input')
+				var output = document.getElementById('effectiveness-text')
+				if ( !input.value ) { output.innerHTML = ""; return }
+				
+				var parsed = parseEffectiveness(input.value)
+				if ( !parsed.damage.length ) { return }
+				
+				var effectiveness = computeAverageEffectiveness(parsed)
+				var rolled, index, sum = 0, samples = 10
+				var example = []
+				
+				for ( index = 0 ; index < samples ; ++index ) {
+					rolled = computeRandomEffectiveness(parsed)
+					example.push(rolled)
+					sum += rolled
+				}
+				
+				var montecarlo = samples //1000
+				for ( index = 0 ; index < montecarlo - samples ; ++index ) {
+					rolled = computeRandomEffectiveness(parsed)
+					sum += rolled
+				}
+				
+				output.innerHTML = "Average damage per turn: " + effectiveness.toFixed(2) + " (e.g. " + (sum / montecarlo).toFixed(2) + " with " + example.join(", ") + ")"
+			}
+		</script>
+	</head>
+	<body>
+		<h4>Attack Effectiveness</h4>
+		
+		<input type='text' id='effectiveness-input' name='effectiveness' size='60' placeholder='+5 /d8+3s #2 @ 16' oninput='handleEffectiveness(event)'>
+		<p><span id='effectiveness-text'></span></p>
+		
+		<input id='toggle-attack-examples' type='checkbox' class='toggle'/>
+		<label for='toggle-attack-examples' class='toggle'>Examples</label>
+		<table id='attack-examples' class='toggled'>
+			<tr><td>Default Armor Class</td><td>@10</td><td>Target has AC 10</td></tr>
+			<tr><td>Default Attacks</td><td>#1</td><td>Attack 1 time</td></tr>
+			<tr><td>Proficiency Bonus</td><td>+2</td><td>Hit +2</td></tr>
+			<tr><td>Ability Bonus</td><td>+3/+3</td><td>Hit and Damage +3</td></tr>
+			<tr><td>Half Orc: Savage Attacks</td><td>/ +c1d</td><td>Add 1 die to critical damage</td></tr>
+			<tr><td>Barbarian: Rage Damage</td><td>/ +2</td><td>Damage +2</td></tr>
+			<tr><td>Barbarian: Reckless Attack</td><td>a</td><td>Advantage to hit</td></tr>
+			<tr><td>Barbarian: Brutal Critical</td><td>/ +c1d</td><td>Add 1 die to critical damage</td></tr>
+			<tr><td>Bard: Bardic Inspiration</td><td>+d6o</td><td>Hit +1d6 one time</td></tr>
+			<tr><td>Cleric: Potent Spellcasting</td><td>/ +5</td><td>Damage +5</td></tr>
+			<tr><td>Cleric: Divine Strike</td><td>/ +d8ro</td><td>Damage +d8 radiant</td></tr>
+			<tr><td>Cleric: Avatar of Battle</td><td>@ rbps</td><td>Resist bludgeoning, piercing and slashing damage</td></tr>
+			<tr><td>Fighter: Extra Attack</td><td>#2</td><td>Attack 2 times</td></tr>
+			<tr><td>Champion: Improved Critical</td><td>c19</td><td>Critical damage on 19 or higher</td></tr>
+			<tr><td>Champion: Superior Critical</td><td>c18</td><td>Critical damage on 18 or higher</td></tr>
+			<tr><td>Battle Master: Lunge</td><td>/ +d8</td><td>Damage +d8</td></tr>
+			<tr><td>Battle Master: Precision</td><td>+d8</td><td>Hit +d8</td></tr>
+			<tr><td>Battle Master: Parry</td><td>@ -d8o-3o</td><td>Reduce damage by d8+3 one time</td></tr>
+			<tr><td>Monk: Deflect Missile</td><td>@ -d10o-5o</td><td>Reduce damage by d8+5 one time</td></tr>
+			<tr><td>Monk: Shadow Step</td><td>ao</td><td>Advantage to hit one time</td></tr>
+			<tr><td>Paladin: Improved Divine Smite</td><td>/ +d8r</td><td>Damage +d8 radiant</td></tr>
+			<tr><td>Ranger: Foe Slayer</td><td>+5o</td><td>Hit +5 one time</td></tr>
+			<tr><td>Ranger: Colossus Slayer</td><td>/ +d8o</td><td>Damage +d8 one time</td></tr>
+			<tr><td>Ranger: Multiattack Defense</td><td>@ +4m</td><td>Armor class +4 after first hit</td></tr>
+			<tr><td>Rogue: Sneak Attack</td><td>/ +2d6o</td><td>Damage +2d6 one time</td></tr>
+			<!-- tr><td>Rogue: Uncanny Dodge</td><td>@ ro (partially implemented)</td></tr -->
+			<tr><td>Rogue: Assassinate</td><td>a c1</td><td>Advantage to hit, Critical damage on any roll</td></tr>
+			<tr><td>Warlock: Lifedrinker</td><td>/ +3</td><td>Damage +3</td></tr>
+			<tr><td>Sorcerer: Elemental Affinity</td><td>/ +3</td><td>Damage +3</td></tr>
+			<tr><td>Fighting Style: Archery</td><td>+2</td><td>Hit +2</td></tr>
+			<tr><td>Fighting Style: Defense</td><td>@ +1</td><td>Armor Class +1</td></tr>
+			<tr><td>Fighting Style: Dueling</td><td>/ +2</td><td>Damage +2</td></tr>
+			<!-- tr><td>Fighting Style: Great Weapon Fighting</td><td>/ r2 (not implemented)</td></tr -->
+			<tr><td>Feat: Charger</td><td>/ +5</td><td>Damage +5</td></tr>
+			<tr><td>Feat: Dual Wielder</td><td>@ +1</td><td>Armor Class +1</td></tr>
+			<tr><td>Feat: Great Weapon Master</td><td>-5/+10#cb</td><td>Hit -5, damage +10, bonus attack after critical hit</td></tr>
+			<tr><td>Feat: Heavy Armor Master</td><td>@ -3</td><td>Target reduces damage by 3</td></tr>
+			<tr><td>Feat: Savage Attacker</td><td>/ ao</td><td>Advantage on damage one time</td></tr>
+			<tr><td>Feat: Sharpshooter</td><td>-5/+10</td><td>Hit -5, damage +10</td></tr>
+			<tr><td>Bane</td><td>-d4</td><td>Hit -d4</td></tr>
+			<tr><td>Bless</td><td>+d4</td><td>Hit +d4</td></tr>
+			<tr><td>Foresight</td><td>a</td><td>Advantage on hit</td></tr>
+			<tr><td>Haste</td><td>#2 @ +2</td><td>Attack one more time, Armor class +2</td></tr>
+			<tr><td>Hex</td><td>/ +d6n</td><td>Damage +d6 necrotic</td></tr>
+			<tr><td>Invisibility</td><td>ao</td><td>Advantage on hit one time</td></tr>
+			<tr><td>Stoneskin</td><td>@ rbps</td><td>Resist bludgeoning, piercing and slashing damage</td></tr>
+			<tr><td>Bracers of Archery</td><td>/ +2</td><td>Damage +2</td></tr>
+			<tr><td>Bracers of Defense</td><td>@ +2</td><td>Armor Class +2</td></tr>
+			<tr><td>Cloak of Displacement</td><td>dh</td><td>Disadvantage on hit until hit</td></tr>
+			<tr><td>Dwarven Thrower</td><td>+3/d8+d8+3</td><td>Hit +3, damage 2d8+3</td></tr>
+			<tr><td>Magic Weapon</td><td>+3/+3</td><td>Hit and damage +3</td></tr>
+			<tr><td>Sword of Sharpness</td><td>+1/+1+c14</td><td>Hit and damage +1, critical damage +14</td></tr>
+			<tr><td>Fighter 1: Longsword</td><td>+2+3/d8+3#1@12</td><td>Hit +5, damage d8+3, 1 attack, target AC 12</td></tr>
+			<tr><td>Warlock 20: Wand +3, Hex</td><td>+6+5+3/d10+5e+d6n#4</td><td>Hit +14, damage d10+d6+5, 4 attacks</td></tr>
+			<tr><td>Champion 20: Greatsword +3</td><td>c18+6+5+3-5/2d6+3m+5+10#4cb</td><td>Hit +9, critical on 18, damage 2d6+18, 4 attacks, bonus attack on critical</td></tr>
+			<tr><td>Fighter 20: Longbow +3, Bracers</td><td>+6+5+3+2-5+d8o/d8+3m+5+2+10#4</td><td>Hit +11, +d8 one time, damage d8 + 20, 4 attacks</td></tr>
+			<tr><td>Barbarian 20: Greataxe +3</td><td>+6+7+3-5/d12+3m+7+10+4+c4d#2cb</td><td>Hit +11, damage d12+24, critical +4 dice, 2 attacks, bonus attack on critical</td></tr>
+			<tr><td colspan=3/></td></tr>
+		</table>
+		
+		<p>
+			<hr/>
+			Chance to hit AC: <input type='number' id='chance-to-hit-input' name='advantage' size='40' placeholder='16' oninput='handleChanceToHit(event)'><br/>
+			<span id='chance-to-hit-text'> </span>
+		</p>
+		<p>
+			<hr/>
+			Average of die roll: <input type='text' id='advantage-input' name='advantage' size='40' placeholder='4d6' oninput='handleAdvantage(event)'><br/>
+			<span id='advantage-text'> </span>
+		</p>
+	</body>
+</html>
