@@ -1185,7 +1185,7 @@
 				defensiveAdjustment = Math.floor((ac - table[indexHP].ac) / 2)
 				indexCR = Math.round((indexHP + defensiveAdjustment + indexDPR + offensiveAdjustment) / 2)
 				
-				return table[indexCR].cr ?? "30"
+				return table[indexCR].cr || "30"
 			}
 			
 			// MARK: History
