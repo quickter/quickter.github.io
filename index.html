@@ -142,6 +142,30 @@
 				return result
 			}
 			
+			function _binarySearch(array, value, compare) {
+				var m = 0, n = (array && array.length) - 1, o = -1
+				
+				if ( 'function' === typeof compare ) {
+					while ( m <= n ) {
+						o = (m + n) >> 1
+						if ( compare(value, array[o]) > 0 ) { m = o + 1 }
+						else { n = o - 1 }
+					}
+					
+					if ( o < 0 || compare(value, array[m > o ? m : o]) < 0 ) { m = -1 - m }
+				} else {
+					while ( m <= n ) {
+						o = (m + n) >> 1
+						if ( value > array[o] ) { m = o + 1 }
+						else { n = o - 1 }
+					}
+					
+					if ( o < 0 || value < array[m > o ? m : o] ) { m = -1 - m }
+				}
+				
+				return m
+			}
+			
 			// MARK: Character
 			
 			function Character(character, compute) {
@@ -242,6 +266,11 @@
 				this.computeCantrips()
 				this.attacks = _flatten(this.weapons, this.cantrips).sort((a, b) => b.effectiveness - a.effectiveness)
 				this.equipmentNames = _flatten(equipmentNames(equipment), background.equipment || [])
+				
+				var best = this.attacks[0]
+				var cr = challengeRating(this.hitpoints, this.armorclass, best.average * best.attacks, +best.hit, this.difficultyClass)
+				
+				this.challengeRating = cr
 			}
 			
 			Character.prototype.computeFeatures = function Character_computeFeatures() {
@@ -631,6 +660,7 @@
 					'attributes':attributes.join(" "),
 					'hit':hit < 0 ? hit : ("+" + hit),
 					'damage':damage + (modifier > 0 ? "+" + modifier : modifier || ""),
+					'attacks':attacks,
 					'average':Math.round(average + modifier),
 					'effectiveness':effectiveness,
 					'rate':Math.max(effectiveness, 0).toFixed(1),
@@ -880,6 +910,8 @@
 						'type':cantrip.type,
 						'attributes':attributes.join(" "),
 						'hit':!cantrip.save ? (hit < 0 ? hit : ( "+" + hit )) : "",
+						'average':average + damageModifier,
+						'attacks':attacks,
 						'damage':damage,
 						'rate':Math.max(effectiveness, 0).toFixed(1),
 						'effectiveness':effectiveness,
@@ -1133,6 +1165,27 @@
 			
 			function abilitiesRoll(diceToRoll) {
 				return dnd.abilities.map((a) => abilityRoll(diceToRoll))
+			}
+			
+			function challengeRating(hp, ac, damage, bonusToHit, dc) {
+				var table = dnd.challenge_rating_table
+				var indexHP = _binarySearch(table, hp, (v, e) => v-e.hp)
+				var indexDPR = _binarySearch(table, damage, (v, e) => v-e.dpr)
+				var indexCR, defensiveAdjustment, offensiveAdjustment
+				
+				if ( indexHP < 0 ) { indexHP = -1 - indexHP }
+				if ( indexDPR < 0 ) { indexDPR = -1 - indexDPR }
+				
+				if ( dc - 8 > bonusToHit ) {
+					offensiveAdjustment = Math.floor((dc - table[indexHP].dc) / 2)
+				} else {
+					offensiveAdjustment = Math.floor((bonusToHit - table[indexHP].hit) / 2)
+				}
+				
+				defensiveAdjustment = Math.floor((ac - table[indexHP].ac) / 2)
+				indexCR = Math.round((indexHP + defensiveAdjustment + indexDPR + offensiveAdjustment) / 2)
+				
+				return table[indexCR].cr ?? "30"
 			}
 			
 			// MARK: History

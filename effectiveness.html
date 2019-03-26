@@ -153,6 +153,20 @@
 				}
 			}
 			
+			function dieRoll(die) {
+				return 1 + Math.floor(Math.random() * die)
+			}
+			
+			function diceRoll(die, roll) {
+				var sum = 0
+				
+				for ( var index = 0 ; index < roll ; ++index ) {
+					sum += dieRoll(die)
+				}
+				
+				return sum
+			}
+			
 			function diceCombinations(die, roll) {
 				/*
 					diceCombinations can be combined with multiply
@@ -436,7 +450,7 @@
 						parseEffectivenessDamageType(match, result, 'immune')
 					} else {
 						value = match | 0
-						if ( value > 0 ) { result.armorClass = value }
+						if ( value >= 0 ) { result.armorClass = value }
 					}
 				}
 				
@@ -445,20 +459,6 @@
 				}
 				
 				return result
-			}
-			
-			function dieRoll(die) {
-				return 1 + Math.floor(Math.random() * die)
-			}
-			
-			function diceRoll(die, roll) {
-				var sum = 0
-				
-				for ( var index = 0 ; index < roll ; ++index ) {
-					sum += dieRoll(die)
-				}
-				
-				return sum
 			}
 			
 			function computeRandomEffectiveness(e) {
@@ -526,18 +526,6 @@
 						if ( advantageHit === 'once' ) { advantageHit = 0 }
 					}
 					
-					if ( asComputeAverage ) {
-						if ( !hasDefended ) {
-							hasDefended = true
-							armorClass += onceArmorClass
-						}
-						
-						if ( !hasBoosted ) {
-							hasBoosted = true
-							modifierHit += onceModifierHit
-						}
-					}
-					
 					if ( toHit < 2 ) {
 						summary.push("missed AC " + armorClass + " with 1")
 						continue
@@ -588,9 +576,9 @@
 						resistant = e.resistant && (e.resistant['all'] || (item.type && e.resistant[item.type]))
 						vulnerable = e.vulnerable && (e.vulnerable['all'] || (item.type && e.vulnerable[item.type]))
 						
-						if ( immune && !(!asComputeAverage && hasHit && immune === 'once') ) { continue }
-						if ( resistant && !(!asComputeAverage && hasHit && resistant === 'once') ) { damageScalar = 0.5 }
-						if ( vulnerable && !(!asComputeAverage && hasHit && vulnerable === 'once') ) { damageScalar *= 2.0 }
+						if ( immune && !(hasHit && immune === 'once') ) { continue }
+						if ( resistant && !(hasHit && resistant === 'once') ) { damageScalar = 0.5 }
+						if ( vulnerable && !(hasHit && vulnerable === 'once') ) { damageScalar *= 2.0 }
 						
 						if ( !(item.once && hasHit) ) {
 							if ( item.die > 0 ) { damageDice.push({'die':item.die, 'roll':item.roll, 'scalar':damageScalar}) }
@@ -640,6 +628,271 @@
 				return effectiveness
 			}
 			
+			function chanceToHitProduct(a, b) {
+				var r = []
+				
+				//	1=miss, 3=near, 5=hit, 7=critical
+				//	i*j%9?i*j:i*j/3 converts second near miss to true miss
+				a.forEach((e, i) => b.forEach((f, j) => r[i*j%49?i*j:i*j/7] = e*f + (r[i*j%49?i*j:i*j/7] || 0)))
+				
+				return r
+			}
+			
+			function chanceToHitResolveNearMisses(p) {
+				var r = []
+				
+				/*
+					AC 16
+					TH +5
+					OH +3
+					DR +4
+					
+					mmmmm mmbbb dhhhh hhhhc
+					
+					AC 16
+					TH +5
+					OH +3
+					DR +2
+					
+					mmmmm mmbbn hhhhh hhhhc
+					
+					m - miss
+					b - miss, consumes n, b, d
+					d - miss, consumes b, d
+					n - hit, consumes n
+					
+				*/
+				
+				//	1=miss, 3=near, 5=hit, 7=critical, 11=block, 13=defend
+				//	i%3?i:i*5/3 converts single near miss to hit
+				p.forEach((e, i) => r[i%7?i:i*3/7] = e + (r[i%7?i:i*3/7] || 0))
+				
+				return r
+			}
+			
+			function chanceToHitNormalize(p) {
+				var n = 0
+				
+				p.forEach(e => n += e)
+				
+				return p.map(e => e / n)
+			}
+			
+			function compuateMeanEffectiveness(e) {
+				var advantageDamage = e.advantageDamage
+				var onceDiceDamage = 0, manyDiceDamage = 0
+				var onceModifyDamage = 0, manyModifyDamage = 0
+				var onceReduceDamage = 0, manyReduceDamage = 0
+				var onceDice = 0, manyDice = 0
+				var onceDiceCombination = [1], manyDiceCombination = [1]
+				var onceDamage = 0, manyDamage = 0
+				var onceCritical = 0, manyCritical = 0
+				var onceDieCritical = 0, manyDieCritical = 0
+				var index, item, roll, value, damageScalar
+				var immune, resistant, vulnerable
+				var immuneAll = e.immune && e.immune['all']
+				var resistantAll = e.resistant && e.resistant['all']
+				var vulnerableAll = e.vulnerable && e.vulnerable['all']
+				
+				for ( index = 0 ; index < e.damage.length ; ++index ) {
+					item = e.damage[index]
+					roll = item.roll || 1
+					damageScalar = 1
+					
+					immune = item.type && e.immune && e.immune[item.type]
+					resistant = item.type && e.resistant && e.resistant[item.type]
+					vulnerable = item.type && e.vulnerable && e.vulnerable[item.type]
+					
+					if ( (immuneAll && (item.once || immuneAll !== 'once')) || (immune && (item.once || immune !== 'once')) ) { continue }
+					if ( (resistantAll && (item.once || resistantAll !== 'once')) || (resistant && (item.once || resistant !== 'once')) ) { damageScalar = 0.5 }
+					if ( (vulnerableAll && (item.once || vulnerableAll !== 'once')) || (vulnerable && (item.once || vulnerable !== 'once')) ) { damageScalar *= 2.0 }
+					//	advantage damage with resistance is approximated by scaling the damage dice
+					
+					if ( item.once ) {
+						if ( item.die && advantageDamage ) {
+							onceDice += roll
+							onceDiceCombination = multiply(diceCombinations(item.die * damageScalar, roll), onceDiceCombination)
+						}
+						
+						if ( item.die ) { onceDiceDamage += damageScalar * roll * (1 + item.die) / 2 }
+						if ( item.modifier ) { onceModifyDamage += damageScalar * item.modifier }
+						if ( item.die > onceDieCritical ) { onceDieCritical = item.die }
+					} else {
+						if ( item.die && advantageDamage ) {
+							manyDice += roll
+							manyDiceCombination = multiply(diceCombinations(item.die * damageScalar, roll), manyDiceCombination)
+						}
+						
+						if ( item.die ) { manyDiceDamage += damageScalar * roll * (1 + item.die) / 2 }
+						if ( item.modifier ) { manyModifyDamage += damageScalar * item.modifier }
+						if ( item.die > manyDieCritical ) { manyDieCritical = item.die }
+					}
+				}
+				
+				for ( index = 0 ; index < e.reduction.length ; ++index ) {
+					item = e.reduction[index]
+					roll = item.roll || 1
+					
+					if ( item.once ) {
+						if ( item.die ) { onceReduceDamage += roll * (1 + item.die) / 2 }
+						if ( item.modifier ) { onceReduceDamage += item.modifier }
+					} else {
+						if ( item.die ) { manyReduceDamage += roll * (1 + item.die) / 2 }
+						if ( item.modifier ) { manyReduceDamage += item.modifier }
+					}
+				}
+				
+				onceDiceDamage += manyDiceDamage
+				onceModifyDamage += manyModifyDamage
+				onceReduceDamage += manyReduceDamage
+				
+				manyCritical = manyDiceDamage * 2
+				onceCritical = onceDiceDamage * 2
+				if ( onceDieCritical < manyDieCritical ) { onceDieCritical = manyDieCritical }
+				
+				if ( advantageDamage ) {
+					onceDice += manyDice
+					onceDiceCombination = multiply(onceDiceCombination, manyDiceCombination)
+					onceDiceDamage = advantageAverageForDiceCombinations(onceDiceCombination, onceDice)
+					
+					onceDiceCombination = multiply(onceDiceCombination, onceDiceCombination)
+					if ( e.criticalDice > 0 ) { onceDiceCombination = multiply(onceDiceCombination, diceCombinations(onceDieCritical, e.criticalDice)) }
+					onceCritical = advantageAverageForDiceCombinations(onceDiceCombination, onceDice + e.criticalDice)
+					
+					if ( advantageDamage !== 'once' ) {
+						manyDiceDamage = advantageAverageForDiceCombinations(manyDiceCombination, manyDice)
+						
+						manyDiceCombination = multiply(manyDiceCombination, manyDiceCombination)
+						if ( e.criticalDice > 0 ) { manyDiceCombination = multiply(manyDiceCombination, diceCombinations(manyDieCritical, e.criticalDice)) }
+						manyCritical = advantageAverageForDiceCombinations(manyDiceCombination, manyDice + e.criticalDice)
+					}
+				}
+				
+				manyDamage = manyDiceDamage + manyModifyDamage - manyReduceDamage
+				onceDamage = onceDiceDamage + onceModifyDamage - onceReduceDamage
+				manyCritical += manyModifyDamage - manyReduceDamage
+				onceCritical += onceModifyDamage - onceReduceDamage
+				manyCritical += (e.criticalDamage | 0) + (e.criticalDice | 0) * (manyDieCritical + 1) / 2
+				onceCritical += (e.criticalDamage | 0) + (e.criticalDice | 0) * (onceDieCritical + 1) / 2
+				
+				if ( manyDamage < 0 ) { manyDamage = 0 }
+				if ( onceDamage < 0 ) { onceDamage = 0 }
+				if ( manyCritical < 0 ) { manyCritical = 0 }
+				if ( onceCritical < 0 ) { onceCritical = 0 }
+				
+				var attacks = Math.max(+e.attacks, 1)
+				var armorClass = e.armorClass || 10
+				var onceArmorClass = 0, manyArmorClass = 0
+				var onceModifierHit = 0, manyModifierHit = 0
+				var onceChanceToHit, manyChanceToHit, chanceToHit
+				var toHit, toCritical, toNearlyMiss, toMiss
+				var h, c, hi, ci, p
+				
+				if ( e.armorClass === 0 ) { return onceDamage + (attacks - 1) * manyDamage }
+				if ( e.armorClass === 99 ) { return onceCritical + (attacks - 1) * manyCritical }
+				
+				for ( index = 0 ; index < e.hit.length ; ++index ) {
+					item = e.hit[index]
+					roll = item.roll || 1
+					
+					if ( item.once ) {
+						if ( item.die ) { onceModifierHit += roll * (1 + item.die) / 2 }
+						if ( item.modifier ) { onceModifierHit += item.modifier }
+					} else {
+						if ( item.die ) { manyModifierHit += roll * (1 + item.die) / 2 }
+						if ( item.modifier ) { manyModifierHit += item.modifier }
+					}
+				}
+				
+				for ( index = 0 ; index < e.defense.length ; ++index ) {
+					item = e.defense[index]
+					roll = item.roll || 1
+					
+					if ( item.once ) {
+						if ( item.die ) { onceArmorClass += roll * (1 + item.die) / 2 }
+						if ( item.modifier ) { onceArmorClass += item.modifier }
+					} else if ( item.afterFirst ) {
+						if ( item.die ) { manyArmorClass += roll * (1 + item.die) / 2 }
+						if ( item.modifier ) { manyArmorClass += item.modifier }
+					} else {
+						if ( item.die ) { armorClass += roll * (1 + item.die) / 2 }
+						if ( item.modifier ) { armorClass += item.modifier }
+					}
+				}
+				
+				toLimit = 20
+				toHit = Math.min(Math.max(2, armorClass + onceArmorClass - manyModifierHit - (onceModifierHit < 0 ? onceModifierHit : 0)), 20) - 1
+				toCritical = Math.min(Math.max(toHit + 1, e.criticalRoll || 20), 20) - 1
+				toNearlyMiss = onceModifierHit < 0 ? toHit : Math.min(Math.max(1, toHit - onceModifierHit), 19)
+				
+				if ( e.advantageHit && !e.disadvantageHit ) {
+					toLimit = 400
+					toHit = toHit * toHit
+					toCritical = toCritical * toCritical
+					toNearlyMiss = toNearlyMiss * toNearlyMiss
+				}
+				
+				if ( e.disadvantageHit && !e.advantageHit ) {
+					toLimit = 400
+					toHit = 400 - (20 - toHit) * (20 - toHit)
+					toCritical = 400 - (20 - toCritical) * (20 - toCritical)
+					toNearlyMiss = 400 - (20 - toNearlyMiss) * (20 - toNearlyMiss)
+				}
+				
+				//	TODO: onceArmorClass should apply strategically instead of always with the first attack
+				onceChanceToHit = [,toNearlyMiss,,toCritical - toHit,,toLimit - toCritical,,toHit - toNearlyMiss]
+				
+				toLimit = 20
+				toHit = Math.min(Math.max(2, armorClass + manyArmorClass - manyModifierHit), 20) - 1
+				toCritical = Math.min(Math.max(toHit + 1, e.criticalRoll || 20), 20) - 1
+				toNearlyMiss = toHit // onceModifierHit < 0 ? toHit : Math.min(Math.max(1, toHit - onceModifierHit), 19)
+				
+				if ( (e.advantageHit && e.advantageHit !== 'once') && !(e.disadvantageHit && e.disadvantageHit !== 'once') ) {
+					toLimit = 400
+					toHit = toHit * toHit
+					toCritical = toCritical * toCritical
+					toNearlyMiss = toNearlyMiss * toNearlyMiss
+				}
+				
+				//	TODO: disadvantage until hit
+				if ( (e.disadvantageHit && e.disadvantageHit !== 'once') && !(e.advantageHit && e.advantageHit !== 'once') ) {
+					toLimit = 400
+					toHit = 400 - (20 - toHit) * (20 - toHit)
+					toCritical = 400 - (20 - toCritical) * (20 - toCritical)
+					toNearlyMiss = 400 - (20 - toNearlyMiss) * (20 - toNearlyMiss)
+				}
+				
+				manyChanceToHit = [,toNearlyMiss,,toCritical - toHit,,toLimit - toCritical,,toHit - toNearlyMiss]
+				
+				chanceToHit = onceChanceToHit
+				
+				for ( index = 1 ; index < attacks ; ++index ) {
+					chanceToHit = chanceToHitProduct(chanceToHit, manyChanceToHit)
+				}
+				
+				chanceToHit = chanceToHitResolveNearMisses(chanceToHit)
+				chanceToHit = chanceToHitNormalize(chanceToHit)
+				chanceToCritical = 0
+				damage = 0
+				
+				for ( h = 0, hi = 1 ; h <= attacks ; ++h, hi *= 3 ) {
+					for ( c = 0, ci = 1 ; h + c <= attacks ; ++c, ci *= 5 ) {
+						var p = chanceToHit[hi * ci] || 0
+						
+						if ( h > 0 ) { damage += p * h * ((onceDamage - manyDamage) / (h + c) + manyDamage) }
+						if ( c > 0 ) { damage += p * c * ((onceCritical - manyCritical) / (h + c) + manyCritical) }
+						if ( c > 0 ) { chanceToCritical += p }
+					}
+				}
+				
+				if ( e.criticalBonusAttack ) {
+					damage += chanceToCritical * manyChanceToHit[5] * manyDamage / toLimit
+					damage += chanceToCritical * manyChanceToHit[7] * manyCritical / toLimit
+				}
+				
+				return damage
+			}
+			
 			function computeAverageEffectiveness(e) {
 				/*
 				+	attacks - number of attacks per action
@@ -647,7 +900,7 @@
 				h	disadvantageHit - attack has disadvantage (all, once, until hit)
 				+	advantageDamage - reroll damage dice and use higher total (all, once)
 				+	hit - modifiers to chance to hit {die, roll, modifier, once}
-				t	damage - damage rolls and modifiers {die, roll, modifier, once, type}
+				+	damage - damage rolls and modifiers {die, roll, modifier, once, type}
 				+	armorClass - armor class of defender
 				+	defense - modifiers to armor class {die, roll, modifier, once, afterFirst}
 				+	reduction - damage reduction {die, roll, modifier, once}
@@ -655,9 +908,9 @@
 				+	criticalBonusAttack - option for bonus attack after critical
 				+	criticalDamage - bonus damage on critical
 				+	criticalDice - bonus dice on critical
-				-	vulnerable - damage types that do double damage
-				-	resistant - damage types that do half damage
-				-	immune - damage types that do no damage
+				o	vulnerable - damage types that do double damage
+				o	resistant - damage types that do half damage
+				o	immune - damage types that do no damage
 				*/
 				
 				var index, item
@@ -829,6 +1082,29 @@
 				return manyAttackDamage + onceAttackDamage
 			}
 			
+			function experiment() {
+			}
+			
+			function handleChanceToHit(event) {
+				var input = document.getElementById('chance-to-hit-input')
+				var output = document.getElementById('chance-to-hit-text')
+				if ( !input.value ) { output.innerHTML = ""; return }
+				
+				experiment()
+				
+				var armorClass = Math.max(+input.value, 0)
+				if ( !armorClass ) { return }
+				
+				var chanceToHit = (21 - Math.min(Math.max(2, armorClass), 20)) / 20
+				var chanceToCritical = (21 - Math.min(Math.max(20, armorClass), 20)) / 20
+				var advantageChanceToHit = 1 - (1 - chanceToHit) * (1 - chanceToHit)
+				var disadvantageChanceToHit = chanceToHit * chanceToHit
+				
+				output.innerHTML = "Chance " + (chanceToHit * 100).toFixed(1) + "%" +
+					", with advantage " + (advantageChanceToHit * 100).toFixed(1) + "%" + " (+" + Math.round((advantageChanceToHit - chanceToHit) * 20) + ")" +
+					", with disadvantage " + (disadvantageChanceToHit * 100).toFixed(1) + "%" + " (-" + Math.round((chanceToHit - disadvantageChanceToHit) * 20) + ")"
+			}
+			
 			function handleAdvantage(event) {
 				var input = document.getElementById('advantage-input')
 				var output = document.getElementById('advantage-text')
@@ -866,24 +1142,6 @@
 					", with disadvantage " + (average * 2 - advantage).toFixed(2)
 			}
 			
-			function handleChanceToHit(event) {
-				var input = document.getElementById('chance-to-hit-input')
-				var output = document.getElementById('chance-to-hit-text')
-				if ( !input.value ) { output.innerHTML = ""; return }
-				
-				var armorClass = Math.max(+input.value, 0)
-				if ( !armorClass ) { return }
-				
-				var chanceToHit = (21 - Math.min(Math.max(2, armorClass), 20)) / 20
-				var chanceToCritical = (21 - Math.min(Math.max(20, armorClass), 20)) / 20
-				var advantageChanceToHit = 1 - (1 - chanceToHit) * (1 - chanceToHit)
-				var disadvantageChanceToHit = chanceToHit * chanceToHit
-				
-				output.innerHTML = "Chance " + (chanceToHit * 100).toFixed(1) + "%" +
-					", with advantage " + (advantageChanceToHit * 100).toFixed(1) + "%" + " (+" + Math.round((advantageChanceToHit - chanceToHit) * 20) + ")" +
-					", with disadvantage " + (disadvantageChanceToHit * 100).toFixed(1) + "%" + " (-" + Math.round((chanceToHit - disadvantageChanceToHit) * 20) + ")"
-			}
-			
 			function handleEffectiveness(event) {
 				var input = document.getElementById('effectiveness-input')
 				var output = document.getElementById('effectiveness-text')
@@ -892,6 +1150,7 @@
 				var parsed = parseEffectiveness(input.value)
 				if ( !parsed.damage.length ) { return }
 				
+				var mean = compuateMeanEffectiveness(parsed)
 				var effectiveness = computeAverageEffectiveness(parsed)
 				var rolled, index, sum = 0, samples = 10
 				var example = []
@@ -902,13 +1161,13 @@
 					sum += rolled
 				}
 				
-				var montecarlo = samples //1000
+				var montecarlo = Math.max(samples, 10)
 				for ( index = 0 ; index < montecarlo - samples ; ++index ) {
 					rolled = computeRandomEffectiveness(parsed)
 					sum += rolled
 				}
 				
-				output.innerHTML = "Average damage per turn: " + effectiveness.toFixed(2) + " (e.g. " + (sum / montecarlo).toFixed(2) + " with " + example.join(", ") + ")"
+				output.innerHTML = "Average damage per turn: " + effectiveness.toFixed(2) + " | " + mean.toFixed(2) + " (e.g. " + (sum / montecarlo).toFixed(2) + " with " + example.join(", ") + ")"
 			}
 		</script>
 	</head>
