@@ -267,10 +267,12 @@
 				this.attacks = _flatten(this.weapons, this.cantrips).sort((a, b) => b.effectiveness - a.effectiveness)
 				this.equipmentNames = _flatten(equipmentNames(equipment), background.equipment || [])
 				
-				var best = this.attacks[0]
-				var cr = challengeRating(this.hitpoints, this.armorclass, best.average * best.attacks, +best.hit, this.difficultyClass)
-				
-				this.challengeRating = cr
+				if ( this.attacks.length > 0 ) {
+					var best = this.attacks[0]
+					var cr = challengeRating(this.hitpoints, this.armorclass, best.average * best.attacks, +best.hit, this.difficultyClass)
+					
+					this.challengeRating = cr
+				}
 			}
 			
 			Character.prototype.computeFeatures = function Character_computeFeatures() {
