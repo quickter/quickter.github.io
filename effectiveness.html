@@ -689,26 +689,25 @@
 				var onceCritical = 0, manyCritical = 0
 				var onceDieCritical = 0, manyDieCritical = 0
 				var index, item, roll, value, damageScalar
-				var immune, resistant, vulnerable
-				var immuneAll = e.immune && e.immune['all']
-				var resistantAll = e.resistant && e.resistant['all']
-				var vulnerableAll = e.vulnerable && e.vulnerable['all']
+				var immune, resistant, vulnerable, itemDamage
+				var immuneAll = (e.immune && e.immune['all']) || false
+				var resistantAll = (e.resistant && e.resistant['all']) || false
+				var vulnerableAll = (e.vulnerable && e.vulnerable['all']) || false
 				
 				for ( index = 0 ; index < e.damage.length ; ++index ) {
 					item = e.damage[index]
 					roll = item.roll || 1
 					damageScalar = 1
 					
-					immune = item.type && e.immune && e.immune[item.type]
-					resistant = item.type && e.resistant && e.resistant[item.type]
-					vulnerable = item.type && e.vulnerable && e.vulnerable[item.type]
-					
-					if ( (immuneAll && (item.once || immuneAll !== 'once')) || (immune && (item.once || immune !== 'once')) ) { continue }
-					if ( (resistantAll && (item.once || resistantAll !== 'once')) || (resistant && (item.once || resistant !== 'once')) ) { damageScalar = 0.5 }
-					if ( (vulnerableAll && (item.once || vulnerableAll !== 'once')) || (vulnerable && (item.once || vulnerable !== 'once')) ) { damageScalar *= 2.0 }
-					//	advantage damage with resistance is approximated by scaling the damage dice
+					immune = (item.type && e.immune && e.immune[item.type]) || false
+					resistant = (item.type && e.resistant && e.resistant[item.type]) || false
+					vulnerable = (item.type && e.vulnerable && e.vulnerable[item.type]) || false
 					
 					if ( item.once ) {
+						if ( immune || immuneAll ) { continue }
+						if ( resistant || resistantAll ) { damageScalar = 0.5 }
+						if ( vulnerable || vulnerableAll ) { damageScalar *= 2.0 }
+						
 						if ( item.die && advantageDamage ) {
 							onceDice += roll
 							onceDiceCombination = multiply(diceCombinations(item.die * damageScalar, roll), onceDiceCombination)
@@ -718,6 +717,17 @@
 						if ( item.modifier ) { onceModifyDamage += damageScalar * item.modifier }
 						if ( item.die > onceDieCritical ) { onceDieCritical = item.die }
 					} else {
+						var itemDamage = roll * (item.die || 0) / 2 + (item.modifier || 0)
+						
+						if ( immune === 'once' || (!immune && immuneAll === 'once') ) { onceReduceDamage += itemDamage }
+						else if ( immune || (immuneAll && immuneAll !== 'once') ) { continue }
+						
+						if ( resistant === 'once' || (!resistant && resistantAll === 'once') ) { onceReduceDamage += itemDamage * 0.5 }
+						else if ( resistant || (resistantAll && resistantAll !== 'once') ) { damageScalar = 0.5 }
+						
+						if ( vulnerable === 'once' || (!vulnerable && vulnerableAll === 'once') ) { onceModifyDamage += itemDamage }
+						else if ( vulnerable || (vulnerableAll && vulnerableAll !== 'once') ) { damageScalar *= 2.0 }
+						
 						if ( item.die && advantageDamage ) {
 							manyDice += roll
 							manyDiceCombination = multiply(diceCombinations(item.die * damageScalar, roll), manyDiceCombination)
@@ -757,14 +767,14 @@
 					
 					onceDiceCombination = multiply(onceDiceCombination, onceDiceCombination)
 					if ( e.criticalDice > 0 ) { onceDiceCombination = multiply(onceDiceCombination, diceCombinations(onceDieCritical, e.criticalDice)) }
-					onceCritical = advantageAverageForDiceCombinations(onceDiceCombination, onceDice + e.criticalDice)
+					onceCritical = advantageAverageForDiceCombinations(onceDiceCombination, onceDice + (e.criticalDice || 0))
 					
 					if ( advantageDamage !== 'once' ) {
 						manyDiceDamage = advantageAverageForDiceCombinations(manyDiceCombination, manyDice)
 						
 						manyDiceCombination = multiply(manyDiceCombination, manyDiceCombination)
 						if ( e.criticalDice > 0 ) { manyDiceCombination = multiply(manyDiceCombination, diceCombinations(manyDieCritical, e.criticalDice)) }
-						manyCritical = advantageAverageForDiceCombinations(manyDiceCombination, manyDice + e.criticalDice)
+						manyCritical = advantageAverageForDiceCombinations(manyDiceCombination, manyDice + (e.criticalDice || 0))
 					}
 				}
 				
@@ -1016,14 +1026,14 @@
 			<tr><td>Ranger: Colossus Slayer</td><td>/ +d8o</td><td>Damage +d8 one time</td></tr>
 			<tr><td>Ranger: Multiattack Defense</td><td>@ +4m</td><td>Armor class +4 after first hit</td></tr>
 			<tr><td>Rogue: Sneak Attack</td><td>/ +2d6o</td><td>Damage +2d6 one time</td></tr>
-			<!-- tr><td>Rogue: Uncanny Dodge</td><td>@ ro (partially implemented)</td></tr -->
+			<tr><td>Rogue: Uncanny Dodge</td><td>@ ro</td><td>Resist all damage one time</td></tr>
 			<tr><td>Rogue: Assassinate</td><td>a c1</td><td>Advantage to hit, Critical damage on any roll</td></tr>
 			<tr><td>Warlock: Lifedrinker</td><td>/ +3</td><td>Damage +3</td></tr>
 			<tr><td>Sorcerer: Elemental Affinity</td><td>/ +3</td><td>Damage +3</td></tr>
 			<tr><td>Fighting Style: Archery</td><td>+2</td><td>Hit +2</td></tr>
 			<tr><td>Fighting Style: Defense</td><td>@ +1</td><td>Armor Class +1</td></tr>
 			<tr><td>Fighting Style: Dueling</td><td>/ +2</td><td>Damage +2</td></tr>
-			<!-- tr><td>Fighting Style: Great Weapon Fighting</td><td>/ r2 (not implemented)</td></tr -->
+			<!-- tr><td>Fighting Style: Great Weapon Fighting</td><td>/ r2</td><td>(not implemented)</td></tr -->
 			<tr><td>Feat: Charger</td><td>/ +5</td><td>Damage +5</td></tr>
 			<tr><td>Feat: Dual Wielder</td><td>@ +1</td><td>Armor Class +1</td></tr>
 			<tr><td>Feat: Great Weapon Master</td><td>-5/+10#cb</td><td>Hit -5, damage +10, bonus attack after critical hit</td></tr>
@@ -1066,11 +1076,7 @@
 		<p>
 			<hr/>
 			
-			<span class='tiny'>There are several modifiers that only apply one time, and support for these is limited.
-			Modifiers that affect armor class one time, either attacker options or defensive reactions, are blindly applied to the first attack instead of being applied when needed.
-			Resistances and vulnerabilities that apply one time are treated as happening every time.
-			Disadvantage that applies until a successful hit is treated as applying all the time.
-			These limitations do not apply to the random rolls and may cause some disparity between the effectiveness rating and example rolls.</span>
+			<span class='tiny'>Some modifiers and combinations are not fully supported.  Resistance and vulnerability are inaccurate when combined with advantage on damage.  Disadvantage on attack may apply to the first attack or all attacks but not until the first hit.  Rerolling low dice is not supported.</span>
 		</p>
 	</body>
 </html>
