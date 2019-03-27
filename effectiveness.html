@@ -220,6 +220,12 @@
 				return disadvantage ? (roll || 1) * (die + 1) - average : average
 			}
 			
+			function damageTypeApplies(type, magical) {
+				var special = ['bludgeoning', 'piercing', 'slashing']
+				
+				return !magical || special.indexOf(type) < 0
+			}
+			
 			function parseEffectivenessDamageType(string, result, key) {
 				if ( !result[key] ) { result[key] = new Object() }
 				
@@ -248,6 +254,7 @@
 				result.damage = []
 				result.defense = []
 				result.reduction = []
+				result.magical = false
 				string = string.toLowerCase().replace(/,•/g, " ")
 				
 				var match, index, found, value, roll, once, type, matched, length, item
@@ -264,7 +271,7 @@
 				var stringDamage = beginDamage < 0 ? '' : string.slice(beginDamage + 1, closeDamage)
 				var stringHit = string.slice(beginHit, closeHit)
 				
-				var patternHit = /([-+]\d*d?\d+o?|ao?|d[oh]?|c\d+)/g
+				var patternHit = /([-+]\d*d?\d+o?|ao?|d[oh]?|c\d+|m)/g
 				var matchHit = stringHit.split(patternHit)
 				
 				for ( index = 0 ; index < matchHit.length ; ++index ) {
@@ -274,17 +281,19 @@
 						if ( match.trim() ) { break } else { continue }
 					}
 					
-					if ( match === 'a' ) {
+					if ( match === 'm' ) {
+						result.magical = true
+					} else if ( match === 'a' ) {
 						result.advantageHit = true
 					} else if ( match === 'ao' ) {
-						result.advantageHit = 'once'
+						if ( !result.advantageHit ) { result.advantageHit = 'once' }
 					} else if ( match === 'd' ) {
 						if ( result.hit.length > 0 ) { break }
 						result.disadvantageHit = true
 					} else if ( match === 'do' ) {
-						result.disadvantageHit = 'once'
+						if ( !result.disadvantageHit ) { result.disadvantageHit = 'once' }
 					} else if ( match === 'dh' ) {
-						result.disadvantageHit = 'hit'
+						if ( !result.disadvantageHit || result.disadvantageHit === 'once' ) { result.disadvantageHit = 'hit' }
 					} else if ( match.charAt(0) === 'c' ) {
 						result.criticalRoll = match.slice(1) | 0
 					} else {
@@ -326,7 +335,7 @@
 					if ( match === 'a' ) {
 						result.advantageDamage = true
 					} else if ( match === 'ao' ) {
-						result.advantageDamage = 'once'
+						if ( !result.advantageDamage ) { result.advantageDamage = 'once' }
 					} else if ( match.charAt(0) === 'r' ) {
 						value = match.slice(1) | 0
 						if ( value > 0 ) { result.lowDamageReroll = value }
@@ -369,6 +378,10 @@
 							if ( length > 0 && !roll && result.damage[length - 1].roll && !result.damage[length - 1].type ) {
 								result.damage[length - 1].type = item.type
 							}
+						} else {
+							if ( length > 0 && result.damage[length - 1].type ) {
+								item.type = result.damage[length - 1].type
+							}
 						}
 						
 						result.damage.push(item)
@@ -397,7 +410,7 @@
 					}
 				}
 				
-				var patternDefense = /(\d+|[-+]\d*d?\d+[mo]?|v[a-z]*|r[a-z]*|i[a-z]+)/g
+				var patternDefense = /(\d+|[-+]\d*d?\d+[mo]?|v[a-z]*|r[a-z]*|i[a-z]+|d[oh]?|ao?)/g
 				var matchDefense = stringDefense.split(patternDefense)
 				
 				for ( index = 0 ; index < matchDefense.length ; ++index ) {
@@ -407,7 +420,18 @@
 						if ( match.trim() ) { break } else { continue }
 					}
 					
-					if ( match.charAt(0) === '+' ) {
+					if ( match === 'a' ) {
+						result.advantageHit = true
+					} else if ( match === 'ao' ) {
+						if ( !result.advantageHit ) { result.advantageHit = 'once' }
+					} else if ( match === 'd' ) {
+						if ( result.hit.length > 0 ) { break }
+						result.disadvantageHit = true
+					} else if ( match === 'do' ) {
+						if ( !result.disadvantageHit ) { result.disadvantageHit = 'once' }
+					} else if ( match === 'dh' ) {
+						if ( !result.disadvantageHit || result.disadvantageHit === 'once' ) { result.disadvantageHit = 'hit' }
+					} else if ( match.charAt(0) === '+' ) {
 						matched = match.match(patternDiceModifierText)
 						
 						if ( matched[2] === 'd' ) {
@@ -572,8 +596,8 @@
 						item = e.damage[index]
 						
 						damageScalar = 1
-						immune = e.immune && (e.immune['all'] || (item.type && e.immune[item.type]))
-						resistant = e.resistant && (e.resistant['all'] || (item.type && e.resistant[item.type]))
+						immune = e.immune && (e.immune['all'] || (item.type && damageTypeApplies(item.type, e.magical) && e.immune[item.type]))
+						resistant = e.resistant && (e.resistant['all'] || (item.type && damageTypeApplies(item.type, e.magical) && e.resistant[item.type]))
 						vulnerable = e.vulnerable && (e.vulnerable['all'] || (item.type && e.vulnerable[item.type]))
 						
 						if ( immune && !(hasHit && immune === 'once') ) { continue }
@@ -699,8 +723,8 @@
 					roll = item.roll || 1
 					damageScalar = 1
 					
-					immune = (item.type && e.immune && e.immune[item.type]) || false
-					resistant = (item.type && e.resistant && e.resistant[item.type]) || false
+					immune = (item.type && damageTypeApplies(item.type, e.magical) && e.immune && e.immune[item.type]) || false
+					resistant = (item.type && damageTypeApplies(item.type, e.magical) && e.resistant && e.resistant[item.type]) || false
 					vulnerable = (item.type && e.vulnerable && e.vulnerable[item.type]) || false
 					
 					if ( item.once ) {
@@ -714,6 +738,7 @@
 							onceDice += roll
 						}
 						
+						//	TODO: onceDieCritical should only use dice from melee weapon (first, by type, ...?)
 						if ( item.die ) { onceDiceDamage += damageScalar * roll * (1 + item.die) / 2 }
 						if ( item.modifier ) { onceModifyDamage += damageScalar * item.modifier }
 						if ( item.die > onceDieCritical ) { onceDieCritical = item.die }
@@ -735,6 +760,7 @@
 							manyDice += roll
 						}
 						
+						//	TODO: manyDieCritical should only use dice from melee weapon (first, by type, ...?)
 						if ( item.die ) { manyDiceDamage += damageScalar * roll * (1 + item.die) / 2 }
 						if ( item.modifier ) { manyModifyDamage += damageScalar * item.modifier }
 						if ( item.die > manyDieCritical ) { manyDieCritical = item.die }
@@ -1020,9 +1046,12 @@
 			<tr><td>Default Attacks</td><td>#1</td><td>Attack 1 time</td></tr>
 			<tr><td>Proficiency Bonus</td><td>+2</td><td>Hit +2</td></tr>
 			<tr><td>Ability Bonus</td><td>+3/+3</td><td>Hit and Damage +3</td></tr>
+			<tr><td>Dwarf: Dwarven Resilience</td><td>@ rq</td><td>Resistant to poison damage</td></tr>
+			<!-- tr><td>Halfling: Lucky</td><td>r1</td><td>(not implemented) Reroll attack dice up to 1</td></tr -->
 			<tr><td>Half Orc: Savage Attacks</td><td>/ +c1d</td><td>Add 1 die to critical damage</td></tr>
-			<tr><td>Barbarian: Rage Damage</td><td>/ +2</td><td>Damage +2</td></tr>
-			<tr><td>Barbarian: Reckless Attack</td><td>a</td><td>Advantage to hit</td></tr>
+			<tr><td>Barbarian: Rage</td><td>/ +2 @ rbps</td><td>Damage +2</td></tr>
+			<tr><td>Barbarian: Reckless Attack</td><td>a @ a</td><td>Advantage to hit</td></tr>
+			<tr><td>Barbarian: Bear Totem</td><td>@ rabcefnpqrst</td><td>Resist damage except psychic (y)</td></tr>
 			<tr><td>Barbarian: Brutal Critical</td><td>/ +c1d</td><td>Add 1 die to critical damage</td></tr>
 			<tr><td>Bard: Bardic Inspiration</td><td>+d6o</td><td>Hit +1d6 one time</td></tr>
 			<tr><td>Cleric: Potent Spellcasting</td><td>/ +5</td><td>Damage +5</td></tr>
@@ -1036,6 +1065,7 @@
 			<tr><td>Battle Master: Parry</td><td>@ -d8o-3o</td><td>Reduce damage by d8+3 one time</td></tr>
 			<tr><td>Monk: Deflect Missile</td><td>@ -d10o-5o</td><td>Reduce damage by d8+5 one time</td></tr>
 			<tr><td>Monk: Shadow Step</td><td>ao</td><td>Advantage to hit one time</td></tr>
+			<tr><td>Monk: Purity of Body</td><td>@ iq</td><td>Immune to poison damage</td></tr>
 			<tr><td>Paladin: Improved Divine Smite</td><td>/ +d8r</td><td>Damage +d8 radiant</td></tr>
 			<tr><td>Ranger: Foe Slayer</td><td>+5o</td><td>Hit +5 one time</td></tr>
 			<tr><td>Ranger: Colossus Slayer</td><td>/ +d8o</td><td>Damage +d8 one time</td></tr>
@@ -1043,12 +1073,13 @@
 			<tr><td>Rogue: Sneak Attack</td><td>/ +2d6o</td><td>Damage +2d6 one time</td></tr>
 			<tr><td>Rogue: Uncanny Dodge</td><td>@ ro</td><td>Resist all damage one time</td></tr>
 			<tr><td>Rogue: Assassinate</td><td>a c1</td><td>Advantage to hit, Critical damage on any roll</td></tr>
+			<tr><td>Rogue: Versatile Trickster</td><td>a</td><td>Advantage to hit</td></tr>
 			<tr><td>Warlock: Lifedrinker</td><td>/ +3</td><td>Damage +3</td></tr>
 			<tr><td>Sorcerer: Elemental Affinity</td><td>/ +3</td><td>Damage +3</td></tr>
 			<tr><td>Fighting Style: Archery</td><td>+2</td><td>Hit +2</td></tr>
 			<tr><td>Fighting Style: Defense</td><td>@ +1</td><td>Armor Class +1</td></tr>
 			<tr><td>Fighting Style: Dueling</td><td>/ +2</td><td>Damage +2</td></tr>
-			<!-- tr><td>Fighting Style: Great Weapon Fighting</td><td>/ r2</td><td>(not implemented)</td></tr -->
+			<!-- tr><td>Fighting Style: Great Weapon Fighting</td><td>/ r2</td><td>(not implemented) Reroll damage dice up to 2</td></tr -->
 			<tr><td>Feat: Charger</td><td>/ +5</td><td>Damage +5</td></tr>
 			<tr><td>Feat: Dual Wielder</td><td>@ +1</td><td>Armor Class +1</td></tr>
 			<tr><td>Feat: Great Weapon Master</td><td>-5/+10#cb</td><td>Hit -5, damage +10, bonus attack after critical hit</td></tr>
@@ -1064,16 +1095,16 @@
 			<tr><td>Stoneskin</td><td>@ rbps</td><td>Resist bludgeoning, piercing and slashing damage</td></tr>
 			<tr><td>Bracers of Archery</td><td>/ +2</td><td>Damage +2</td></tr>
 			<tr><td>Bracers of Defense</td><td>@ +2</td><td>Armor Class +2</td></tr>
-			<tr><td>Cloak of Displacement</td><td>dh</td><td>Disadvantage on hit until hit</td></tr>
-			<tr><td>Dwarven Thrower</td><td>+3/d8+d8+3</td><td>Hit +3, damage 2d8+3</td></tr>
-			<tr><td>Magic Weapon</td><td>+3/+3</td><td>Hit and damage +3</td></tr>
-			<tr><td>Sword of Sharpness</td><td>+1/+1+c14</td><td>Hit and damage +1, critical damage +14</td></tr>
-			<tr><td>Fighter 1: Longsword</td><td>+2+3/d8+3#1@13</td><td>Hit +5, damage d8+3, 1 attack, target AC 13</td></tr>
-			<tr><td>Warlock 20: Wand +3, Hex</td><td>+6+5+3/d10+5e+d6n#4</td><td>Hit +14, damage d10+d6+5, 4 attacks</td></tr>
-			<tr><td>Champion 20: Greatsword +3</td><td>c18+6+5+3-5/2d6+3m+5+10#4cb</td><td>Hit +9, critical on 18, damage 2d6+18, 4 attacks, bonus attack on critical</td></tr>
-			<tr><td>Fighter 20: Longbow +3, Bracers</td><td>+6+5+3+2-5+d12o/d8+3m+5+2+10#4</td><td>Hit +11, +d12 one time, damage d8 + 20, 4 attacks</td></tr>
-			<tr><td>Barbarian 20: Greataxe +3</td><td>+6+7+3-5/d12+3m+7+10+4+c4d#2cb</td><td>Hit +11, damage d12+24, critical +4 dice, 2 attacks, bonus attack on critical</td></tr>
-			<tr><td>Assassin 20: Shortbow +3, surprise</td><td>c1a+6+5+3/d6+3+5+10d6o#1</td><td>Hit +14, critical on 1, advantage, damage d6+8, +10d6 once</td></tr>
+			<tr><td>Cloak of Displacement</td><td>@ dh</td><td>Disadvantage on hit until hit</td></tr>
+			<tr><td>Dwarven Thrower</td><td>+3m/d8b+d8b+3</td><td>Hit +3, damage 2d8+3</td></tr>
+			<tr><td>Magic Weapon</td><td>+3m/+3</td><td>Hit and damage +3, attack is magical</td></tr>
+			<tr><td>Sword of Sharpness</td><td>+1m/+1+c14</td><td>Hit and damage +1, critical damage +14</td></tr>
+			<tr><td>Fighter 1: Longsword</td><td>+2+3/d8s+3#1@13</td><td>Hit +5, damage d8+3, 1 attack, target AC 13</td></tr>
+			<tr><td>Warlock 20: Wand +3, Hex</td><td>+6+5+3/d10e+5+d6n#4</td><td>Hit +14, damage d10+d6+5, 4 attacks</td></tr>
+			<tr><td>Champion 20: Greatsword +3</td><td>c18+6+5+3m-5/2d6s+3+5+10#4cb</td><td>Hit +9, critical on 18, damage 2d6+18, 4 attacks, bonus attack on critical</td></tr>
+			<tr><td>Fighter 20: Longbow +3, Bracers</td><td>+6+5+3m+2-5+d12o/d8p+3+5+2+10#4</td><td>Hit +11, +d12 one time, damage d8 + 20, 4 attacks</td></tr>
+			<tr><td>Barbarian 20: Greataxe +3</td><td>+6+7+3m-5/d12s+3+7+10+4+c4d#2cb</td><td>Hit +11, damage d12+24, critical +4 dice, 2 attacks, bonus attack on critical</td></tr>
+			<tr><td>Assassin 20: Shortbow +3, surprise</td><td>c1a+6+5+3m/d6p+3+5+10d6o#1</td><td>Hit +14, critical on 1, advantage, damage d6+8, +10d6 once</td></tr>
 			<tr><td colspan=3/></td></tr>
 		</table>
 		
