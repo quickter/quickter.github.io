@@ -369,7 +369,7 @@
 							type = type.slice(0, -1)
 						}
 						
-						//console.log("parseEffectivenessDamageType " + match + " => " + type + " => " + damageTypeMap[type])
+						//console.log("parseEffectivenessDamageType " + match + " => " + (type ? type + " => " + damageTypeMap[type] : '-'))
 						
 						if ( type ) {
 							item.type = damageTypeMap[type] || type
@@ -377,10 +377,6 @@
 							
 							if ( length > 0 && !roll && result.damage[length - 1].roll && !result.damage[length - 1].type ) {
 								result.damage[length - 1].type = item.type
-							}
-						} else {
-							if ( length > 0 && result.damage[length - 1].type ) {
-								item.type = result.damage[length - 1].type
 							}
 						}
 						
@@ -497,13 +493,20 @@
 				var modifierHit, onceModifierHit
 				var armorClass, onceArmorClass, hit
 				var damageRolled, damageAdvantageRolled, damageModifier
-				var index, item
+				var index, item, type, previousType
 				var isCritical
 				var advantageHit = e.advantageHit
 				var disadvantageHit = e.disadvantageHit
 				var advantageDamage = e.advantageDamage
 				var damageDice, dieForCritical
 				var damageScalar, immune, resistant, vulnerable
+				var immuneAll = (e.immune && e.immune['all']) || false
+				var resistantAll = (e.resistant && e.resistant['all']) || false
+				var vulnerableAll = (e.vulnerable && e.vulnerable['all']) || false
+				
+				immuneAll = immuneAll ? immuneAll !== 'once' ? 2 : 1 : 0
+				resistantAll = resistantAll ? resistantAll !== 'once' ? 2 : 1 : 0
+				vulnerableAll = vulnerableAll ? vulnerableAll !== 'once' ? 2 : 1 : 0
 				
 				for ( attack = 0 ; attack < attacks ; ++attack ) {
 					modifierHit = 0
@@ -594,15 +597,21 @@
 					
 					for ( index = 0 ; index < e.damage.length ; ++index ) {
 						item = e.damage[index]
-						
+						type = item.type || previousType
+						previousType = type
 						damageScalar = 1
-						immune = e.immune && (e.immune['all'] || (item.type && damageTypeApplies(item.type, e.magical) && e.immune[item.type]))
-						resistant = e.resistant && (e.resistant['all'] || (item.type && damageTypeApplies(item.type, e.magical) && e.resistant[item.type]))
-						vulnerable = e.vulnerable && (e.vulnerable['all'] || (item.type && e.vulnerable[item.type]))
 						
-						if ( immune && !(hasHit && immune === 'once') ) { continue }
-						if ( resistant && !(hasHit && resistant === 'once') ) { damageScalar = 0.5 }
-						if ( vulnerable && !(hasHit && vulnerable === 'once') ) { damageScalar *= 2.0 }
+						immune = type && e.immune && damageTypeApplies(type, e.magical) && e.immune[type]
+						resistant = type && e.resistant && damageTypeApplies(type, e.magical) && e.resistant[type]
+						vulnerable = type && e.vulnerable && e.vulnerable[type]
+						
+						immune = (immune ? immune !== 'once' ? 2 : 1 : 0) | immuneAll
+						resistant = (resistant ? resistant !== 'once' ? 2 : 1 : 0) | resistantAll
+						vulnerable = (vulnerable ? vulnerable !== 'once' ? 2 : 1 : 0) | vulnerableAll
+						
+						if ( immune && !(hasHit && immune === 1) ) { continue }
+						if ( resistant && !(hasHit && resistant === 1) ) { damageScalar = 0.5 }
+						if ( vulnerable && !(hasHit && vulnerable === 1) ) { damageScalar *= 2.0 }
 						
 						if ( !(item.once && hasHit) ) {
 							if ( item.die > 0 ) { damageDice.push({'die':item.die, 'roll':item.roll, 'scalar':damageScalar}) }
@@ -621,6 +630,7 @@
 					}
 					
 					isCritical = !(toHit < (e.criticalRoll || 20))
+					var damageDiceLength = damageDice.length
 					
 					if ( isCritical ) {
 						damageDice = damageDice.concat(damageDice)
@@ -631,6 +641,7 @@
 					
 					for ( index = 0 ; index < damageDice.length ; ++index ) {
 						item = damageDice[index]
+						if ( item.roll < 0 && !(index < damageDiceLength) ) { continue }
 						damageRolled += diceRoll(item.die, item.roll || 1) * (item.scalar || 1)
 						damageAdvantageRolled += diceRoll(item.die, item.roll || 1) * (item.scalar || 1)
 					}
@@ -703,7 +714,8 @@
 			}
 			
 			function computeAverageEffectiveness(e) {
-				var advantageDamage = e.advantageDamage
+				var trace = true
+				var advantageDamage = e.advantageDamage, advantageDamageOnceAdjustment = 0
 				var onceDiceDamage = 0, manyDiceDamage = 0
 				var onceModifyDamage = 0, manyModifyDamage = 0
 				var onceReduceDamage = 0, manyReduceDamage = 0
@@ -712,58 +724,98 @@
 				var onceDamage = 0, manyDamage = 0
 				var onceCritical = 0, manyCritical = 0
 				var onceDieCritical = 0, manyDieCritical = 0
-				var index, item, roll, value, damageScalar
+				var index, item, roll, value, damageScalar, onceDamageScalar
 				var immune, resistant, vulnerable, itemDamage
 				var immuneAll = (e.immune && e.immune['all']) || false
 				var resistantAll = (e.resistant && e.resistant['all']) || false
 				var vulnerableAll = (e.vulnerable && e.vulnerable['all']) || false
+				var type, previousType = false
+				
+				immuneAll = immuneAll ? immuneAll !== 'once' ? 2 : 1 : 0
+				resistantAll = resistantAll ? resistantAll !== 'once' ? 2 : 1 : 0
+				vulnerableAll = vulnerableAll ? vulnerableAll !== 'once' ? 2 : 1 : 0
 				
 				for ( index = 0 ; index < e.damage.length ; ++index ) {
 					item = e.damage[index]
 					roll = item.roll || 1
+					type = item.type || previousType
+					previousType = type
 					damageScalar = 1
+					onceDamageScalar = 0
 					
-					immune = (item.type && damageTypeApplies(item.type, e.magical) && e.immune && e.immune[item.type]) || false
-					resistant = (item.type && damageTypeApplies(item.type, e.magical) && e.resistant && e.resistant[item.type]) || false
-					vulnerable = (item.type && e.vulnerable && e.vulnerable[item.type]) || false
+					if ( roll < 0 ) {
+						//if ( trace ) { console.log("Average reduce" + (item.die ? (roll < 0 ? ' ' : ' +') + roll + 'd' + item.die : '') + (item.modifier ? (item.modifier < 0 ? ' ' : ' +') + item.modifier : '') + (item.once ? 'o' : '')) }
+						
+						if ( item.once ) {
+							if ( item.die > 0 ) { onceReduceDamage += -roll * (1 + item.die) / 2 }
+							if ( item.modifier ) { onceReduceDamage += item.modifier }
+						} else {
+							if ( item.die > 0 ) { manyReduceDamage += -roll * (1 + item.die) / 2 }
+							if ( item.modifier ) { manyReduceDamage += item.modifier }
+						}
+						
+						continue
+					}
+					
+					immune = type && damageTypeApplies(type, e.magical) && e.immune && e.immune[type]
+					resistant = type && damageTypeApplies(type, e.magical) && e.resistant && e.resistant[type]
+					vulnerable = type && e.vulnerable && e.vulnerable[type]
+					
+					immune = (immune ? immune !== 'once' ? 2 : 1 : 0) | immuneAll
+					resistant = (resistant ? resistant !== 'once' ? 2 : 1 : 0) | resistantAll
+					vulnerable = (vulnerable ? vulnerable !== 'once' ? 2 : 1 : 0) | vulnerableAll
+					
+					//if ( trace ) { console.log("Average damage" + (item.die ? (roll < 0 ? ' ' : ' +') + roll + 'd' + item.die : '') + (item.modifier ? (item.modifier < 0 ? ' ' : ' +') + item.modifier : '') + (item.once ? 'o' : '') + (type ? ' ' + type : '') + (immune ? ' i' + immune : '') + (resistant ? ' r' + resistant : '') + (vulnerable ? ' v' + vulnerable : '')) }
 					
 					if ( item.once ) {
-						if ( immune || immuneAll ) { continue }
-						if ( resistant || resistantAll ) { damageScalar = 0.5 }
-						if ( vulnerable || vulnerableAll ) { damageScalar *= 2.0 }
+						if ( immune ) { continue }
+						if ( resistant ) { damageScalar = 0.5 }
+						if ( vulnerable ) { damageScalar *= 2.0 }
 						
-						if ( item.die && advantageDamage ) {
+						if ( item.die > 0 && advantageDamage ) {
 							//	Approximate the effects of resistance and vulnerability combined with advantage on damage by scaling the die rolled
 							onceDiceCombination = multiply(diceCombinations(item.die * damageScalar, roll), onceDiceCombination)
 							onceDice += roll
 						}
 						
-						//	TODO: onceDieCritical should only use dice from melee weapon (first, by type, ...?)
-						if ( item.die ) { onceDiceDamage += damageScalar * roll * (1 + item.die) / 2 }
+						if ( item.die > 0 ) { onceDiceDamage += damageScalar * roll * (1 + item.die) / 2 }
 						if ( item.modifier ) { onceModifyDamage += damageScalar * item.modifier }
-						if ( item.die > onceDieCritical ) { onceDieCritical = item.die }
+						if ( item.die > 0 && !onceDieCritical ) { onceDieCritical = item.die }
 					} else {
-						var itemDamage = roll * (item.die || 0) / 2 + (item.modifier || 0)
+						if ( immune > 1 ) { continue }
+						if ( resistant > 1 ) { damageScalar = 0.5; onceDamageScalar = vulnerable === 1 ? 0.5 : 0 }
+						if ( vulnerable > 1 ) { damageScalar *= 2.0; onceDamageScalar = resistant === 1 ? -1 : 0 }
 						
-						if ( immune === 'once' || (!immune && immuneAll === 'once') ) { onceReduceDamage += itemDamage }
-						else if ( immune || (immuneAll && immuneAll !== 'once') ) { continue }
+						if ( immune === 1 ) { onceDamageScalar = -1 }
+						if ( resistant === 1 && !vulnerable ) { onceDamageScalar = -0.5 }
+						if ( vulnerable === 1 && !resistant ) { onceDamageScalar = 1 }
 						
-						if ( resistant === 'once' || (!resistant && resistantAll === 'once') ) { onceReduceDamage += itemDamage * 0.5 }
-						else if ( resistant || (resistantAll && resistantAll !== 'once') ) { damageScalar = 0.5 }
-						
-						if ( vulnerable === 'once' || (!vulnerable && vulnerableAll === 'once') ) { onceModifyDamage += itemDamage }
-						else if ( vulnerable || (vulnerableAll && vulnerableAll !== 'once') ) { damageScalar *= 2.0 }
-						
-						if ( item.die && advantageDamage ) {
+						if ( item.die > 0 && advantageDamage ) {
 							//	Approximate the effects of resistance and vulnerability combined with advantage on damage by scaling the die rolled
 							manyDiceCombination = multiply(diceCombinations(item.die * damageScalar, roll), manyDiceCombination)
 							manyDice += roll
+							
+							if ( onceDamageScalar > 0 ) {
+								onceDiceCombination = multiply(diceCombinations(item.die * onceDamageScalar, roll), onceDiceCombination)
+								onceDice += roll
+							}
+							
+							if ( onceDamageScalar < 0 ) {
+								advantageDamageOnceAdjustment += onceDamageScalar * roll * (1 + item.die) / 2
+							}
 						}
 						
-						//	TODO: manyDieCritical should only use dice from melee weapon (first, by type, ...?)
-						if ( item.die ) { manyDiceDamage += damageScalar * roll * (1 + item.die) / 2 }
-						if ( item.modifier ) { manyModifyDamage += damageScalar * item.modifier }
-						if ( item.die > manyDieCritical ) { manyDieCritical = item.die }
+						if ( item.die > 0 ) {
+							manyDiceDamage += damageScalar * roll * (1 + item.die) / 2
+							onceDiceDamage += onceDamageScalar * roll * (1 + item.die) / 2
+						}
+						
+						if ( item.modifier ) {
+							manyModifyDamage += damageScalar * item.modifier
+							onceModifyDamage += onceDamageScalar * item.modifier
+						}
+						
+						if ( item.die > 0 && !manyDieCritical ) { manyDieCritical = item.die }
 					}
 				}
 				
@@ -778,31 +830,43 @@
 						if ( item.die ) { manyReduceDamage += roll * (1 + item.die) / 2 }
 						if ( item.modifier ) { manyReduceDamage += item.modifier }
 					}
+					
+					//if ( trace ) { console.log("Average reduce" + (item.die ? (roll < 0 ? ' ' : ' +') + roll + 'd' + item.die : '') + (item.modifier ? (item.modifier < 0 ? ' ' : ' +') + item.modifier : '') + (item.once ? 'o' : '')) }
 				}
 				
 				onceDiceDamage += manyDiceDamage
 				onceModifyDamage += manyModifyDamage
 				onceReduceDamage += manyReduceDamage
 				
-				manyCritical = manyDiceDamage * 2
-				onceCritical = onceDiceDamage * 2
 				if ( onceDieCritical < manyDieCritical ) { onceDieCritical = manyDieCritical }
+				manyCritical = manyDiceDamage * 2 + (e.criticalDice | 0) * (manyDieCritical + 1) / 2
+				onceCritical = onceDiceDamage * 2 + (e.criticalDice | 0) * (onceDieCritical + 1) / 2
 				
 				if ( advantageDamage ) {
+					//if ( trace ) { console.log("Average damage normal 1 x " + onceDiceDamage.toFixed(1) + " (c" + onceCritical.toFixed(1) + ")") }
+					
 					onceDice += manyDice
 					onceDiceCombination = multiply(onceDiceCombination, manyDiceCombination)
 					onceDiceDamage = advantageAverageForDiceCombinations(onceDiceCombination, onceDice)
+					onceDiceDamage += advantageDamageOnceAdjustment
 					
 					onceDiceCombination = multiply(onceDiceCombination, onceDiceCombination)
 					if ( e.criticalDice > 0 ) { onceDiceCombination = multiply(onceDiceCombination, diceCombinations(onceDieCritical, e.criticalDice)) }
-					onceCritical = advantageAverageForDiceCombinations(onceDiceCombination, onceDice + (e.criticalDice || 0))
+					onceCritical = advantageAverageForDiceCombinations(onceDiceCombination, onceDice * 2 + (e.criticalDice || 0))
+					onceCritical += advantageDamageOnceAdjustment * 2
+					
+					//if ( trace ) { console.log("Average damage advantage 1 x " + onceDiceDamage.toFixed(1) + " (c" + onceCritical.toFixed(1) + ")") }
 					
 					if ( advantageDamage !== 'once' ) {
+						//if ( trace ) { console.log("Average damage normal " + (e.attacks - 1) + " x " + manyDiceDamage.toFixed(1) + " (c" + manyCritical.toFixed(1) + ")") }
+						
 						manyDiceDamage = advantageAverageForDiceCombinations(manyDiceCombination, manyDice)
 						
 						manyDiceCombination = multiply(manyDiceCombination, manyDiceCombination)
 						if ( e.criticalDice > 0 ) { manyDiceCombination = multiply(manyDiceCombination, diceCombinations(manyDieCritical, e.criticalDice)) }
-						manyCritical = advantageAverageForDiceCombinations(manyDiceCombination, manyDice + (e.criticalDice || 0))
+						manyCritical = advantageAverageForDiceCombinations(manyDiceCombination, manyDice * 2 + (e.criticalDice || 0))
+						
+						//if ( trace ) { console.log("Average damage advantage " + (e.attacks - 1) + " x " + manyDiceDamage.toFixed(1) + " (c" + manyCritical.toFixed(1) + ")") }
 					}
 				}
 				
@@ -810,8 +874,10 @@
 				onceDamage = onceDiceDamage + onceModifyDamage - onceReduceDamage
 				manyCritical += manyModifyDamage - manyReduceDamage
 				onceCritical += onceModifyDamage - onceReduceDamage
-				manyCritical += (e.criticalDamage | 0) + (e.criticalDice | 0) * (manyDieCritical + 1) / 2
-				onceCritical += (e.criticalDamage | 0) + (e.criticalDice | 0) * (onceDieCritical + 1) / 2
+				manyCritical += (e.criticalDamage | 0)
+				onceCritical += (e.criticalDamage | 0)
+				
+				//if ( trace ) { console.log("Average damage 1 x " + onceDamage.toFixed(1) + " (c" + onceCritical.toFixed(1) + ") + " + (e.attacks - 1) + " x " + manyDamage.toFixed(1) + " (c" + manyCritical.toFixed(1) + (e.criticalDice ? ' ' + e.criticalDice + 'd' + manyDieCritical : '') + ")") }
 				
 				if ( manyDamage < 0 ) { manyDamage = 0 }
 				if ( onceDamage < 0 ) { onceDamage = 0 }
@@ -914,6 +980,8 @@
 				}
 				
 				manyChanceToHit = [,toNearlyMiss,,toCritical - toHit,,toLimit - toCritical,,toHit - toNearlyMiss]
+				
+				//if ( trace ) { console.log("Average hit 1 x " + (onceChanceToHit[3] + onceChanceToHit[5] + onceChanceToHit[7]).toFixed(2) + " : " + onceChanceToHit[1].toFixed(2) + " + " + (attacks - 1) + " x " + (manyChanceToHit[3] + manyChanceToHit[5] + manyChanceToHit[7]).toFixed(2) + " : " + manyChanceToHit[1].toFixed(2)) }
 				
 				chanceToHit = onceChanceToHit
 				
