@@ -246,7 +246,7 @@
 				}
 			}
 			
-			function parseEffectiveness(string) {
+			function parseSingleEffectiveness(string) {
 				var result = new Object()
 				
 				result.armorClass = 10
@@ -481,7 +481,7 @@
 				return result
 			}
 			
-			function computeRandomEffectiveness(e) {
+			function computeSingleRandomEffectiveness(e) {
 				var effectiveness = 0
 				var asComputeAverage = e.asComputeAverage || false
 				var summary = []
@@ -663,6 +663,119 @@
 				return effectiveness
 			}
 			
+			function applyChanceToHit(r, i, j, p) {
+				/*
+					mmmmm mmmmm mmmmh hhhhc - no offense or defense
+					mmmmm mmmmm mnnnh hhhhc - offense
+					mmmmm mmmmm mmmmd dhhhc - defense
+					mmmmm mmmmm mbbnh hhhhc - offense > defense
+					mmmmm mmmmm mbbbd hhhhc - offense < defense
+					
+					m - 1     - miss
+					n - 59    - hit once else miss
+					d - 61    - miss once else hit
+					b - 3599  - miss once else hit once else miss
+					h - p > 1 - hit
+					c - p > 1 - critical
+				*/
+				
+				if ( j % 3599 === 0 ) {
+					//	miss once consuming hit once
+					j = !(i % 3599) ? 1 : !(i % 61) ? j / 61 : !(i % 59) ? 61 : j
+				} else if ( j % 61 === 0 ) {
+					//	miss once
+					j = !(i % 61) ? j / 61 : 61
+				} else if ( j % 59 === 0 ) {
+					//	hit once
+					j = !(i % 59) ? 1 : j
+				}
+				
+				i *= j
+				
+				if ( r.keys.indexOf(i) < 0 ) {
+					r.keys.push(i)
+					r[i] = p
+				} else {
+					r[i] += p
+				}
+				
+				r.sum += p
+			}
+			
+			function multiplyChanceToHit(a, b) {
+				var chances = new Object()
+				var k = a.keys
+				
+				chances.keys = []
+				chances.sum = 0
+				
+				if ( k && k.length > 0 ) {
+					k.forEach(i => b.forEach((d, j) => applyChanceToHit(chances, i, j, a[i] * d)))
+				} else {
+					a.forEach((c, i) => b.forEach((d, j) => applyChanceToHit(chances, i, j, c * d)))
+				}
+				
+				return chances
+			}
+			
+			function removeOneTimeChancesFromChanceToHit(chances) {
+				var r = []
+				
+				chances.forEach((p, i) => r[i / ((i % 59 ? 1 : 59) * (i % 61 ? 1 : 61))] = p + (r[i / ((i % 59 ? 1 : 59) * (i % 61 ? 1 : 61))] || 0))
+				
+				return r
+			}
+			
+			function normalizeChanceToHit(chances) {
+				var n = chances.sum
+				
+				if ( n > 0 ) {
+					chances.keys.forEach(i => chances[i] /= n)
+					chances.sum = 1
+					
+					return chances
+				}
+				
+				n = 0
+				chances.forEach(e => n += e)
+				n = 1.0 / n
+				
+				return chances.map(e => e * n)
+			}
+			
+			function evaluateOneChanceToHit(result, chance, damage, product, factor, index) {
+				var once = !(result.once === product)
+				var reduce = product
+				var hits = 0, criticals = 0, sum
+				var factorHit = damage.factorHit
+				var factorCritical = damage.factorCritical
+				
+				while ( reduce % factorHit === 0 ) { hits += 1; reduce /= factorHit }
+				while ( reduce % factorCritical === 0 ) { criticals += 1; reduce /= factorCritical }
+				
+				sum = hits + criticals
+				
+				if ( sum > 0 ) { result.once = product }
+				if ( hits > 0 ) { result.damage += chance * hits * ((once ? damage.onceDamage - damage.manyDamage : 0) / sum + damage.manyDamage) }
+				if ( criticals > 0 ) { result.damage += chance * criticals * ((once ? damage.onceCritical - damage.manyCritical : 0) / sum + damage.manyCritical) }
+				if ( criticals > 0 ) { result.chanceToCritical += chance * criticals }
+			}
+			
+			function evaluateChanceToHit(chances, damage) {
+				var result = new Object()
+				var n = 0
+				
+				result.once = 0
+				result.damage = 0
+				result.chanceToCritical = 0
+				
+				chances.forEach((p, i) => damage.forEach((d, j) => evaluateOneChanceToHit(result, p, d, i, j, ++n)))
+				
+				delete result.once
+				
+				return result
+			}
+			
 			function chanceToHitProduct(a, b) {
 				var r = []
 				
@@ -676,29 +789,7 @@
 			function chanceToHitResolveNearMisses(p) {
 				var r = []
 				
-				/*
-					AC 16
-					TH +5
-					OH +3
-					DR +4
-					
-					mmmmm mmbbb dhhhh hhhhc
-					
-					AC 16
-					TH +5
-					OH +3
-					DR +2
-					
-					mmmmm mmbbn hhhhh hhhhc
-					
-					m - miss
-					b - miss, consumes n, b, d
-					d - miss, consumes b, d
-					n - hit, consumes n
-					
-				*/
-				
-				//	1=miss, 3=near, 5=hit, 7=critical, 11=block, 13=defend
+				//	1=miss, 7=near, 3=hit, 5=critical
 				//	i%3?i:i*5/3 converts single near miss to hit
 				p.forEach((e, i) => r[i%7?i:i*3/7] = e + (r[i%7?i:i*3/7] || 0))
 				
@@ -713,12 +804,7 @@
 				return p.map(e => e / n)
 			}
 			
-			function computeAverageEffectiveness(e) {
-				if ( e.attacks < 0 || !e.damage ) {
-					return 0
-				}
-				
-				var trace = true
+			function evaluateAverageDamage(e) {
 				var advantageDamage = e.advantageDamage, advantageDamageOnceAdjustment = 0
 				var onceDiceDamage = 0, manyDiceDamage = 0
 				var onceModifyDamage = 0, manyModifyDamage = 0
@@ -734,6 +820,8 @@
 				var resistantAll = (e.resistant && e.resistant['all']) || false
 				var vulnerableAll = (e.vulnerable && e.vulnerable['all']) || false
 				var type, previousType = false
+				var criticalDice = e.criticalDice || 0
+				var criticalDamage = e.criticalDamage || 0
 				
 				immuneAll = immuneAll ? immuneAll !== 'once' ? 2 : 1 : 0
 				resistantAll = resistantAll ? resistantAll !== 'once' ? 2 : 1 : 0
@@ -843,8 +931,8 @@
 				onceReduceDamage += manyReduceDamage
 				
 				if ( onceDieCritical < manyDieCritical ) { onceDieCritical = manyDieCritical }
-				manyCritical = manyDiceDamage * 2 + (e.criticalDice | 0) * (manyDieCritical + 1) / 2
-				onceCritical = onceDiceDamage * 2 + (e.criticalDice | 0) * (onceDieCritical + 1) / 2
+				manyCritical = manyDiceDamage * 2 + criticalDice * (manyDieCritical + 1) / 2
+				onceCritical = onceDiceDamage * 2 + criticalDice * (onceDieCritical + 1) / 2
 				
 				if ( advantageDamage ) {
 					//if ( trace ) { console.log("Average damage normal 1 x " + onceDiceDamage.toFixed(1) + " (c" + onceCritical.toFixed(1) + ")") }
@@ -855,8 +943,8 @@
 					onceDiceDamage += advantageDamageOnceAdjustment
 					
 					onceDiceCombination = multiply(onceDiceCombination, onceDiceCombination)
-					if ( e.criticalDice > 0 ) { onceDiceCombination = multiply(onceDiceCombination, diceCombinations(onceDieCritical, e.criticalDice)) }
-					onceCritical = advantageAverageForDiceCombinations(onceDiceCombination, onceDice * 2 + (e.criticalDice || 0))
+					if ( criticalDice > 0 ) { onceDiceCombination = multiply(onceDiceCombination, diceCombinations(onceDieCritical, criticalDice)) }
+					onceCritical = advantageAverageForDiceCombinations(onceDiceCombination, onceDice * 2 + criticalDice)
 					onceCritical += advantageDamageOnceAdjustment * 2
 					
 					//if ( trace ) { console.log("Average damage advantage 1 x " + onceDiceDamage.toFixed(1) + " (c" + onceCritical.toFixed(1) + ")") }
@@ -867,8 +955,8 @@
 						manyDiceDamage = advantageAverageForDiceCombinations(manyDiceCombination, manyDice)
 						
 						manyDiceCombination = multiply(manyDiceCombination, manyDiceCombination)
-						if ( e.criticalDice > 0 ) { manyDiceCombination = multiply(manyDiceCombination, diceCombinations(manyDieCritical, e.criticalDice)) }
-						manyCritical = advantageAverageForDiceCombinations(manyDiceCombination, manyDice * 2 + (e.criticalDice || 0))
+						if ( criticalDice > 0 ) { manyDiceCombination = multiply(manyDiceCombination, diceCombinations(manyDieCritical, criticalDice)) }
+						manyCritical = advantageAverageForDiceCombinations(manyDiceCombination, manyDice * 2 + criticalDice)
 						
 						//if ( trace ) { console.log("Average damage advantage " + (e.attacks - 1) + " x " + manyDiceDamage.toFixed(1) + " (c" + manyCritical.toFixed(1) + ")") }
 					}
@@ -878,8 +966,8 @@
 				onceDamage = onceDiceDamage + onceModifyDamage - onceReduceDamage
 				manyCritical += manyModifyDamage - manyReduceDamage
 				onceCritical += onceModifyDamage - onceReduceDamage
-				manyCritical += (e.criticalDamage | 0)
-				onceCritical += (e.criticalDamage | 0)
+				manyCritical += criticalDamage
+				onceCritical += criticalDamage
 				
 				//if ( trace ) { console.log("Average damage 1 x " + onceDamage.toFixed(1) + " (c" + onceCritical.toFixed(1) + ") + " + (e.attacks - 1) + " x " + manyDamage.toFixed(1) + " (c" + manyCritical.toFixed(1) + (e.criticalDice ? ' ' + e.criticalDice + 'd' + manyDieCritical : '') + ")") }
 				
@@ -888,6 +976,27 @@
 				if ( manyCritical < 0 ) { manyCritical = 0 }
 				if ( onceCritical < 0 ) { onceCritical = 0 }
 				
+				return {
+					'damage':manyDamage,
+					'critical':manyCritical,
+					'onceDamage':onceDamage,
+					'onceCritical':onceCritical
+				}
+			}
+			
+			function computeSingleAverageEffectiveness(e) {
+				if ( e.attacks < 0 || !e.damage ) {
+					return 0
+				}
+				
+				var averageDamage = evaluateAverageDamage(e)
+				
+				manyDamage = averageDamage.damage
+				onceDamage = averageDamage.onceDamage
+				manyCritical = averageDamage.critical
+				onceCritical = averageDamage.onceCritical
+				
+				var trace = true
 				var attacks = Math.max(+e.attacks, 1)
 				var armorClass = e.armorClass || 10
 				var onceArmorClass = 0, manyArmorClass = 0
@@ -1027,6 +1136,35 @@
 				return damage
 			}
 			
+			function parseEffectiveness(string) {
+				var parts = string.split(';')
+				var index, count = parts.length
+				
+				if ( count > 1 ) {
+					var defense = parts[count - 1].indexOf('@')
+					
+					if ( defense >= 0 ) {
+						var suffix = parts[count - 1].slice(defense)
+						
+						for ( index = 0 ; index < count - 1 ; ++index ) {
+							if ( parts.length > 0 && parts[index].indexOf('@') < 0 ) {
+								parts[index] += suffix
+							}
+						}
+					}
+				}
+				
+				return parts.map(parseSingleEffectiveness)
+			}
+			
+			function computeAverageEffectiveness(e) {
+				return e.map(computeSingleAverageEffectiveness).reduce((s, e) => s+e, 0)
+			}
+			
+			function computeRandomEffectiveness(e) {
+				return e.map(computeSingleRandomEffectiveness).reduce((s, e) => s+e, 0)
+			}
+			
 			function experiment() {
 			}
 			
@@ -1093,7 +1231,7 @@
 				if ( !input.value ) { output.innerHTML = ""; return }
 				
 				var parsed = parseEffectiveness(input.value)
-				if ( !parsed.damage.length ) { return }
+				if ( !parsed.length && !parsed[0].damage.length ) { return }
 				
 				var effectiveness = computeAverageEffectiveness(parsed)
 				var rolled, index, sum = 0, samples = 10
@@ -1171,7 +1309,7 @@
 			<tr><td>Feat: Sharpshooter</td><td>-5/+10</td><td>Hit -5, damage +10</td></tr>
 			<tr><td>Spell: Bane</td><td>-d4</td><td>Hit -d4</td></tr>
 			<tr><td>Spell: Bless</td><td>+d4</td><td>Hit +d4</td></tr>
-			<tr><td>Spell: Foresight</td><td>a</td><td>Advantage on hit</td></tr>
+			<tr><td>Spell: Foresight</td><td>a @ d</td><td>Advantage on hit, impose disadvantage on attackers</td></tr>
 			<tr><td>Spell: Haste</td><td>#2 @ +2</td><td>Attack one more time, Armor class +2</td></tr>
 			<tr><td>Spell: Hex</td><td>/ +d6n</td><td>Damage +d6 necrotic</td></tr>
 			<tr><td>Spell: Invisibility</td><td>ao</td><td>Advantage on hit one time</td></tr>
@@ -1206,7 +1344,7 @@
 		<p>
 			<hr/>
 			
-			<span class='tiny'>Some calculations are approximated.  With advantage on damage, resistance and vulnerability are approximate.  Disadvantage on attack until a hit succeeds is approximated.</span>
+			<span class='tiny'>Some calculations are approximated.  With advantage on damage, resistance and vulnerability are approximate.  Disadvantage on attack until a hit succeeds is approximated.  One time defense options are applied to the first attack instead of strategically.</span>
 		</p>
 	</body>
 </html>
