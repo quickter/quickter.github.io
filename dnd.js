@@ -85,7 +85,8 @@ var dnd = {
 		{"key":"poison", "name":"Poison"},
 		{"key":"disease", "name":"Disease"},
 		{"key":"mental-magic", "name":"Mind Affecting Magical Effects"},
-		{"key":"spells", "name":"Damage from Spells"},
+		{"key":"spell-damage", "name":"Damage from Spells"},
+		{"key":"spells", "name":"Spells"},
 		{"key":"aging", "name":"Magical Aging"},
 		{"key":"sleep", "name":"Magical Sleep"},
 		{"key":"acid", "name":"Acid"},
@@ -1160,7 +1161,7 @@ var dnd = {
 		"features":[
 			{"level":3, "key":"wrath", "name":"Channel Divinity: Nature's Wrath", "summary":"Entangle", "type":"action"},
 			{"level":3, "key":"turn", "name":"Channel Divinity: Turn the Faithless", "summary":"Turn fey and fiends", "type":"action"},
-			{"level":7, "key":"warding", "name":"Aura of Warding", "summary":"Resistance to spell damage radius 10", "resistance":["spells"]},
+			{"level":7, "key":"warding", "name":"Aura of Warding", "summary":"Resistance to spell damage radius 10", "resistance":["spell-damage"]},
 			{"level":15, "key":"sentinel", "name":"Undying Sentinel", "summary":"1/day avoid death", "immunities":["aging"]},
 			{"level":20, "key":"elder", "name":"Elder Champion", "summary":"1/day heal, quick spells, impose disadvantage on saves"},
 		]
@@ -1271,35 +1272,83 @@ var dnd = {
 	},{
 		"key":"abjuration",
 		"name":"School of Abjuration",
-		"features":[]
+		"features":[
+            {"level":2, "key":"savant", "name":"Abjuration Savant", "summary":"Half gold and time to copy abjuration spells"},
+            {"level":2, "key":"ward", "name":"Arcane Ward", "summary":"Abjuration spells power ward that absorbs damage"},
+            {"level":6, "key":"project", "name":"Projected Ward", "summary":"Use arcane ward to aid creatures within 30 feet", "type":"reaction"},
+            {"level":10, "key":"improve", "name":"Improved Abjuration", "summary":"Add proficiency bonus to abjuration spell ability checks"},
+            {"level":14, "key":"resist", "name":"Spell Resistance", "summary":"Advantage on spell saves and resistance to spell damage", "resistance":["spell-damage"], "advantage_on_saves":["spells"]},
+		]
 	},{
 		"key":"conjuration",
 		"name":"School of Conjuration",
-		"features":[]
+		"features":[
+            {"level":2, "key":"savant", "name":"Conjuration Savant", "summary":"Half gold and time to copy conjuration spells"},
+            {"level":2, "key":"conjure", "name":"Minor Conjuration", "summary":"Conjure small inanimate object", "type":"action"},
+            {"level":6, "key":"transpose", "name":"Benign Transposition", "summary":"1/day teleport 30 feet or transpose with willing target", "type":"action"},
+            {"level":10, "key":"focus", "name":"Focused Conjuration", "summary":"Concentration on conjuration spells unaffected by taking damage"},
+            {"level":14, "key":"durable", "name":"Durable Summons", "summary":"Conjured creatures have 30 temporary hit points"},
+		]
 	},{
 		"key":"divination",
 		"name":"School of Divination",
-		"features":[]
+		"features":[
+            {"level":2, "key":"savant", "name":"Divination Savant", "summary":"Half gold and time to copy divination spells"},
+            {"level":2, "key":"portent", "name":"Portent", "summary":"2/day replace any attack, save or ability check with chosen roll"},
+            {"level":6, "key":"expert", "name":"Expert Divination", "summary":"Restore spell slots when casting divination spells"},
+            {"level":10, "key":"eye", "name":"The Third Eye", "summary":"1/rest see ethereal, invisible, in darkness, or read any language", "type":"action"},
+            {"level":14, "key":"potent", "name":"Greater Portent", "summary":"Gain third portent die"},
+		]
 	},{
 		"key":"enchantment",
 		"name":"School of Enchantment",
-		"features":[]
+		"features":[
+            {"level":2, "key":"savant", "name":"Enchantment Savant", "summary":"Half gold and time to copy enchantment spells"},
+            {"level":2, "key":"gaze", "name":"Hypnotic Gaze", "summary":"1/day daze creature that fails wisdom save", "type":"action"},
+            {"level":6, "key":"charm", "name":"Instinctive Charm", "summary":"Force nearby attacker to attack a different target", "type":"reaction"},
+            {"level":10, "key":"split", "name":"Split Enchantment", "summary":"Enchantment spells with a single target can have a second target"},
+            {"level":14, "key":"alter", "name":"Alter Memories", "summary":"Enchantment spells cause single target to forget being enchanted"},
+		]
 	},{
 		"key":"evocation",
 		"name":"School of Evocation",
-		"features":[]
+		"features":[
+            {"level":2, "key":"savant", "name":"Evocation Savant", "summary":"Half gold and time to copy evocation spells"},
+            {"level":2, "key":"sculpt", "name":"Sculpt Spells", "summary":"Choose creatures to be unaffected by evocation spells"},
+            {"level":6, "key":"potent", "name":"Potent Cantrip", "summary":"Damaging cantrips with savings throws cause half damage on save"},
+            {"level":10, "key":"empower", "name":"Empowered Evocation", "summary":"Add intelligence modifier to evocation spell damage"},
+            {"level":14, "key":"overchannel", "name":"Overchannel", "summary":"1/day evocation spell up to fifth level deals maximum damage"},
+		]
 	},{
 		"key":"illusion",
 		"name":"School of Illusion",
-		"features":[]
+		"features":[
+            {"level":2, "key":"savant", "name":"Illusion Savant", "summary":"Half gold and time to copy illusion spells"},
+            {"level":2, "key":"minor", "name":"Improved Minor Illusion", "summary":"Minor illusion cantrip creates both sound and image"},
+            {"level":6, "key":"malleable", "name":"Malleable Illusions", "summary":"Lasting illusion spells may be reshaped", "type":"action"},
+            {"level":10, "key":"deflect", "name":"Illusory Self", "summary":"1/rest cause attack to automatically miss", "type":"reaction"},
+            {"level":14, "key":"reality", "name":"Illusory Reality", "summary":"Make inanimate part of illusion spell real for a minute", "type":"bonusaction"},
+		]
 	},{
 		"key":"necromancy",
 		"name":"School of Necromancy",
-		"features":[]
+		"features":[
+            {"level":2, "key":"savant", "name":"Necromancy Savant", "summary":"Half gold and time to copy necromancy spells"},
+            {"level":2, "key":"harvest", "name":"Grim Harvest", "summary":"Regain hit points by killing creatures with spells"},
+            {"level":6, "key":"thralls", "name":"Undead Thralls", "summary":"Created undead have bonus hit points and damage"},
+            {"level":10, "key":"inured", "name":"Inured to Undeath", "summary":"Hit point maximum cannot be reduced, resist necrotic damage", "resistance":["necrotic"]},
+            {"level":14, "key":"command", "name":"Command Undead", "summary":"Control one undead target that fails a charisma save", "type":"action"},
+		]
 	},{
 		"key":"transmutation",
 		"name":"School of Transmutation",
-		"features":[]
+		"features":[
+            {"level":2, "key":"savant", "name":"Transmutation Savant", "summary":"Half gold and time to copy transmutation spells"},
+            {"level":2, "key":"alchemy", "name":"Minor Alchemy", "summary":"Alter material of a simple object for an hour"},
+            {"level":6, "key":"stone", "name":"Transmuter's Stone", "summary":"Create a magical stone that grants a chosen benefit"},
+            {"level":10, "key":"shapechanger", "name":"Shapechanger", "summary":"1/rest cast polymorph on self limited to challenge rating 1 beast", "type":"action"},
+            {"level":14, "key":"master", "name":"Master Transmuter", "summary":"Consume transmuter's stone to cast a spell or effect", "type":"action"},
+		]
 	}],
 	"names":{
 		"human":{
