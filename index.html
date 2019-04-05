@@ -1492,6 +1492,10 @@
 					}
 				}
 				
+				if ( key === 'race' || key === 'sex' ) {
+					randomName()
+				}
+				
 				if ( key === 'crass' && character.crass !== value ) {
 					delete character.increases
 					character.ordered = false
@@ -1618,6 +1622,36 @@
 				}
 				
 				return result
+			}
+			
+			function randomName() {
+				var name = []
+				var sex = character.sex
+				var race = lookup.races[character.race]
+				var namesKey = race && race.names[randomInteger(race.names.length)]
+				var names = namesKey && dnd.names[namesKey]
+				
+				if ( names && sex ) {
+					if ( names[sex] ) {
+						name.push(names[sex][randomInteger(names[sex].length)])
+					} else if ( names.birth ) {
+						name.push(names.birth[randomInteger(names.birth.length)])
+					}
+				
+					if ( names.nick ) {
+						name.push("(" + names.nick[randomInteger(names.nick.length)] + ")")
+					}
+				
+					if ( names.family ) {
+						name.push(names.family[randomInteger(names.family.length)])
+					}
+				
+					if ( names.clan ) {
+						name.push(names.clan[randomInteger(names.clan.length)])
+					}
+				}
+				
+				_element('character-name').innerHTML = name.join(" ")
 			}
 			
 			function randomCharacter() {
@@ -1752,6 +1786,7 @@
 					
 				}
 				
+				randomName()
 				advanceHeight()
 				renderCharacter(character, 'random', true)
 			}
@@ -1760,6 +1795,7 @@
 				character = {'rolls':defaults.rolls, 'archetype':{}}
 				
 				_element('character-form').reset()
+				_element('character-name').innerHTML = ''
 				renderCharacter(character, 'reset', true)
 			}
 			
@@ -2503,6 +2539,8 @@
 			</p>
 			<p id="rolled"></p>
 			<hr/>
+			
+			<p id='character-name' class='toggle tall' title='Name' onclick='randomName()'> </p>
 			
 			<span id='level' class='advances tall' title='Level' onclick='advanceLevel(event)'> </span>
 			<span class='bullet'>&bull;</span>
