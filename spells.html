@@ -715,7 +715,7 @@
 		"material": "A weapon.",
 		"duration": "1 round",
 		"classes": ["Sorcerer","Warlock","Wizard"],
-		"desc": "<p>As part of the action used the cast this spell, you must make a melee attack with a weapon against one create within the spell‘s range otherwise the spell fails. On a hit, the target suffers the attack‘s normal effects, and it becomes sheathed in booming energy until the start of your next turn. If the target willingly moves before then, it immediately takes 1d8 thunder damage, and the spell ends.</p><p>This spell‘s damage increases when you reach higher levels. At 5th level, the melee attack deals an extra 1d8 thunder damage to the target, and the damage the target take for moving increases to 2d8. Both damage rolls increase by 1d8 at 11th level and 17th level.</p>",
+		"desc": "<p>As part of the action used to cast this spell, you must make a melee attack with a weapon against one create within the spell‘s range otherwise the spell fails. On a hit, the target suffers the attack‘s normal effects, and it becomes sheathed in booming energy until the start of your next turn. If the target willingly moves before then, it immediately takes 1d8 thunder damage, and the spell ends.</p><p>This spell‘s damage increases when you reach higher levels. At 5th level, the melee attack deals an extra 1d8 thunder damage to the target, and the damage the target take for moving increases to 2d8. Both damage rolls increase by 1d8 at 11th level and 17th level.</p>",
 		"book": "scag",
 		"page": 142
 	},{
@@ -3101,7 +3101,7 @@
 		"material": "A weapon.",
 		"duration": "Instantaneous",
 		"classes": ["Sorcerer","Warlock","Wizard"],
-		"desc": "<p>As part of the action used the cast this spell, you must make a melee attack with a weapon against one create within the spell‘s range otherwise the spell fails. On a hit, the target suffers the attack‘s normal effects, and green fire leaps from the target to a different creature of your choice that you can see within 5 feet of it. The second creature take fire damage equal to your spellcasting modifier.</p><p>This spell‘s damage increases when you reach higher levels. At 5th level, the melee attack deals an extra 1d8 fire damage to the target, and the fire damage to the second creature increases to 18d + your spellcasting ability modifier. Both damage rolls increase by 1d8 at 11th level and 17th level.</p>",
+		"desc": "<p>As part of the action used to cast this spell, you must make a melee attack with a weapon against one creature within the spell‘s range otherwise the spell fails. On a hit, the target suffers the attack‘s normal effects, and green fire leaps from the target to a different creature of your choice that you can see within 5 feet of it. The second creature takes fire damage equal to your spellcasting modifier.</p><p>This spell‘s damage increases when you reach higher levels. At 5th level, the melee attack deals an extra 1d8 fire damage to the target, and the fire damage to the second creature increases to 18d + your spellcasting ability modifier. Both damage rolls increase by 1d8 at 11th level and 17th level.</p>",
 		"book": "scag",
 		"page": 143
 	},{
@@ -3693,7 +3693,7 @@
 		"duration": "Instantaneous",
 		"save": "constitution",
 		"classes": ["Druid","Sorcerer","Warlock","Wizard"],
-		"desc": "<p>You cause a cloud of mites, fleas, and other parasites to appear momentarily on one creature you can see within range. The target must succeed on a Constitution saving throw, or it takes 1d6 poison damage and moves 5 feet in a random direction if it can move and its speed is at least 5 feet. Roll a d4 for the direction: 1., north; 2, south; 3, east; or 4, west. This movement doesn’t provoke opportunity attacks, and if the direction rolled is blocked, the target doesn‘t move.</p><p>The spell’s damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6).</p>",
+		"desc": "<p>You cause a cloud of mites, fleas, and other parasites to appear momentarily on one creature you can see within range. The target must succeed on a Constitution saving throw, or it takes 1d6 poison damage and moves 5 feet in a random direction if it can move and its speed is at least 5 feet. Roll a d4 for the direction: 1, north; 2, south; 3, east; or 4, west. This movement doesn’t provoke opportunity attacks, and if the direction rolled is blocked, the target doesn‘t move.</p><p>The spell’s damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6).</p>",
 		"book": "xgte",
 		"page": 158
 	},{
@@ -7353,9 +7353,9 @@
 						classname = classname + ( classname ? " " : "" ) + 'sorted-' + (ascending ? 'ascending' : 'descending')
 					}
 					
-					attribute = table.getAttribute('data-sort-multiple') || false
+					attribute = table.getAttribute('data-sort-multiple')
 					if ( !( +attribute || 'yes' === attribute || '' === attribute ) ) {
-						classmatch = []
+						classmatch = ['sorted-ascending',/(^|\s*)sorted-ascending(\s*|$)/,'sorted-descending',/(^|\s*)sorted-descending(\s*|$)/]
 						count = classmatch.length
 						for ( index = 0 ; index < count ; index += 2 ) {
 							sorted = table.getElementsByClassName(classmatch[index])
@@ -7421,7 +7421,8 @@
 						if ( value.hasAttribute('data-sort-key') ) {
 							value = value.getAttribute('data-sort-key')
 						} else if ( value.childElementCount > 0 && 'INPUT' === value.firstElementChild.nodeName ) {
-							value = value.firstElementChild.value || ""
+							value = value.firstElementChild
+							value = (value.checked === undefined) ? value.value || "" : value.checked
 						} else {
 							value = value.textContent.trim()
 						}
@@ -7598,6 +7599,10 @@
 					else if ( value.indexOf && value.indexOf('mile') > 0 ) { value = parseInt(value) * 5280 }
 					spell['rangekey'] = value
 					
+					value = spell['higher_level']
+					value = value ? value.replace("<p>", "<p class='higher-level'>") : ""
+					spell['higher_level'] = value
+					
 					spell['page'] = +spell.page || spell.page
 					spell['styles'] = styles.join(" ")
 					spell['ss'] = (spell['school'] === 'Illusion') ? 'Ill' : spell['school'].substr(0, 2)
@@ -7605,7 +7610,6 @@
 					spell['classnames'] = spell['classes'].join(", ")
 					spell['namekey'] = spell.name.replace(/['‘]/g, '')
 					
-					if ( spell['higher_level'] === undefined ) { spell['higher_level'] = '' }
 					if ( spell['material'] === undefined ) { spell['material'] = '' }
 					
 					result.push(spell)
@@ -7623,7 +7627,8 @@
 			}
 			
 			function populateSpells() {
-				var rowTemplate = "<tr id='{key}' class='spell {styles}'>" +
+				var rowTemplate = "<tr id='row-{key}' class='spell {styles}'>" +
+					"<td class='prepared'><input id='spell-{key}' name='{key}' type='checkbox' /></td>" +
 					"<td class='name' data-sort-key='{namekey}'><label class='toggle'><input type='checkbox' class='toggle' /><span>{name}</span><div class='toggled details'><p class='material'>{material}</p>{desc}{higher_level}<p class='classnames'>{classnames}</p><p class='page-{book}'>{page}</p></div></label></td>" +
 					"<td class='level'>{level}</td>" +
 					"<td class='school'>{ss}</td>" +
@@ -7633,6 +7638,7 @@
 					"<td class='duration' data-sort-key='{durationkey}'>{period}</td>" +
 				"</tr>"
 				var header = "<tr id='header' class='header'>" +
+					"<th class='prepared sortable' data-sort-invert> </th>" +
 					"<th class='name sortable' data-sort-format='locale'>Name</th>" +
 					"<th class='level sortable sorted-ascending' data-sort-format='number'>Level</th>" +
 					"<th class='school sortable'>Sc</th>" +
@@ -7655,19 +7661,35 @@
 				var input = event.target
 				var elements = table.getElementsByClassName('name')
 				var index = elements.length
-				var found, value = input.value
+				var found, value = input.value || ""
+				var count = 0
 				
-				if ( value ) {
+				if ( !value ) {
 					while ( index --> 1 ) {
-						found = elements[index].textContent.indexOf(value)
+						_assignClass(elements[index].parentElement, className, -1)
+					}
+				} else if ( value.search(/[[?*.|^${\\]/) < 0 ) {
+					value = value.toLowerCase()//.replace(/['‘’"“”]/g, '')
+					
+					while ( index --> 1 ) {
+						found = elements[index].textContent.toLowerCase().indexOf(value)
+						count += (found < 0) ? 0 : 1
 						
 						_assignClass(elements[index].parentElement, className, found < 0 ? 1 : -1)
 					}
 				} else {
+					try { value = new RegExp(value, 'ius') }
+					catch (error) { return }
+					
 					while ( index --> 1 ) {
-						_assignClass(elements[index].parentElement, className, -1)
+						found = elements[index].textContent.search(value)
+						count += (found < 0) ? 0 : 1
+						
+						_assignClass(elements[index].parentElement, className, found < 0 ? 1 : -1)
 					}
 				}
+				
+				_element('spell-text-filter-count').innerHTML = count || ''
 			}
 		</script>
 		
@@ -7717,6 +7739,9 @@
 			th.sortable.unsorted, th.sortable.sorted-descending { cursor:s-resize; }
 			th.sortable.sorted-ascending { cursor:n-resize; }
 			
+			th.sortable.sorted-descending { text-decoration:overline; }
+			th.sortable.sorted-ascending { text-decoration:underline; }
+			
 			input.toggle, input.filter { display:none; }
 			input.filter:not(:checked) + label { opacity:0.5; }
 			input.toggle:not(:checked) ~ div.toggled { display:none; }
@@ -7725,14 +7750,14 @@
 			table#spells tr { border-bottom:0.25px solid #DDD; }
 			table#spells td { padding-top:0.25em; padding-bottom:0.25em; }
 			
+			p.higher-level:not(:empty):before { content:"At Higher Level. "; font-weight:bold; font-style:italic; }
 			p.material:not(:empty):before { content:"Materials: "; font-weight:bold; }
 			p.material:empty { display:none; }
-			
 			p.classnames:not(:empty):before { content:"Classes: "; font-weight:bold; }
 			p.classnames:empty { display:none; }
 			
 			p.page-phb:before  { content:"Player's Handbook page " }
-			p.page-xgte:before { content:"Xanathar's Guid to Everything page " }
+			p.page-xgte:before { content:"Xanathar's Guide to Everything page " }
 			p.page-eepc:before { content:"Elemental Evil Player's Companion page " }
 			p.page-scag:before { content:"Sword Coast Adventure Guide page " }
 			p.page-trot:before { content:"The Rise of Tiamat page " }
@@ -7818,6 +7843,8 @@
 				user-select:none;
 			}
 			
+			span#spell-text-filter-count { opacity:0.5; font-size:60%; }
+			
 			@media (max-width:600px) {
 				body { min-width:30em; padding: 1em; }
 				th.components, td.components { display:none; }
@@ -7838,6 +7865,7 @@
 		
 		<span class='caption taper'>Search:</span>
 		<input type='search' id='spell-text-filter' name='spell-text-filter' size='40' placeholder='' oninput='handleSearch(event)'>
+		<span id='spell-text-filter-count'></span>
 		
 		<br/><span class='caption taper'>Level:</span>
 		<input id='filter-level-0' type='checkbox' checked class='filter'/><label for='filter-level-0' class='filter'>0</label>
