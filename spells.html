@@ -7589,7 +7589,7 @@
 					result.push(spell)
 				}
 				
-				//result.sort((a, b) => a.name.localeCompare(b.name))
+				result.sort((a, b) => (a.level - b.level) || a.name.localeCompare(b.name))
 				
 				return result
 			}
@@ -7612,7 +7612,7 @@
 				"</tr>"
 				var header = "<tr id='header' class='header'>" +
 					"<th class='name sortable' data-sort-format='locale'>Name</th>" +
-					"<th class='level sortable' data-sort-format='number'>Level</th>" +
+					"<th class='level sortable sorted-ascending' data-sort-format='number'>Level</th>" +
 					"<th class='school sortable'>Sc</th>" +
 					"<th class='casting sortable' data-sort-format='number'>Time</th>" +
 					"<th class='range sortable' data-sort-format='number'>Range</th>" +
@@ -7625,7 +7625,6 @@
 				
 				table.innerHTML = header + rows.join("")
 				tableSort(table)
-				tableSort('spells^1')
 			}
 		</script>
 		
