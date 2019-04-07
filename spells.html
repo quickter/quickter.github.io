@@ -37,6 +37,7 @@
 		"range": "Self",
 		"components": ["S"],
 		"duration": "1 round",
+		"attack": true,
 		"defense": true,
 		"damage": "+1d6",
 		"damage_type": "*",
@@ -121,6 +122,7 @@
 		"components": ["V","S"],
 		"duration": "Up to 1 hour",
 		"concentration": true,
+		"attack": true,
 		"damage": "1d6+1",
 		"damage_type": "*",
 		"classes": ["Sorcerer","Wizard"],
@@ -451,6 +453,7 @@
 		"components": ["V"],
 		"duration": "Up to 1 minute",
 		"concentration": true,
+		"attack": true,
 		"damage": "+5d10",
 		"damage_type": "force",
 		"classes": ["Paladin"],
@@ -620,6 +623,7 @@
 		"material": "A sprinkling of holy water.",
 		"duration": "Up to 1 minute",
 		"concentration": true,
+		"attack": true,
 		"defense": true,
 		"classes": ["Cleric","Paladin"],
 		"desc": "<p>You bless up to three creatures of your choice within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target can roll a d4 and add the number rolled to the attack roll or saving throw.</p>",
@@ -740,6 +744,7 @@
 		"components": ["V","M"],
 		"material": "A weapon.",
 		"duration": "1 round",
+		"attack": true,
 		"damage": "*d8",
 		"damage_type": "thunder",
 		"classes": ["Sorcerer","Warlock","Wizard"],
@@ -756,6 +761,7 @@
 		"components": ["V"],
 		"duration": "Up to 1 minute",
 		"concentration": true,
+		"attack": true,
 		"damage": "+2d6",
 		"damage_type": "radiant",
 		"classes": ["Paladin"],
@@ -1655,6 +1661,7 @@
 		"components": ["V"],
 		"duration": "Up to 1 minute",
 		"concentration": true,
+		"attack": true,
 		"damage": "+1d4",
 		"damage_type": "radiant",
 		"classes": ["Cleric","Paladin"],
@@ -2030,6 +2037,7 @@
 		"components": ["V","S"],
 		"duration": "Up to 1 minute",
 		"concentration": true,
+		"attack": true,
 		"damage": "+1d4",
 		"damage_type": "radiant",
 		"classes": ["Cleric","Paladin"],
@@ -2300,6 +2308,7 @@
 		"components": ["V","S"],
 		"duration": "Up to 1 hour",
 		"concentration": true,
+		"attack": true,
 		"damage": "+1d4",
 		"damage_type": "*",
 		"classes": ["Paladin"],
@@ -2801,6 +2810,7 @@
 		"components": ["V","S"],
 		"duration": "Up to 1 hour",
 		"concentration": true,
+		"attack": true,
 		"damage": "+1d6",
 		"damage_type": "fire",
 		"classes": ["Druid","Ranger","Sorcerer","Wizard"],
@@ -3228,6 +3238,7 @@
 		"components": ["V","M"],
 		"material": "A weapon.",
 		"duration": "Instantaneous",
+		"attack": true,
 		"damage": "*d8",
 		"damage_type": "fire",
 		"classes": ["Sorcerer","Warlock","Wizard"],
@@ -3554,6 +3565,7 @@
 		"material": "The petrified eye of a newt.",
 		"duration": "Up to 1 hour",
 		"concentration": true,
+		"attack": true,
 		"damage": "+1d6",
 		"damage_type": "necrotic",
 		"classes": ["Warlock"],
@@ -3662,6 +3674,7 @@
 		"components": ["V"],
 		"duration": "Up to 1 hour",
 		"concentration": true,
+		"attack": true,
 		"damage": "+1d6",
 		"damage_type": "*",
 		"classes": ["Paladin","Ranger"],
@@ -4404,6 +4417,7 @@
 		"components": ["V","S"],
 		"duration": "Up to 1 hour",
 		"concentration": true,
+		"attack": true,
 		"damage": "+1",
 		"damage_type": "*",
 		"classes": ["Cleric","Paladin","Wizard"],
@@ -5743,6 +5757,7 @@
 		"range": 120,
 		"components": ["V","S"],
 		"duration": "Instantaneous",
+		"attack": true,
 		"damage": "2d6",
 		"damage_type": "fire",
 		"classes": ["Cleric","Sorcerer","Warlock","Wizard"],
@@ -5862,6 +5877,7 @@
 		"components": ["V","S"],
 		"duration": "Up to 1 minute",
 		"concentration": true,
+		"attack": true,
 		"damage": "2d8+m",
 		"damage_type": "psychic",
 		"classes": ["Sorcerer","Warlock","Wizard"],
@@ -5976,6 +5992,7 @@
 		"components": ["V","S","M"],
 		"material": "Mistletoe, a shamrock leaf, and a club or quarterstaff.",
 		"duration": "1 minute",
+		"attack": true,
 		"damage": "1d8",
 		"damage_type": "*",
 		"classes": ["Druid"],
@@ -6719,6 +6736,7 @@
 		"material": "A few hairs from a bull.",
 		"duration": "Up to 10 minutes",
 		"concentration": true,
+		"attack": true,
 		"damage": "+2d12",
 		"damage_type": "force",
 		"classes": ["Wizard"],
@@ -7518,6 +7536,7 @@
 		"components": ["V"],
 		"duration": "Up to 1 minute",
 		"concentration": true,
+		"attack": true,
 		"damage": "+1d8",
 		"damage_type": "force",
 		"classes": ["Ranger"],
@@ -7958,12 +7977,12 @@
 				var rowTemplate = "<tr id='row-{key}' class='spell {styles}'>" +
 					"<td class='prepared'><input id='spell-{key}' name='{key}' type='checkbox' /></td>" +
 					"<td class='name' data-sort-key='{namekey}'><label class='toggle'><input type='checkbox' class='toggle' /><span>{name}</span><div class='toggled details'><p class='material'>{material}</p>{desc}{higher_level}<p class='classnames'>{classnames}</p><p class='page-{book}'>{page}</p></div></label></td>" +
-					"<td class='level'>{level}</td>" +
-					"<td class='school'>{ss}</td>" +
-					"<td class='casting' data-sort-key='{castingkey}'>{casting}</td>" +
-					"<td class='range' data-sort-key='{rangekey}'>{range}</td>" +
-					"<td class='components'>{vsm}</td>" +
-					"<td class='duration' data-sort-key='{durationkey}'>{period}</td>" +
+					"<td class='level' data-sort-key='{level}' title='Level {level}'>{level}</td>" +
+					"<td class='school' data-sort-key='{ss}' title='{school}'>{ss}</td>" +
+					"<td class='casting' data-sort-key='{castingkey}' title='Casting Time {casting_time}'>{casting}</td>" +
+					"<td class='range' data-sort-key='{rangekey}' title='Range {range}'>{range}</td>" +
+					"<td class='components' data-sort-key='{vsm}' title='Components {vsm}'>{vsm}</td>" +
+					"<td class='duration' data-sort-key='{durationkey}' title='Duration {duration}'>{period}</td>" +
 					//"<td class='damage'>{damage}</td>" +
 				"</tr>"
 				var header = "<tr id='header' class='header'>" +
@@ -8046,6 +8065,7 @@
 			
 			div.details { white-space:normal; width:20em; font-size:80%; }
 			div.details > p { width:150%; }
+			
 			span.taper { display:inline-block; font-size:62.5%; }
 			span.taper:first-letter { font-size:160%; }
 			
@@ -8054,13 +8074,13 @@
 			tr.spell { vertical-align:top; }
 			th.name, th.school, th.casting, th.components, th.duration { text-align:left; }
 			td.range, th.range, td.level, th.level { text-align:right; padding-right:1em; }
-			th.name { width:17em } /*Mordenkainen's Magnificent Mansion*/
-			th.level { width:2em } /*0 */
-			th.school { width:2em } /*M*/
-			th.casting { width:4em } /*Reaction*/
-			th.range { width:5em; } /*Unlimited*/
-			th.components { width:3em } /*VSM*/
-			th.duration { width:7em; } /*Instantaneous/1 hour*/
+			th.name { width:17em }
+			th.level { width:2em }
+			th.school { width:2em }
+			th.casting { width:4em }
+			th.range { width:5em; }
+			th.components { width:3em }
+			th.duration { width:7em; }
 			
 			tr.filtered { display:none; }
 			tr.is-ritual > td.casting:after { content:" ᴿ"; opacity:0.75; font-size:80%; }
@@ -8154,18 +8174,33 @@
 			input#filter-casting-hours:not(:checked) ~ table#spells tr.cast-hours { display:none; }
 			input#filter-casting-other:not(:checked) ~ table#spells tr.cast-other { display:none; }
 			
-			input#filter-ritual:checked ~ table#spells tr.not-ritual { display:none; }
-			input#filter-concentration:checked ~ table#spells tr.not-concentration { display:none; }
-			input#filter-attack:checked ~ table#spells tr.not-attack { display:none; }
-			input#filter-save:checked ~ table#spells tr.not-save { display:none; }
-			input#filter-higher-level:checked ~ table#spells tr.not-higher-level { display:none; }
-			input#filter-defense:checked ~ table#spells tr.not-defense { display:none; }
-			input#filter-damage:checked ~ table#spells tr.not-damage { display:none; }
-			input#filter-permanent:checked ~ table#spells tr.not-permanent { display:none; }
+			label.trivia.disable > span { opacity:0.5; }
+			label.trivia.exclude { position:relative; }
+			label.trivia.exclude:after { content:""; position:absolute; left:-0.125em; right:-0.125em; bottom:30%; border-top:solid #C00 1.5px; }
+			input.trivia { display:none; }
+			input.trivia:not(:checked) + input.trivia + .trivia + label.trivia + label.trivia { display:none; }
+			input.trivia:not(:checked) + label.trivia { display:none; }
 			
-			.filter { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+			input#filter-ritual-require:checked ~ table#spells tr:not(.is-ritual):not(.header) { display:none; }
+			input#filter-ritual-exclude:checked ~ table#spells tr.is-ritual { display:none; }
+			input#filter-concentration-require:checked ~ table#spells tr:not(.is-concentration):not(.header) { display:none; }
+			input#filter-concentration-exclude:checked ~ table#spells tr.is-concentration { display:none; }
+			input#filter-attack-require:checked ~ table#spells tr:not(.is-attack):not(.header) { display:none; }
+			input#filter-attack-exclude:checked ~ table#spells tr.is-attack { display:none; }
+			input#filter-save-require:checked ~ table#spells tr:not(.has-save):not(.header) { display:none; }
+			input#filter-save-exclude:checked ~ table#spells tr.has-save { display:none; }
+			input#filter-higher-require:checked ~ table#spells tr:not(.has-higher-level):not(.header) { display:none; }
+			input#filter-higher-exclude:checked ~ table#spells tr.has-higher-level { display:none; }
+			input#filter-defense-require:checked ~ table#spells tr:not(.is-defense):not(.header) { display:none; }
+			input#filter-defense-exclude:checked ~ table#spells tr.is-defense { display:none; }
+			input#filter-damage-require:checked ~ table#spells tr:not(.is-damage):not(.header) { display:none; }
+			input#filter-damage-exclude:checked ~ table#spells tr.is-damage { display:none; }
+			input#filter-permanent-require:checked ~ table#spells tr:not(.is-permanent):not(.header) { display:none; }
+			input#filter-permanent-exclude:checked ~ table#spells tr.is-permanent { display:none; }
 			
-			.nose, .filter, .toggle {
+			.filter, .trivia { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+			
+			.nose, .filter, .toggle, .trivia {
 				-webkit-touch-callout:none;
 				-webkit-user-select:none;
 				-moz-user-select:none;
@@ -8210,50 +8245,104 @@
 		<span>&bull;</span> <input id='filter-level-8' type='checkbox' checked class='filter'/><label for='filter-level-8' class='filter'>8</label>
 		<span>&bull;</span> <input id='filter-level-9' type='checkbox' checked class='filter'/><label for='filter-level-9' class='filter'>9</label>
 		
-		<br/><span class='caption taper'>School:</span>
-		<input id='filter-school-a' type='checkbox' checked class='filter'/><label for='filter-school-a' class='filter' title='Abjuration'><span class='taper small'>Abjuration</span></label>
-		<span>&bull;</span> <input id='filter-school-c' type='checkbox' checked class='filter'/><label for='filter-school-c' class='filter' title='Conjuration'><span class='taper small'>Conjuration</span></label>
-		<span>&bull;</span> <input id='filter-school-d' type='checkbox' checked class='filter'/><label for='filter-school-d' class='filter' title='Divination'><span class='taper small'>Divination</span></label>
-		<span>&bull;</span> <input id='filter-school-e' type='checkbox' checked class='filter'/><label for='filter-school-e' class='filter' title='Enchantment'><span class='taper small'>Enchantment</span></label>
-		<span>&bull;</span> <input id='filter-school-v' type='checkbox' checked class='filter'/><label for='filter-school-v' class='filter' title='Evocation'><span class='taper small'>Evocation</span></label>
-		<span>&bull;</span> <input id='filter-school-i' type='checkbox' checked class='filter'/><label for='filter-school-i' class='filter' title='Illusion'><span class='taper small'>Illusion</span></label>
-		<span>&bull;</span> <input id='filter-school-n' type='checkbox' checked class='filter'/><label for='filter-school-n' class='filter' title='Necromancy'><span class='taper small'>Necromancy</span></label>
-		<span>&bull;</span> <input id='filter-school-t' type='checkbox' checked class='filter'/><label for='filter-school-t' class='filter' title='Transmutation'><span class='taper small'>Transmutation</span></label>
-		
 		<br/><span class='caption taper'>Class:</span>
-		<input id='filter-class-any' name='class' type='radio' checked class='filter'/><label for='filter-class-any' class='filter' title='Any'><span class='taper small'>Any</span></label>
-		<span>&bull;</span> <input id='filter-class-bard' name='class' type='radio' class='filter'/><label for='filter-class-bard' class='filter' title='Bard'><span class='taper small'>Bard</span></label>
-		<span>&bull;</span> <input id='filter-class-cleric' name='class' type='radio' class='filter'/><label for='filter-class-cleric' class='filter' title='Cleric'><span class='taper small'>Cleric</span></label>
-		<span>&bull;</span> <input id='filter-class-druid' name='class' type='radio' class='filter'/><label for='filter-class-druid' class='filter' title='Druid'><span class='taper small'>Druid</span></label>
-		<span>&bull;</span> <input id='filter-class-paladin' name='class' type='radio' class='filter'/><label for='filter-class-paladin' class='filter' title='Paladin'><span class='taper small'>Paladin</span></label>
-		<span>&bull;</span> <input id='filter-class-ranger' name='class' type='radio' class='filter'/><label for='filter-class-ranger' class='filter' title='Ranger'><span class='taper small'>Ranger</span></label>
-		<span>&bull;</span> <input id='filter-class-sorcerer' name='class' type='radio' class='filter'/><label for='filter-class-sorcerer' class='filter' title='Sorcerer'><span class='taper small'>Sorcerer</span></label>
-		<span>&bull;</span> <input id='filter-class-warlock' name='class' type='radio' class='filter'/><label for='filter-class-warlock' class='filter' title='Warlock'><span class='taper small'>Warlock</span></label>
-		<span>&bull;</span> <input id='filter-class-wizard' name='class' type='radio' class='filter'/><label for='filter-class-wizard' class='filter' title='Wizard'><span class='taper small'>Wizard</span></label>
+		<input id='filter-class-any' name='class' type='radio' checked class='filter'/><label for='filter-class-any' class='filter' title='Any'><span class='taper'>Any</span></label>
+		<span>&bull;</span> <input id='filter-class-bard' name='class' type='radio' class='filter'/><label for='filter-class-bard' class='filter' title='Bard'><span class='taper'>Bard</span></label>
+		<span>&bull;</span> <input id='filter-class-cleric' name='class' type='radio' class='filter'/><label for='filter-class-cleric' class='filter' title='Cleric'><span class='taper'>Cleric</span></label>
+		<span>&bull;</span> <input id='filter-class-druid' name='class' type='radio' class='filter'/><label for='filter-class-druid' class='filter' title='Druid'><span class='taper'>Druid</span></label>
+		<span>&bull;</span> <input id='filter-class-paladin' name='class' type='radio' class='filter'/><label for='filter-class-paladin' class='filter' title='Paladin'><span class='taper'>Paladin</span></label>
+		<span>&bull;</span> <input id='filter-class-ranger' name='class' type='radio' class='filter'/><label for='filter-class-ranger' class='filter' title='Ranger'><span class='taper'>Ranger</span></label>
+		<span>&bull;</span> <input id='filter-class-sorcerer' name='class' type='radio' class='filter'/><label for='filter-class-sorcerer' class='filter' title='Sorcerer'><span class='taper'>Sorcerer</span></label>
+		<span>&bull;</span> <input id='filter-class-warlock' name='class' type='radio' class='filter'/><label for='filter-class-warlock' class='filter' title='Warlock'><span class='taper'>Warlock</span></label>
+		<span>&bull;</span> <input id='filter-class-wizard' name='class' type='radio' class='filter'/><label for='filter-class-wizard' class='filter' title='Wizard'><span class='taper'>Wizard</span></label>
+		
+		<br/><span class='caption taper'>School:</span>
+		<input id='filter-school-a' type='checkbox' checked class='filter'/><label for='filter-school-a' class='filter' title='Abjuration'><span class='taper'>Abjuration</span></label>
+		<span>&bull;</span> <input id='filter-school-c' type='checkbox' checked class='filter'/><label for='filter-school-c' class='filter' title='Conjuration'><span class='taper'>Conjuration</span></label>
+		<span>&bull;</span> <input id='filter-school-d' type='checkbox' checked class='filter'/><label for='filter-school-d' class='filter' title='Divination'><span class='taper'>Divination</span></label>
+		<span>&bull;</span> <input id='filter-school-e' type='checkbox' checked class='filter'/><label for='filter-school-e' class='filter' title='Enchantment'><span class='taper'>Enchantment</span></label>
+		<span>&bull;</span> <input id='filter-school-v' type='checkbox' checked class='filter'/><label for='filter-school-v' class='filter' title='Evocation'><span class='taper'>Evocation</span></label>
+		<span>&bull;</span> <input id='filter-school-i' type='checkbox' checked class='filter'/><label for='filter-school-i' class='filter' title='Illusion'><span class='taper'>Illusion</span></label>
+		<span>&bull;</span> <input id='filter-school-n' type='checkbox' checked class='filter'/><label for='filter-school-n' class='filter' title='Necromancy'><span class='taper'>Necromancy</span></label>
+		<span>&bull;</span> <input id='filter-school-t' type='checkbox' checked class='filter'/><label for='filter-school-t' class='filter' title='Transmutation'><span class='taper'>Transmutation</span></label>
 		
 		<br/><span class='caption taper'>Casting Time:</span>
-		<input id='filter-casting-reaction' type='checkbox' checked class='filter'/><label for='filter-casting-reaction' class='filter' title='Reaction'><span class='taper small'>Reaction</span></label>
-		<span>&bull;</span> <input id='filter-casting-bonus' type='checkbox' checked class='filter'/><label for='filter-casting-bonus' class='filter' title='Bonus Action'><span class='taper small'>Bonus Action</span></label>
-		<span>&bull;</span> <input id='filter-casting-action' type='checkbox' checked class='filter'/><label for='filter-casting-action' class='filter' title='Action'><span class='taper small'>Action</span></label>
-		<span>&bull;</span> <input id='filter-casting-minutes' type='checkbox' checked class='filter'/><label for='filter-casting-minutes' class='filter' title='Minutes'><span class='taper small'>Minutes</span></label>
-		<span>&bull;</span> <input id='filter-casting-hours' type='checkbox' checked class='filter'/><label for='filter-casting-hours' class='filter' title='Hours'><span class='taper small'>Hours</span></label>
+		<input id='filter-casting-reaction' type='checkbox' checked class='filter'/><label for='filter-casting-reaction' class='filter' title='Reaction'><span class='taper'>Reaction</span></label>
+		<span>&bull;</span> <input id='filter-casting-bonus' type='checkbox' checked class='filter'/><label for='filter-casting-bonus' class='filter' title='Bonus Action'><span class='taper'>Bonus Action</span></label>
+		<span>&bull;</span> <input id='filter-casting-action' type='checkbox' checked class='filter'/><label for='filter-casting-action' class='filter' title='Action'><span class='taper'>Action</span></label>
+		<span>&bull;</span> <input id='filter-casting-minutes' type='checkbox' checked class='filter'/><label for='filter-casting-minutes' class='filter' title='Minutes'><span class='taper'>Minutes</span></label>
+		<span>&bull;</span> <input id='filter-casting-hours' type='checkbox' checked class='filter'/><label for='filter-casting-hours' class='filter' title='Hours'><span class='taper'>Hours</span></label>
 		
 		<br/><span class='caption taper'>Book:</span>
-		<input id='filter-book-ph' type='checkbox' checked class='filter'/><label for='filter-book-ph' class='filter' title='Players Handbook'><span class='taper small'>Players Handbook</span></label>
-		<span>&bull;</span> <input id='filter-book-xg' type='checkbox' checked class='filter'/><label for='filter-book-xg' class='filter' title='Xanathars Guide To Everything'><span class='taper small'>Xanathars</span></label>
-		<span>&bull;</span> <input id='filter-book-ee' type='checkbox' checked class='filter'/><label for='filter-book-ee' class='filter' title='Elemental Evil Players Companion'><span class='taper small'>Elemental Evil</span></label>
-		<span>&bull;</span> <input id='filter-book-sc' type='checkbox' checked class='filter'/><label for='filter-book-sc' class='filter' title='Sword Coast Adventure guide'><span class='taper small'>Sword Coast</span></label>
-		<span>&bull;</span> <input id='filter-book-rt' type='checkbox' checked class='filter'/><label for='filter-book-rt' class='filter' title='The Rise of Tiamat'><span class='taper small'>Tiamat</span></label>
+		<input id='filter-book-ph' type='checkbox' checked class='filter'/><label for='filter-book-ph' class='filter' title='Players Handbook'><span class='taper'>Players Handbook</span></label>
+		<span>&bull;</span> <input id='filter-book-xg' type='checkbox' checked class='filter'/><label for='filter-book-xg' class='filter' title='Xanathars Guide To Everything'><span class='taper'>Xanathars</span></label>
+		<span>&bull;</span> <input id='filter-book-ee' type='checkbox' checked class='filter'/><label for='filter-book-ee' class='filter' title='Elemental Evil Players Companion'><span class='taper'>Elemental Evil</span></label>
+		<span>&bull;</span> <input id='filter-book-sc' type='checkbox' checked class='filter'/><label for='filter-book-sc' class='filter' title='Sword Coast Adventure guide'><span class='taper'>Sword Coast</span></label>
+		<span>&bull;</span> <input id='filter-book-rt' type='checkbox' checked class='filter'/><label for='filter-book-rt' class='filter' title='The Rise of Tiamat'><span class='taper'>Tiamat</span></label>
 		
-		<br/><span class='caption taper'>Only:</span>
-		<input id='filter-ritual' type='checkbox' class='filter'/><label for='filter-ritual' class='filter' title='Ritual'><span class='taper small'>Ritual</span></label>
-		<span>&bull;</span> <input id='filter-concentration' type='checkbox' class='filter'/><label for='filter-concentration' class='filter' title='Requires Concentration'><span class='taper small'>Concentration</span></label>
-		<span>&bull;</span> <input id='filter-attack' type='checkbox' class='filter'/><label for='filter-attack' class='filter' title='Requires Spell Attack'><span class='taper small'>Attack</span></label>
-		<span>&bull;</span> <input id='filter-save' type='checkbox' class='filter'/><label for='filter-save' class='filter' title='Requires Savinga Throw'><span class='taper small'>Save</span></label>
-		<span>&bull;</span> <input id='filter-higher-level' type='checkbox' class='filter'/><label for='filter-higher-level' class='filter' title='Has Higher Level'><span class='taper small'>Raisable</span></label>
-		<span>&bull;</span> <input id='filter-defense' type='checkbox' class='filter'/><label for='filter-defense' class='filter' title='Has Defensive Benefit'><span class='taper small'>Defense</span></label>
-		<span>&bull;</span> <input id='filter-damage' type='checkbox' class='filter'/><label for='filter-damage' class='filter' title='Inflicts Damage'><span class='taper small'>Damage</span></label>
-		<span>&bull;</span> <input id='filter-permanent' type='checkbox' class='filter'/><label for='filter-permanent' class='filter' title='Has Permanent Effect'><span class='taper small'>Permanent</span></label>
+		<br/><span class='caption taper'>And:</span>
+		<input id='filter-ritual-disable' name='filter-ritual' type='radio' checked class='trivia'/>
+		<input id='filter-ritual-require' name='filter-ritual' type='radio' class='trivia'/>
+		<input id='filter-ritual-exclude' name='filter-ritual' type='radio' class='trivia'/>
+		<label for='filter-ritual-disable' class='trivia exclude'><span class='taper'>Ritual</span></label>
+		<label for='filter-ritual-require' class='trivia disable'><span class='taper'>Ritual</span></label>
+		<label for='filter-ritual-exclude' class='trivia require'><span class='taper'>Ritual</span></label>
+		
+		<span>&bull;</span>
+		<input id='filter-concentration-disable' name='filter-concentration' type='radio' checked class='trivia'/>
+		<input id='filter-concentration-require' name='filter-concentration' type='radio' class='trivia'/>
+		<input id='filter-concentration-exclude' name='filter-concentration' type='radio' class='trivia'/>
+		<label for='filter-concentration-disable' class='trivia exclude'><span class='taper'>Concentration</span></label>
+		<label for='filter-concentration-require' class='trivia disable'><span class='taper'>Concentration</span></label>
+		<label for='filter-concentration-exclude' class='trivia require'><span class='taper'>Concentration</span></label>
+		
+		<span>&bull;</span>
+		<input id='filter-attack-disable' name='filter-attack' type='radio' checked class='trivia'/>
+		<input id='filter-attack-require' name='filter-attack' type='radio' class='trivia'/>
+		<input id='filter-attack-exclude' name='filter-attack' type='radio' class='trivia'/>
+		<label for='filter-attack-disable' class='trivia exclude'><span class='taper'>Attack</span></label>
+		<label for='filter-attack-require' class='trivia disable'><span class='taper'>Attack</span></label>
+		<label for='filter-attack-exclude' class='trivia require'><span class='taper'>Attack</span></label>
+		
+		<span>&bull;</span>
+		<input id='filter-save-disable' name='filter-save' type='radio' checked class='trivia'/>
+		<input id='filter-save-require' name='filter-save' type='radio' class='trivia'/>
+		<input id='filter-save-exclude' name='filter-save' type='radio' class='trivia'/>
+		<label for='filter-save-disable' class='trivia exclude'><span class='taper'>Save</span></label>
+		<label for='filter-save-require' class='trivia disable'><span class='taper'>Save</span></label>
+		<label for='filter-save-exclude' class='trivia require'><span class='taper'>Save</span></label>
+		
+		<span>&bull;</span>
+		<input id='filter-higher-disable' name='filter-higher' type='radio' checked class='trivia'/>
+		<input id='filter-higher-require' name='filter-higher' type='radio' class='trivia'/>
+		<input id='filter-higher-exclude' name='filter-higher' type='radio' class='trivia'/>
+		<label for='filter-higher-disable' class='trivia exclude'><span class='taper'>Higher</span></label>
+		<label for='filter-higher-require' class='trivia disable'><span class='taper'>Higher</span></label>
+		<label for='filter-higher-exclude' class='trivia require'><span class='taper'>Higher</span></label>
+		
+		<span>&bull;</span>
+		<input id='filter-defense-disable' name='filter-defense' type='radio' checked class='trivia'/>
+		<input id='filter-defense-require' name='filter-defense' type='radio' class='trivia'/>
+		<input id='filter-defense-exclude' name='filter-defense' type='radio' class='trivia'/>
+		<label for='filter-defense-disable' class='trivia exclude'><span class='taper'>Defense</span></label>
+		<label for='filter-defense-require' class='trivia disable'><span class='taper'>Defense</span></label>
+		<label for='filter-defense-exclude' class='trivia require'><span class='taper'>Defense</span></label>
+		
+		<span>&bull;</span>
+		<input id='filter-damage-disable' name='filter-damage' type='radio' checked class='trivia'/>
+		<input id='filter-damage-require' name='filter-damage' type='radio' class='trivia'/>
+		<input id='filter-damage-exclude' name='filter-damage' type='radio' class='trivia'/>
+		<label for='filter-damage-disable' class='trivia exclude'><span class='taper'>Damage</span></label>
+		<label for='filter-damage-require' class='trivia disable'><span class='taper'>Damage</span></label>
+		<label for='filter-damage-exclude' class='trivia require'><span class='taper'>Damage</span></label>
+		
+		<span>&bull;</span>
+		<input id='filter-permanent-disable' name='filter-permanent' type='radio' checked class='trivia'/>
+		<input id='filter-permanent-require' name='filter-permanent' type='radio' class='trivia'/>
+		<input id='filter-permanent-exclude' name='filter-permanent' type='radio' class='trivia'/>
+		<label for='filter-permanent-disable' class='trivia exclude'><span class='taper'>Permanent</span></label>
+		<label for='filter-permanent-require' class='trivia disable'><span class='taper'>Permanent</span></label>
+		<label for='filter-permanent-exclude' class='trivia require'><span class='taper'>Permanent</span></label>
 		
 		<table id='spells'></table>
 	</body>
