@@ -428,7 +428,7 @@
 			function populateSpells() {
 				var rowTemplate = "<tr id='row-{key}' class='spell {styles}'>" +
 					"<td class='prepared'><input id='spell-{key}' name='{key}' type='checkbox' /></td>" +
-					"<td class='name' data-sort-key='{namekey}'><label class='toggle'><input type='checkbox' class='toggle' /><span>{name}</span><div class='toggled details'><p class='material'>{material}</p>{desc}{higher_level}<p class='classnames'>{classnames}</p><p class='page-{book}'>{page}</p></div></label></td>" +
+					"<td class='name' data-sort-key='{namekey}'><label class='toggle'><input type='checkbox' class='toggle' /><span>{name}</span><br/><div class='toggled details'><div class='inner details'><p class='material'>{material}</p>{desc}{higher_level}<p class='classnames'>{classnames}</p><p class='page-{book}'>{page}</p></div></div></label></td>" +
 					"<td class='level' data-sort-key='{level}' title='Level {level}'>{level}</td>" +
 					"<td class='school' data-sort-key='{ss}' title='{school}'>{ss}</td>" +
 					"<td class='casting' data-sort-key='{castingkey}' title='Casting Time {casting_time}{title_ritual}'>{casting}</td>" +
@@ -507,22 +507,34 @@
 				box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06);
 				color: #555;
 				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-				font-size: 16px;
 				line-height: 1.5;
 				margin: 0 auto;
-				max-width:50em;
-				min-width:32em;
-				padding: 2em 2em 4em;
+				font-size: 21px;
+				font-size: 2.4vw;
+				padding:2em 2em 4em;
 			}
 			
-			div.details { white-space:normal; width:20em; font-size:80%; }
-			div.details > p { width:150%; }
+			div.details { white-space:normal; width:0; }
+			div.details > div.details.inner { width:20em; width:60vw; }
+			
+			@media (min-width:1000px) {
+				body { max-width:1000px; font-size:24px; padding:2em 2em 4em; }
+				div.details > div.details.inner { width:800px; }
+			}
+			@media (max-width:600px) {
+				body { max-width:100vw; font-size:18px; font-size:3vw; padding:1em; }
+				th.components, td.components { display:none; }
+			}
+			@media (max-width:420px) {
+				body { max-width:100vw; font-size:16px; font-size:4vw; padding:1em; }
+				th.duration, td.duration { display:none; }
+				th.range, td.range { display:none; }
+			}
 			
 			span.taper { display:inline-block; font-size:62.5%; }
 			span.taper:first-letter { font-size:160%; }
 			
 			table#spells { padding:0; margin:1em 0; border-spacing:0; border-collapse:collapse; }
-			table#spells { font-size:80%; }
 			tr.spell { vertical-align:top; }
 			th.name, th.school, th.casting, th.components, th.duration { text-align:left; }
 			td.range, th.range, td.level, th.level { text-align:right; padding-right:1em; }
@@ -662,27 +674,13 @@
 			}
 			
 			span#spell-text-filter-count { opacity:0.5; font-size:60%; }
-			
-			@media (max-width:600px) {
-				body { min-width:30em; padding: 1em; }
-				th.components, td.components { display:none; }
-			}
-			@media (max-width:400px) {
-				body { min-width:20em; padding: 1em; }
-				th.duration, td.duration { display:none; }
-				th.range, td.range { display:none; }
-			}
-			@media (max-width:320px) {
-				body { min-width:16em; padding: 0.5em; }
-				th.casting, td.casting { display:none; }
-			}
 		</style>
 	</head>
 	<body onload='populateSpells()'>
 		<h4>Spells</h4>
 		
 		<span class='caption taper'>Search:</span>
-		<input type='search' id='spell-text-filter' name='spell-text-filter' size='40' placeholder='' oninput='handleSearch(event)'>
+		<input type='search' id='spell-text-filter' name='spell-text-filter' size='36' placeholder='' oninput='handleSearch(event)'>
 		<span id='spell-text-filter-count'></span>
 		
 		<br/><span class='caption taper'>Level:</span>
@@ -725,11 +723,11 @@
 		<span>&bull;</span> <input id='filter-casting-minutes' type='checkbox' checked class='filter'/><label for='filter-casting-minutes' class='filter' title='Minutes'><span class='taper'>Minutes</span></label>
 		<span>&bull;</span> <input id='filter-casting-hours' type='checkbox' checked class='filter'/><label for='filter-casting-hours' class='filter' title='Hours'><span class='taper'>Hours</span></label>
 		
-		<br/><span class='caption taper'>Book:</span>
+		<br/><span class='caption taper'>Source:</span>
 		<input id='filter-book-ph' type='checkbox' checked class='filter'/><label for='filter-book-ph' class='filter' title='Players Handbook'><span class='taper'>Players Handbook</span></label>
-		<span>&bull;</span> <input id='filter-book-xg' type='checkbox' checked class='filter'/><label for='filter-book-xg' class='filter' title='Xanathars Guide To Everything'><span class='taper'>Xanathars</span></label>
-		<span>&bull;</span> <input id='filter-book-ee' type='checkbox' checked class='filter'/><label for='filter-book-ee' class='filter' title='Elemental Evil Players Companion'><span class='taper'>Elemental Evil</span></label>
-		<span>&bull;</span> <input id='filter-book-sc' type='checkbox' checked class='filter'/><label for='filter-book-sc' class='filter' title='Sword Coast Adventure guide'><span class='taper'>Sword Coast</span></label>
+		<span>&bull;</span> <input id='filter-book-xg' type='checkbox' checked class='filter'/><label for='filter-book-xg' class='filter' title='Xanathar‘s Guide To Everything'><span class='taper'>Xanathars</span></label>
+		<span>&bull;</span> <input id='filter-book-ee' type='checkbox' checked class='filter'/><label for='filter-book-ee' class='filter' title='Elemental Evil Player‘s Companion'><span class='taper'>Elemental Evil</span></label>
+		<span>&bull;</span> <input id='filter-book-sc' type='checkbox' checked class='filter'/><label for='filter-book-sc' class='filter' title='Sword Coast Adventure Guide'><span class='taper'>Sword Coast</span></label>
 		<span>&bull;</span> <input id='filter-book-rt' type='checkbox' checked class='filter'/><label for='filter-book-rt' class='filter' title='The Rise of Tiamat'><span class='taper'>Tiamat</span></label>
 		
 		<br/><span class='caption taper'>And:</span>
