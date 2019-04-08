@@ -325,7 +325,7 @@
 					spell = 1 ? {} : {}
 					styles = []
 					
-					spell['key'] = s.name.toLowerCase().replace(/[^a-z0-9]|.*['‘]s /g, '')
+					spell['key'] = s.name.toLowerCase().replace(/[^a-z0-9]|.*['‘’]s /g, '')
 					
 					for ( key of keys ) {
 						if ( s[key] !== undefined && s[key] !== false ) { spell[key] = s[key] }
@@ -404,7 +404,7 @@
 					spell['ss'] = (spell['school'] === 'Illusion') ? 'Ill' : spell['school'].substr(0, 2)
 					spell['vsm'] = spell['components'].join("")
 					spell['classnames'] = spell['classes'].join(", ")
-					spell['namekey'] = spell.name.replace(/['‘]/g, '')
+					spell['namekey'] = spell.name.replace(/['‘’]/g, '')
 					spell['title_ritual'] = spell.ritual ? ", Ritual " + Math.floor(spell.castingkey + 10) + " Minutes" : ""
 					spell['title_concentration'] = spell.concentration ? "Concentration, " : ""
 					
@@ -425,7 +425,7 @@
 				return template.replace(pattern, match => object[match.slice(1, -1)])
 			}
 			
-			function populateSpells() {
+			function populatePage() {
 				var rowTemplate = "<tr id='row-{key}' class='spell {styles}'>" +
 					"<td class='prepared'><input id='spell-{key}' name='{key}' type='checkbox' /></td>" +
 					"<td class='name' data-sort-key='{namekey}'><label class='toggle'><input type='checkbox' class='toggle' /><span>{name}</span><br/><div class='toggled details'><div class='inner details'><p class='material'>{material}</p>{desc}{higher_level}<p class='classnames'>{classnames}</p><p class='page-{book}'>{page}</p></div></div></label></td>" +
@@ -435,7 +435,7 @@
 					"<td class='range' data-sort-key='{rangekey}' title='Range {range}'>{range}</td>" +
 					"<td class='components' data-sort-key='{vsm}' title='Components {vsm}'>{vsm}</td>" +
 					"<td class='duration' data-sort-key='{durationkey}' title='Duration {title_concentration}{duration}'>{period}</td>" +
-					//"<td class='damage'>{damage}</td>" +
+					"<td class='damage'>{damage}</td>" +
 				"</tr>"
 				var header = "<tr id='header' class='header'>" +
 					"<th class='prepared sortable' data-sort-invert> </th>" +
@@ -446,7 +446,7 @@
 					"<th class='range sortable' data-sort-format='number'>Range</th>" +
 					"<th class='components sortable'>VSM</th>" +
 					"<th class='duration sortable' data-sort-format='number'>Duration</th>" +
-					//"<th class='damage sortable' data-sort-format='natural'>Damage</th>" +
+					"<th class='damage sortable' data-sort-format='natural'>Damage</th>" +
 				"</tr>"
 				var list = spellsReadyToDisplay(spells)
 				var rows = list.map(spell => replaceKeys(rowTemplate, spell))
@@ -460,7 +460,7 @@
 				var className = 'filtered'
 				var table = _element('spells')
 				var input = event.target
-				var elements = table.getElementsByClassName('name')
+				var element, elements = table.getElementsByClassName('name')
 				var index = elements.length
 				var found, value = input.value || ""
 				var count = 0
@@ -470,23 +470,25 @@
 						_assignClass(elements[index].parentElement, className, -1)
 					}
 				} else if ( value.search(/[[?*.|^${\\]/) < 0 ) {
-					value = value.toLowerCase()//.replace(/['‘’"“”]/g, '')
+					value = value.toLowerCase()
 					
 					while ( index --> 1 ) {
-						found = elements[index].textContent.toLowerCase().indexOf(value)
+						element = elements[index]
+						found = element.textContent.toLowerCase().indexOf(value)
 						count += (found < 0) ? 0 : 1
 						
-						_assignClass(elements[index].parentElement, className, found < 0 ? 1 : -1)
+						_assignClass(element.parentElement, className, found < 0 ? 1 : -1)
 					}
 				} else {
 					try { value = new RegExp(value, 'ius') }
 					catch (error) { return }
 					
 					while ( index --> 1 ) {
-						found = elements[index].textContent.search(value)
+						element = elements[index]
+						found = element.textContent.search(value)
 						count += (found < 0) ? 0 : 1
 						
-						_assignClass(elements[index].parentElement, className, found < 0 ? 1 : -1)
+						_assignClass(element.parentElement, className, found < 0 ? 1 : -1)
 					}
 				}
 				
@@ -497,54 +499,61 @@
 		<style>
 			html {
 				background: #EEE;
-				background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%);
-				-webkit-font-smoothing: antialiased;
 			}
-
+			
 			body {
-				-webkit-touch-callout:none;
-				background: #FFF;
-				box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06);
+				-webkit-font-smoothing: antialiased;
+				-webkit-touch-callout: none;
 				color: #555;
+				background: #FFF;
 				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-				line-height: 1.5;
+				font-size: 14px;
+				line-height: 1.75;
+				padding: 2em;
 				margin: 0 auto;
-				font-size: 21px;
-				font-size: 2.4vw;
-				padding:2em 2em 4em;
+				max-width: 50em;
 			}
+			
+			html { background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%); }
+			body { box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
 			
 			div.details { white-space:normal; width:0; }
-			div.details > div.details.inner { width:20em; width:60vw; }
+			div.details > div.details.inner { width:30em; }
 			
-			@media (min-width:1000px) {
-				body { max-width:1000px; font-size:24px; padding:2em 2em 4em; }
-				div.details > div.details.inner { width:800px; }
-			}
 			@media (max-width:600px) {
-				body { max-width:100vw; font-size:18px; font-size:3vw; padding:1em; }
+				body { padding:1em; font-size:80%; }
+				div.details > div.details.inner { width:60vw; }
 				th.components, td.components { display:none; }
+				th.damage, td.damage { display:none; }
 			}
 			@media (max-width:420px) {
-				body { max-width:100vw; font-size:16px; font-size:4vw; padding:1em; }
+				body { font-size:2.8vmin; }
 				th.duration, td.duration { display:none; }
 				th.range, td.range { display:none; }
 			}
 			
-			span.taper { display:inline-block; font-size:62.5%; }
-			span.taper:first-letter { font-size:160%; }
+			input#spell-text-filter { font-size:100%; max-width:98%; }
+			span#spell-text-filter-count { opacity:0.5; font-size:60%; }
+			span.taper { display:inline-block; font-size:80%; }
+			span.taper:first-letter { font-size:125%; }
 			
-			table#spells { padding:0; margin:1em 0; border-spacing:0; border-collapse:collapse; }
-			tr.spell { vertical-align:top; }
-			th.name, th.school, th.casting, th.components, th.duration { text-align:left; }
+			table#spells { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
+			table#spells tr { border-bottom:0.25px solid #DDD; }
+			table#spells td { padding-top:0.125em; padding-bottom:0.125em; }
+			
+			tr.spell { vertical-align:text-top; }
+			th.name, th.school, th.casting, th.components, th.duration, th.damage { text-align:left; }
 			td.range, th.range, td.level, th.level { text-align:right; padding-right:1em; }
+			td.school, th.school { padding-right:1em; }
+			
 			th.name { width:17em }
 			th.level { width:2em }
-			th.school { width:2em }
-			th.casting { width:4em }
+			th.school { width:1em }
+			th.casting { width:3em }
 			th.range { width:5em; }
 			th.components { width:3em }
 			th.duration { width:7em; }
+			th.damage { width:4em; }
 			
 			tr.filtered { display:none; }
 			tr.is-ritual > td.casting:after { content:" ᴿ"; opacity:0.75; font-size:80%; }
@@ -552,7 +561,6 @@
 			tr.has-higher-level > td.level { font-style:oblique; }
 			th.sortable.unsorted, th.sortable.sorted-descending { cursor:s-resize; }
 			th.sortable.sorted-ascending { cursor:n-resize; }
-			
 			th.sortable.sorted-descending { text-decoration:overline; }
 			th.sortable.sorted-ascending { text-decoration:underline; }
 			
@@ -560,9 +568,6 @@
 			input.filter:not(:checked) + label { opacity:0.5; }
 			input.toggle:not(:checked) ~ div.toggled { display:none; }
 			input.toggle:not(:checked) + label + div.toggled { display:none; }
-			
-			table#spells tr { border-bottom:0.25px solid #DDD; }
-			table#spells td { padding-top:0.25em; padding-bottom:0.25em; }
 			
 			p.higher-level:not(:empty):before { content:"At Higher Level. "; font-weight:bold; font-style:italic; }
 			p.material:not(:empty):before { content:"Materials: "; font-weight:bold; }
@@ -672,11 +677,9 @@
 				-o-user-select:none;
 				user-select:none;
 			}
-			
-			span#spell-text-filter-count { opacity:0.5; font-size:60%; }
 		</style>
 	</head>
-	<body onload='populateSpells()'>
+	<body onload='populatePage()'>
 		<h4>Spells</h4>
 		
 		<span class='caption taper'>Search:</span>
@@ -725,8 +728,8 @@
 		
 		<br/><span class='caption taper'>Source:</span>
 		<input id='filter-book-ph' type='checkbox' checked class='filter'/><label for='filter-book-ph' class='filter' title='Players Handbook'><span class='taper'>Players Handbook</span></label>
-		<span>&bull;</span> <input id='filter-book-xg' type='checkbox' checked class='filter'/><label for='filter-book-xg' class='filter' title='Xanathar‘s Guide To Everything'><span class='taper'>Xanathars</span></label>
-		<span>&bull;</span> <input id='filter-book-ee' type='checkbox' checked class='filter'/><label for='filter-book-ee' class='filter' title='Elemental Evil Player‘s Companion'><span class='taper'>Elemental Evil</span></label>
+		<span>&bull;</span> <input id='filter-book-xg' type='checkbox' checked class='filter'/><label for='filter-book-xg' class='filter' title='Xanathar’s Guide To Everything'><span class='taper'>Xanathars</span></label>
+		<span>&bull;</span> <input id='filter-book-ee' type='checkbox' checked class='filter'/><label for='filter-book-ee' class='filter' title='Elemental Evil Player’s Companion'><span class='taper'>Elemental Evil</span></label>
 		<span>&bull;</span> <input id='filter-book-sc' type='checkbox' checked class='filter'/><label for='filter-book-sc' class='filter' title='Sword Coast Adventure Guide'><span class='taper'>Sword Coast</span></label>
 		<span>&bull;</span> <input id='filter-book-rt' type='checkbox' checked class='filter'/><label for='filter-book-rt' class='filter' title='The Rise of Tiamat'><span class='taper'>Tiamat</span></label>
 		
