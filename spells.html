@@ -226,7 +226,7 @@
 							value = parseFloat(value)
 							if ( isNaN(value) ) { value = null }
 						} else if ( 'natural' === format ) {
-							value = value.replace(/\d+/g, n => "00000000000000000000".substr(n.length) + n)
+							value = value.replace(/\d+/g, n => "00000000000000000000".substring(n.length) + n)
 						} else if ( 'lower' === format ) {
 							value = value.toLowerCase()
 						} else if ( 'lower-locale' === format ) {
@@ -240,14 +240,14 @@
 						values[index] = value
 					}
 					
-					if ( 'locale' === format.substr(0, 6) ) {
+					if ( 'locale' === format.substring(0, 6) ) {
 						var locale = false, options = new Object()
 						
 						index = format.indexOf(':')
 						
 						if ( index > 0 ) {
-							locale = format.substr(index + 1)
-							format = format.substr(0 , index)
+							locale = format.substring(index + 1)
+							format = format.substring(0 , index)
 							if ( locale.indexOf(':') > 0 ) locale = locale.split(':')
 						}
 						
@@ -316,10 +316,123 @@
 				return false
 			}
 			
+			function inflateParameters(result, string, leading, separator) {
+				if ( string.charAt(0) === leading ) { string = string.slice(1) }
+				
+				var part, parts = string.split(separator)
+				var object = result || new Object()
+				
+				for ( part of parts ) {
+					var equals = part.indexOf("=")
+					var value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
+					var key = equals < 0 ? part : part.slice(0, equals)
+					
+					object[key] = value
+				}
+				
+				return object
+			}
+			
+			function applyParameters() {
+				var hash = inflateParameters(null, location.hash, '#', '|')
+				var object = inflateParameters(hash, location.search, '?', '&')
+				var key, value, v, V, values
+				var form = _element('spells-form')
+				
+				value = object['l'] || ''
+				for ( v = 0 ; v < 10 ; ++v ) { _element('filter-level-' + v).checked = !(value && value.indexOf(v) < 0) }
+				
+				value = object['c'] || 'any'
+				form['crass'].value = value
+				
+				value = object['s'] || ''
+				values = ['a', 'c', 'd', 'e', 'v', 'i', 'n', 't']
+				for ( v of values ) { _element('filter-school-' + v).checked = !(value && value.indexOf(v) < 0) }
+				
+				value = object['t'] || ''
+				values = ['r', 'b', 'a', 'm', 'h']
+				for ( v of values ) { _element('filter-casting-' + v).checked = !(value && value.indexOf(v) < 0) }
+				
+				value = object['b'] || ''
+				values = ['ph', 'xg', 'ee', 'sc', 'rt']
+				for ( v of values ) { _element('filter-book-' + v).checked = !(value.length > 0 && value.indexOf(v) < 0) }
+				
+				value = object['a'] || ''
+				values = 0||{'r':'ritual', 'c':'concentration', 'f':'defense', 'a':'attack', 's':'save', 'd':'damage', 'h':'higher', 'p':'permanent'}
+				for ( v in values ) { V = v.toUpperCase(); form['filter-' + values[v]].value = value.indexOf(v) < 0 ? value.indexOf(V) < 0 ? '-' : V : v }
+				
+				value = (object['p'] || '').split('.')
+				for ( key of form.everySpell ) { form.elements[key].checked = !(value.indexOf(key) < 0) }
+			}
+			
+			function deflateParameters() {
+				var separator = '.'
+				var filters = []
+				var form = _element('spells-form')
+				
+				var levels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].filter(v => _element('filter-level-' + v).checked)
+				if ( levels.length > 0 && levels.length < 10 ) { filters.push('l=' + levels.join('')) }
+				
+				var crass = form.crass.value
+				if ( crass && crass != 'any' ) { filters.push('c=' + crass) }
+				
+				var schools = ['a', 'c', 'd', 'e', 'v', 'i', 'n', 't'].filter(v => _element('filter-school-' + v).checked)
+				if ( schools.length > 0 && schools.length < 8 ) { filters.push('s=' + schools.join('')) }
+				
+				var times = ['r', 'b', 'a', 'm', 'h'].filter(v => _element('filter-casting-' + v).checked)
+				if ( times.length > 0 && times.length < 5 ) { filters.push('t=' + times.join('')) }
+				
+				var books = ['ph', 'xg', 'ee', 'sc', 'rt'].filter(v => _element('filter-book-' + v).checked)
+				if ( books.length > 0 && books.length < 5 ) { filters.push('b=' + books.join('.')) }
+				
+				var and = ['ritual', 'concentration', 'defense', 'attack', 'save', 'damage', 'higher', 'permanent']
+				var flags = and.map(v => form['filter-' + v].value).join('').replace(/-/g, '')
+				if ( flags != '' ) { filters.push('a=' + flags) }
+				
+				var spells = form.everySpell.filter(key => form[key].checked).sort()
+				if ( spells.length > 0 ) { filters.push('p=' + spells.join('.')) }
+				
+				return filters
+			}
+			
+			function shareParameters() {
+				var value = deflateParameters()
+				var search = location.search
+				var current = location.hash
+				
+				if ( search && search.charAt(0) === "?" ) { search = search.slice(1) }
+				if ( current && current.charAt(0) === "#" ) { current = current.slice(1) }
+				
+				if ( history.pushState ) {
+					if ( search ) {
+						history.pushState(null, null, "?" + value.join('&'))
+					} else {
+						history.pushState(null, null, "#" + value.join('|'))
+					}
+				} else if ( search ) {
+					value = value.join('&')
+					
+					if ( current ) {
+						location.href = location.href.split('?', 2)[0] + '?' + value
+					} else if ( value !== search ) {
+						location.search = value
+					}
+				} else {
+					value = value.join('|')
+					
+					if ( value !== current ) {
+						location.hash = value
+					}
+				}
+				
+				return false
+			}
+			
 			function spellsReadyToDisplay(spells) {
 				var result = []
 				var keys = ['name', 'level', 'school', 'casting_time', 'range', 'components', 'material', 'duration', 'ritual', 'concentration', 'defense', 'attack', 'save', 'permanent', 'damage', 'damage_type', 'classes', 'desc', 'higher_level', 'book', 'page', 'circles', 'oaths', 'domains', 'patrons', 'archetype']
 				var spell, value, styles, scalar, casting
+				var s, key
 				
 				for ( s of spells ) {
 					spell = 1 ? {} : {}
@@ -362,7 +475,7 @@
 					
 					scalar = 1
 					value = spell['duration']
-					if ( 'Up to ' === value.substr(0, 6) ) { value = value.substr(6); scalar = 15/16 }
+					if ( 'Up to ' === value.substring(0, 6) ) { value = value.substring(6); scalar = 15/16 }
 					if ( value === 'Instantaneous' ) { value = 0 }
 					else if ( value === 'Instantaneous/1 hour' ) { value = 61 }
 					else if ( value === 'Until dispelled' ) { value = 2000000000 }
@@ -401,7 +514,7 @@
 					
 					spell['page'] = +spell.page || spell.page
 					spell['styles'] = styles.join(" ")
-					spell['ss'] = (spell['school'] === 'Illusion') ? 'Ill' : spell['school'].substr(0, 2)
+					spell['ss'] = (spell['school'] === 'Illusion') ? 'Ill' : spell['school'].substring(0, 2)
 					spell['vsm'] = spell['components'].join("")
 					spell['classnames'] = spell['classes'].join(", ")
 					spell['namekey'] = spell.name.replace(/['‘’]/g, '')
@@ -419,15 +532,9 @@
 				return result
 			}
 			
-			function replaceKeys(template, object) {
-				var pattern = RegExp("({[^ }]+})", "g")
-				
-				return template.replace(pattern, match => object[match.slice(1, -1)])
-			}
-			
 			function populatePage() {
 				var rowTemplate = "<tr id='row-{key}' class='spell {styles}'>" +
-					"<td class='prepared'><input id='spell-{key}' name='{key}' type='checkbox' /></td>" +
+					"<td class='prepared'><input id='{key}' name='{key}' type='checkbox' class='spell-selection' /></td>" +
 					"<td class='name' data-sort-key='{namekey}'><label class='toggle'><input type='checkbox' class='toggle' /><span>{name}</span><br/><div class='toggled details'><div class='inner details'><p class='material'>{material}</p>{desc}{higher_level}<p class='classnames'>{classnames}</p><p class='page-{book}'>{page}</p></div></div></label></td>" +
 					"<td class='level' data-sort-key='{level}' title='Level {level}'>{level}</td>" +
 					"<td class='school' data-sort-key='{ss}' title='{school}'>{ss}</td>" +
@@ -437,6 +544,7 @@
 					"<td class='duration' data-sort-key='{durationkey}' title='Duration {title_concentration}{duration}'>{period}</td>" +
 					"<td class='damage'>{damage}</td>" +
 				"</tr>"
+				
 				var header = "<tr id='header' class='header'>" +
 					"<th class='prepared sortable' data-sort-invert> </th>" +
 					"<th class='name sortable' data-sort-format='locale'>Name</th>" +
@@ -448,12 +556,18 @@
 					"<th class='duration sortable' data-sort-format='number'>Duration</th>" +
 					"<th class='damage sortable' data-sort-format='natural'>Damage</th>" +
 				"</tr>"
+				
 				var list = spellsReadyToDisplay(spells)
-				var rows = list.map(spell => replaceKeys(rowTemplate, spell))
+				var pattern = RegExp('({[^ }]+})', 'g')
+				var rows = list.map(spell => rowTemplate.replace(pattern, match => spell[match.slice(1, -1)]))
+				var form = _element('spells-form')
 				var table = _element('spells')
 				
+				form.everySpell = list.map(spell => spell.key)
 				table.innerHTML = header + rows.join("")
 				tableSort(table)
+				
+				applyParameters()
 			}
 			
 			function handleSearch(event) {
@@ -515,7 +629,7 @@
 			}
 			
 			html { background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%); }
-			body { box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
+			body { position:relative; box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
 			
 			div.details { white-space:normal; width:0; }
 			div.details > div.details.inner { width:30em; }
@@ -537,6 +651,9 @@
 			span.taper { display:inline-block; font-size:80%; }
 			span.taper:first-letter { font-size:125%; }
 			
+			div#controls { position:absolute; right:0; top:0; padding:2em; }
+			div#controls > button { border:solid #CCC 0.125em; border-radius:0.25em 0.25em; background:#EEE; min-width:4em; min-height:2em; }
+			
 			table#spells { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
 			table#spells tr { border-bottom:0.25px solid #DDD; }
 			table#spells td { padding-top:0.125em; padding-bottom:0.125em; }
@@ -546,10 +663,11 @@
 			td.range, th.range, td.level, th.level { text-align:right; padding-right:1em; }
 			td.school, th.school { padding-right:1em; }
 			
+			th.prepared { width:2em }
 			th.name { width:17em }
 			th.level { width:2em }
 			th.school { width:1em }
-			th.casting { width:3em }
+			th.casting { width:4em }
 			th.range { width:5em; }
 			th.components { width:3em }
 			th.duration { width:7em; }
@@ -636,12 +754,12 @@
 			input#filter-class-warlock:checked ~ table#spells tr.spell:not(.Warlock) { display:none; }
 			input#filter-class-wizard:checked ~ table#spells tr.spell:not(.Wizard) { display:none; }
 			
-			input#filter-casting-reaction:not(:checked) ~ table#spells tr.reaction { display:none; }
-			input#filter-casting-bonus:not(:checked) ~ table#spells tr.bonusaction { display:none; }
-			input#filter-casting-action:not(:checked) ~ table#spells tr.action { display:none; }
-			input#filter-casting-minutes:not(:checked) ~ table#spells tr.cast-minutes { display:none; }
-			input#filter-casting-hours:not(:checked) ~ table#spells tr.cast-hours { display:none; }
-			input#filter-casting-other:not(:checked) ~ table#spells tr.cast-other { display:none; }
+			input#filter-casting-r:not(:checked) ~ table#spells tr.reaction { display:none; }
+			input#filter-casting-b:not(:checked) ~ table#spells tr.bonusaction { display:none; }
+			input#filter-casting-a:not(:checked) ~ table#spells tr.action { display:none; }
+			input#filter-casting-m:not(:checked) ~ table#spells tr.cast-minutes { display:none; }
+			input#filter-casting-h:not(:checked) ~ table#spells tr.cast-hours { display:none; }
+			input#filter-casting-o:not(:checked) ~ table#spells tr.cast-other { display:none; }
 			
 			label.trivia.disable > span { opacity:0.5; }
 			label.trivia.exclude { position:relative; }
@@ -682,7 +800,13 @@
 	<body onload='populatePage()'>
 		<h4>Spells</h4>
 		
-		<span class='caption taper'>Search:</span>
+		<form id='spells-form'>
+		<div id='controls'>
+			<button id='save-filters' type='button' onclick='shareParameters()' title='Save to link'>⬆</button>
+			<button type='reset' title='Show all spells'>↻</button>
+		</div>
+		
+		<br/><span class='caption taper'>Search:</span>
 		<input type='search' id='spell-text-filter' name='spell-text-filter' size='36' placeholder='' oninput='handleSearch(event)'>
 		<span id='spell-text-filter-count'></span>
 		
@@ -699,15 +823,15 @@
 		<span>&bull;</span> <input id='filter-level-9' type='checkbox' checked class='filter'/><label for='filter-level-9' class='filter'>9</label>
 		
 		<br/><span class='caption taper'>Class:</span>
-		<input id='filter-class-any' name='class' type='radio' checked class='filter'/><label for='filter-class-any' class='filter' title='Any'><span class='taper'>Any</span></label>
-		<span>&bull;</span> <input id='filter-class-bard' name='class' type='radio' class='filter'/><label for='filter-class-bard' class='filter' title='Bard'><span class='taper'>Bard</span></label>
-		<span>&bull;</span> <input id='filter-class-cleric' name='class' type='radio' class='filter'/><label for='filter-class-cleric' class='filter' title='Cleric'><span class='taper'>Cleric</span></label>
-		<span>&bull;</span> <input id='filter-class-druid' name='class' type='radio' class='filter'/><label for='filter-class-druid' class='filter' title='Druid'><span class='taper'>Druid</span></label>
-		<span>&bull;</span> <input id='filter-class-paladin' name='class' type='radio' class='filter'/><label for='filter-class-paladin' class='filter' title='Paladin'><span class='taper'>Paladin</span></label>
-		<span>&bull;</span> <input id='filter-class-ranger' name='class' type='radio' class='filter'/><label for='filter-class-ranger' class='filter' title='Ranger'><span class='taper'>Ranger</span></label>
-		<span>&bull;</span> <input id='filter-class-sorcerer' name='class' type='radio' class='filter'/><label for='filter-class-sorcerer' class='filter' title='Sorcerer'><span class='taper'>Sorcerer</span></label>
-		<span>&bull;</span> <input id='filter-class-warlock' name='class' type='radio' class='filter'/><label for='filter-class-warlock' class='filter' title='Warlock'><span class='taper'>Warlock</span></label>
-		<span>&bull;</span> <input id='filter-class-wizard' name='class' type='radio' class='filter'/><label for='filter-class-wizard' class='filter' title='Wizard'><span class='taper'>Wizard</span></label>
+		<input id='filter-class-any' name='crass' value='any' type='radio' checked class='filter'/><label for='filter-class-any' class='filter' title='Any'><span class='taper'>Any</span></label>
+		<span>&bull;</span> <input id='filter-class-bard' name='crass' value='bard' type='radio' class='filter'/><label for='filter-class-bard' class='filter' title='Bard'><span class='taper'>Bard</span></label>
+		<span>&bull;</span> <input id='filter-class-cleric' name='crass' value='cleric' type='radio' class='filter'/><label for='filter-class-cleric' class='filter' title='Cleric'><span class='taper'>Cleric</span></label>
+		<span>&bull;</span> <input id='filter-class-druid' name='crass' value='druid' type='radio' class='filter'/><label for='filter-class-druid' class='filter' title='Druid'><span class='taper'>Druid</span></label>
+		<span>&bull;</span> <input id='filter-class-paladin' name='crass' value='paladin' type='radio' class='filter'/><label for='filter-class-paladin' class='filter' title='Paladin'><span class='taper'>Paladin</span></label>
+		<span>&bull;</span> <input id='filter-class-ranger' name='crass' value='ranger' type='radio' class='filter'/><label for='filter-class-ranger' class='filter' title='Ranger'><span class='taper'>Ranger</span></label>
+		<span>&bull;</span> <input id='filter-class-sorcerer' name='crass' value='sorcerer' type='radio' class='filter'/><label for='filter-class-sorcerer' class='filter' title='Sorcerer'><span class='taper'>Sorcerer</span></label>
+		<span>&bull;</span> <input id='filter-class-warlock' name='crass' value='warlock' type='radio' class='filter'/><label for='filter-class-warlock' class='filter' title='Warlock'><span class='taper'>Warlock</span></label>
+		<span>&bull;</span> <input id='filter-class-wizard' name='crass' value='wizard' type='radio' class='filter'/><label for='filter-class-wizard' class='filter' title='Wizard'><span class='taper'>Wizard</span></label>
 		
 		<br/><span class='caption taper'>School:</span>
 		<input id='filter-school-a' type='checkbox' checked class='filter'/><label for='filter-school-a' class='filter' title='Abjuration'><span class='taper'>Abjuration</span></label>
@@ -720,11 +844,11 @@
 		<span>&bull;</span> <input id='filter-school-t' type='checkbox' checked class='filter'/><label for='filter-school-t' class='filter' title='Transmutation'><span class='taper'>Transmutation</span></label>
 		
 		<br/><span class='caption taper'>Casting Time:</span>
-		<input id='filter-casting-reaction' type='checkbox' checked class='filter'/><label for='filter-casting-reaction' class='filter' title='Reaction'><span class='taper'>Reaction</span></label>
-		<span>&bull;</span> <input id='filter-casting-bonus' type='checkbox' checked class='filter'/><label for='filter-casting-bonus' class='filter' title='Bonus Action'><span class='taper'>Bonus Action</span></label>
-		<span>&bull;</span> <input id='filter-casting-action' type='checkbox' checked class='filter'/><label for='filter-casting-action' class='filter' title='Action'><span class='taper'>Action</span></label>
-		<span>&bull;</span> <input id='filter-casting-minutes' type='checkbox' checked class='filter'/><label for='filter-casting-minutes' class='filter' title='Minutes'><span class='taper'>Minutes</span></label>
-		<span>&bull;</span> <input id='filter-casting-hours' type='checkbox' checked class='filter'/><label for='filter-casting-hours' class='filter' title='Hours'><span class='taper'>Hours</span></label>
+		<input id='filter-casting-r' type='checkbox' checked class='filter'/><label for='filter-casting-r' class='filter' title='Reaction'><span class='taper'>Reaction</span></label>
+		<span>&bull;</span> <input id='filter-casting-b' type='checkbox' checked class='filter'/><label for='filter-casting-b' class='filter' title='Bonus Action'><span class='taper'>Bonus Action</span></label>
+		<span>&bull;</span> <input id='filter-casting-a' type='checkbox' checked class='filter'/><label for='filter-casting-a' class='filter' title='Action'><span class='taper'>Action</span></label>
+		<span>&bull;</span> <input id='filter-casting-m' type='checkbox' checked class='filter'/><label for='filter-casting-m' class='filter' title='Minutes'><span class='taper'>Minutes</span></label>
+		<span>&bull;</span> <input id='filter-casting-h' type='checkbox' checked class='filter'/><label for='filter-casting-h' class='filter' title='Hours'><span class='taper'>Hours</span></label>
 		
 		<br/><span class='caption taper'>Source:</span>
 		<input id='filter-book-ph' type='checkbox' checked class='filter'/><label for='filter-book-ph' class='filter' title='Players Handbook'><span class='taper'>Players Handbook</span></label>
@@ -734,69 +858,70 @@
 		<span>&bull;</span> <input id='filter-book-rt' type='checkbox' checked class='filter'/><label for='filter-book-rt' class='filter' title='The Rise of Tiamat'><span class='taper'>Tiamat</span></label>
 		
 		<br/><span class='caption taper'>And:</span>
-		<input id='filter-ritual-disable' name='filter-ritual' type='radio' checked class='trivia'/>
-		<input id='filter-ritual-require' name='filter-ritual' type='radio' class='trivia'/>
-		<input id='filter-ritual-exclude' name='filter-ritual' type='radio' class='trivia'/>
+		<input id='filter-ritual-disable' name='filter-ritual' value='-' type='radio' checked class='trivia'/>
+		<input id='filter-ritual-require' name='filter-ritual' value='R' type='radio' class='trivia'/>
+		<input id='filter-ritual-exclude' name='filter-ritual' value='r' type='radio' class='trivia'/>
 		<label for='filter-ritual-disable' class='trivia exclude'><span class='taper'>Ritual</span></label>
 		<label for='filter-ritual-require' class='trivia disable'><span class='taper'>Ritual</span></label>
 		<label for='filter-ritual-exclude' class='trivia require'><span class='taper'>Ritual</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-concentration-disable' name='filter-concentration' type='radio' checked class='trivia'/>
-		<input id='filter-concentration-require' name='filter-concentration' type='radio' class='trivia'/>
-		<input id='filter-concentration-exclude' name='filter-concentration' type='radio' class='trivia'/>
+		<input id='filter-concentration-disable' name='filter-concentration' value='-' type='radio' checked class='trivia'/>
+		<input id='filter-concentration-require' name='filter-concentration' value='C' type='radio' class='trivia'/>
+		<input id='filter-concentration-exclude' name='filter-concentration' value='c' type='radio' class='trivia'/>
 		<label for='filter-concentration-disable' class='trivia exclude'><span class='taper'>Concentration</span></label>
 		<label for='filter-concentration-require' class='trivia disable'><span class='taper'>Concentration</span></label>
 		<label for='filter-concentration-exclude' class='trivia require'><span class='taper'>Concentration</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-defense-disable' name='filter-defense' type='radio' checked class='trivia'/>
-		<input id='filter-defense-require' name='filter-defense' type='radio' class='trivia'/>
-		<input id='filter-defense-exclude' name='filter-defense' type='radio' class='trivia'/>
+		<input id='filter-defense-disable' name='filter-defense' value='-' type='radio' checked class='trivia'/>
+		<input id='filter-defense-require' name='filter-defense' value='F' type='radio' class='trivia'/>
+		<input id='filter-defense-exclude' name='filter-defense' value='f' type='radio' class='trivia'/>
 		<label for='filter-defense-disable' class='trivia exclude'><span class='taper'>Defense</span></label>
 		<label for='filter-defense-require' class='trivia disable'><span class='taper'>Defense</span></label>
 		<label for='filter-defense-exclude' class='trivia require'><span class='taper'>Defense</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-attack-disable' name='filter-attack' type='radio' checked class='trivia'/>
-		<input id='filter-attack-require' name='filter-attack' type='radio' class='trivia'/>
-		<input id='filter-attack-exclude' name='filter-attack' type='radio' class='trivia'/>
+		<input id='filter-attack-disable' name='filter-attack' value='-' type='radio' checked class='trivia'/>
+		<input id='filter-attack-require' name='filter-attack' value='A' type='radio' class='trivia'/>
+		<input id='filter-attack-exclude' name='filter-attack' value='a' type='radio' class='trivia'/>
 		<label for='filter-attack-disable' class='trivia exclude'><span class='taper'>Attack</span></label>
 		<label for='filter-attack-require' class='trivia disable'><span class='taper'>Attack</span></label>
 		<label for='filter-attack-exclude' class='trivia require'><span class='taper'>Attack</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-save-disable' name='filter-save' type='radio' checked class='trivia'/>
-		<input id='filter-save-require' name='filter-save' type='radio' class='trivia'/>
-		<input id='filter-save-exclude' name='filter-save' type='radio' class='trivia'/>
+		<input id='filter-save-disable' name='filter-save' value='-' type='radio' checked class='trivia'/>
+		<input id='filter-save-require' name='filter-save' value='S' type='radio' class='trivia'/>
+		<input id='filter-save-exclude' name='filter-save' value='s' type='radio' class='trivia'/>
 		<label for='filter-save-disable' class='trivia exclude'><span class='taper'>Save</span></label>
 		<label for='filter-save-require' class='trivia disable'><span class='taper'>Save</span></label>
 		<label for='filter-save-exclude' class='trivia require'><span class='taper'>Save</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-damage-disable' name='filter-damage' type='radio' checked class='trivia'/>
-		<input id='filter-damage-require' name='filter-damage' type='radio' class='trivia'/>
-		<input id='filter-damage-exclude' name='filter-damage' type='radio' class='trivia'/>
+		<input id='filter-damage-disable' name='filter-damage' value='-' type='radio' checked class='trivia'/>
+		<input id='filter-damage-require' name='filter-damage' value='D' type='radio' class='trivia'/>
+		<input id='filter-damage-exclude' name='filter-damage' value='d' type='radio' class='trivia'/>
 		<label for='filter-damage-disable' class='trivia exclude'><span class='taper'>Damage</span></label>
 		<label for='filter-damage-require' class='trivia disable'><span class='taper'>Damage</span></label>
 		<label for='filter-damage-exclude' class='trivia require'><span class='taper'>Damage</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-higher-disable' name='filter-higher' type='radio' checked class='trivia'/>
-		<input id='filter-higher-require' name='filter-higher' type='radio' class='trivia'/>
-		<input id='filter-higher-exclude' name='filter-higher' type='radio' class='trivia'/>
+		<input id='filter-higher-disable' name='filter-higher' value='-' type='radio' checked class='trivia'/>
+		<input id='filter-higher-require' name='filter-higher' value='H' type='radio' class='trivia'/>
+		<input id='filter-higher-exclude' name='filter-higher' value='h' type='radio' class='trivia'/>
 		<label for='filter-higher-disable' class='trivia exclude'><span class='taper'>Higher</span></label>
 		<label for='filter-higher-require' class='trivia disable'><span class='taper'>Higher</span></label>
 		<label for='filter-higher-exclude' class='trivia require'><span class='taper'>Higher</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-permanent-disable' name='filter-permanent' type='radio' checked class='trivia'/>
-		<input id='filter-permanent-require' name='filter-permanent' type='radio' class='trivia'/>
-		<input id='filter-permanent-exclude' name='filter-permanent' type='radio' class='trivia'/>
+		<input id='filter-permanent-disable' name='filter-permanent' value='-' type='radio' checked class='trivia'/>
+		<input id='filter-permanent-require' name='filter-permanent' value='P' type='radio' class='trivia'/>
+		<input id='filter-permanent-exclude' name='filter-permanent' value='p' type='radio' class='trivia'/>
 		<label for='filter-permanent-disable' class='trivia exclude'><span class='taper'>Permanent</span></label>
 		<label for='filter-permanent-require' class='trivia disable'><span class='taper'>Permanent</span></label>
 		<label for='filter-permanent-exclude' class='trivia require'><span class='taper'>Permanent</span></label>
 		
 		<table id='spells'></table>
+		</form>
 	</body>
 </html>
