@@ -56,28 +56,28 @@ var dnd = {
 		{"key":"thieves", "name":"Thieves' Cant", "hidden":true}
 	],
 	"dragonbornancestry":[
-		{"key":"black", "name":"Black", "summary":"Acid breath in 30 foot line, dexterity save", "resistance":["acid"], "shape":"line", "save":"dexterity"},
-		{"key":"blue", "name":"Blue", "summary":"Lightning breath in 30 foot line, dexterity save", "resistance":["lightning"], "shape":"line", "save":"dexterity"},
-		{"key":"brass", "name":"Brass", "summary":"Fire breath in 30 foot line, dexterity save", "resistance":["fire"], "shape":"line", "save":"dexterity"},
-		{"key":"bronze", "name":"Bronze", "summary":"Lightning breath in 30 foot line, dexterity save", "resistance":["lightning"], "shape":"line", "save":"dexterity"},
-		{"key":"copper", "name":"Copper", "summary":"Acid breath in 30 foot line, dexterity save", "resistance":["acid"], "shape":"line", "save":"dexterity"},
-		{"key":"gold", "name":"Gold", "summary":"Fire breath in 15 foot cone, dexterity save", "resistance":["fire"], "shape":"cone", "save":"dexterity"},
-		{"key":"green", "name":"Green", "summary":"Poison breath in 15 foot cone, constitution save", "resistance":["poison"], "shape":"cone", "save":"constitution"},
-		{"key":"red", "name":"Red", "summary":"Fire breath in 15 foot cone, dexterity save", "resistance":["fire"], "shape":"cone", "save":"dexterity"},
-		{"key":"silver", "name":"Silver", "summary":"Cold breath in 15 foot cone, constitution save", "resistance":["cold"], "shape":"cone", "save":"constitution"},
-		{"key":"white", "name":"White", "summary":"Cold breath in 15 foot cone, constitution save", "resistance":["cold"], "shape":"cone", "save":"constitution"}
+		{"key":"black", "name":"Black", "summary":"Acid breath in 30 foot line, Dexterity save", "resistance":["acid"], "shape":"line", "save":"dexterity"},
+		{"key":"blue", "name":"Blue", "summary":"Lightning breath in 30 foot line, Dexterity save", "resistance":["lightning"], "shape":"line", "save":"dexterity"},
+		{"key":"brass", "name":"Brass", "summary":"Fire breath in 30 foot line, Dexterity save", "resistance":["fire"], "shape":"line", "save":"dexterity"},
+		{"key":"bronze", "name":"Bronze", "summary":"Lightning breath in 30 foot line, Dexterity save", "resistance":["lightning"], "shape":"line", "save":"dexterity"},
+		{"key":"copper", "name":"Copper", "summary":"Acid breath in 30 foot line, Dexterity save", "resistance":["acid"], "shape":"line", "save":"dexterity"},
+		{"key":"gold", "name":"Gold", "summary":"Fire breath in 15 foot cone, Dexterity save", "resistance":["fire"], "shape":"cone", "save":"dexterity"},
+		{"key":"green", "name":"Green", "summary":"Poison breath in 15 foot cone, Constitution save", "resistance":["poison"], "shape":"cone", "save":"constitution"},
+		{"key":"red", "name":"Red", "summary":"Fire breath in 15 foot cone, Dexterity save", "resistance":["fire"], "shape":"cone", "save":"dexterity"},
+		{"key":"silver", "name":"Silver", "summary":"Cold breath in 15 foot cone, Constitution save", "resistance":["cold"], "shape":"cone", "save":"constitution"},
+		{"key":"white", "name":"White", "summary":"Cold breath in 15 foot cone, Constitution save", "resistance":["cold"], "shape":"cone", "save":"constitution"}
 	],
 	"draconicancestry":[
-		{"key":"black", "name":"Black", "summary":"Acid damage", "resistance":"acid"},
-		{"key":"blue", "name":"Blue", "summary":"Lightning damage", "resistance":"lightning"},
-		{"key":"brass", "name":"Brass", "summary":"Fire damage", "resistance":"fire"},
-		{"key":"bronze", "name":"Bronze", "summary":"Lightning damage", "resistance":"lightning"},
-		{"key":"copper", "name":"Copper", "summary":"Acid damage", "resistance":"acid"},
-		{"key":"gold", "name":"Gold", "summary":"Fire damage", "resistance":"fire"},
-		{"key":"green", "name":"Green", "summary":"Poison damage", "resistance":"poison"},
-		{"key":"red", "name":"Red", "summary":"Fire damage", "resistance":"fire"},
-		{"key":"silver", "name":"Silver", "summary":"Cold damage", "resistance":"cold"},
-		{"key":"white", "name":"White", "summary":"Cold damage", "resistance":"cold"}
+		{"key":"black", "name":"Black", "summary":"Acid damage", "resistance":["acid"]},
+		{"key":"blue", "name":"Blue", "summary":"Lightning damage", "resistance":["lightning"]},
+		{"key":"brass", "name":"Brass", "summary":"Fire damage", "resistance":["fire"]},
+		{"key":"bronze", "name":"Bronze", "summary":"Lightning damage", "resistance":["lightning"]},
+		{"key":"copper", "name":"Copper", "summary":"Acid damage", "resistance":["acid"]},
+		{"key":"gold", "name":"Gold", "summary":"Fire damage", "resistance":["fire"]},
+		{"key":"green", "name":"Green", "summary":"Poison damage", "resistance":["poison"]},
+		{"key":"red", "name":"Red", "summary":"Fire damage", "resistance":["fire"]},
+		{"key":"silver", "name":"Silver", "summary":"Cold damage", "resistance":["cold"]},
+		{"key":"white", "name":"White", "summary":"Cold damage", "resistance":["cold"]}
 	],
 	"resistances":[
 		{"key":"fear", "name":"Fear"},
@@ -105,7 +105,7 @@ var dnd = {
 	],
 	"weapons":[
 		{"key":"dagger", "name":"Dagger", "damage":{"die":4}, "type":"piercing", "kind":"sword", "common":2, "thrown":true, "finesse":true, "light":true, "range":20, "longrange":60, "weight":2},
-		{"key":"throwinghammer", "name":"Light Hammer", "damage":{"die":4}, "type":"bludgeoning", "kind":"hammer", "light":true, "thrown":true, "range":20, "longrange":60, "weight":2},
+		{"key":"lighthammer", "name":"Light Hammer", "damage":{"die":4}, "type":"bludgeoning", "kind":"hammer", "light":true, "thrown":true, "range":20, "longrange":60, "weight":2},
 		{"key":"javelin", "name":"Javelin", "damage":{"die":6}, "type":"piercing", "thrown":true, "range":30, "longrange":120, "weight":2},
 		{"key":"handaxe", "name":"Handaxe", "damage":{"die":6}, "type":"slashing", "kind":"axe", "common":2, "light":true, "thrown":true, "range":20, "longrange":60, "weight":2},
 		{"key":"mace", "name":"Mace", "damage":{"die":6}, "type":"bludgeoning", "common":2, "weight":4},
@@ -157,7 +157,7 @@ var dnd = {
 		{"key":"medium", "name":"Medium Armor", "armors":["hidearmor", "chainshirt", "scalemail", "breastplate", "halfplate"]},
 		{"key":"heavy", "name":"Heavy Armor", "armors":["ringmail", "chainmail", "splintmail", "platemail"]},
 		{"key":"shields", "name":"Shields", "armors":["shield", "woodenshield"]},
-		{"key":"simple", "name":"Simple Weapons", "weapons":["dagger", "throwinghammer", "javelin", "handaxe", "mace", "staff", "spear", "lightcrossbow", "dart", "shortbow", "sling"]},
+		{"key":"simple", "name":"Simple Weapons", "weapons":["dagger", "lighthammer", "javelin", "handaxe", "mace", "staff", "spear", "lightcrossbow", "dart", "shortbow", "sling"]},
 		{"key":"martial", "name":"Martial Weapons", "weapons":["battleaxe", "glaive", "greataxe", "greatsword", "halberd", "maul", "longsword", "pike", "rapier", "scimitar", "shortsword", "trident", "warhammer", "whip", "handcrossbow", "heavycrossbow", "longbow"]},
 	],
 	"tools":[
@@ -245,6 +245,25 @@ var dnd = {
 		{"key":"great", "name":"Great Weapon Fighting", "summary":"Improve damage of two handed melee weapon"},
 		{"key":"block", "name":"Protection", "summary":"Impose disadvantage on nearby attack with shield", "type":"reaction"},
 		{"key":"dual", "name":"Two Weapon Fighting", "summary":"Improve damage of melee weapon in second hand", "type":"bonusaction"}
+	],
+	"huntertactics3":[
+		{"key":"slayer", "name":"Colossus Slayer", "summary":"1/turn extra 1d8 weapon damage against injured foe"},
+		{"key":"killer", "name":"Giant Killer", "summary":"Attack as reaction to attack by Large or larger creature", "type":"reaction"},
+		{"key":"breaker", "name":"Horde Breaker", "summary":"1/turn extra attack against creature within 5 feet of original target"}
+	],
+	"huntertactics7":[
+		{"key":"escape", "name":"Escape the Horde", "summary":"Impose disadvantage on opportunity attacks"},
+		{"key":"defense", "name":"Multiattack Defense", "summary":"AC +4 on attacks after first hit by same creature"},
+		{"key":"will", "name":"Steel Will", "summary":"Advantage on saves against fear", "advantage_on_saves":["fear"]}
+	],
+	"huntertactics11":[
+		{"key":"volley", "name":"Volley", "summary":"Ranged attack against every creature within 10 foot radius", "type":"action"},
+		{"key":"whirlwind", "name":"Whirlwind Attack", "summary":"Melee attack against every creature within 5 feet", "type":"action"}
+	],
+	"huntertactics15":[
+		{"key":"evasion", "name":"Evasion", "summary":"Receive half or no damage with Dexterity save"},
+		{"key":"", "name":"Stand Against the Tide", "summary":"Redirect missed attack to another creature as reaction", "type":"reaction"},
+		{"key":"dodge", "name":"Uncanny Dodge", "summary":"Reduce damage from an attack to half as a reaction", "type":"reaction"}
 	],
 	"feats":[
 		{"key":"a", "name":"Ability", "summary":"+2", "increase":2, "multiple":true},
@@ -352,11 +371,11 @@ var dnd = {
 			[[{"pack":"explorers"}, {"weapon":"javelin", "quantity":4}]]
 		],
 		"features":[
-			{"level":1, "key":"rage", "name":"Rage", "summary":"Damage resistance and strength advantage", "type":"bonusaction"},
-			{"level":1, "key":"ragedamage", "name":"Rage Damage (+2)", "summary":"Extra melee strength damage when raging"},
-			{"level":1, "key":"defense", "name":"Unarmored Defence", "summary":"Add constitution modifier to armor class when unarmored", "requirement":"unarmored", "armorclass":"constitution"},
+			{"level":1, "key":"rage", "name":"Rage", "summary":"Damage resistance and Strength advantage", "type":"bonusaction"},
+			{"level":1, "key":"ragedamage", "name":"Rage Damage (+2)", "summary":"Extra melee Strength damage when raging"},
+			{"level":1, "key":"defense", "name":"Unarmored Defence", "summary":"Add Constitution modifier to armor class when unarmored", "requirement":"unarmored", "armorclass":"constitution"},
 			{"level":2, "key":"reckless", "name":"Reckless Attack", "summary":"Advantage on attacks and for attackers"},
-			{"level":2, "key":"danger", "name":"Danger Sense", "summary":"Advantage on some dexterity saving throws", "advantage":"dexterity"},
+			{"level":2, "key":"danger", "name":"Danger Sense", "summary":"Advantage on some Dexterity saving throws", "advantage":"dexterity"},
 			{"level":3, "key":"archetype", "name":"Primal Path", "summary":"Choose a path"},
 			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}},
 			{"level":5, "key":"attack", "name":"Extra Attack", "summary":"Attack twice with the attack action", "attacks":1},
@@ -364,15 +383,15 @@ var dnd = {
 			{"level":7, "key":"feral", "name":"Feral Instinct", "summary":"Advantage on initiative", "advantage":"initiative"},
 			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}},
 			{"level":9, "key":"brutal", "name":"Brutal Critical (+1)", "summary":"Extra damage die on critical hits", "criticaldice":1},
-			{"level":9, "key":"ragedamage", "name":"Rage Damage (+3)", "summary":"Extra melee strength damage when raging"},
+			{"level":9, "key":"ragedamage", "name":"Rage Damage (+3)", "summary":"Extra melee Strength damage when raging"},
 			{"level":11, "key":"relentless", "name":"Relentless Rage", "summary":"Avoid death while raging"},
 			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}},
 			{"level":13, "key":"brutal", "name":"Brutal Critical (+2)", "summary":"Extra damage die on critical hits", "criticaldice":1},
 			{"level":15, "key":"persistent", "name":"Persistent Rage", "summary":"Sustain rage without combat"},
-			{"level":16, "key":"ragedamage", "name":"Rage Damage (+4)", "summary":"Extra melee strength damage when raging"},
+			{"level":16, "key":"ragedamage", "name":"Rage Damage (+4)", "summary":"Extra melee Strength damage when raging"},
 			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}},
 			{"level":17, "key":"brutal", "name":"Brutal Critical (+3)", "summary":"Extra damage die on critical hits", "criticaldice":1},
-			{"level":18, "key":"indomitable", "name":"Indomitable Might", "summary":"Use strength score for strength checks"},
+			{"level":18, "key":"indomitable", "name":"Indomitable Might", "summary":"Use Strength score for Strength checks"},
 			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}},
 			{"level":20, "key":"primal", "name":"Primal Champion", "summary":"Strength +4 and Constitution +4", "abilities":{"strength":4, "constitution":4}}
 		]
@@ -415,7 +434,7 @@ var dnd = {
 			{"level":4, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "cantrips":1},
 			{"level":5, "key":"font", "name":"Font of Inspiration", "summary":"Regain inspiration dice after short rest"},
 			{"level":5, "key":"inspiration", "name":"Bardic Inspiration (d8)", "summary":"Improve inspiration dice", "die":8},
-			{"level":6, "key":"counter", "name":"Countercharm", "summary":"Advantage on fear and charm save", "type":"action", "advantage":["fear", "charm"]},
+			{"level":6, "key":"counter", "name":"Countercharm", "summary":"Advantage on fear and charm saves", "type":"action", "advantage_on_saves":["fear", "charm"]},
 			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}},
 			{"level":10, "key":"inspiration", "name":"Bardic Inspiration (d10)", "summary":"Improve inspiration dice", "die":10},
 			{"level":10, "key":"secrets", "name":"Magical Secrets (2)", "summary":"Choose 2 spells from any class"},
@@ -590,7 +609,7 @@ var dnd = {
 			[[{"pack":"dungeoneers"}], [{"pack":"explorers"}]]
 		],
 		"features":[
-			{"level":1, "key":"defense", "name":"Unarmored Defence", "summary":"Add wisdom modifier to armor class when unarmored", "requirement":"unarmored", "armorclass":"wisdom"},
+			{"level":1, "key":"defense", "name":"Unarmored Defence", "summary":"Add Wisdom modifier to armor class when unarmored", "requirement":"unarmored", "armorclass":"wisdom"},
 			{"level":1, "key":"martial", "name":"Martial Arts (d4)", "summary":"Bonus unarmed attack, monk weapon finesse", "requirement":"unarmored", "type":"bonusaction", "monkweapondamagedie":4},
 			{"level":2, "key":"ki", "name":"Ki", "summary":"1 ki Unarmed strikes, dodge, dash, disengage", "requirement":"unarmored", "type":"bonusaction"},
 			{"level":2, "key":"movement", "name":"Unarmored Movement (10)", "summary":"Increase speed while unarmored", "requirement":"unarmored", "speed":10},
@@ -602,7 +621,7 @@ var dnd = {
 			{"level":5, "key":"stun", "name":"Stunning Strike", "summary":"1 ki on hit to stun", "type":"hit"},
 			{"level":5, "key":"martial", "name":"Martial Arts (d6)", "summary":"Increase monk weapon damage", "monkweapondamagedie":6},
 			{"level":6, "key":"movement", "name":"Unarmored Movement (15)", "summary":"Increase speed while unarmored", "requirement":"unarmored", "speed":5},
-			{"level":7, "key":"evasion", "name":"Evasion", "summary":"Receive half or no damage with dexterity save"},
+			{"level":7, "key":"evasion", "name":"Evasion", "summary":"Receive half or no damage with Dexterity save"},
 			{"level":7, "key":"stillness", "name":"Stillness of Mind", "summary":"Remove charm or fear effect from self as action", "type":"action"},
 			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}},
 			{"level":9, "key":"movement", "name":"Unarmored Movement", "summary":"Move on vertical surfaces or liquids", "requirement":"unarmored"},
@@ -718,7 +737,7 @@ var dnd = {
 			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}},
 			{"level":18, "key":"feral", "name":"Feral Senses", "summary":"No disadvantage to attack unseen target", "blindsense":30},
 			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}},
-			{"level":20, "key":"slayer", "name":"Foe Slayer", "summary":"Add wisdom modifier to attack or damage 1/turn"},
+			{"level":20, "key":"slayer", "name":"Foe Slayer", "summary":"Add Wisdom modifier to attack or damage 1/turn"},
 		]
 	},{
 		"key":"rogue",
@@ -753,7 +772,7 @@ var dnd = {
 			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}},
 			{"level":5, "key":"uncanny", "name":"Uncanny Dodge", "summary":"Reduce damage from an attack to half as a reaction", "type":"reaction"},
 			{"level":6, "key":"expertise", "name":"Expertise", "summary":"Double proficiency in two skills"},
-			{"level":7, "key":"evasion", "name":"Evasion", "summary":"Receive half or no damage with dexterity save"},
+			{"level":7, "key":"evasion", "name":"Evasion", "summary":"Receive half or no damage with Dexterity save"},
 			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}},
 			{"level":10, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft10"}},
 			{"level":11, "key":"reliable", "name":"Reliable Talent", "summary":"Minimum roll of 10 on proficient skill checks"},
@@ -844,7 +863,7 @@ var dnd = {
 		},
 		"invocations_known":[0,2,2,2,3,3,4,4,5,5,5,6,6,6,7,7,7,8,8,8],
 		"invocations":[
-			{"key":"agonizing", "name":"Agonizing Blast", "summary":"Increase Eldritch Blast damage by charisma modifier"},
+			{"key":"agonizing", "name":"Agonizing Blast", "summary":"Increase Eldritch Blast damage by Charisma modifier"},
 			{"key":"magearmor", "name":"Armor of Shadows", "summary":"Cast Magearmor at will"},
 			{"key":"levitate", "name":"Ascendant Step", "summary":"Cast Levitate at will", "requirelevel":9},
 			{"key":"speakwithanimals", "name":"Beast Speech", "summary":"Cast Speak with Animals at will"},
@@ -859,7 +878,7 @@ var dnd = {
 			{"key":"rune", "name":"Eyes of the Rune Keeper", "summary":"Read all writing"},
 			{"key":"falselife", "name":"Fiendish Vigor", "summary":"Case False Life at will"},
 			{"key":"gaze", "name":"Gaze of Two Minds", "summary":"Clairvoyance through willing target", "type":"action"},
-			{"key":"lifedrinker", "name":"Lifedrinker", "summary":"Increase pact weapon damage by charisma modifier", "requirelevel":12, "requireboon":"blade"},
+			{"key":"lifedrinker", "name":"Lifedrinker", "summary":"Increase pact weapon damage by Charisma modifier", "requirelevel":12, "requireboon":"blade"},
 			{"key":"disguiseself", "name":"Mask of Many Faces", "summary":"Cast Disguise Self at will"},
 			{"key":"alterself", "name":"Master of Myriad Forms", "summary":"Cast Alter Self at will", "requirelevel":15},
 			{"key":"elemental", "name":"Minions of Chaos", "summary":"Cast Conjure Elemental", "requirelevel":9},
@@ -990,7 +1009,7 @@ var dnd = {
 			{"level":1, "key":"blessings", "name":"Blessings of Knowledge", "summary":"Gain 2 languages and 2 double profiencies", "extra_language":2, "skill_options":{limit:2, "list":["arcana", "history", "nature", "religion"]}},
 			{"level":2, "key":"knowledge", "name":"Channel Divinity: Knowledge of the Ages", "summary":"Gain temporary proficiency as an action", "type":"action"},
 			{"level":6, "key":"thoughts", "name":"Channel Divinity: Read Thoughts", "summary":"Read thoughts and cast suggestion", "type":"action"},
-			{"level":8, "key":"potent", "name":"Potent Spellcasting", "summary":"Add wisdom modifier to cantrip damage"},
+			{"level":8, "key":"potent", "name":"Potent Spellcasting", "summary":"Add Wisdom modifier to cantrip damage"},
 			{"level":17, "key":"visions", "name":"Visions of the Past", "summary":"Read auras and objects"},
 		]
 	},{
@@ -1012,7 +1031,7 @@ var dnd = {
 			{"level":1, "key":"flare", "name":"Warding Flare", "summary":"Impose disadvantage on attack as a reaction", "type":"reaction"},
 			{"level":2, "key":"radiance", "name":"Channel Divinity: Radiance of the Dawn", "summary":"Deal 2d10+level radiant damage", "type":"action"},
 			{"level":6, "key":"improved", "name":"Improved Flare", "summary":"Warding flare to defend allies"},
-			{"level":8, "key":"potent", "name":"Potent Spellcasting", "summary":"Add wisdom modifier to cantrip damage"},
+			{"level":8, "key":"potent", "name":"Potent Spellcasting", "summary":"Add Wisdom modifier to cantrip damage"},
 			{"level":17, "key":"corona", "name":"Corona of Light", "summary":"Impose disadvantage on fire and radiant saves", "type":"action"},
 		]
 	},{
@@ -1084,25 +1103,25 @@ var dnd = {
 		"key":"champion",
 		"name":"Champion",
 		"features":[
-			{"level":3, "key":"critical", "name":"Improved Critical", "summary":"Critical hit on 19-20"},
+			{"level":3, "key":"critical", "name":"Improved Critical", "summary":"Critical hit on 19-20", "critical_range":1},
 			{"level":7, "key":"remarkable", "name":"Remarkable Athlete", "summary":"Half proficiency bonus to physical"},
 			{"level":10, "key":"fightingstyle", "name":"Additional Fighting Style", "summary":"Choose an additional fighting style", "options":{"dnd":"fightingstyles", "hash":"fs2"}},
-			{"level":15, "key":"superior", "name":"Superior Critical", "summary":"Critical hit on 18-20"},
+			{"level":15, "key":"superior", "name":"Superior Critical", "summary":"Critical hit on 18-20", "critical_range":1},
 			{"level":18, "key":"survivor", "name":"Survivor", "summary":"Regain 10 hit points every turn"}
 		]
 	},{
 		"key":"battle",
 		"name":"Battle Master",
 		"features":[
-			{"level":3, "key":"superiority", "name":"Combat Superiority (4d8)", "summary":"Choose 3 combat maneuvers"},
+			{"level":3, "key":"superiority", "name":"Combat Superiority (4d8)", "summary":"Choose 3 combat maneuvers", "options":{"dnd":"maneuvers", "limit":3, "hash":"cm"}},
 			{"level":3, "key":"student", "name":"Student of War", "summary":"Gain proficiency with artisan tools"},
 			{"level":7, "key":"enemy", "name":"Know Your Enemy", "summary":"Learn capabilities of adversary"},
 			{"level":7, "key":"superiority", "name":"Superiority Die (5d8)", "summary":"Gain another superiority die"},
-			{"level":7, "key":"maneuvers", "name":"Combat Maneuvers (5)", "summary":"Gain 2 combat maneuvers"},
+			{"level":7, "key":"maneuvers", "name":"Combat Maneuvers (5)", "summary":"Gain 2 combat maneuvers", "options":{"dnd":"maneuvers", "limit":2, "hash":"cm2"}},
 			{"level":10, "key":"superiority", "name":"Improved Combat Superiority (5d10)", "summary":"Superiority dice are d10"},
-			{"level":10, "key":"maneuvers", "name":"Combat Maneuvers (7)", "summary":"Gain 2 combat maneuvers"},
+			{"level":10, "key":"maneuvers", "name":"Combat Maneuvers (7)", "summary":"Gain 2 combat maneuvers", "options":{"dnd":"maneuvers", "limit":2, "hash":"cm3"}},
 			{"level":15, "key":"relentless", "name":"Relentless", "summary":"Regain superiority die at initiative", "type":"initiative"},
-			{"level":15, "key":"maneuvers", "name":"Combat Maneuvers (9)", "summary":"Gain 2 combat maneuvers"},
+			{"level":15, "key":"maneuvers", "name":"Combat Maneuvers (9)", "summary":"Gain 2 combat maneuvers", "options":{"dnd":"maneuvers", "limit":2, "hash":"cm4"}},
 			{"level":15, "key":"superiority", "name":"Superiority Die (6d10)", "summary":"Gain another superiority die"},
 			{"level":18, "key":"superiority", "name":"Improved Combat Superiority (6d12)", "summary":"Superiority dice are d12"},
 		]
@@ -1179,18 +1198,18 @@ var dnd = {
 		"key":"hunter",
 		"name":"Hunter",
 		"features":[
-			{"level":3, "key":"prey", "name":"Hunter's Prey", "summary":"Choose a tactic"},
-			{"level":7, "key":"tactics", "name":"Defensive Tactics", "summary":"Choose a tactic"},
-			{"level":11, "key":"multiattack", "name":"Multiattack", "summary":"Choose a tactic"},
-			{"level":15, "key":"defense", "name":"Superior Hunter's Defense", "summary":"Choose a defense"},
+			{"level":3, "key":"prey", "name":"Hunter's Prey", "summary":"Choose a tactic", "options":{"dnd":"huntertactics3", "hash":"ht3"}},
+			{"level":7, "key":"tactics", "name":"Defensive Tactics", "summary":"Choose a tactic", "options":{"dnd":"huntertactics7", "hash":"ht7"}},
+			{"level":11, "key":"multiattack", "name":"Multiattack", "summary":"Choose a tactic", "options":{"dnd":"huntertactics11", "hash":"ht11"}},
+			{"level":15, "key":"defense", "name":"Superior Hunter's Defense", "summary":"Choose a defense", "options":{"dnd":"huntertactics15", "hash":"ht15"}},
 		]
 	},{
 		"key":"beast",
 		"name":"Beast Master",
 		"features":[
 			{"level":3, "key":"companion", "name":"Ranger's Companion", "summary":"Gain beast companion up to CP 1/4"},
-			{"level":7, "key":"training", "name":"Exceptional Training", "summary":"Companion dash. dodge, help, diengage as bonus action", "type":"bonusaction"},
-			{"level":11, "key":"fury", "name":"Bestial Fury", "summary":"Companion attacks twice the the attack action"},
+			{"level":7, "key":"training", "name":"Exceptional Training", "summary":"Companion dash, dodge, help, disengage as bonus action", "type":"bonusaction"},
+			{"level":11, "key":"fury", "name":"Bestial Fury", "summary":"Companion attacks twice with the attack action"},
 			{"level":15, "key":"share", "name":"Share Spells", "summary":"Spells affecting self also affect companion"},
 		]
 	},{
@@ -1209,38 +1228,39 @@ var dnd = {
 		"features":[
 			{"level":3, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain proficiency with poison and disguise kits", "tools":["disguise", "poison"]},
 			{"level":3, "key":"assassinate", "name":"Assassinate", "summary":"Advantage before first turn, Critical on surprise"},
-			{"level":9, "key":"infiltration", "name":"Infiltration Expertise", "summary":""},
-			{"level":13, "key":"imposter", "name":"Imposter", "summary":""},
-			{"level":17, "key":"strike", "name":"Death Strike", "summary":"Surprised targets save or take double damage"},
+			{"level":9, "key":"infiltration", "name":"Infiltration Expertise", "summary":"Unfailingly create false identities for yourself"},
+			{"level":13, "key":"imposter", "name":"Imposter", "summary":"Unerringly mimic another's speech, writing and behavior"},
+			{"level":17, "key":"strike", "name":"Death Strike", "summary":"Surprised targets take double damage on failed Constitution save"},
 		]
 	},{
 		"key":"trickster",
 		"name":"Arcane Trickster",
 		"features":[
 			{"level":3, "key":"spellcasting", "name":"Spellcasting", "summary":"Intelligence, 2 cantrips"},
-			{"level":3, "key":"hand", "name":"Mage Hand Legerdemain", "summary":""},
-			{"level":9, "key":"ambush", "name":"Magical Ambush", "summary":""},
-			{"level":13, "key":"trickster", "name":"Versatile Trickster", "summary":"", "type":"bonusaction"},
-			{"level":17, "key":"thief", "name":"Spell Thief", "summary":""},
+			{"level":3, "key":"hand", "name":"Mage Hand Legerdemain", "summary":"Mage Hand is invisible, picks locks, picks pockets"},
+			{"level":9, "key":"ambush", "name":"Magical Ambush", "summary":"Impose disadvantage on saves when hidden from targets"},
+			{"level":13, "key":"trickster", "name":"Versatile Trickster", "summary":"Advantage on attack using Mage Hand as distraction", "type":"bonusaction"},
+			{"level":17, "key":"thief", "name":"Spell Thief", "summary":"1/day counter spell and steal knowledge of how to cast it"},
 		]
 	},{
 		"key":"draconic",
 		"name":"Draconic Bloodline",
 		"features":[
+			{"level":1, "key":"ancestor", "name":"Dragon Ancestor", "summary":"Choose dragon ancestor", "options":{"dnd":"draconicancestry", "hash":"sa"}, "languages":["draconic"]},
 			{"level":1, "key":"resilience", "name":"Draconic Resilience", "summary":"AC +3, HP +level", "requirement":"unarmored", "armorclass":3, "toughness":1},
-			{"level":6, "key":"potent", "name":"Elemental Affinity", "summary":""},
-			{"level":14, "key":"wings", "name":"Dragon Wings", "summary":""},
-			{"level":18, "key":"presense", "name":"Draconic Presense", "summary":""},
+			{"level":6, "key":"potent", "name":"Elemental Affinity", "summary":"Resist ancestral damage for 1 sorcery point, increase spell damage"},
+			{"level":14, "key":"wings", "name":"Dragon Wings", "summary":"Sprout dragon wings and fly", "type":"bonusaction"},
+			{"level":18, "key":"presense", "name":"Draconic Presense", "summary":"Cause fear or awe in 60 foot radius for 5 sorcery points", "type":"action"},
 		]
 	},{
 		"key":"wild",
 		"name":"Wild Magic",
 		"features":[
-			{"level":1, "key":"surge", "name":"Wild Magic Surge", "summary":""},
-			{"level":1, "key":"tides", "name":"Tides of Chaos", "summary":""},
-			{"level":6, "key":"luck", "name":"Bend Luck", "summary":""},
-			{"level":14, "key":"chaos", "name":"Controlled Chaos", "summary":""},
-			{"level":18, "key":"bombardment", "name":"Spell Bombardment", "summary":""},
+			{"level":1, "key":"surge", "name":"Wild Magic Surge", "summary":"Rolling 1 on d20 after casting spell unleashes wild magic surge"},
+			{"level":1, "key":"tides", "name":"Tides of Chaos", "summary":"1/day gain advantage on attack, save or ability check"},
+			{"level":6, "key":"luck", "name":"Bend Luck", "summary":"Add bonus or penalty d4 to attack, save or ability check for 2 sorcery points", "type":"reaction"},
+			{"level":14, "key":"chaos", "name":"Controlled Chaos", "summary":"Roll twice and choose either number when rolling a wild magic surge"},
+			{"level":18, "key":"bombardment", "name":"Spell Bombardment", "summary":"1/turn add 1 die to spell damage when highest number was rolled"},
 		]
 	},{
 		"key":"archfey",
@@ -1304,7 +1324,7 @@ var dnd = {
 		"name":"School of Enchantment",
 		"features":[
             {"level":2, "key":"savant", "name":"Enchantment Savant", "summary":"Half gold and time to copy enchantment spells"},
-            {"level":2, "key":"gaze", "name":"Hypnotic Gaze", "summary":"1/day daze creature that fails wisdom save", "type":"action"},
+            {"level":2, "key":"gaze", "name":"Hypnotic Gaze", "summary":"1/day daze creature that fails Wisdom save", "type":"action"},
             {"level":6, "key":"charm", "name":"Instinctive Charm", "summary":"Force nearby attacker to attack a different target", "type":"reaction"},
             {"level":10, "key":"split", "name":"Split Enchantment", "summary":"Enchantment spells with a single target can have a second target"},
             {"level":14, "key":"alter", "name":"Alter Memories", "summary":"Enchantment spells cause single target to forget being enchanted"},
@@ -1316,7 +1336,7 @@ var dnd = {
             {"level":2, "key":"savant", "name":"Evocation Savant", "summary":"Half gold and time to copy evocation spells"},
             {"level":2, "key":"sculpt", "name":"Sculpt Spells", "summary":"Choose creatures to be unaffected by evocation spells"},
             {"level":6, "key":"potent", "name":"Potent Cantrip", "summary":"Damaging cantrips with savings throws cause half damage on save"},
-            {"level":10, "key":"empower", "name":"Empowered Evocation", "summary":"Add intelligence modifier to evocation spell damage"},
+            {"level":10, "key":"empower", "name":"Empowered Evocation", "summary":"Add Intelligence modifier to evocation spell damage"},
             {"level":14, "key":"overchannel", "name":"Overchannel", "summary":"1/day evocation spell up to fifth level deals maximum damage"},
 		]
 	},{
@@ -1337,7 +1357,7 @@ var dnd = {
             {"level":2, "key":"harvest", "name":"Grim Harvest", "summary":"Regain hit points by killing creatures with spells"},
             {"level":6, "key":"thralls", "name":"Undead Thralls", "summary":"Created undead have bonus hit points and damage"},
             {"level":10, "key":"inured", "name":"Inured to Undeath", "summary":"Hit point maximum cannot be reduced, resist necrotic damage", "resistance":["necrotic"]},
-            {"level":14, "key":"command", "name":"Command Undead", "summary":"Control one undead target that fails a charisma save", "type":"action"},
+            {"level":14, "key":"command", "name":"Command Undead", "summary":"Control one undead target that fails a Charisma save", "type":"action"},
 		]
 	},{
 		"key":"transmutation",
@@ -1438,7 +1458,7 @@ var dnd = {
 		"skills":[],
 		"languages":["common", "dwarvish"],
 		"abilities":{"constitution":2, "wisdom":1},
-		"weapons":["battleaxe", "handaxe", "throwinghammer", "warhammer"],
+		"weapons":["battleaxe", "handaxe", "lighthammer", "warhammer"],
 		"benefits":["Dwarven Resilience", "Tool Profiency", "Stonecunning", "Dwarven Toughness"],
 		"height":{"base":44, "plus":{"roll":2, "die":4}},
 		"weight":{"base":115, "times":{"roll":2, "die":6}},
@@ -1465,7 +1485,7 @@ var dnd = {
 		"skills":[],
 		"languages":["common", "dwarvish"],
 		"abilities":{"strength":2, "constitution":2},
-		"weapons":["battleaxe", "handaxe", "throwinghammer", "warhammer"],
+		"weapons":["battleaxe", "handaxe", "lighthammer", "warhammer"],
 		"armor":["light", "medium"],
 		"benefits":["Dwarven Resilience", "Tool Profiency", "Stonecunning", "Dwarven Armor Training"],
 		"height":{"base":48, "plus":{"roll":2, "die":4}},
