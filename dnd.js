@@ -86,6 +86,7 @@ var dnd = {
 		{"key":"disease", "name":"Disease"},
 		{"key":"mental-magic", "name":"Mind Affecting Magical Effects"},
 		{"key":"spell-damage", "name":"Damage from Spells"},
+		{"key":"thought-reading", "name":"Thought Reading"},
 		{"key":"spells", "name":"Spells"},
 		{"key":"aging", "name":"Magical Aging"},
 		{"key":"sleep", "name":"Magical Sleep"},
@@ -1265,109 +1266,134 @@ var dnd = {
 	},{
 		"key":"archfey",
 		"name":"The Archfey",
-		"features":[]
+		"features":[
+			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn"},
+			{"level":1, "key":"fey", "name":"Fey Presence", "summary":"1/rest charm or fear radius 5 for 1 turn", "type":"action"},
+			{"level":6, "key":"escape", "name":"Misty Escape", "summary":"1/rest teleport 60 and turn invisible for 1 turn as reaction", "type":"reaction"},
+			{"level":10, "key":"beguile", "name":"Beguiling Defenses", "summary":"Charm creature attempting to charm you for 1 minute as reaction", "immunities":["charm"], "type":"reaction"},
+			{"level":14, "key":"delirium", "name":"Dark Delirium", "summary":"1/rest charm or fear on one creature with immersive illusion for 1 minute", "type":"action"}
+		]
 	},{
 		"key":"fiend",
 		"name":"The Fiend",
-		"features":[]
+		"features":[
+			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn"},
+			{"level":1, "key":"blessing", "name":"Dark One’s Blessing", "summary":"Gain temporary hit points of Charisma modifier+level on kill"},
+			{"level":6, "key":"luck", "name":"Dark One’s Luck", "summary":"1/rest add d10 to save or ability check"},
+			{"level":10, "key":"resilience", "name":"Fiendish Resilience", "summary":"After rest gain resistance to one damage type until next rest ends"},
+			{"level":14, "key":"hurl", "name":"Hurl Through Hell", "summary":"1/day send creature to hell for a turn and inflict 10d10 psychic damage"}
+		]
 	},{
 		"key":"old",
 		"name":"The Great Old One",
-		"features":[]
-    },{
-        "key":"celestial",
-        "name":"The Celestial",
-		"features":[]
-    },{
-        "key":"hexblade",
-        "name":"The Hexblade",
+		"features":[
+			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn"},
+			{"level":1, "key":"mind", "name":"Awakened Mind", "summary":"Telepathy to radius 30 with creatures that understand any language"},
+			{"level":6, "key":"ward", "name":"Entropic Ward", "summary":"1/rest impose disadvantage on attack and gain attack advantage on miss"},
+			{"level":10, "key":"shield", "name":"Thought Shield", "summary":"Immune to mind reading, reflect psychic damage at attacker", "resistance":["psychic"], "immunities":["thought-reading"]},
+			{"level":14, "key":"thrall", "name":"Create Thrall", "summary":"Charm incapacitated humanoid until remove curse or another thrall is created", "type":"action"}
+		]
+	},{
+		"key":"celestial",
+		"name":"The Celestial",
+		"features":[
+			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn"},
+			{"level":1, "key":"light", "name":"Bonus Cantrip", "summary":"Gain the Light and Sacred Flame cantrips", "cantrip":{"keys":["light", "sacredflame"], "ability":"charisma"}, "type":"cantrip"},
+			{"level":1, "key":"healing", "name":"Healing Light", "summary":"1/day gain pool of 1+level d6, use dice to heal creature within 60", "type":"bonusaction"},
+			{"level":6, "key":"soul", "name":"Radiant Soul", "summary":"Add Charisma modifier to radiant or fire damage of one target of spells", "resistance":["radiant"]},
+			{"level":10, "key":"resilience", "name":"Celestial Resilience", "summary":"After rest grant temporary hit points to self and 5 allies"},
+			{"level":14, "key":"vengeance", "name":"Searing Vengeance", "summary":"1/day avoid death saving throw, regain half maximum hit points, stand, damage and blind enemies"}
+		]
+	},{
+		"key":"hexblade",
+		"name":"The Hexblade",
 		"features":[	
-            {"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn"},
-            {"level":1, "key":"curse", "name":"Hexblades Curse", "summary":"Curse a target to recieve more damage", "type":"bonusaction"},
-            {"level":1, "key":"warrior", "name":"Hex Warrior", "summary":"Gain proficiency in medium armor and all weapons", "armor":["medium", "shields"], "weapons":["martial"]},
-            {"level":6, "key":"specter", "name":"Accursed Specter", "summary":"Slain humanoid can be raised as a specter"},
-            {"level":10, "key":"armor", "name":"Armor of Hexes", "summary":"Hexblade curse may cause target to miss you"},
-            {"level":14, "key":"hexes", "name":"Master of Hexes", "summary":"Transfer hexblade curse to new target on death"},
+			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn"},
+			{"level":1, "key":"curse", "name":"Hexblades Curse", "summary":"1/rest curse target within 30 for 1 minute to receive proficiency bonus as added damage", "type":"bonusaction"},
+			{"level":1, "key":"warrior", "name":"Hex Warrior", "summary":"Use Charisma modifier with single weapon, gain proficiency in medium armor and all weapons", "armor":["medium", "shields"], "weapons":["martial"]},
+			{"level":6, "key":"specter", "name":"Accursed Specter", "summary":"1/day raise slain humanoid as obedient specter with temporary hit points of level/2"},
+			{"level":10, "key":"armor", "name":"Armor of Hexes", "summary":"Hexblades curse target misses you on roll of 4+ on d6 as reaction", "type":"reaction"},
+			{"level":14, "key":"hexes", "name":"Master of Hexes", "summary":"Transfer hexblade curse to new target within 30 on death instead of regaining hit points"},
 		]
 	},{
 		"key":"abjuration",
 		"name":"School of Abjuration",
 		"features":[
-            {"level":2, "key":"savant", "name":"Abjuration Savant", "summary":"Half gold and time to copy abjuration spells"},
-            {"level":2, "key":"ward", "name":"Arcane Ward", "summary":"Abjuration spells power ward that absorbs damage"},
-            {"level":6, "key":"project", "name":"Projected Ward", "summary":"Use arcane ward to aid creatures within 30 feet", "type":"reaction"},
-            {"level":10, "key":"improve", "name":"Improved Abjuration", "summary":"Add proficiency bonus to abjuration spell ability checks"},
-            {"level":14, "key":"resist", "name":"Spell Resistance", "summary":"Advantage on spell saves and resistance to spell damage", "resistance":["spell-damage"], "advantage_on_saves":["spells"]},
+			{"level":2, "key":"savant", "name":"Abjuration Savant", "summary":"Half gold and time to copy abjuration spells"},
+			{"level":2, "key":"ward", "name":"Arcane Ward", "summary":"Abjuration spells power ward that absorbs damage"},
+			{"level":6, "key":"project", "name":"Projected Ward", "summary":"Use arcane ward to aid creatures within 30 feet", "type":"reaction"},
+			{"level":10, "key":"improve", "name":"Improved Abjuration", "summary":"Add proficiency bonus to abjuration spell ability checks"},
+			{"level":14, "key":"resist", "name":"Spell Resistance", "summary":"Advantage on spell saves and resistance to spell damage", "resistance":["spell-damage"], "advantage_on_saves":["spells"]},
 		]
 	},{
 		"key":"conjuration",
 		"name":"School of Conjuration",
 		"features":[
-            {"level":2, "key":"savant", "name":"Conjuration Savant", "summary":"Half gold and time to copy conjuration spells"},
-            {"level":2, "key":"conjure", "name":"Minor Conjuration", "summary":"Conjure small inanimate object", "type":"action"},
-            {"level":6, "key":"transpose", "name":"Benign Transposition", "summary":"1/day teleport 30 feet or transpose with willing target", "type":"action"},
-            {"level":10, "key":"focus", "name":"Focused Conjuration", "summary":"Concentration on conjuration spells unaffected by taking damage"},
-            {"level":14, "key":"durable", "name":"Durable Summons", "summary":"Conjured creatures have 30 temporary hit points"},
+			{"level":2, "key":"savant", "name":"Conjuration Savant", "summary":"Half gold and time to copy conjuration spells"},
+			{"level":2, "key":"conjure", "name":"Minor Conjuration", "summary":"Conjure small inanimate object", "type":"action"},
+			{"level":6, "key":"transpose", "name":"Benign Transposition", "summary":"1/day teleport 30 feet or transpose with willing target", "type":"action"},
+			{"level":10, "key":"focus", "name":"Focused Conjuration", "summary":"Concentration on conjuration spells unaffected by taking damage"},
+			{"level":14, "key":"durable", "name":"Durable Summons", "summary":"Conjured creatures have 30 temporary hit points"},
 		]
 	},{
 		"key":"divination",
 		"name":"School of Divination",
 		"features":[
-            {"level":2, "key":"savant", "name":"Divination Savant", "summary":"Half gold and time to copy divination spells"},
-            {"level":2, "key":"portent", "name":"Portent", "summary":"2/day replace any attack, save or ability check with chosen roll"},
-            {"level":6, "key":"expert", "name":"Expert Divination", "summary":"Restore spell slots when casting divination spells"},
-            {"level":10, "key":"eye", "name":"The Third Eye", "summary":"1/rest see ethereal, invisible, in darkness, or read any language", "type":"action"},
-            {"level":14, "key":"potent", "name":"Greater Portent", "summary":"Gain third portent die"},
+			{"level":2, "key":"savant", "name":"Divination Savant", "summary":"Half gold and time to copy divination spells"},
+			{"level":2, "key":"portent", "name":"Portent", "summary":"2/day replace any attack, save or ability check with chosen roll"},
+			{"level":6, "key":"expert", "name":"Expert Divination", "summary":"Restore spell slots when casting divination spells"},
+			{"level":10, "key":"eye", "name":"The Third Eye", "summary":"1/rest see ethereal, invisible, in darkness, or read any language", "type":"action"},
+			{"level":14, "key":"potent", "name":"Greater Portent", "summary":"Gain third portent die"},
 		]
 	},{
 		"key":"enchantment",
 		"name":"School of Enchantment",
 		"features":[
-            {"level":2, "key":"savant", "name":"Enchantment Savant", "summary":"Half gold and time to copy enchantment spells"},
-            {"level":2, "key":"gaze", "name":"Hypnotic Gaze", "summary":"1/day daze creature that fails Wisdom save", "type":"action"},
-            {"level":6, "key":"charm", "name":"Instinctive Charm", "summary":"Force nearby attacker to attack a different target", "type":"reaction"},
-            {"level":10, "key":"split", "name":"Split Enchantment", "summary":"Enchantment spells with a single target can have a second target"},
-            {"level":14, "key":"alter", "name":"Alter Memories", "summary":"Enchantment spells cause single target to forget being enchanted"},
+			{"level":2, "key":"savant", "name":"Enchantment Savant", "summary":"Half gold and time to copy enchantment spells"},
+			{"level":2, "key":"gaze", "name":"Hypnotic Gaze", "summary":"1/day daze creature that fails Wisdom save", "type":"action"},
+			{"level":6, "key":"charm", "name":"Instinctive Charm", "summary":"Force nearby attacker to attack a different target", "type":"reaction"},
+			{"level":10, "key":"split", "name":"Split Enchantment", "summary":"Enchantment spells with a single target can have a second target"},
+			{"level":14, "key":"alter", "name":"Alter Memories", "summary":"Enchantment spells cause single target to forget being enchanted"},
 		]
 	},{
 		"key":"evocation",
 		"name":"School of Evocation",
 		"features":[
-            {"level":2, "key":"savant", "name":"Evocation Savant", "summary":"Half gold and time to copy evocation spells"},
-            {"level":2, "key":"sculpt", "name":"Sculpt Spells", "summary":"Choose creatures to be unaffected by evocation spells"},
-            {"level":6, "key":"potent", "name":"Potent Cantrip", "summary":"Damaging cantrips with savings throws cause half damage on save"},
-            {"level":10, "key":"empower", "name":"Empowered Evocation", "summary":"Add Intelligence modifier to evocation spell damage"},
-            {"level":14, "key":"overchannel", "name":"Overchannel", "summary":"1/day evocation spell up to fifth level deals maximum damage"},
+			{"level":2, "key":"savant", "name":"Evocation Savant", "summary":"Half gold and time to copy evocation spells"},
+			{"level":2, "key":"sculpt", "name":"Sculpt Spells", "summary":"Choose creatures to be unaffected by evocation spells"},
+			{"level":6, "key":"potent", "name":"Potent Cantrip", "summary":"Damaging cantrips with savings throws cause half damage on save"},
+			{"level":10, "key":"empower", "name":"Empowered Evocation", "summary":"Add Intelligence modifier to evocation spell damage"},
+			{"level":14, "key":"overchannel", "name":"Overchannel", "summary":"1/day evocation spell up to fifth level deals maximum damage"},
 		]
 	},{
 		"key":"illusion",
 		"name":"School of Illusion",
 		"features":[
-            {"level":2, "key":"savant", "name":"Illusion Savant", "summary":"Half gold and time to copy illusion spells"},
-            {"level":2, "key":"minor", "name":"Improved Minor Illusion", "summary":"Minor illusion cantrip creates both sound and image"},
-            {"level":6, "key":"malleable", "name":"Malleable Illusions", "summary":"Lasting illusion spells may be reshaped", "type":"action"},
-            {"level":10, "key":"deflect", "name":"Illusory Self", "summary":"1/rest cause attack to automatically miss", "type":"reaction"},
-            {"level":14, "key":"reality", "name":"Illusory Reality", "summary":"Make inanimate part of illusion spell real for a minute", "type":"bonusaction"},
+			{"level":2, "key":"savant", "name":"Illusion Savant", "summary":"Half gold and time to copy illusion spells"},
+			{"level":2, "key":"minor", "name":"Improved Minor Illusion", "summary":"Minor illusion cantrip creates both sound and image"},
+			{"level":6, "key":"malleable", "name":"Malleable Illusions", "summary":"Lasting illusion spells may be reshaped", "type":"action"},
+			{"level":10, "key":"deflect", "name":"Illusory Self", "summary":"1/rest cause attack to automatically miss", "type":"reaction"},
+			{"level":14, "key":"reality", "name":"Illusory Reality", "summary":"Make inanimate part of illusion spell real for a minute", "type":"bonusaction"},
 		]
 	},{
 		"key":"necromancy",
 		"name":"School of Necromancy",
 		"features":[
-            {"level":2, "key":"savant", "name":"Necromancy Savant", "summary":"Half gold and time to copy necromancy spells"},
-            {"level":2, "key":"harvest", "name":"Grim Harvest", "summary":"Regain hit points by killing creatures with spells"},
-            {"level":6, "key":"thralls", "name":"Undead Thralls", "summary":"Created undead have bonus hit points and damage"},
-            {"level":10, "key":"inured", "name":"Inured to Undeath", "summary":"Hit point maximum cannot be reduced, resist necrotic damage", "resistance":["necrotic"]},
-            {"level":14, "key":"command", "name":"Command Undead", "summary":"Control one undead target that fails a Charisma save", "type":"action"},
+			{"level":2, "key":"savant", "name":"Necromancy Savant", "summary":"Half gold and time to copy necromancy spells"},
+			{"level":2, "key":"harvest", "name":"Grim Harvest", "summary":"Regain hit points by killing creatures with spells"},
+			{"level":6, "key":"thralls", "name":"Undead Thralls", "summary":"Created undead have bonus hit points and damage"},
+			{"level":10, "key":"inured", "name":"Inured to Undeath", "summary":"Hit point maximum cannot be reduced, resist necrotic damage", "resistance":["necrotic"]},
+			{"level":14, "key":"command", "name":"Command Undead", "summary":"Control one undead target that fails a Charisma save", "type":"action"},
 		]
 	},{
 		"key":"transmutation",
 		"name":"School of Transmutation",
 		"features":[
-            {"level":2, "key":"savant", "name":"Transmutation Savant", "summary":"Half gold and time to copy transmutation spells"},
-            {"level":2, "key":"alchemy", "name":"Minor Alchemy", "summary":"Alter material of a simple object for an hour"},
-            {"level":6, "key":"stone", "name":"Transmuter's Stone", "summary":"Create a magical stone that grants a chosen benefit"},
-            {"level":10, "key":"shapechanger", "name":"Shapechanger", "summary":"1/rest cast polymorph on self limited to challenge rating 1 beast", "type":"action"},
-            {"level":14, "key":"master", "name":"Master Transmuter", "summary":"Consume transmuter's stone to cast a spell or effect", "type":"action"},
+			{"level":2, "key":"savant", "name":"Transmutation Savant", "summary":"Half gold and time to copy transmutation spells"},
+			{"level":2, "key":"alchemy", "name":"Minor Alchemy", "summary":"Alter material of a simple object for an hour"},
+			{"level":6, "key":"stone", "name":"Transmuter's Stone", "summary":"Create a magical stone that grants a chosen benefit"},
+			{"level":10, "key":"shapechanger", "name":"Shapechanger", "summary":"1/rest cast polymorph on self limited to challenge rating 1 beast", "type":"action"},
+			{"level":14, "key":"master", "name":"Master Transmuter", "summary":"Consume transmuter's stone to cast a spell or effect", "type":"action"},
 		]
 	}],
 	"names":{
@@ -1903,40 +1929,40 @@ var dnd = {
 			"a set of dark common clothes including a hood",
 			"a belt pouch",
 		],
-        "trait":[
-            "I always have a plan for what to do when things go wrong.",
-            "I am always calm, no matter what the situation. I never raise my voice or let my emotions control me.",
-            "The first thing I do in a new place is note the locations of everything valuable—or where such things could be hidden.",
-            "I would rather make a new friend than a new enemy.",
-            "I am incredibly slow to trust. Those who seem the fairest often have the most to hide.",
-            "I don’t pay attention to the risks in a situation. Never tell me the odds.",
-            "The best way to get me to do something is to tell me I can’t do it.",
-            "I blow up at the slightest insult."
-        ],
-        "ideal":[
-            "Honor. I don't steal from  others in the trade. (lawful)",
-            "Freedom. Chains are meant to be broken, as are those who would forge them. (Chaotic)", 
-            "Charity. I steal from the wealthy so that I can help people in need. (Good)",
-            "Greed. I will do whatever it takes to become wealthy. (Evil)",
-		    "People. I’m loyal to my friends, not to any ideals, and everyone else can take a trip down the Styx for all I care. (Neutral)",
-		    "Redemption. There’s a spark of good in everyone. (Good)"
+		"trait":[
+			"I always have a plan for what to do when things go wrong.",
+			"I am always calm, no matter what the situation. I never raise my voice or let my emotions control me.",
+			"The first thing I do in a new place is note the locations of everything valuable—or where such things could be hidden.",
+			"I would rather make a new friend than a new enemy.",
+			"I am incredibly slow to trust. Those who seem the fairest often have the most to hide.",
+			"I don’t pay attention to the risks in a situation. Never tell me the odds.",
+			"The best way to get me to do something is to tell me I can’t do it.",
+			"I blow up at the slightest insult."
 		],
-        "bond":[
-            "I'm trying to pay an old debt I owe to a generous benefactor.",
-            "My ill-gotten gains go to support my family.",
-            "Something important was taken from me, and I aim to steal it back.",
-            "I will become the greatest thief that ever lived.",
-		    "I’m guilty of a terrible crime. I hope I can redeem myself for it.",
-            "Someone I loved died because of I mistake I made. That will never happen again."
-        ],
-        "flaw":[
-            "When I see something valuable, I can’t think about anything but how to steal it.",
-		    "When faced with a choice between money and my friends, I usually choose the money.",
-            "If there’s a plan, I’ll forget it. If I don’t forget it, I’ll ignore it.",
-            "I have a “tell” that reveals when I’m lying.",
-            "I turn tail and run when things look bad.",
-            "An innocent person is in prison for a crime that I committed. I’m okay with that."
-        ]
+		"ideal":[
+			"Honor. I don't steal from	others in the trade. (lawful)",
+			"Freedom. Chains are meant to be broken, as are those who would forge them. (Chaotic)", 
+			"Charity. I steal from the wealthy so that I can help people in need. (Good)",
+			"Greed. I will do whatever it takes to become wealthy. (Evil)",
+			"People. I’m loyal to my friends, not to any ideals, and everyone else can take a trip down the Styx for all I care. (Neutral)",
+			"Redemption. There’s a spark of good in everyone. (Good)"
+		],
+		"bond":[
+			"I'm trying to pay an old debt I owe to a generous benefactor.",
+			"My ill-gotten gains go to support my family.",
+			"Something important was taken from me, and I aim to steal it back.",
+			"I will become the greatest thief that ever lived.",
+			"I’m guilty of a terrible crime. I hope I can redeem myself for it.",
+			"Someone I loved died because of I mistake I made. That will never happen again."
+		],
+		"flaw":[
+			"When I see something valuable, I can’t think about anything but how to steal it.",
+			"When faced with a choice between money and my friends, I usually choose the money.",
+			"If there’s a plan, I’ll forget it. If I don’t forget it, I’ll ignore it.",
+			"I have a “tell” that reveals when I’m lying.",
+			"I turn tail and run when things look bad.",
+			"An innocent person is in prison for a crime that I committed. I’m okay with that."
+		]
 	},{
 		"key":"entertainer",
 		"name":"Entertainer",
@@ -2149,12 +2175,12 @@ var dnd = {
 			"If you do me an injury, I will crush you, ruin your name, and salt your fields.",
 		],
 		"ideal":[
-			"Respect. Respect is due to me because of my position, but all people regardless of station deserve to be treated with dignity.  (Good)",
-			"Responsibility. It is my duty to respect the authority of those above me, just as those below me must respect mine.  (Lawful)",
-			"Independence. I must prove that I can handle myself without the coddling of my family.  (Chaotic)",
-			"Power. If I  can attain more power, no one will tell me what to do.  (Evil)",
-			"Family. Blood runs thicker than water.  (Any)",
-			"Noble Obligation. It is my duty to protect and care for the people beneath me.  (Good)",
+			"Respect. Respect is due to me because of my position, but all people regardless of station deserve to be treated with dignity. (Good)",
+			"Responsibility. It is my duty to respect the authority of those above me, just as those below me must respect mine. (Lawful)",
+			"Independence. I must prove that I can handle myself without the coddling of my family. (Chaotic)",
+			"Power. If I  can attain more power, no one will tell me what to do. (Evil)",
+			"Family. Blood runs thicker than water. (Any)",
+			"Noble Obligation. It is my duty to protect and care for the people beneath me. (Good)",
 		],
 		"bond":[
 			"I will face any challenge to win the approval of my family.",
@@ -2168,9 +2194,9 @@ var dnd = {
 			"I secretly believe that everyone is beneath me.",
 			"I hide a truly scandalous secret that could ruin my family forever.",
 			"I too often hear veiled insults and threats in every word addressed to me, and I’m quick to anger.",
-			"I  have an insatiable desire for carnal pleasures.",
+			"I have an insatiable desire for carnal pleasures.",
 			"In fact, the world does revolve around me.",
-			"By my words and actions,  I often bring shame to my family.",
+			"By my words and actions, I often bring shame to my family.",
 		],
 	},{
 		"key":"outlander",
@@ -2241,7 +2267,7 @@ var dnd = {
 			"I'm used to helping out those who aren’t as smart as I am, and I patiently explain anything and everything to others.",
 			"There’s nothing I like more than a good mystery.",
 			"I’m willing to listen to every side of an argument before I make my own judgment.",
-			"I . . . speak . . . slowly .  . . when talking .  .  . to idiots, . . . which . . . almost . . . everyone . .  . is . . . compared . . . to me.",
+			"I . . . speak . . . slowly .  . . when talking .  .  . to idiots, . . . which . . . almost . . . everyone . . . is . . . compared . . . to me.",
 			"I am horribly, horribly awkward in social situations.",
 			"I’m convinced that people are always trying to steal my secrets.",
 		],
