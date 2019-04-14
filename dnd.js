@@ -853,7 +853,7 @@ var dnd = {
 		"order":["charisma", "constitution", "dexterity", "strength", "wisdom", "intelligence"],
 		"skill_options":{limit:2, "list":["arcana", "deception", "history", "intimidation", "investigation", "nature", "religion"]},
 		"archetype_name":"Otherworldly Patron",
-		"archetypes":["archfey", "fiend", "old", "celestial", "hexblade"],
+		"archetypes":["fey", "fiend", "old", "celestial", "hexblade"],
 		"archetype_default":"archfey",
 		"background_default":"charlatan",
 		"spells":{
@@ -986,6 +986,21 @@ var dnd = {
 			{"level":14, "key":"attunement", "name":"Totemic Attunement", "summary":"Choose a totem animal"},
 		]
 	},{
+		"key":"guardian",
+		"name":"Path of the Ancestral Guardian",
+		"features":[
+		]
+	},{
+		"key":"herald",
+		"name":"Path of the Storm Herald",
+		"features":[
+		]
+	},{
+		"key":"zealot",
+		"name":"Path of the Zealot",
+		"features":[
+		]
+	},{
 		"key":"lore",
 		"name":"College of Lore",
 		"features":[
@@ -1002,6 +1017,21 @@ var dnd = {
 			{"level":3, "key":"combat", "name":"Combat Inspiration", "summary":"Use inspiration die for damage or armor class", "type":"reaction"},
 			{"level":6, "key":"attack", "name":"Extra Attack", "summary":"Attack twice with the attack action", "attacks":1},
 			{"level":14, "key":"battle", "name":"Battle Magic", "summary":"Attack as a bonus action after casting a spell", "type":"bonusaction"},
+		]
+	},{
+		"key":"glamour",
+		"name":"College of Glamour",
+		"features":[
+		]
+	},{
+		"key":"swords",
+		"name":"College of Swords",
+		"features":[
+		]
+	},{
+		"key":"whispers",
+		"name":"College of Whispers",
+		"features":[
 		]
 	},{
 		"key":"knowledge",
@@ -1079,6 +1109,16 @@ var dnd = {
 			{"level":17, "key":"avatar", "name":"Avatar of Battle", "summary":"Gain resistance to weapon damage", "resistance":["slashing", "piercing", "bludgeoning"]},
 		]
 	},{
+		"key":"forge",
+		"name":"Forge Domain",
+		"features":[
+		]
+	},{
+		"key":"grave",
+		"name":"Grave Domain",
+		"features":[
+		]
+	},{
 		"key":"land",
 		"name":"Circle of the Land",
 		"features":[
@@ -1099,6 +1139,16 @@ var dnd = {
 			{"level":6, "key":"strike", "name":"Primal Strike", "summary":"Wild Shape attacks count as magical"},
 			{"level":10, "key":"elemental", "name":"Elemental Form", "summary":"Wild shape into an elemental"},
 			{"level":14, "key":"thousand", "name":"Thousand Forms", "summary":"Cast alter self at will", "type":"action"},
+		]
+	},{
+		"key":"dreams",
+		"name":"Circle of Dreams",
+		"features":[
+		]
+	},{
+		"key":"shepherd",
+		"name":"Circle of the Shepherd",
+		"features":[
 		]
 	},{
 		"key":"champion",
@@ -1138,6 +1188,21 @@ var dnd = {
 			{"level":18, "key":"improve", "name":"Improved War Magic", "summary":"Attack as a bonus action after casting a spell", "type":"bonusaction"},
 		]
 	},{
+		"key":"archer",
+		"name":"Arcane Archer",
+		"features":[
+		]
+	},{
+		"key":"cavalier",
+		"name":"Cavalier",
+		"features":[
+		]
+	},{
+		"key":"samurai",
+		"name":"Samurai",
+		"features":[
+		]
+	},{
 		"key":"hand",
 		"name":"Way of the Open Hand",
 		"features":[
@@ -1164,6 +1229,21 @@ var dnd = {
 			{"level":6, "key":"discipline", "name":"Disciple of the Elements (2)", "summary":"Choose an Elemental Discipline"},
 			{"level":11, "key":"discipline", "name":"Disciple of the Elements (3)", "summary":"Choose an Elemental Discipline"},
 			{"level":17, "key":"discipline", "name":"Disciple of the Elements (4)", "summary":"Choose an Elemental Discipline"},
+		]
+	},{
+		"key":"drunken",
+		"name":"Way of the Drunken Master",
+		"features":[
+		]
+	},{
+		"key":"kensei",
+		"name":"Way of the Kensei",
+		"features":[
+		]
+	},{
+		"key":"sun",
+		"name":"Way of the Sun Soul",
+		"features":[
 		]
 	},{
 		"key":"devotion",
@@ -1196,6 +1276,16 @@ var dnd = {
 			{"level":20, "key":"angel", "name":"Avenging Angel", "summary":"1/day angels wings 1 hour, fly 60, menacing aura"},
 		]
 	},{
+		"key":"conquest",
+		"name":"Oath of Conquest",
+		"features":[
+		]
+	},{
+		"key":"redemption",
+		"name":"Oath of Redemption",
+		"features":[
+		]
+	},{
 		"key":"hunter",
 		"name":"Hunter",
 		"features":[
@@ -1212,6 +1302,21 @@ var dnd = {
 			{"level":7, "key":"training", "name":"Exceptional Training", "summary":"Companion dash, dodge, help, disengage as bonus action", "type":"bonusaction"},
 			{"level":11, "key":"fury", "name":"Bestial Fury", "summary":"Companion attacks twice with the attack action"},
 			{"level":15, "key":"share", "name":"Share Spells", "summary":"Spells affecting self also affect companion"},
+		]
+	},{
+		"key":"stalker",
+		"name":"Gloom Stalker",
+		"features":[
+		]
+	},{
+		"key":"walker",
+		"name":"Horizon Walker",
+		"features":[
+		]
+	},{
+		"key":"slayer",
+		"name":"Monster Slayer",
+		"features":[
 		]
 	},{
 		"key":"thief",
@@ -1244,6 +1349,21 @@ var dnd = {
 			{"level":17, "key":"thief", "name":"Spell Thief", "summary":"1/day counter spell and steal knowledge of how to cast it"},
 		]
 	},{
+		"key":"inquisitive",
+		"name":"Inquisitive",
+		"features":[
+		]
+	},{
+		"key":"mastermind",
+		"name":"Mastermind",
+		"features":[
+		]
+	},{
+		"key":"swashbuckler",
+		"name":"Swashbuckler",
+		"features":[
+		]
+	},{
 		"key":"draconic",
 		"name":"Draconic Bloodline",
 		"features":[
@@ -1264,7 +1384,22 @@ var dnd = {
 			{"level":18, "key":"bombardment", "name":"Spell Bombardment", "summary":"1/turn add 1 die to spell damage when highest number was rolled"},
 		]
 	},{
-		"key":"archfey",
+		"key":"divine",
+		"name":"Divine Soul",
+		"features":[
+		]
+	},{
+		"key":"shade",
+		"name":"Shadow Magic",
+		"features":[
+		]
+	},{
+		"key":"storm",
+		"name":"Storm Sorcery",
+		"features":[
+		]
+	},{
+		"key":"fey",
 		"name":"The Archfey",
 		"features":[
 			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn"},
@@ -1394,6 +1529,11 @@ var dnd = {
 			{"level":6, "key":"stone", "name":"Transmuter's Stone", "summary":"Create a magical stone that grants a chosen benefit"},
 			{"level":10, "key":"shapechanger", "name":"Shapechanger", "summary":"1/rest cast polymorph on self limited to challenge rating 1 beast", "type":"action"},
 			{"level":14, "key":"master", "name":"Master Transmuter", "summary":"Consume transmuter's stone to cast a spell or effect", "type":"action"},
+		]
+	},{
+		"key":"combat",
+		"name":"War Magic",
+		"features":[
 		]
 	}],
 	"names":{
