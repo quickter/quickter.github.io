@@ -133,9 +133,11 @@ br.tall + * { margin-top:1.5em; }
 .caption { position:relative; left:-0.5em; }
 
 p#characteristics > span.characteristic::before { content:"↻ "; opacity:0.25; }
+td.summary > div.cycle-option::before { content:"↻ "; opacity:0.25; }
+td.summary > span.summary { margin-left:1.25em; }
 
 .advances { display:inline-block; text-align:center; cursor:pointer; }
-.advances.tall { line-height:2.0; min-width:7em; }
+.advances.tall { line-height:2.0; min-width:8em; }
 .advances.narrow { line-height:1.5; min-width:4em; }
 .listable { display:inline-block; min-width:6em; text-align:center; line-height:1.5; }
 span.advances { position:relative; padding:0 1em; }

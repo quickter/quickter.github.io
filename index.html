@@ -1522,6 +1522,18 @@
 				if ( key.indexOf('-archetype') > 0 && lookup.archetypes[value].order ) {
 					character.ordered = false
 				}
+				
+				if ( key === 'race' ) {
+					_assignClass(_element('races'), 'hidden', 1)
+				}
+				
+				if ( key.indexOf('-archetype') > 0 ) {
+					_assignClass(_element('classes'), 'hidden', 1)
+				}
+				
+				if ( key === 'background' ) {
+					_assignClass(_element('backgrounds'), 'hidden', 1)
+				}
 			}
 			
 			// MARK: Forms
@@ -2300,7 +2312,7 @@
 			
 			function featuresTableHTML(items) {
 				var featuresTableTemplate = "<table class='features' id='features-table'>{rows}</table>"
-				var featuresRowTemplate = "<tr class='features {type}'><td class='feature level'>{level}</td><td class='feature name'>{name}</td><td id='feature-{key}-{level}-summary' class='feature summary'>{summary}</td></tr><tr id='feature-{key}-{level}-drawer' class='features drawer hidden'><td id='feature-{key}-{level}-options' colspan='3'></td></tr>"
+				var featuresRowTemplate = "<tr class='features {type}'><td class='feature level'>{level}</td><td class='feature name'>{name}</td><td id='feature-{key}-{level}-summary' class='feature summary'><span class='summary'>{summary}</span></td></tr><tr id='feature-{key}-{level}-drawer' class='features drawer hidden'><td id='feature-{key}-{level}-options' colspan='3'></td></tr>"
 				var featuresRows = items.map(f => replaceKeys(featuresRowTemplate, f))
 				var featuresHTML = replaceKeys(featuresTableTemplate, {"rows":featuresRows.join(" ")})
 				
@@ -2415,7 +2427,7 @@
 				else if ( character.options.indexOf(hash) < 0 ) { character.options.push(hash) }
 				
 				if ( layout === 'cycle' ) {
-					var beginTag = "<div id='"+prefix+"' data-dnd='"+optionSet.dnd+"' data-hash='"+hash+"' class='"+style+"' onclick='handleCycleOptionSet(\""+prefix+"\")'>"
+					var beginTag = "<div id='"+prefix+"' data-dnd='"+optionSet.dnd+"' data-hash='"+hash+"' class='"+style+" cycle-option' onclick='handleCycleOptionSet(\""+prefix+"\")'>"
 					var closeTag = "</div>"
 					var templateList = "<span id='"+prefix+"-{key}' data-key='{key}' class='"+style+" "+prefix+" hidden toggle nose'><b>{name}</b>: {summary}</span>"
 					var included = optionSet.exclude ? items.filter(i => optionSet.exclude.indexOf(i.key) < 0) : items
@@ -2626,6 +2638,12 @@
 			
 			<span class='caption'>Features</span>
 			<p id='feature'></p>
+			
+			<!-- fighter:maneuvers 3 3 3 7 7 10 10 15 15 monk:disciplines 3 3 6 11 17 ranger:terrain+enemy sorcerer:metamagic 3 3 10 17 warlock:invocations 2 2 5 7 9 12 15 18 -->
+			<!-- span id='feature-options-caption' class='caption feature-options'>Feature Options</span>
+			<input id='feature-options-toggle' class='toggle feature-options' type='checkbox' />
+			<label for='feature-options-toggle' class='feature-options'><p id='feature-options-chosen' title='Tap to change selection' class='toggle'> </p></label>
+			<p id='feature-options' class='feature-options toggled'></p -->
 			
 			<span class='caption'>Characteristics</span>
 			<p id='characteristics' class='small'>
