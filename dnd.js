@@ -1343,16 +1343,34 @@ var dnd = {
 		"key":"stalker",
 		"name":"Gloom Stalker",
 		"features":[
+			{"level":3, "key":"magic", "name":"Gloom Stalker Magic", "summary":"Learn additional spells"},
+			{"level":3, "key":"ambusher", "name":"Dread Ambusher", "summary":"Increase speed by 10 and attacks by 1 on first turn of combat, and increase initiative"},
+			{"level":3, "key":"sight", "name":"Umbral Sight", "summary":"Invisible to darkvision, increase darkvision by 30"},
+			{"level":7, "key":"mind", "name":"Iron Mind", "summary":"Gain proficiency in Wisdom saving throws"},
+			{"level":11, "key":"flurry", "name":"Stalker's Flurry", "summary":"1/turn attack again after a missed attack"},
+			{"level":15, "key":"dodge", "name":"Shadowy Dodge", "summary":"Impose disadvantage on one attack roll as reaction", "type":"reaction"},
 		]
 	},{
 		"key":"walker",
 		"name":"Horizon Walker",
 		"features":[
+			{"level":3, "key":"magic", "name":"Horizon Walker Magic", "summary":"Learn additional spells"},
+			{"level":3, "key":"detect", "name":"Detect Portal", "summary":"1/rest detect nearest planar portal within 1 mile"},
+			{"level":3, "key":"warrior", "name":"Planar Warrior", "summary":"Increase damage of next weapon attack by d8 and convert damage to force", "type":"bonusaction"},
+			{"level":7, "key":"step", "name":"Ethereal Step", "summary":"1/rest cast etherealness for remainder of turn", "type":"bonusaction"},
+			{"level":11, "key":"strike", "name":"Distant Strike", "summary":"Teleport 10 before each attack and gain extra attack against third creature"},
+			{"level":15, "key":"defense", "name":"Spectral Defense", "summary":"Gain resistance to damage from attack as a reaction", "type":"reaction"},
 		]
 	},{
 		"key":"slayer",
 		"name":"Monster Slayer",
 		"features":[
+			{"level":3, "key":"magic", "name":"Monter Slayer Magic", "summary":"Learn additional spells"},
+			{"level":3, "key":"sense", "name":"Hunter's Sense", "summary":"m/rest divine immunities, vulnerabilities and resistances of target creature within 60"},
+			{"level":3, "key":"prey", "name":"Slayer's Prey", "summary":"Designate creature within 60 as prey, 1/turn increase damage by d6 against prey", "type":"bonusaction"},
+			{"level":7, "key":"defense", "name":"Supernatural Defense", "summary":"Add d6 to saves and grapple checks against current prey"},
+			{"level":11, "key":"nemesis", "name":"Magic-User's Nemesis", "summary":"1/rest force target within 60 to make wisdom save or waste spell", "type":"reaction"},
+			{"level":15, "key":"counter", "name":"Slayer's Counter", "summary":"Gain bonus attack before current prey forces saving throw", "type":"reaction"},
 		]
 	},{
 		"key":"thief",

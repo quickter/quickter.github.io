@@ -5811,7 +5811,7 @@ var spells = [
 		"material": "A dash of talc and a small amount of silver powder.",
 		"duration": "1 hour",
 		"classes": ["Bard", "Sorcerer", "Wizard"],
-		"desc": "<p>For the duration of the spell, you see invisible creatures and objects as if they were visible, and you can see through Ethereal. The ethereal objects and creatures appear ghostly translucent.</p>",
+		"desc": "<p>For the duration of the spell, you see invisible creatures and objects as if they were visible, and you can see into the Ethereal Plane. Ethereal objects and creatures appear ghostly and translucent.</p>",
 		"book": "phb",
 		"page": 274
 	},{
@@ -6627,7 +6627,7 @@ var spells = [
 		"concentration": true,
 		"save": "wisdom",
 		"classes": ["Bard", "Warlock", "Wizard"],
-		"desc": "<p>A creature of your choice that you can see within range perceives everything as hilariously funny and falls into fits of laughter if this spell affects it. The target must succeed on a wisdom saving throw or fall prone, becoming incapacitated and unable to stand up for the duration. A creature with an Intelligence score of 4 or less isn’t affected.</p><p>At the end of each of its turns, and each time it takes damage, the target can make another wisdom saving throw. The target had advantage on the saving throw if it’s triggered by damage. On a success, the spell ends.</p>",
+		"desc": "<p>A creature of your choice that you can see within range perceives everything as hilariously funny and falls into fits of laughter if this spell affects it. The target must succeed on a wisdom saving throw or fall prone, becoming incapacitated and unable to stand up for the duration. A creature with an Intelligence score of 4 or less isn’t affected.</p><p>At the end of each of its turns, and each time it takes damage, the target can make another wisdom saving throw. The target has advantage on the saving throw if it’s triggered by damage. On a success, the spell ends.</p>",
 		"book": "phb",
 		"page": 280,
 		"patrons": "Great Old One",
