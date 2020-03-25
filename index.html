@@ -284,15 +284,29 @@
 				var background = this.background
 				var character = this.character
 				var features = _flatten(race.features, crass.features, archetype.features, background.features)
-				var activeFeatures = features.filter(f => f.level <= level)
+				var activeFeatures = []
+				var displayFeatures = []
 				
-				for ( feature of activeFeatures ) {
+				for ( feature of features ) {
+					var displayFeature = {
+						'key':feature.key,
+						'type':feature.type || 'none',
+						'level':feature.level || '',
+						'name':feature.name,
+						'summary':feature.summary,
+						'description':feature.description || dnd.description[feature.key],
+					}
+					
+					displayFeatures.push(displayFeature)
+					
+					if ( feature.level <= level ) { activeFeatures.push(feature) }
 					if ( !feature.options || !dnd[feature.options.dnd] ) { continue }
 					
 					if ( this.options[feature.options.hash] ) {
 						for ( option of dnd[feature.options.dnd] ) {
 							if ( option.key === this.options[feature.options.hash] ) {
-								activeFeatures.push(option)
+								displayFeature.description = option.description || dnd.description[option.key]
+								if ( feature.level <= level ) { activeFeatures.push(option) }
 								break
 							}
 						}
@@ -301,17 +315,19 @@
 						
 						if ( option ) {
 							this.options[feature.options.hash] = option.hash
-							activeFeatures.push(option)
+							displayFeature.description = option.description || dnd.description[option.key]
+							if ( feature.level <= level ) { activeFeatures.push(option) }
 						}
 					}
 				}
 				
 				var sources = _flatten([character, race, crass, background, archetype], activeFeatures)
 				
-				features.sort((a, b) => (a.level - b.level) || (a.name > b.name ? 1 : -1))
+				displayFeatures.sort((a, b) => (a.level - b.level) || (a.name > b.name ? 1 : -1))
 				
 				this.features = features
 				this.activeFeatures = activeFeatures
+				this.displayFeatures = displayFeatures
 				this.sources = sources
 			}
 			
@@ -342,7 +358,7 @@
 				this.darkvision = race.darkvision
 				this.attacksPerAction = attacksPerAction
 				this.difficultyClass = 8 + pb + (modifiers[spellcasting] | 0)
-				this.passivePerception = 10 + (modifiers['wisdom'] | 0) + (this.proficiencies.skills.indexOf('preception') < 0 ? 0 : pb)
+				this.passivePerception = 10 + (modifiers['wisdom'] | 0) + (this.proficiencies.skills.indexOf('perception') < 0 ? 0 : pb)
 			}
 			
 			Character.prototype.computeSpellcasting = function Character_computeSpellcasting() {
@@ -2103,6 +2119,12 @@
 				}
 			}
 			
+			function toggleFeature(key) {
+				//if ( !_element('toggle-all-features').checked ) { return }
+				
+				_assignClass(_element("feature-" + key + "-description"), 'hidden', 0)
+			}
+			
 			function increaseAbility(ability) {
 				var maximum = defaults.maximumAbility
 				var element = _element(ability + '-score')
@@ -2234,7 +2256,7 @@
 				_element('equipment').innerHTML = details.equipmentNames.join("<br/>")
 				_element('treasure').innerHTML = (details.background.gold || 0) + "gp"
 				_element('abilities').innerHTML = abilitiesTableHTML(details.abilityItems)
-				_element('feature').innerHTML = featuresTableHTML(details.features)
+				_element('feature').innerHTML = featuresTableHTML(details.displayFeatures)
 				_element('attacks').innerHTML = attacksTableHTML(details.attacks, details.effectivenessArmorclass)
 				_element('proficiency').innerHTML = proficienciesHTML(details)
 				_element('resistances').innerHTML = resistancesHTML(details) || placeholder("None")
@@ -2312,7 +2334,7 @@
 			
 			function featuresTableHTML(items) {
 				var featuresTableTemplate = "<table class='features' id='features-table'>{rows}</table>"
-				var featuresRowTemplate = "<tr class='features {type}'><td class='feature level'>{level}</td><td class='feature name'>{name}</td><td id='feature-{key}-{level}-summary' class='feature summary'><span class='summary'>{summary}</span></td></tr><tr id='feature-{key}-{level}-drawer' class='features drawer hidden'><td id='feature-{key}-{level}-options' colspan='3'></td></tr>"
+				var featuresRowTemplate = "<tr class='features {type}'><td class='feature level'>{level}</td><td class='feature {key} name toggle' onclick='toggleFeature(\"{key}-{level}\")'>{name}</td><td id='feature-{key}-{level}-summary' class='feature summary'><span class='summary'>{summary}</span></td></tr><tr id='feature-{key}-{level}-description' class='hidden'><td></td><td class='feature description' colspan='2'>{description}</td></tr><tr id='feature-{key}-{level}-drawer' class='features drawer hidden'><td id='feature-{key}-{level}-options' colspan='3'></td></tr>"
 				var featuresRows = items.map(f => replaceKeys(featuresRowTemplate, f))
 				var featuresHTML = replaceKeys(featuresTableTemplate, {"rows":featuresRows.join(" ")})
 				

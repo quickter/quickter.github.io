@@ -135,6 +135,9 @@ br.tall + * { margin-top:1.5em; }
 p#characteristics > span.characteristic::before { content:"↻ "; opacity:0.25; }
 td.summary > div.cycle-option::before { content:"↻ "; opacity:0.25; }
 td.summary > span.summary { margin-left:1.25em; }
+td.feature.level { width:2em; }
+td.feature.description { font-size:75%; background:#FCFCFC; padding:1em; }
+table#features-table { width:100%; }
 
 .advances { display:inline-block; text-align:center; cursor:pointer; }
 .advances.tall { line-height:2.0; min-width:8em; }
