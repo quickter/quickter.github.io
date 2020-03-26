@@ -315,11 +315,11 @@ var dnd = {
 		{"key":"ham", "name":"Heavy Armor Master", "summary":""},
 		{"key":"lead", "name":"Inspiring Leader", "summary":""},
 		{"key":"keen", "name":"Keen Mind", "summary":""},
-		{"key":"light", "name":"Lightly Armored", "summary":"", "armor":["light"], "abilities":{"strength":1, "dexterit":1, "limit":1}},
+		{"key":"light", "name":"Lightly Armored", "summary":"", "armor":["light"], "abilities":{"strength":1, "dexterity":1, "limit":1}},
 		{"key":"slay", "name":"Mage Slayer", "summary":""},
 		{"key":"martial", "name":"Martial Adept", "summary":""},
 		{"key":"mam", "name":"Medium Armor Master", "summary":""},
-		{"key":"medium", "name":"Moderately Armored", "summary":"", "armor":["medium", "shields"], "abilities":{"strength":1, "dexterit":1, "limit":1}},
+		{"key":"medium", "name":"Moderately Armored", "summary":"", "armor":["medium", "shields"], "abilities":{"strength":1, "dexterity":1, "limit":1}},
 		{"key":"mount", "name":"Mounted Combatant", "summary":""},
 		{"key":"observe", "name":"Observant", "summary":""},
 		{"key":"pole", "name":"Polearm Master", "summary":"Bonus attack, opportunity attack with polearms", "description":"TODO"},
@@ -971,7 +971,7 @@ var dnd = {
 		"order":["intelligence", "dexterity", "constitution", "wisdom", "charisma", "strength"],
 		"skill_options":{limit:2, "list":["arcana", "history", "insight", "investigation", "medicine", "religion"]},
 		"archetype_name":"Arcane Tradition",
-		"archetypes":["abjuration", "conjuration", "divination", "enchantment", "evocation", "illusion", "necromancy", "transmutation"],
+		"archetypes":["abjuration", "conjuration", "divination", "enchantment", "evocation", "illusion", "necromancy", "transmutation", "combat"],
 		"archetype_default":"abjuration",
 		"background_default":"sage",
 		"spells_known":"4+2*level+learned",
@@ -1025,16 +1025,28 @@ var dnd = {
 		"key":"guardian",
 		"name":"Path of the Ancestral Guardian",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":10, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"herald",
 		"name":"Path of the Storm Herald",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":10, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"zealot",
 		"name":"Path of the Zealot",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":10, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"lore",
@@ -1058,16 +1070,25 @@ var dnd = {
 		"key":"glamour",
 		"name":"College of Glamour",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"swords",
 		"name":"College of Swords",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"whispers",
 		"name":"College of Whispers",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"knowledge",
@@ -1148,11 +1169,21 @@ var dnd = {
 		"key":"forge",
 		"name":"Forge Domain",
 		"features":[
+			{"level":1, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":2, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":8, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":17, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"grave",
 		"name":"Grave Domain",
 		"features":[
+			{"level":1, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":2, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":8, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":17, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"land",
@@ -1180,11 +1211,19 @@ var dnd = {
 		"key":"dreams",
 		"name":"Circle of Dreams",
 		"features":[
+			{"level":2, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":10, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"shepherd",
 		"name":"Circle of the Shepherd",
 		"features":[
+			{"level":2, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":10, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"champion",
@@ -1227,16 +1266,31 @@ var dnd = {
 		"key":"archer",
 		"name":"Arcane Archer",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":7, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":10, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":15, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":18, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"cavalier",
 		"name":"Cavalier",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":7, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":10, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":15, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":18, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"samurai",
 		"name":"Samurai",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":7, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":10, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":15, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":18, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"hand",
@@ -1270,16 +1324,28 @@ var dnd = {
 		"key":"drunken",
 		"name":"Way of the Drunken Master",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":11, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":17, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"kensei",
 		"name":"Way of the Kensei",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":11, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":17, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"sun",
 		"name":"Way of the Sun Soul",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":11, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":17, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"devotion",
@@ -1315,11 +1381,19 @@ var dnd = {
 		"key":"conquest",
 		"name":"Oath of Conquest",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":7, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":15, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":20, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"redemption",
 		"name":"Oath of Redemption",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":7, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":15, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":20, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"hunter",
@@ -1344,9 +1418,9 @@ var dnd = {
 		"name":"Gloom Stalker",
 		"features":[
 			{"level":3, "key":"magic", "name":"Gloom Stalker Magic", "summary":"Learn additional spells", "description":"TODO"},
-			{"level":3, "key":"ambusher", "name":"Dread Ambusher", "summary":"Increase speed by 10 and attacks by 1 on first turn of combat, and increase initiative", "description":"TODO"},
-			{"level":3, "key":"sight", "name":"Umbral Sight", "summary":"Invisible to darkvision, increase darkvision by 30", "description":"TODO"},
-			{"level":7, "key":"mind", "name":"Iron Mind", "summary":"Gain proficiency in Wisdom saving throws", "description":"TODO"},
+			{"level":3, "key":"ambusher", "name":"Dread Ambusher", "summary":"Increase speed by 10 and attacks by 1 on first turn of combat, and increase initiative", "description":"TODO", "initiative":"wisdom", "type":"initiative"},
+			{"level":3, "key":"sight", "name":"Umbral Sight", "summary":"Invisible to darkvision, increase darkvision by 30", "description":"TODO", "darkvision":30},
+			{"level":7, "key":"mind", "name":"Iron Mind", "summary":"Gain proficiency in Wisdom saving throws", "description":"TODO", "saves":["wisdom"]},
 			{"level":11, "key":"flurry", "name":"Stalker's Flurry", "summary":"1/turn attack again after a missed attack", "description":"TODO"},
 			{"level":15, "key":"dodge", "name":"Shadowy Dodge", "summary":"Impose disadvantage on one attack roll as reaction", "description":"TODO", "type":"reaction"},
 		]
@@ -1406,16 +1480,28 @@ var dnd = {
 		"key":"inquisitive",
 		"name":"Inquisitive",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":9, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":13, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":17, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"mastermind",
 		"name":"Mastermind",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":9, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":13, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":17, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"swashbuckler",
 		"name":"Swashbuckler",
 		"features":[
+			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":9, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":13, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":17, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"draconic",
@@ -1441,16 +1527,28 @@ var dnd = {
 		"key":"divine",
 		"name":"Divine Soul",
 		"features":[
+			{"level":1, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":18, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"shade",
 		"name":"Shadow Magic",
 		"features":[
+			{"level":1, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":18, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"storm",
 		"name":"Storm Sorcery",
 		"features":[
+			{"level":1, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":18, "key":"", "name":"", "summary":"", "description":"TODO"},
 		]
 	},{
 		"key":"fey",
@@ -1588,6 +1686,11 @@ var dnd = {
 		"key":"combat",
 		"name":"War Magic",
 		"features":[
+			{"level":2, "key":"deflection", "name":"Arcane Deflection", "summary":"+2 AC or +4 to savings throw as reaction, no spell slots next turn", "description":"TODO", "type":"reaction"},
+			{"level":2, "key":"wit", "name":"Tactical Wit", "summary":"Add intelligence modifier to initiative", "description":"TODO", "initiative":"intelligence"},
+			{"level":6, "key":"surge", "name":"Power Surge", "summary":"Add force damage to spell", "description":"TODO"},
+			{"level":10, "key":"durable", "name":"Durable Magic", "summary":"+2 AC and +2 savings throws while maintaining concentration", "description":"TODO"},
+			{"level":14, "key":"shroud", "name":"Deflecting Shroud", "summary":"Do level/2 force damage to 3 creatures within 60 with Arcane Deflection", "description":"TODO", "type":"reaction"},
 		]
 	}],
 	"names":{

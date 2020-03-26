@@ -346,6 +346,7 @@
 				var hitpointsPerLevel = averageHitpoints + toughness + (modifiers['constitution'] | 0)
 				var hitpoints = hitpointsPerLevel * level + (hitdie - averageHitpoints)
 				var attacksPerAction = sources.reduce((t, f) => t + (f.attacks || 0), 0) + 1
+				var initiative = +modifiers['dexterity'] + sources.reduce((t, f) => t + +(modifiers[f.initiative] || f.initiative || 0), 0)
 				
 				this.proficiencyBonus = pb
 				this.toughness = toughness
@@ -354,8 +355,8 @@
 				this.speed = sources.reduce((t, f) => t + (f.speed || 0), 0)
 				this.criticalDice = sources.reduce((t, f) => t + (f.criticaldice | 0), 0) + 0
 				this.criticalRange = sources.reduce((t, f) => t + (f.criticalrange | 0), 0) + 1
-				this.initiative = modifiers['dexterity']
-				this.darkvision = race.darkvision
+				this.initiative = initiative < 0 ? initiative : "+" + initiative
+				this.darkvision = sources.reduce((t, f) => t + (f.darkvision || 0), 0)
 				this.attacksPerAction = attacksPerAction
 				this.difficultyClass = 8 + pb + (modifiers[spellcasting] | 0)
 				this.passivePerception = 10 + (modifiers['wisdom'] | 0) + (this.proficiencies.skills.indexOf('perception') < 0 ? 0 : pb)
@@ -2622,8 +2623,6 @@
 				var hashEqual = hash ? hash === '#' + item : true
 				var notesEqual = notesItem == notes
 				var equal = hashEqual && notesEqual
-				
-				console.log("storageDisplay item " + hashEqual + " notes " + notesEqual)
 				
 				_assignClass(_element('storage-save'), 'unmodified', equal ? 1 : -1)
 				_assignClass(_element('storage-load'), 'unmodified', equal ? 1 : -1)
