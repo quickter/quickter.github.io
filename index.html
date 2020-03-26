@@ -1208,6 +1208,15 @@
 			
 			// MARK: History
 			
+			function queryParameter(name, search) {
+				var parameters = search || window.location.search
+				var pattern = RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)', 'i')
+				var results = pattern.exec(parameters)
+				if ( !results ) { return null }
+				if ( !results[2] ) { return true }
+				return decodeURIComponent(results[2]);
+			}
+			
 			function inflateHash(string, keyMap) {
 				if ( string.charAt(0) === "#" ) { string = string.slice(1) }
 				
@@ -1228,7 +1237,7 @@
 				return object
 			}
 			
-			function characterIntoHash(character) {
+			function hashFromCharacter(character) {
 				var separator = "."
 				var archetype = ""
 				var traits = ""
@@ -1262,6 +1271,7 @@
 				if ( character.sex ) { values.push("x=" + character.sex) }
 				if ( character.height > 0 && character.weight > 0 ) { values.push("h=" + character.height + separator + character.weight) }
 				if ( character.increases && character.increases.length > 0 ) { values.push("i=" + character.increases.join(separator)) }
+				if ( character.name && character.name.length > 0 ) { values.push("z=" + btoa(character.name)) }
 				
 				var options = character.options
 				
@@ -1276,6 +1286,12 @@
 				}
 				
 				var hash = values.join("|")
+				
+				return hash
+			}
+			
+			function characterIntoHash(character) {
+				var hash = hashFromCharacter(character)
 				var current = location.hash
 				
 				if ( hash === (current.charAt(0) === "#" ? current.slice(1) : current) ) {
@@ -1287,6 +1303,8 @@
 				} else {
 					location.hash = hash
 				}
+				
+				storageDisplay()
 			}
 			
 			function characterFromHash(hash) {
@@ -1336,16 +1354,17 @@
 				if ( object['f'] ) { character.feats = object['f'].split(separator) }
 				if ( object['i'] ) { character.increases = object['i'].split(separator) }
 				if ( object['l'] ) { character.level = object['l'] }
+				if ( object['n'] ) { character.alignment = object['n'] }
 				if ( object['r'] ) { character.race = object['r'] }
 				if ( object['s'] ) { character.skills = object['s'].split(separator) }
 				if ( object['t'] ) { character.languages = object['t'].split(separator) }
-				if ( object['n'] ) { character.alignment = object['n'] }
 				if ( object['x'] ) { character.sex = object['x'] }
+				if ( object['z'] ) { character.name = atob(object['z']) }
 				
-				for ( var hash of lookup.optionHash ) {
-					if ( object[hash] ) {
-						character[hash] = object[hash]
-						character.options.push(hash)
+				for ( var key of lookup.optionHash ) {
+					if ( object[key] ) {
+						character[key] = object[key]
+						character.options.push(key)
 					}
 				}
 				
@@ -1634,6 +1653,10 @@
 				return 2 * x - 1
 			}
 			
+			function nameChanged() {
+				character.name = _element('character-name').value
+			}
+			
 			function randomInteger(count) {
 				return Math.floor(Math.random() * Math.floor(count)) | 0
 			}
@@ -1679,7 +1702,8 @@
 					}
 				}
 				
-				_element('character-name').innerHTML = name.join(" ")
+				character.name = name.join(" ")
+				_element('character-name').value = character.name
 			}
 			
 			function randomCharacter() {
@@ -1823,7 +1847,6 @@
 				character = {'rolls':defaults.rolls, 'archetype':{}}
 				
 				_element('character-form').reset()
-				_element('character-name').innerHTML = ''
 				renderCharacter(character, 'reset', true)
 			}
 			
@@ -2304,6 +2327,10 @@
 					}
 					
 					renderRolls(character.rolls)
+					
+					if ( character.name ) {
+						_element('character-name').value = character.name
+					}
 				}
 				
 				if ( applyToForm || prefix ) {
@@ -2449,7 +2476,7 @@
 				else if ( character.options.indexOf(hash) < 0 ) { character.options.push(hash) }
 				
 				if ( layout === 'cycle' ) {
-					var beginTag = "<div id='"+prefix+"' data-dnd='"+optionSet.dnd+"' data-hash='"+hash+"' class='"+style+" cycle-option' onclick='handleCycleOptionSet(\""+prefix+"\")'>"
+					var beginTag = "<div id='"+prefix+"' data-dnd='"+optionSet.dnd+"' data-hash='"+hash+"' class='"+style+" cycle-option advance' onclick='handleCycleOptionSet(\""+prefix+"\")'>"
 					var closeTag = "</div>"
 					var templateList = "<span id='"+prefix+"-{key}' data-key='{key}' class='"+style+" "+prefix+" hidden toggle nose'><b>{name}</b>: {summary}</span>"
 					var included = optionSet.exclude ? items.filter(i => optionSet.exclude.indexOf(i.key) < 0) : items
@@ -2518,6 +2545,112 @@
 				populateSkills()
 			}
 			
+			// MARK: Storage
+			
+			function storageSave() {
+				var key = defaults.storageKey || defaults.storageKeyToSave
+				
+				if ( key ) {
+					defaults.storageKey = key
+					
+					window.localStorage.setItem(key, hashFromCharacter(character))
+				}
+				
+				storageDisplay()
+			}
+			
+			function storageLoad(preserveHash) {
+				var key = defaults.storageKey || defaults.storageKeyToLoad
+				
+				if ( key ) {
+					defaults.storageKey = key
+					
+					var item = window.localStorage.getItem(key)
+					
+					if ( item ) {
+						var character = characterFromHash(item)
+					
+						if ( character.rolls ) {
+							window.character = character
+							renderCharacter(character, false, true)
+						
+							if ( !preserveHash ) {
+								characterIntoHash(character)
+							}
+						}
+					} else {
+						clearCharacter()
+					}
+				}
+				
+				storageDisplay()
+			}
+			
+			function storageRemove() {
+				var key = defaults.storageKey
+				
+				if ( key ) {
+					window.localStorage.removeItem(key)
+				}
+				
+				storageDisplay()
+			}
+			
+			function storageDisplay() {
+				var item = window.localStorage.getItem(defaults.storageKey)
+				var hash = location.hash
+				var equal = hash && item ? hash === '#' + item : hash == item
+				
+				_assignClass(_element('storage-save'), 'unmodified', equal ? 1 : -1)
+				_assignClass(_element('storage-load'), 'unmodified', equal ? 1 : -1)
+				_assignClass(_element('storage-remove'), 'unmodified', item ? -1 : 1)
+			}
+			
+			function prepareStorage() {
+				var parameterKey = "character"
+				var prefix = "quickter.character."
+				var parameter = queryParameter(parameterKey)
+				var storage = window.localStorage
+				var key, keys = []
+				var index, count = storage.length
+				var next
+				
+				for ( index = 0 ; index < count ; ++index ) {
+					key = storage.key(index)
+					
+					if ( key.startsWith(prefix) ) {
+						keys.push(key)
+					}
+				}
+				
+				count = keys.length
+				
+				if ( parameter ) {
+					defaults.storageKey = prefix + parameter
+					
+					index = keys.indexOf(prefix + parameter)
+				} else {
+					defaults.storageKeyToLoad = count > 0 ? keys[0] : null
+					
+					for ( index = count + 1 ; index > 0 ; --index ) {
+						if ( !keys.includes(prefix + index) ) {
+							defaults.storageKeyToSave = prefix + index
+							break
+						}
+					}
+					
+					index = -1
+				}
+				
+				if ( index === 0 && count === 1 ) {
+					next = (parameter | 0) + 1
+				} else {
+					next = count > 0 ? keys[(index + 1) % count].slice(prefix.length) : '1'
+				}
+				
+				_element('storage-next').href = "?" + parameterKey + "=" + encodeURIComponent(next)
+			}
+			
 			// MARK: Prepare
 			
 			function prepareLookup() {
@@ -2546,15 +2679,34 @@
 			}
 			
 			function prepare() {
+				prepareStorage()
 				prepareLookup()
 				populate()
 				window.addEventListener('hashchange', hashChanged)
-				hashChanged()
+				
+				if ( !location.hash && defaults.storageKey && window.localStorage.getItem(defaults.storageKey) ) {
+					storageLoad(true)
+				} else {
+					hashChanged()
+				}
 			}
 		</script>
 	</head>
 	<body>
-		<h4>Character Template</h4>
+		<div id='header'>
+			<h4 id='pagename'>
+				Character Template
+			</h4>
+			<div id='toolbar'>
+				<a id='storage-next' class='toolbar-button' title='Next Character' />↻︎</a>
+				<input id='storage-save' type='button' class='action' onclick='storageSave()' />
+				<label for='storage-save' title='Save Character' class='toolbar-button'>⬆</label>
+				<input id='storage-load' type='button' class='action' onclick='storageLoad()' />
+				<label for='storage-load' title='Load Character' class='toolbar-button'>⬇</label>
+				<input id='storage-remove' type='button' class='action' onclick='storageRemove()' />
+				<label for='storage-remove' title='Delete Character' class='toolbar-button'>⨂</label>
+			</div>
+		</div>
 		
 		<div id='character-view'><form id='character-form'>
 			<p id='randomize'>
@@ -2574,7 +2726,7 @@
 			<p id="rolled"></p>
 			<hr/>
 			
-			<p id='character-name' class='toggle tall' title='Name' onclick='randomName()'> </p>
+			<p class='name'><span class='cycle-option advance' onclick='randomName()'></span><input type='text' id='character-name' size='40' placeholder='Name' onchange='nameChanged()'></p>
 			
 			<span id='level' class='advances tall' title='Level' onclick='advanceLevel(event)'> </span>
 			<span class='bullet'>&bull;</span>
