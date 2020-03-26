@@ -1657,6 +1657,16 @@
 				character.name = _element('character-name').value
 			}
 			
+			function notesChanged() {
+				var element = _element('character-notes')
+				
+				if ( element.scrollHeight > element.clientHeight ) {
+					element.style.height = element.scrollHeight + 'px'
+				}
+				
+				storageDisplay()
+			}
+			
 			function randomInteger(count) {
 				return Math.floor(Math.random() * Math.floor(count)) | 0
 			}
@@ -2547,6 +2557,10 @@
 			
 			// MARK: Storage
 			
+			function storageNotesKey(key) {
+				return key.replace('.character.', '.notes.')
+			}
+			
 			function storageSave() {
 				var key = defaults.storageKey || defaults.storageKeyToSave
 				
@@ -2554,6 +2568,7 @@
 					defaults.storageKey = key
 					
 					window.localStorage.setItem(key, hashFromCharacter(character))
+					window.localStorage.setItem(storageNotesKey(key), _element('character-notes').value)
 				}
 				
 				storageDisplay()
@@ -2569,11 +2584,12 @@
 					
 					if ( item ) {
 						var character = characterFromHash(item)
-					
+						
 						if ( character.rolls ) {
 							window.character = character
 							renderCharacter(character, false, true)
-						
+							_element('character-notes').value = window.localStorage.getItem(storageNotesKey(key))
+							
 							if ( !preserveHash ) {
 								characterIntoHash(character)
 							}
@@ -2591,15 +2607,23 @@
 				
 				if ( key ) {
 					window.localStorage.removeItem(key)
+					window.localStorage.removeItem(storageNotesKey(key))
 				}
 				
 				storageDisplay()
 			}
 			
 			function storageDisplay() {
-				var item = window.localStorage.getItem(defaults.storageKey)
+				var key = defaults.storageKey
+				var item = window.localStorage.getItem(key)
+				var notesItem = window.localStorage.getItem(storageNotesKey(key))
+				var notes = _element('character-notes').value
 				var hash = location.hash
-				var equal = hash && item ? hash === '#' + item : hash == item
+				var hashEqual = hash ? hash === '#' + item : true
+				var notesEqual = notesItem == notes
+				var equal = hashEqual && notesEqual
+				
+				console.log("storageDisplay item " + hashEqual + " notes " + notesEqual)
 				
 				_assignClass(_element('storage-save'), 'unmodified', equal ? 1 : -1)
 				_assignClass(_element('storage-load'), 'unmodified', equal ? 1 : -1)
@@ -2782,6 +2806,9 @@
 			<p><span class='caption'>Abilities</span>
 			<span id='clear-abilities' title='Revert rolls to class order with only racial increases' class='action tiny toggle' onclick='clearAbilities()'>(Reset)</span></p>
 			<p id='abilities' title='Tap rolls to change order.  Tap scores to increase.'></p>
+			
+			<p><span class='caption'>Notes</span>
+			<p id='notes'><textarea id='character-notes' rows='3' cols='40' wrap='on' spellcheck='false' placeholder='Notes' oninput='notesChanged()'></textarea></p>
 			
 			<span class='caption'>Attacks</span>
 			<input id='toggle-all-attacks' class='toggle' type='checkbox' />

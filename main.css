@@ -44,6 +44,8 @@ label.option, label.action {
 #toolbar > .toolbar-button { margin-right:0.5em; cursor:pointer; }
 #toolbar > a { text-decoration:none; color:#000; }
 #toolbar > .unmodified + label { color:#999; }
+#character-name { max-width:85%; }
+#character-notes { max-width:98%; font-size:125%; }
 
 p.name > span, p.name > input { font-size:150%; }
 p.name > input { border:2px solid #EEE; padding:0.5em; font-family:cursive; }
