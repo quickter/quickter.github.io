@@ -305,7 +305,7 @@
 					if ( this.options[feature.options.hash] ) {
 						for ( option of dnd[feature.options.dnd] ) {
 							if ( option.key === this.options[feature.options.hash] ) {
-								displayFeature.description = option.description || dnd.description[option.key]
+								displayFeature.description = option.description || dnd.description[option.key] || displayFeature.description
 								if ( feature.level <= level ) { activeFeatures.push(option) }
 								break
 							}
@@ -315,7 +315,7 @@
 						
 						if ( option ) {
 							this.options[feature.options.hash] = option.hash
-							displayFeature.description = option.description || dnd.description[option.key]
+							displayFeature.description = option.description || dnd.description[option.key] || displayFeature.description
 							if ( feature.level <= level ) { activeFeatures.push(option) }
 						}
 					}
@@ -2470,7 +2470,7 @@
 				populateRadioItems(_element(key), dnd[key], prefix, false, templateContent)
 			}
 			
-			function populateOptionSet(element, optionSet, level) {
+			function populateOptionSet(element, optionSet) {
 				var index
 				var items = dnd[optionSet.dnd]
 				var node = _element(element)
@@ -2480,7 +2480,7 @@
 				
 				//	cycle, radio, checkbox, list
 				var style = 'set-' + optionSet.dnd
-				var prefix = 'set-' + optionSet.dnd + '-' + level
+				var prefix = 'set-' + optionSet.dnd + '-' + optionSet.hash
 				var layout = optionSet.layout || (optionSet.limit > 0 ? 'checkbox' : 'cycle')
 				
 				if ( !character.options ) { character.options = [hash] }
@@ -2511,7 +2511,7 @@
 				var layout = optionSet.layout || (optionSet.limit > 0 ? 'checkbox' : 'cycle')
 				var suffix = (layout === 'cycle') ? '-summary' : '-options'
 				
-				populateOptionSet('feature-' + feature.key + '-' + feature.level + suffix, optionSet, feature.level)
+				populateOptionSet('feature-' + feature.key + '-' + (feature.level || '') + suffix, optionSet)
 			}
 			
 			function populateRaces() {
