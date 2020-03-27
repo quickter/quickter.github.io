@@ -2617,7 +2617,7 @@
 			function storageDisplay() {
 				var key = defaults.storageKey
 				var item = window.localStorage.getItem(key)
-				var notesItem = window.localStorage.getItem(storageNotesKey(key))
+				var notesItem = key ? window.localStorage.getItem(storageNotesKey(key)) : ""
 				var notes = _element('character-notes').value
 				var hash = location.hash
 				var hashEqual = hash ? hash === '#' + item : true
