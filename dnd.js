@@ -56,48 +56,48 @@ var dnd = {
 		{"key":"thieves", "name":"Thieves' Cant", "hidden":true}
 	],
 	"dragonbornancestry":[
-		{"key":"black", "name":"Black", "summary":"Acid breath in 30 foot line, Dexterity save", "description":"TODO", "resistance":["acid"], "shape":"line", "save":"dexterity"},
-		{"key":"blue", "name":"Blue", "summary":"Lightning breath in 30 foot line, Dexterity save", "description":"TODO", "resistance":["lightning"], "shape":"line", "save":"dexterity"},
-		{"key":"brass", "name":"Brass", "summary":"Fire breath in 30 foot line, Dexterity save", "description":"TODO", "resistance":["fire"], "shape":"line", "save":"dexterity"},
-		{"key":"bronze", "name":"Bronze", "summary":"Lightning breath in 30 foot line, Dexterity save", "description":"TODO", "resistance":["lightning"], "shape":"line", "save":"dexterity"},
-		{"key":"copper", "name":"Copper", "summary":"Acid breath in 30 foot line, Dexterity save", "description":"TODO", "resistance":["acid"], "shape":"line", "save":"dexterity"},
-		{"key":"gold", "name":"Gold", "summary":"Fire breath in 15 foot cone, Dexterity save", "description":"TODO", "resistance":["fire"], "shape":"cone", "save":"dexterity"},
-		{"key":"green", "name":"Green", "summary":"Poison breath in 15 foot cone, Constitution save", "description":"TODO", "resistance":["poison"], "shape":"cone", "save":"constitution"},
-		{"key":"red", "name":"Red", "summary":"Fire breath in 15 foot cone, Dexterity save", "description":"TODO", "resistance":["fire"], "shape":"cone", "save":"dexterity"},
-		{"key":"silver", "name":"Silver", "summary":"Cold breath in 15 foot cone, Constitution save", "description":"TODO", "resistance":["cold"], "shape":"cone", "save":"constitution"},
-		{"key":"white", "name":"White", "summary":"Cold breath in 15 foot cone, Constitution save", "description":"TODO", "resistance":["cold"], "shape":"cone", "save":"constitution"}
+		{"key":"black", "name":"Black", "summary":"Acid breath in 30 foot line, Dexterity save", "resistance":["acid"], "shape":"line", "save":"dexterity", "description":"TODO"},
+		{"key":"blue", "name":"Blue", "summary":"Lightning breath in 30 foot line, Dexterity save", "resistance":["lightning"], "shape":"line", "save":"dexterity", "description":"TODO"},
+		{"key":"brass", "name":"Brass", "summary":"Fire breath in 30 foot line, Dexterity save", "resistance":["fire"], "shape":"line", "save":"dexterity", "description":"TODO"},
+		{"key":"bronze", "name":"Bronze", "summary":"Lightning breath in 30 foot line, Dexterity save", "resistance":["lightning"], "shape":"line", "save":"dexterity", "description":"TODO"},
+		{"key":"copper", "name":"Copper", "summary":"Acid breath in 30 foot line, Dexterity save", "resistance":["acid"], "shape":"line", "save":"dexterity", "description":"TODO"},
+		{"key":"gold", "name":"Gold", "summary":"Fire breath in 15 foot cone, Dexterity save", "resistance":["fire"], "shape":"cone", "save":"dexterity", "description":"TODO"},
+		{"key":"green", "name":"Green", "summary":"Poison breath in 15 foot cone, Constitution save", "resistance":["poison"], "shape":"cone", "save":"constitution", "description":"TODO"},
+		{"key":"red", "name":"Red", "summary":"Fire breath in 15 foot cone, Dexterity save", "resistance":["fire"], "shape":"cone", "save":"dexterity", "description":"TODO"},
+		{"key":"silver", "name":"Silver", "summary":"Cold breath in 15 foot cone, Constitution save", "resistance":["cold"], "shape":"cone", "save":"constitution", "description":"TODO"},
+		{"key":"white", "name":"White", "summary":"Cold breath in 15 foot cone, Constitution save", "resistance":["cold"], "shape":"cone", "save":"constitution", "description":"TODO"}
 	],
 	"draconicancestry":[
-		{"key":"black", "name":"Black", "summary":"Acid damage", "description":"TODO", "resistance":["acid"]},
-		{"key":"blue", "name":"Blue", "summary":"Lightning damage", "description":"TODO", "resistance":["lightning"]},
-		{"key":"brass", "name":"Brass", "summary":"Fire damage", "description":"TODO", "resistance":["fire"]},
-		{"key":"bronze", "name":"Bronze", "summary":"Lightning damage", "description":"TODO", "resistance":["lightning"]},
-		{"key":"copper", "name":"Copper", "summary":"Acid damage", "description":"TODO", "resistance":["acid"]},
-		{"key":"gold", "name":"Gold", "summary":"Fire damage", "description":"TODO", "resistance":["fire"]},
-		{"key":"green", "name":"Green", "summary":"Poison damage", "description":"TODO", "resistance":["poison"]},
-		{"key":"red", "name":"Red", "summary":"Fire damage", "description":"TODO", "resistance":["fire"]},
-		{"key":"silver", "name":"Silver", "summary":"Cold damage", "description":"TODO", "resistance":["cold"]},
-		{"key":"white", "name":"White", "summary":"Cold damage", "description":"TODO", "resistance":["cold"]}
+		{"key":"black", "name":"Black", "summary":"Acid damage", "resistance":["acid"], "description":"TODO"},
+		{"key":"blue", "name":"Blue", "summary":"Lightning damage", "resistance":["lightning"], "description":"TODO"},
+		{"key":"brass", "name":"Brass", "summary":"Fire damage", "resistance":["fire"], "description":"TODO"},
+		{"key":"bronze", "name":"Bronze", "summary":"Lightning damage", "resistance":["lightning"], "description":"TODO"},
+		{"key":"copper", "name":"Copper", "summary":"Acid damage", "resistance":["acid"], "description":"TODO"},
+		{"key":"gold", "name":"Gold", "summary":"Fire damage", "resistance":["fire"], "description":"TODO"},
+		{"key":"green", "name":"Green", "summary":"Poison damage", "resistance":["poison"], "description":"TODO"},
+		{"key":"red", "name":"Red", "summary":"Fire damage", "resistance":["fire"], "description":"TODO"},
+		{"key":"silver", "name":"Silver", "summary":"Cold damage", "resistance":["cold"], "description":"TODO"},
+		{"key":"white", "name":"White", "summary":"Cold damage", "resistance":["cold"], "description":"TODO"}
 	],
 	"druidicterrain":[
-		{"key":"arctic", "name":"Arctic", "summary":"Slow, Ice Storm, Cone of Cold", "description":"TODO", "spells":["holdperson", "spikegrowth", "sleetstorm", "slow", "freedomofmovement", "icestorm", "communewithnature", "coneofcold"]},
-		{"key":"coast", "name":"Coast", "summary":"Misty Step, Control Water, Conjure Elemental", "description":"TODO", "spells":["mirrorimage", "mistystep", "waterbreathing", "waterwalk", "controlwater", "freedomofmovement", "conjureelemental", "scrying"]},
-		{"key":"desert", "name":"Desert", "summary":"Blur, Blight, Wall of Stone", "description":"TODO", "spells":["blur", "silence", "createfoodandwater", "protectionfromenergy", "blight", "hallicinatoryterrain", "insectplague", "wallofstone"]},
-		{"key":"forest", "name":"Forest", "summary":"Barkskin, Call Lightning, Tree Stride", "description":"TODO", "spells":["barkskin", "spiderclimb", "calllightning", "plantgrowth", "divination", "freedomofmovement", "communewithnature", "treestride"]},
-		{"key":"grassland", "name":"Grassland", "summary":"Invisibility, Haste, Dream", "description":"TODO", "spells":["invisibility", "passwithouttrace", "daylight", "haste", "divination", "freedomofmovement", "dream", "insectplague"]},
-		{"key":"mountain", "name":"Mountain", "summary":"Lightning Bolt, Stoneskin, Passwall", "description":"TODO", "spells":["spiderclimb", "spikegrowth", "lightningbolt", "meldintostone", "stoneshape", "stoneskin", "passwall", "wallofstone"]},
-		{"key":"swamp", "name":"Swamp", "summary":"Darkness, Stinking Cloud, Insect Plague", "description":"TODO", "spells":["darkness", "acidarrow", "waterwalk", "stinkingcloud", "freedomofmovement", "locatecreature", "insectplague", "scrying"]},
-		{"key":"underdark", "name":"Underdark", "summary":"Gaseous Form, Greater Invisibility, Cloudkill", "description":"TODO", "spells":["spiderclimb", "web", "gaseousform", "stinkingcloud", "greaterinvisibility", "stoneshape", "cloudkill", "insectplague"]},
+		{"key":"arctic", "name":"Arctic", "summary":"Slow, Ice Storm, Cone of Cold", "spells":["holdperson", "spikegrowth", "sleetstorm", "slow", "freedomofmovement", "icestorm", "communewithnature", "coneofcold"], "description":"TODO"},
+		{"key":"coast", "name":"Coast", "summary":"Misty Step, Control Water, Conjure Elemental", "spells":["mirrorimage", "mistystep", "waterbreathing", "waterwalk", "controlwater", "freedomofmovement", "conjureelemental", "scrying"], "description":"TODO"},
+		{"key":"desert", "name":"Desert", "summary":"Blur, Blight, Wall of Stone", "spells":["blur", "silence", "createfoodandwater", "protectionfromenergy", "blight", "hallicinatoryterrain", "insectplague", "wallofstone"], "description":"TODO"},
+		{"key":"forest", "name":"Forest", "summary":"Barkskin, Call Lightning, Tree Stride", "spells":["barkskin", "spiderclimb", "calllightning", "plantgrowth", "divination", "freedomofmovement", "communewithnature", "treestride"], "description":"TODO"},
+		{"key":"grassland", "name":"Grassland", "summary":"Invisibility, Haste, Dream", "spells":["invisibility", "passwithouttrace", "daylight", "haste", "divination", "freedomofmovement", "dream", "insectplague"], "description":"TODO"},
+		{"key":"mountain", "name":"Mountain", "summary":"Lightning Bolt, Stoneskin, Passwall", "spells":["spiderclimb", "spikegrowth", "lightningbolt", "meldintostone", "stoneshape", "stoneskin", "passwall", "wallofstone"], "description":"TODO"},
+		{"key":"swamp", "name":"Swamp", "summary":"Darkness, Stinking Cloud, Insect Plague", "spells":["darkness", "acidarrow", "waterwalk", "stinkingcloud", "freedomofmovement", "locatecreature", "insectplague", "scrying"], "description":"TODO"},
+		{"key":"underdark", "name":"Underdark", "summary":"Gaseous Form, Greater Invisibility, Cloudkill", "spells":["spiderclimb", "web", "gaseousform", "stinkingcloud", "greaterinvisibility", "stoneshape", "cloudkill", "insectplague"], "description":"TODO"},
 	],
 	"rangerterrain":[
-		{"key":"arctic", "name":"Arctic", "summary":""},
-		{"key":"coast", "name":"Coast", "summary":""},
-		{"key":"desert", "name":"Desert", "summary":""},
-		{"key":"forest", "name":"Forest", "summary":""},
-		{"key":"grassland", "name":"Grassland", "summary":""},
-		{"key":"mountain", "name":"Mountain", "summary":""},
-		{"key":"swamp", "name":"Swamp", "summary":""},
-		{"key":"underdark", "name":"Underdark", "summary":""}
+		{"key":"arctic", "name":"Arctic", "summary":"", "description":"TODO"},
+		{"key":"coast", "name":"Coast", "summary":"", "description":"TODO"},
+		{"key":"desert", "name":"Desert", "summary":"", "description":"TODO"},
+		{"key":"forest", "name":"Forest", "summary":"", "description":"TODO"},
+		{"key":"grassland", "name":"Grassland", "summary":"", "description":"TODO"},
+		{"key":"mountain", "name":"Mountain", "summary":"", "description":"TODO"},
+		{"key":"swamp", "name":"Swamp", "summary":"", "description":"TODO"},
+		{"key":"underdark", "name":"Underdark", "summary":"", "description":"TODO"}
 	],
 	"resistances":[
 		{"key":"fear", "name":"Fear"},
@@ -260,78 +260,78 @@ var dnd = {
 		{"key":"survival", "name":"Survival", "ability":"wisdom", "style":"wisdom"}
 	],
 	"fightingstyles":[
-		{"key":"archery", "name":"Archery", "summary":"+2 to hit with ranged weapons", "description":"You gain a +2 bonus to attack rolls you make with ranged weapons.", "requirement":"ammunition", "hit":2},
-		{"key":"defense", "name":"Defense", "summary":"+1 to armor class when armored", "description":"While you are wearing armor, you gain a +1 bonus to AC.", "requirement":"armored", "armorclass":1},
-		{"key":"dueling", "name":"Dueling", "summary":"+2 to damage with single melee weapon", "description":"When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon.", "requirement":"one-handed-melee", "damage":2},
+		{"key":"archery", "name":"Archery", "summary":"+2 to hit with ranged weapons", "requirement":"ammunition", "hit":2, "description":"You gain a +2 bonus to attack rolls you make with ranged weapons."},
+		{"key":"defense", "name":"Defense", "summary":"+1 to armor class when armored", "requirement":"armored", "armorclass":1, "description":"While you are wearing armor, you gain a +1 bonus to AC."},
+		{"key":"dueling", "name":"Dueling", "summary":"+2 to damage with single melee weapon", "requirement":"one-handed-melee", "damage":2, "description":"When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon."},
 		{"key":"great", "name":"Great Weapon Fighting", "summary":"Improve damage of two handed melee weapon", "description":"When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can reroll the die and must use the new roll, even if the new roll is a 1 or a 2. The weapon must have the two-handed or versatile property for you to gain this benefit."},
-		{"key":"block", "name":"Protection", "summary":"Impose disadvantage on nearby attack with shield", "description":"When a creature you can see attacks a target other than you that is within 5 feet of you, you can use your reaction to impose disadvantage on the attack roll. You must be wielding a shield.", "type":"reaction"},
-		{"key":"dual", "name":"Two Weapon Fighting", "summary":"Improve damage of melee weapon in second hand", "description":"When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack.", "type":"bonusaction"}
+		{"key":"block", "name":"Protection", "summary":"Impose disadvantage on nearby attack with shield", "type":"reaction", "description":"When a creature you can see attacks a target other than you that is within 5 feet of you, you can use your reaction to impose disadvantage on the attack roll. You must be wielding a shield."},
+		{"key":"dual", "name":"Two Weapon Fighting", "summary":"Improve damage of melee weapon in second hand", "type":"bonusaction", "description":"When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack."}
 	],
 	"huntertactics3":[
 		{"key":"slayer", "name":"Colossus Slayer", "summary":"1/turn extra 1d8 weapon damage against injured foe", "description":"Your tenacity can wear down the most potent foes. When you hit a creature with a weapon attack, the creature takes an extra 1d8 damage if it’s below its hit point maximum. You can deal this extra damage only once per turn."},
-		{"key":"killer", "name":"Giant Killer", "summary":"Attack as reaction to attack by Large or larger creature", "description":"When a Large or larger creature within 5 feet of you hits or misses you with an attack, you can use your reaction to attack that creature immediately after its attack, provided that you can see the creature.", "type":"reaction"},
+		{"key":"killer", "name":"Giant Killer", "summary":"Attack as reaction to attack by Large or larger creature", "type":"reaction", "description":"When a Large or larger creature within 5 feet of you hits or misses you with an attack, you can use your reaction to attack that creature immediately after its attack, provided that you can see the creature."},
 		{"key":"breaker", "name":"Horde Breaker", "summary":"1/turn extra attack against creature within 5 feet of original target", "description":"Once on each of your turns when you make a weapon attack, you can make another attack with the same weapon against a different creature that is within 5 feet of the original target and within range of your weapon."}
 	],
 	"huntertactics7":[
 		{"key":"escape", "name":"Escape the Horde", "summary":"Impose disadvantage on opportunity attacks", "description":"Opportunity attacks against you are made with disadvantage."},
 		{"key":"defense", "name":"Multiattack Defense", "summary":"AC +4 on attacks after first hit by same creature", "description":"When a creature hits you with an attack, you gain a +4 bonus to AC against all subsequent attacks made by that creature for the rest of the turn."},
-		{"key":"will", "name":"Steel Will", "summary":"Advantage on saves against fear", "description":"You have advantage on saving throws against being frightened.", "advantage_on_saves":["fear"]}
+		{"key":"will", "name":"Steel Will", "summary":"Advantage on saves against fear", "advantage_on_saves":["fear"], "description":"You have advantage on saving throws against being frightened."}
 	],
 	"huntertactics11":[
-		{"key":"volley", "name":"Volley", "summary":"Ranged attack against every creature within 10 foot radius", "description":"You can use your action to make a ranged attack against any number of creatures within 10 feet of a point you can see within your weapon’s range. You must have ammunition for each target, as normal, and you make a separate attack roll for each target.", "type":"action"},
-		{"key":"whirlwind", "name":"Whirlwind Attack", "summary":"Melee attack against every creature within 5 feet", "description":"You can use your action to make a melee attack against any number of creatures within 5 feet of you, with a separate attack roll for each target.", "type":"action"}
+		{"key":"volley", "name":"Volley", "summary":"Ranged attack against every creature within 10 foot radius", "type":"action", "description":"You can use your action to make a ranged attack against any number of creatures within 10 feet of a point you can see within your weapon’s range. You must have ammunition for each target, as normal, and you make a separate attack roll for each target."},
+		{"key":"whirlwind", "name":"Whirlwind Attack", "summary":"Melee attack against every creature within 5 feet", "type":"action", "description":"You can use your action to make a melee attack against any number of creatures within 5 feet of you, with a separate attack roll for each target."}
 	],
 	"huntertactics15":[
 		{"key":"evasion", "name":"Evasion", "summary":"Receive half or no damage with Dexterity save"},
-		{"key":"tide", "name":"Stand Against the Tide", "summary":"Redirect missed attack to another creature as reaction", "description":"When a hostile creature misses you with a melee attack, you can use your reaction to force that creature to repeat the same attack against another creature (other than itself) of your choice.", "type":"reaction"},
+		{"key":"tide", "name":"Stand Against the Tide", "summary":"Redirect missed attack to another creature as reaction", "type":"reaction", "description":"When a hostile creature misses you with a melee attack, you can use your reaction to force that creature to repeat the same attack against another creature (other than itself) of your choice."},
 		{"key":"uncanny", "name":"Uncanny Dodge", "summary":"Reduce damage from an attack to half as a reaction", "type":"reaction"}
 	],
 	"feats":[
 		{"key":"a", "name":"Ability", "summary":"+2", "increase":2, "multiple":true},
-		{"key":"alert", "name":"Alert", "summary":"+5 initiative, unsurprised, prevent advantage of hidden", "description":"TODO", "initiative":5},
-		{"key":"duelist", "name":"Defensive Duelist", "summary":"Add PB to AC as reaction with finesse weapon", "description":"TODO"},
-		{"key":"great", "name":"Great Weapon Master", "summary":"Optional -5/+10 attack with heavy melee weapon, attack as bonus action", "description":"TODO", "reckless":"heavy"},
-		{"key":"linguist", "name":"Linguist", "summary":"+1 Intelligence, +3 languages, create cyphers", "description":"TODO", "extra_language":3, "abilities":{"intelligence":1}},
-		{"key":"lucky", "name":"Lucky", "summary":"3/day reroll attack, save, or ability check", "description":"TODO"},
-		{"key":"spell", "name":"Magic Initiate", "summary":"Gain 2 cantrips, 1st level spell 1/day", "description":"TODO"},
-		{"key":"mobile", "name":"Mobile", "summary":"+10 speed, unhindered dash, prevent opportunity attacks", "description":"TODO", "speed":10},
-		{"key":"skill", "name":"Skilled", "summary":"Gain 3 skills", "description":"TODO", "skill_options":{"limit":3}},
-		{"key":"sharp", "name":"Sharpshooter", "summary":"Optional -5/+10 attack with ranged weapon, no range disadvantage, no cover penalty", "description":"TODO", "reckless":"ranged"},
-		{"key":"snipe", "name":"Spell Sniper", "summary":"Gain 1 attack cantrip, double range, spells ignore cover", "description":"TODO"},
-		{"key":"tough", "name":"Tough", "summary":"+2 hp/level", "description":"TODO", "toughness":2},
+		{"key":"alert", "name":"Alert", "summary":"+5 initiative, unsurprised, prevent advantage of hidden", "initiative":5, "description":"Always on the lookout for danger, you gain the following benefits:<ul><li>You gain a +5 bonus to initiative.</li><li>You can't be surprised while you are conscious.</li><li>Other creatures don't gain advantage on attack rolls against you as a result of being hidden from you.</li></ul>"},
+		{"key":"duelist", "name":"Defensive Duelist", "summary":"Add PB to AC as reaction with finesse weapon", "description":"When you are wielding a finesse weapon with which you are proficient and another creature hits you with a melee attack, you can use your reaction to add your proficiency bonus to your AC for that attack, potentially causing the attack to miss you."},
+		{"key":"adept", "name":"Elemental Adept", "summary":"Spells you cast ignore resistance to chosen damage type", "description":"When you gain this feat, choose one of the following damage types: acid, cold, fire, lightning, or thunder.<br/>Spells you cast ignore resistance to damage of the chosen type. In addition, when you roll damage for a spell you cast that deals damage of that type, you can treat any 1 on a damage die as a 2.<br/>You can select this feat multiple times. Each time you do so, you must choose a different damage type."},
+		{"key":"great", "name":"Great Weapon Master", "summary":"Optional -5/+10 attack with heavy melee weapon, attack as bonus action", "reckless":"heavy", "description":"You've learned to put the weight of a weapon to your advantage, letting its momentum empower your strikes. You gain the following benefits:<ul><li>On your turn, when you score a criticai hit with a melee weapon or reduce a creature to 0 hit points with one, you can make one melee weapon attack as a bonus action.</li><li>Before you make a melee attack with a heavy weapon that you are proficient with, you can choose to take a -5 penalty to the attack roll. If the attack hits, you add +10 to the attack's damage.</li></ul>"},
+		{"key":"healer", "name":"Healer", "summary":"Use healing kit to restore hit points", "description":"You are an able physician, allowing you to mend wounds quickly and get your allies back in the fight. You gain the following benefits:<br/>When you use a healer's kit to stabilize a dying creature, that creature also regains 1 hit point.<br/>As an action, you can spend one use of a healer's kit to tend to a creature and restore 1d6 + 4 hit points to it, plus additional hit points equal to the creature's maximum number of Hit Dice. The creature can't regain hit points from this feat again until it finishes a short or long rest."},
+		{"key":"linguist", "name":"Linguist", "summary":"+1 Intelligence, +3 languages, create cyphers", "extra_language":3, "abilities":{"intelligence":1}, "description":"You have studied languages and codes, gaining the following benefits:<ul><li>Increase your Intelligence score by 1, to a maximum of 20.</li><li>You learn three languages of your choice.</li><li>You can ably create written ciphers. Others can't decipher a code you create unless you teach them, they succeed on an Intelligence check (DC equal to your Intelligence score + your proficiency bonus), or they use magic to decipher it.</li></ul>"},
+		{"key":"lucky", "name":"Lucky", "summary":"3/day advantage on attack, save, or ability check", "description":"You have inexplicable luck that seems to kick in at just the right moment.<br/>You have 3 luck points. Whenever you make an attack roll, an ability check, or a saving throw, you can spend one luck point to roll an additional d20. You can choose to spend one of your luck points after you roll the die, but before the outcome is determined. You choose which of the d20s is used for the attack roll, ability check, or saving throw.<br/>You can also spend one luck point when an attack roll is made against you. Roll a d20, and then choose whether the attack uses the attacker's roll or yours.<br/>If more than one creature spends a luck point to influence the outcome of a roll, the points cancel each other out; no additional dice are rolled.<br/>You regain your expended luck points when you finish a long rest."},
+		{"key":"spell", "name":"Magic Initiate", "summary":"Gain 2 cantrips, 1/day cast 1st level spell", "description":"Choose a class: bard, cleric, druid, sorcerer, warlock, or wizard. You learn two cantrips of your choice from that class's spell list.<br/>In addition, choose one 1st levei spell from that same list. You learn that spell and can cast it at its lowest level. Once you cast it, you must finish a long rest before you can cast it again.<br/>Your spellcasting ability for these spells depends on the class you chose: Charisma for bard, sorcerer, or warlock: Wisdom for cleric or druid: or Intelligence for wizard."},
+		{"key":"mobile", "name":"Mobile", "summary":"+10 speed, unhindered dash, prevent opportunity attacks", "speed":10, "description":"You are exceptionally speedy and agile. You gain the following benefits:<ul><li>Your speed increases by 10 feel.</li><li>When you use the Dash action, difficult terrain doesn't cost you extra movement on that turn.</li><li>When you make a melee attack against a creature, you don't provoke opportunity attacks from that creature for the rest of the turn, whether you hit or not.</li></ul>"},
+		{"key":"observant", "name":"Observant", "summary":"+1 Intelligence or Wisdom, +5 passive perception and investigation, read lips", "passive":5, "abilities":{"intelligence":1, "wisdom":1, "limit":1}, "description":"Quick to notice details of your environment, you gain the following benefits:<ul><li>Increase your Intelligence or Wisdom score by 1, to a maximum of 20.</li><li>If you can see a creature's mouth while it is speaking a language you understand, you can interpret what it's saying by reading its lips.</li><li>You have a +5 bonus to your passive Wisdom (Perception) and passive Intelligence (Investigation) scores.</li></ul>"},
+		{"key":"polearm", "name":"Polearm Master", "summary":"Bonus attack, opportunity attack with polearms", "description":"You can keep your enemies at bay with reach weapons. You gain the following benetits:<ul><li>When you take the Attack action and attack with only a glaive, halberd, or quarterstaff, you can use a bonus action to make a melee attack with the opposite end of the weapon. The weapon's damage die for this attack is a d4, and the attack deals bludgeoning damage.</li><li>While you are wielding a glaive, halberd, pike, or quarterstaff, other creatures provoke an opportunity attack from you when they enter your reach.</li></ul>"},
+		{"key":"resilient", "name":"Resilient", "summary":"+1 and proficiency with saving throws for chosen ability score", "increase":1, "description":"Choose one ability score. You gain the following benefits:<ul><li>Increase the chosen ability score by 1, to a maximum of 20.</li><li>You gain proficiency in saving throws using the chosen ability.</li></ul>"},
+		{"key":"savage", "name":"Savage Attacker", "summary":"1/turn gain advantage on melee weapon damage roll", "description":"Once per turn when you roll damage for a melee weapon attack, you can reroll the weapon's damage dice and use either total."},
+		{"key":"sharp", "name":"Sharpshooter", "summary":"Optional -5/+10 attack with ranged weapon, no range disadvantage, no cover penalty", "reckless":"ranged", "description":"You have mastered ranged weapons and can make shots that others find impossible. You gain the following benefits:<ul><li>Attacking at long range doesn't impose disadvantage on your ranged weapon attack rolls.</li><li>Your ranged weapon attacks ignore half cover and three-quarters cover.</li><li>Before you make an attack with a ranged weapon that you are proficient with, you can choose to take a -5 penalty to the attack roll. If the attack hits, you add +10 to the attack's damage.</li></ul>"},
+		{"key":"skill", "name":"Skilled", "summary":"Gain 3 skills", "skill_options":{"limit":3}, "description":"You gain proficiency in any combination of three skills or tools of your choice."},
+		{"key":"snipe", "name":"Spell Sniper", "summary":"Gain 1 attack cantrip, double range, spells ignore cover", "description":"You have learned techniques to enhance your attacks with certain kinds of spells, gaining the following benefits:<ul><li>When you cast a spell that requires you to make an attack roll, the spell's range is doubled.</li><li>Your ranged spell attacks ignore half cover and three-quarters cover.</li><li>You learn one cantrip that requires an attack roll. Choose the cantrip from the bard, cleric, druid, sorcerer, warlock, or wizard spell list. Your spellcasting ability for this cantrip depends on the spell list you chose from: Charisma for bard, sorcerer, or warlock; Wisdom for cleric or druid; or Intelligence for wizard.</li></ul>"},
+		{"key":"tough", "name":"Tough", "summary":"+2 hp/level", "toughness":2, "description":"Your hit point maximum increases by an amount equal to twice your level when you gain this feat. Whenever you gain a level thereafter, your hit point maximum increases by an additional 2 hit points."},
 	],
 	"incomplete_feats":[
-		{"key":"athlete", "name":"Athlete", "summary":""},
-		{"key":"actor", "name":"Actor", "summary":""},
-		{"key":"charge", "name":"Charger", "summary":""},
-		{"key":"crossbow", "name":"Crossbow Expert", "summary":""},
-		{"key":"dual", "name":"Dual Wielder", "summary":""},
-		{"key":"delve", "name":"Dungeon Delver", "summary":""},
-		{"key":"durable", "name":"Durable", "summary":""},
-		{"key":"adept", "name":"Elemental Adept", "summary":""},
-		{"key":"grapple", "name":"Grappler", "summary":""},
-		{"key":"heal", "name":"Healer", "summary":""},
-		{"key":"heavy", "name":"Heavily Armored", "summary":"", "armor":["heavy"], "abilities":{"strength":1}},
-		{"key":"ham", "name":"Heavy Armor Master", "summary":""},
-		{"key":"lead", "name":"Inspiring Leader", "summary":""},
-		{"key":"keen", "name":"Keen Mind", "summary":""},
-		{"key":"light", "name":"Lightly Armored", "summary":"", "armor":["light"], "abilities":{"strength":1, "dexterity":1, "limit":1}},
-		{"key":"slay", "name":"Mage Slayer", "summary":""},
-		{"key":"martial", "name":"Martial Adept", "summary":""},
-		{"key":"mam", "name":"Medium Armor Master", "summary":""},
-		{"key":"medium", "name":"Moderately Armored", "summary":"", "armor":["medium", "shields"], "abilities":{"strength":1, "dexterity":1, "limit":1}},
-		{"key":"mount", "name":"Mounted Combatant", "summary":""},
-		{"key":"observe", "name":"Observant", "summary":""},
-		{"key":"pole", "name":"Polearm Master", "summary":"Bonus attack, opportunity attack with polearms", "description":"TODO"},
-		{"key":"resilient", "name":"Resilient", "summary":""},
-		{"key":"ritual", "name":"Ritual Caster", "summary":""},
-		{"key":"savage", "name":"Savage Attacker", "summary":""},
-		{"key":"sentinel", "name":"Sentinel", "summary":""},
-		{"key":"shield", "name":"Shield Master", "summary":""},
-		{"key":"skulk", "name":"Skulker", "summary":""},
-		{"key":"brawl", "name":"Tavern Brawler", "summary":""},
-		{"key":"war", "name":"War Caster", "summary":""},
-		{"key":"weapon", "name":"Weapon Master", "summary":""},
+		{"key":"actor", "name":"Actor", "summary":"+1 Charisma, advantage on deception and performance", "description":"TODO"},
+		{"key":"athlete", "name":"Athlete", "summary":"+1 Strength or Dexterity, improved climbing, jumping, and rising", "abilities":{"strength":1, "dexterity":1, "limit":1}, "description":"You have undergone extensive physical training to gain the following benefits:<ul><li>Increase your Strength or Dexterity score by 1, to a maximum of 20.</li><li>When you are prone, standing up uses only 5 feet of your movement.</li><li>Climbing doesn't halve your speed.</li><li>You can make a running long jump or a running high jump after moving only 5 feet on foot, rather than 10 feet.</li></ul>"},
+		{"key":"charger", "name":"Charger", "summary":"Bonus Action attack with +5 damage or shove after Dash action", "description":"TODO"},
+		{"key":"crossbow", "name":"Crossbow Expert", "summary":"No loading, no close quarters disadvantage, bonus action attack with hand crossbow", "description":"TODO"},
+		{"key":"dual", "name":"Dual Wielder", "summary":"+1 AC bonus, no light weapon restriction, draw or stow two weapons at once", "description":"TODO"},
+		{"key":"delve", "name":"Dungeon Delver", "summary":"Find secret doors and traps, resist trap damage", "description":"TODO"},
+		{"key":"durable", "name":"Durable", "summary":"+1 Constitution, improve short rest healing", "description":"TODO"},
+		{"key":"grappler", "name":"Grappler", "summary":"Improved grappling, advantage on attacks against grappled targets", "description":"TODO"},
+		{"key":"heavy", "name":"Heavily Armored", "summary":"+1 Strength, proficiency with heavy armor", "armor":["heavy"], "abilities":{"strength":1}, "description":"TODO"},
+		{"key":"ham", "name":"Heavy Armor Master", "summary":"+1 Strength, reduce damage from nonmagical weapons by 3", "abilities":{"strength":1}, "description":"TODO"},
+		{"key":"leader", "name":"Inspiring Leader", "summary":"1/rest grant temporary hit points to allies", "description":"You can spend 10 minutes inspiring your companions, shoring up their resolve to fight. When you do so, choose up to six friendly creatures (which can include yourself) within 30 feet of you who can see or hear you and who can understand you. Each creature can gain temporary hit points equal to your levei + your Charisma modifier. A creature can't gain temporary hit points from this feat again until it has finished a short or long rest."},
+		{"key":"keen", "name":"Keen Mind", "summary":"+1 Intelligence, track time, direction, and detail with uncanny precision", "description":"TODO"},
+		{"key":"light", "name":"Lightly Armored", "summary":"+1 Strength or Dexterity, proficiency with light armor", "armor":["light"], "abilities":{"strength":1, "dexterity":1, "limit":1}, "description":"TODO"},
+		{"key":"slay", "name":"Mage Slayer", "summary":"Extra attack against target within 5 as reaction to casting a spell", "description":"TODO"},
+		{"key":"martial", "name":"Martial Adept", "summary":"Gain two Battle Master maneuvers and 1 superiority die", "description":"TODO"},
+		{"key":"mam", "name":"Medium Armor Master", "summary":"No stealth penalty for medium armor, increase maximum dexterity bonus to 3", "description":"TODO"},
+		{"key":"medium", "name":"Moderately Armored", "summary":"+1 Strength or Dexterity, proficiency with medium armor and shields", "armor":["medium", "shields"], "abilities":{"strength":1, "dexterity":1, "limit":1}, "description":"TODO"},
+		{"key":"mount", "name":"Mounted Combatant", "summary":"Advantage on melee attacks against targets smaller than mount, protect mount", "description":"TODO"},
+		{"key":"ritual", "name":"Ritual Caster", "summary":"Gain ability to cast ritual spells of chosen class from spellbook", "description":"TODO"},
+		{"key":"sentinel", "name":"Sentinel", "summary":"Attack target within 5 attacking ally as reaction, ignore disengage", "description":"TODO"},
+		{"key":"shield", "name":"Shield Master", "summary":"Add shield bonus to dexterity saves, no damage on succesful dexterity save as reaction", "description":"TODO"},
+		{"key":"skulk", "name":"Skulker", "summary":"Remain hidden when ranged attack misses, hide when lightly obscured", "description":"TODO"},
+		{"key":"brawl", "name":"Tavern Brawler", "summary":"+1 Strength or Constitution, improved improvised weapons", "abilities":{"strength":1, "constitution":1, "limit":1}, "description":"TODO"},
+		{"key":"war", "name":"War Caster", "summary":"Advantage on maintaining concentration, opportunity attack may be spell", "description":"TODO"},
+		{"key":"weapon", "name":"Weapon Master", "summary":"+1 Strength or Dexterity, 4 additional weapon proficiencies", "abilities":{"strength":1, "dexterity":1, "limit":1}, "description":"TODO"},
 	],
 	"challenge_rating_table":[
 		{ "cr": "0", "pb":2, "ac":13, "hp":  6, "hit": 3, "dpr":  1, "dc":13, "xp":     0 },
@@ -383,7 +383,7 @@ var dnd = {
 		"order":["strength", "constitution", "dexterity", "charisma", "wisdom", "intelligence"],
 		"skill_options":{limit:2, "list":["animals", "athletics", "intimidation", "nature", "perception", "survival"]},
 		"archetype_name":"Primal Paths",
-		"archetypes":["berserker", "totem"],
+		"archetypes":["berserker", "totem", "guardian", "herald", "zealot"],
 		"archetype_default":"totem",
 		"background_default":"outlander",
 		"equipment":[
@@ -392,29 +392,29 @@ var dnd = {
 			[[{"pack":"explorers"}, {"weapon":"javelin", "quantity":4}]]
 		],
 		"features":[
-			{"level":1, "key":"rage", "name":"Rage", "summary":"Damage resistance and Strength advantage", "description":"TODO", "type":"bonusaction"},
-			{"level":1, "key":"ragedamage", "name":"Rage Damage (+2)", "summary":"Extra melee Strength damage when raging", "description":"TODO"},
-			{"level":1, "key":"defense", "name":"Unarmored Defence", "summary":"Add Constitution modifier to armor class when unarmored", "description":"TODO", "requirement":"unarmored", "armorclass":"constitution"},
-			{"level":2, "key":"reckless", "name":"Reckless Attack", "summary":"Advantage on attacks and for attackers", "description":"TODO"},
-			{"level":2, "key":"danger", "name":"Danger Sense", "summary":"Advantage on some Dexterity saving throws", "description":"TODO", "advantage":"dexterity"},
-			{"level":3, "key":"archetype", "name":"Primal Path", "summary":"Choose a path", "description":"TODO"},
-			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft4"}},
-			{"level":5, "key":"attack", "name":"Extra Attack", "summary":"Attack twice with the attack action", "description":"TODO", "attacks":1},
-			{"level":5, "key":"fast", "name":"Fast Movement", "summary":"Increase speed by 10 while unarmored", "description":"TODO", "speed":10},
-			{"level":7, "key":"feral", "name":"Feral Instinct", "summary":"Advantage on initiative", "description":"TODO", "advantage":"initiative"},
-			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft8"}},
-			{"level":9, "key":"brutal", "name":"Brutal Critical (+1)", "summary":"Extra damage die on critical hits", "description":"TODO", "criticaldice":1},
-			{"level":9, "key":"ragedamage", "name":"Rage Damage (+3)", "summary":"Extra melee Strength damage when raging", "description":"TODO"},
-			{"level":11, "key":"relentless", "name":"Relentless Rage", "summary":"Avoid death while raging", "description":"TODO"},
-			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft12"}},
-			{"level":13, "key":"brutal", "name":"Brutal Critical (+2)", "summary":"Extra damage die on critical hits", "description":"TODO", "criticaldice":1},
-			{"level":15, "key":"persistent", "name":"Persistent Rage", "summary":"Sustain rage without combat", "description":"TODO"},
-			{"level":16, "key":"ragedamage", "name":"Rage Damage (+4)", "summary":"Extra melee Strength damage when raging", "description":"TODO"},
-			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft16"}},
-			{"level":17, "key":"brutal", "name":"Brutal Critical (+3)", "summary":"Extra damage die on critical hits", "description":"TODO", "criticaldice":1},
-			{"level":18, "key":"indomitable", "name":"Indomitable Might", "summary":"Use Strength score for Strength checks", "description":"TODO"},
-			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft19"}},
-			{"level":20, "key":"primal", "name":"Primal Champion", "summary":"Strength +4 and Constitution +4", "description":"TODO", "abilities":{"strength":4, "constitution":4}}
+			{"level":1, "key":"rage", "name":"Rage", "summary":"Damage resistance and Strength advantage", "type":"bonusaction", "description":"In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action.<br/>While raging, you gain the following benefits if you aren’t wearing heavy armor:<ul><li>You have advantage on Strength checks and Strength saving throws.</li><li>When you make a melee weapon attack using Strength, you gain a bonus to the damage roll that increases as you gain levels as a barbarian, as shown in the Rage Damage column of the Barbarian table.</li><li>You have resistance to bludgeoning, piercing, and slashing damage.</li></ul>If you are able to cast spells, you can’t cast them or concentrate on them while raging.<br/>Your rage lasts for 1 minute. It ends early if you are knocked unconscious or if your turn ends and you haven’t attacked a hostile creature since your last turn or taken damage since then. You can also end your rage on your turn as a bonus action.<br/>Once you have raged the number of times shown for your barbarian level in the Rages column of the Barbarian table, you must finish a long rest before you can rage again."},
+			{"level":1, "key":"ragedamage", "name":"Rage Damage (+2)", "summary":"Extra melee Strength damage when raging", "description":"When you make a melee weapon attack using Strength, you gain a bonus to the damage roll that increases as you gain levels as a barbarian, as shown in the Rage Damage column of the Barbarian table."},
+			{"level":1, "key":"defense", "name":"Unarmored Defence", "summary":"Add Constitution modifier to armor class when unarmored", "requirement":"unarmored", "armorclass":"constitution", "description":"While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier. Vou can use a shield and still gain this benefit."},
+			{"level":2, "key":"reckless", "name":"Reckless Attack", "summary":"Advantage on attacks and for attackers", "description":"Starting at 2nd level, you can throw aside all concern for defense to attack with fierce desperation. When you make your first attack on your turn, you can decide to attack recklessly. Doing so gives you advantage on melee weapon attack rolls using Strength during this turn, but attack rolls against you have advantage until your next turn."},
+			{"level":2, "key":"danger", "name":"Danger Sense", "summary":"Advantage on some Dexterity saving throws", "advantage":"dexterity", "description":"At 2nd level, you gain an uncanny sense of when things nearby aren’t as they should be, giving you an edge when you dodge away from danger.<br/>You have advantage on Dexterity saving throws against effects that you can see, such as traps and spells. To gain this benefit, you can’t be blinded, deafened, or incapacitated."},
+			{"level":3, "key":"archetype", "name":"Primal Path", "summary":"Choose a path", "description":"At 3rd level, you choose a path that shapes the nature of your rage. The Path of the Berserker is detailed at the end of the class description, and additional primal paths are available in other sources. Your choice grants you features at 3rd level and again at 6th, 10th, and 14th levels."},
+			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":5, "key":"attack", "name":"Extra Attack", "summary":"Attack twice with the attack action", "attacks":1, "description":"Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."},
+			{"level":5, "key":"fast", "name":"Fast Movement", "summary":"Increase speed by 10 while unarmored", "speed":10, "description":"Starting at 5th level, your speed increases by 10 feet while you aren’t wearing heavy armor."},
+			{"level":7, "key":"feral", "name":"Feral Instinct", "summary":"Advantage on initiative", "advantage":"initiative", "description":"By 7th level, your instincts are so honed that you have advantage on initiative rolls.<br/>Additionally, if you are surprised at the beginning of combat and aren’t incapacitated, you can act normally on your first turn, but only if you enter your rage before doing anything else on that turn."},
+			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":9, "key":"brutal", "name":"Brutal Critical (+1)", "summary":"Extra damage die on critical hits", "criticaldice":1, "description":"Beginning at 9th level, you can roll one additional weapon damage die when determining the extra damage for a critical hit with a melee attack.<br/>This increases to two additional dice at 13th level and three additional dice at 17th level."},
+			{"level":9, "key":"ragedamage", "name":"Rage Damage (+3)", "summary":"Extra melee Strength damage when raging", "description":"When you make a melee weapon attack using Strength, you gain a bonus to the damage roll that increases as you gain levels as a barbarian, as shown in the Rage Damage column of the Barbarian table."},
+			{"level":11, "key":"relentless", "name":"Relentless Rage", "summary":"Avoid death while raging", "description":"Starting at 11th level, your rage can keep you fighting despite grievous wounds. If you drop to 0 hit points while you’re raging and don’t die outright, you can make a DC 10 Constitution saving throw. If you succeed, you drop to 1 hit point instead.<br/>Each time you use this feature after the first, the DC increases by 5. When you finish a short or long rest, the DC resets to 10."},
+			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":13, "key":"brutal", "name":"Brutal Critical (+2)", "summary":"Extra damage die on critical hits", "criticaldice":1, "description":"Beginning at 9th level, you can roll one additional weapon damage die when determining the extra damage for a critical hit with a melee attack.<br/>This increases to two additional dice at 13th level and three additional dice at 17th level."},
+			{"level":15, "key":"persistent", "name":"Persistent Rage", "summary":"Sustain rage without combat", "description":"Beginning at 15th level, your rage is so fierce that it ends early only if you fall unconscious or if you choose to end it."},
+			{"level":16, "key":"ragedamage", "name":"Rage Damage (+4)", "summary":"Extra melee Strength damage when raging", "description":"When you make a melee weapon attack using Strength, you gain a bonus to the damage roll that increases as you gain levels as a barbarian, as shown in the Rage Damage column of the Barbarian table."},
+			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":17, "key":"brutal", "name":"Brutal Critical (+3)", "summary":"Extra damage die on critical hits", "criticaldice":1, "description":"Beginning at 9th level, you can roll one additional weapon damage die when determining the extra damage for a critical hit with a melee attack.<br/>This increases to two additional dice at 13th level and three additional dice at 17th level."},
+			{"level":18, "key":"indomitable", "name":"Indomitable Might", "summary":"Use Strength score for Strength checks", "description":"Beginning at 18th level, if your total for a Strength check is less than your Strength score, you can use that score in place of the total."},
+			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":20, "key":"primal", "name":"Primal Champion", "summary":"Strength +4 and Constitution +4", "abilities":{"strength":4, "constitution":4}, "description":"At 20th level, you embody the power of the wilds. Your Strength and Constitution scores increase by 4. Your maximum for those scores is now 24."}
 		]
 	},{
 		"key":"bard",
@@ -430,7 +430,7 @@ var dnd = {
 		"order":["charisma", "dexterity", "constitution", "wisdom", "intelligence", "strength"],
 		"skill_options":{limit:3},
 		"archetype_name":"Bardic College",
-		"archetypes":["lore", "valor"],
+		"archetypes":["lore", "valor", "glamour", "swords", "whispers"],
 		"archetype_default":"valor",
 		"background_default":"entertainer",
 		"spells":{
@@ -445,29 +445,29 @@ var dnd = {
 			[[{"pack":"entertainers"}], [{"pack":"diplomats"}]]
 		],
 		"features":[
-			{"level":1, "key":"spellcasting", "name":"Spellcasting", "summary":"Charisma, 2 cantrips, know 4", "description":"TODO", "cantrips":2, "known":4, "prepared":"all", "slots":[2], "ritual":true},
-			{"level":1, "key":"inspiration", "name":"Bardic Inspiration (d6)", "summary":"Grant inspiration to allies m/day", "description":"TODO", "type":"bonusaction", "uses":"charisma", "die":6},
-			{"level":2, "key":"skilled", "name":"Jack of All Trades", "summary":"Half profiency in all skills", "description":"TODO"},
-			{"level":2, "key":"rest", "name":"Song of Rest", "summary":"Improve healing at rest by d6", "description":"TODO"},
-			{"level":3, "key":"archetype", "name":"Bard College", "summary":"Choose a college", "description":"TODO"},
-			{"level":3, "key":"expertise", "name":"Expertise", "summary":"Double profiency with 2 skills", "description":"TODO"},
-			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft4"}},
-			{"level":4, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "description":"TODO", "cantrips":1},
-			{"level":5, "key":"font", "name":"Font of Inspiration", "summary":"Regain inspiration dice after short rest", "description":"TODO"},
-			{"level":5, "key":"inspiration", "name":"Bardic Inspiration (d8)", "summary":"Improve inspiration dice", "description":"TODO", "die":8},
-			{"level":6, "key":"counter", "name":"Countercharm", "summary":"Advantage on fear and charm saves", "description":"TODO", "type":"action", "advantage_on_saves":["fear", "charm"]},
-			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft8"}},
-			{"level":10, "key":"inspiration", "name":"Bardic Inspiration (d10)", "summary":"Improve inspiration dice", "description":"TODO", "die":10},
-			{"level":10, "key":"secrets", "name":"Magical Secrets (2)", "summary":"Choose 2 spells from any class", "description":"TODO"},
-			{"level":10, "key":"expertise", "name":"Expertise", "summary":"Double profiency with 2 skills", "description":"TODO"},
-			{"level":10, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "description":"TODO", "cantrips":1},
-			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft12"}},
-			{"level":14, "key":"secrets", "name":"Magical Secrets (4)", "summary":"Choose 2 spells from any class", "description":"TODO"},
-			{"level":15, "key":"inspiration", "name":"Bardic Inspiration (d12)", "summary":"Improve inspiration dice", "description":"TODO", "die":12},
-			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft16"}},
-			{"level":18, "key":"secrets", "name":"Magical Secrets (6)", "summary":"Choose 2 spells from any class", "description":"TODO"},
-			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft19"}},
-			{"level":20, "key":"superior", "name":"Superior Inspiration", "summary":"Regain inspiration die on initiative", "description":"TODO", "type":"initiative"}
+			{"level":1, "key":"spellcasting", "name":"Spellcasting", "summary":"Charisma, 2 cantrips, know 4", "cantrips":2, "known":4, "prepared":"all", "slots":[2], "ritual":true, "description":"You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music. Your spells are part of your vast repertoire, magic that you can tune to different situations."},
+			{"level":1, "key":"inspiration", "name":"Bardic Inspiration (d6)", "summary":"Grant inspiration to allies m/day", "type":"bonusaction", "uses":"charisma", "die":6, "description":"You can inspire others through stirring words or music. To do so, you use a bonus action on your turn to choose one creature other than yourself within 60 feet of you who can hear you. That creature gains one Bardic Inspiration die, a d6.<br/>Once within the next 10 minutes, the creature can roll the die and add the number rolled to one ability check, attack roll, or saving throw it makes. The creature can wait until after it rolls the d20 before deciding to use the Bardic Inspiration die, but must decide before the DM says whether the roll succeeds or fails. Once the Bardic Inspiration die is rolled, it is lost. A creature can have only one Bardic Inspiration die at a time.<br/>You can use this feature a number of times equal to your Charisma modifier (a minimum of once). You regain any expended uses when you finish a long rest.<br/>Your Bardic Inspiration die changes when you reach certain levels in this class. The die becomes a d8 at 5th level, a d10 at 10th level, and a d12 at 15th level."},
+			{"level":2, "key":"skilled", "name":"Jack of All Trades", "summary":"Half proficiency in all skills", "description":"Starting at 2nd level, you can add half your proficiency bonus, rounded down, to any ability check you make that doesn’t already include your proficiency bonus."},
+			{"level":2, "key":"rest", "name":"Song of Rest", "summary":"Improve healing at rest by d6", "description":"Beginning at 2nd level, you can use soothing music or oration to help revitalize your wounded allies during a short rest. If you or any friendly creatures who can hear your performance regain hit points at the end of the short rest by spending one or more Hit Dice, each of those creatures regains an extra 1d6 hit points.<br/>The extra hit points increase when you reach certain levels in this class: to 1d8 at 9th level, to 1d10 at 13th level, and to 1d12 at 17th level."},
+			{"level":3, "key":"archetype", "name":"Bard College", "summary":"Choose a college", "description":"At 3rd level, you delve into the advanced techniques of a bard college of your choice: the College of Lore detailed at the end of the class description or another from the Player's Handbook or other sources. Your choice grants you features at 3rd level and again at 6th and 14th level."},
+			{"level":3, "key":"expertise", "name":"Expertise", "summary":"Double proficiency with 2 skills", "description":"At 3rd level, choose two of your skill proficiencies. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies."},
+			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":4, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "cantrips":1, "description":"You know two cantrips of your choice from the bard spell list. You learn additional bard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Bard table."},
+			{"level":5, "key":"font", "name":"Font of Inspiration", "summary":"Regain inspiration dice after short rest", "description":"Beginning when you reach 5th level, you regain all of your expended uses of Bardic Inspiration when you finish a short or long rest."},
+			{"level":5, "key":"inspiration", "name":"Bardic Inspiration (d8)", "summary":"Improve inspiration dice", "die":8, "description":"Your Bardic Inspiration die changes when you reach certain levels in this class. The die becomes a d8 at 5th level, a d10 at 10th level, and a d12 at 15th level."},
+			{"level":6, "key":"counter", "name":"Countercharm", "summary":"Advantage on fear and charm saves", "type":"action", "advantage_on_saves":["fear", "charm"], "description":"At 6th level, you gain the ability to use musical notes or words of power to disrupt mind-influencing effects. As an action, you can start a performance that lasts until the end of your next turn. During that time, you and any friendly creatures within 30 feet of you have advantage on saving throws against being frightened or charmed. A creature must be able to hear you to gain this benefit. The performance ends early if you are incapacitated or silenced or if you voluntarily end it (no action required)."},
+			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":10, "key":"inspiration", "name":"Bardic Inspiration (d10)", "summary":"Improve inspiration dice", "die":10, "description":"Your Bardic Inspiration die changes when you reach certain levels in this class. The die becomes a d8 at 5th level, a d10 at 10th level, and a d12 at 15th level."},
+			{"level":10, "key":"secrets", "name":"Magical Secrets (2)", "summary":"Choose 2 spells from any class", "description":"By 10th level, you have plundered magical knowledge from a wide spectrum of disciplines. Choose two spells from any classes, including this one. A spell you choose must be of a level you can cast, as shown on the Bard table, or a cantrip.<br/>The chosen spells count as bard spells for you and are included in the number in the Spells Known column of the Bard table.<br/>You learn two additional spells from any classes at 14th level and again at 18th level."},
+			{"level":10, "key":"expertise", "name":"Expertise", "summary":"Double proficiency with 2 skills", "description":"At 3rd level, choose two of your skill proficiencies. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies."},
+			{"level":10, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "cantrips":1, "description":"You know two cantrips of your choice from the bard spell list. You learn additional bard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Bard table."},
+			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":14, "key":"secrets", "name":"Magical Secrets (4)", "summary":"Choose 2 spells from any class", "description":"By 10th level, you have plundered magical knowledge from a wide spectrum of disciplines. Choose two spells from any classes, including this one. A spell you choose must be of a level you can cast, as shown on the Bard table, or a cantrip.<br/>The chosen spells count as bard spells for you and are included in the number in the Spells Known column of the Bard table.<br/>You learn two additional spells from any classes at 14th level and again at 18th level."},
+			{"level":15, "key":"inspiration", "name":"Bardic Inspiration (d12)", "summary":"Improve inspiration dice", "die":12, "description":"Your Bardic Inspiration die changes when you reach certain levels in this class. The die becomes a d8 at 5th level, a d10 at 10th level, and a d12 at 15th level."},
+			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":18, "key":"secrets", "name":"Magical Secrets (6)", "summary":"Choose 2 spells from any class", "description":"By 10th level, you have plundered magical knowledge from a wide spectrum of disciplines. Choose two spells from any classes, including this one. A spell you choose must be of a level you can cast, as shown on the Bard table, or a cantrip.<br/>The chosen spells count as bard spells for you and are included in the number in the Spells Known column of the Bard table.<br/>You learn two additional spells from any classes at 14th level and again at 18th level."},
+			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":20, "key":"superior", "name":"Superior Inspiration", "summary":"Regain inspiration die on initiative", "type":"initiative", "description":"At 20th level, when you roll initiative and have no uses of Bardic Inspiration left, you regain one use."}
 		]
 	},{
 		"key":"cleric",
@@ -499,22 +499,22 @@ var dnd = {
 			[[{"armor":"shield"}, {"item":"holysymbol"}]]
 		],
 		"features":[
-			{"level":1, "key":"spellcasting", "name":"Spellcasting", "summary":"Wisdom, 3 cantrips, prepare level+modifier", "description":"TODO", "cantrips":3, "slots":[2], "known":"all", "prepared":"level+wisdom", "ritual":true},
-			{"level":1, "key":"archetype", "name":"Divine Domain", "summary":"Choose a domain", "description":"TODO"},
-			{"level":2, "key":"channel", "name":"Channel Divinity (1)", "summary":"Power divine actions", "description":"TODO", "uses":1},
-			{"level":2, "key":"turn", "name":"Channel Divinity: Turn Undead", "summary":"Cause fear in undead", "description":"TODO", "type":"action"},
-			{"level":4, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "description":"TODO", "cantrips":1},
-			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft4"}},
-			{"level":5, "key":"destroy", "name":"Destroy Undead", "summary":"Turn undead destroys weak undead", "description":"TODO", "type":"action"},
-			{"level":6, "key":"channel", "name":"Channel Divinity (2)", "summary":"Channel twice before a rest", "description":"TODO", "uses":2},
-			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft8"}},
-			{"level":10, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "description":"TODO", "cantrips":1},
-			{"level":10, "key":"intervention", "name":"Divine Intervention", "summary":"Beseech your deity for aid", "description":"TODO", "type":"action"},
-			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft12"}},
-			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft16"}},
-			{"level":18, "key":"channel", "name":"Channel Divinity (3)", "summary":"Channel thrice before a rest", "description":"TODO", "uses":3},
-			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft19"}},
-			{"level":20, "key":"divine", "name":"Divine Intervention Improvement", "summary":"Divine intervention always succeeds", "description":"TODO", "type":"action"},
+			{"level":1, "key":"spellcasting", "name":"Spellcasting", "summary":"Wisdom, 3 cantrips, prepare level+modifier", "cantrips":3, "slots":[2], "known":"all", "prepared":"level+wisdom", "ritual":true, "description":"As a conduit for divine power, you can cast cleric spells."},
+			{"level":1, "key":"archetype", "name":"Divine Domain", "summary":"Choose a domain", "description":"Choose one domain related to your deity: Knowledge, Life, Light, Nature, Tempest, Trickery, or War. Each domain is detailed at the end of the class description, and each one provides examples of gods associated with it. Your choice grants you domain spells and other features when you choose it at 1st level. It also grants you additional ways to use Channel Divinity when you gain that feature at 2nd level, and additional benefits at 6th, 8th, and 17th leveis."},
+			{"level":2, "key":"channel", "name":"Channel Divinity (1)", "summary":"Power divine actions", "uses":1, "description":"At 2nd level, you gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects. You start with two such effects: Turn Undead and an effect determined by your domain. Some domains grant you additional effects as you advance in levels, as noted in the domain description.<br/>When you use your Channel Divinity, you choose which effect to create. You must then finish a short or long rest to use your Channel Divinity again.<br/>Some Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your cleric spell save DC.<br/>Beginning at 6th level, you can use your Channel Divinity twice between rests, and beginning at 18th level, you can use it three times between rests. When you finish a short or long rest, you regain your expended uses."},
+			{"level":2, "key":"turn", "name":"Channel Divinity: Turn Undead", "summary":"Cause fear in undead", "type":"action", "description":"As an action, you present your holy symbol and speak a prayer censuring the undead. Each undead that can see or hear you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage.<br/>A turned creature must spend its turns trying to move as far away from you as it can, and it can’t willingly move to a space within 30 feet of you. It also can’t take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there’s nowhere to move, the creature can use the Dodge action."},
+			{"level":4, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "cantrips":1, "description":"At 1st level, you know three cantrips of your choice from the cleric spell list. You learn additional cleric cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Cleric table."},
+			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":5, "key":"destroy", "name":"Destroy Undead", "summary":"Turn undead destroys weak undead", "type":"action", "description":"Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold, as shown in the Destroy Undead table."},
+			{"level":6, "key":"channel", "name":"Channel Divinity (2)", "summary":"Channel twice before a rest", "uses":2, "description":"Beginning at 6th level, you can use your Channel Divinity twice between rests. When you finish a short or long rest, you regain your expended uses."},
+			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":10, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "cantrips":1, "description":"At 1st level, you know three cantrips of your choice from the cleric spell list. You learn additional cleric cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Cleric table."},
+			{"level":10, "key":"intervention", "name":"Divine Intervention", "summary":"1/week beseech your deity for aid", "type":"action", "description":"Beginning at 10th level, you can call on your deity to intervene on your behalf when your need is great.<br/>Imploring your deity’s aid requires you to use your action. Describe the assistance you seek, and roll percentile dice. If you roll a number equal to or lower than your cleric level, your deity intervenes. The DM chooses the nature of the intervention; the effect of any cleric spell or cleric domain spell would be appropriate.<br/>If your deity intervenes, you can’t use this feature again for 7 days. Otherwise, you can use it again after you finish a long rest.<br/>At 20th level, your call for intervention succeeds automatically, no roll required."},
+			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":18, "key":"channel", "name":"Channel Divinity (3)", "summary":"Channel thrice before a rest", "uses":3, "description":"Beginning at 18th level, you can use your Channel Divinity three between rests. When you finish a short or long rest, you regain your expended uses."},
+			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":20, "key":"divine", "name":"Divine Intervention Improvement", "summary":"Divine intervention always succeeds", "type":"action", "description":"At 20th level, your call for intervention succeeds automatically, no roll required.<br/>Imploring your deity’s aid requires you to use your action. Describe the assistance you seek. The DM chooses the nature of the intervention; the effect of any cleric spell or cleric domain spell would be appropriate.<br/>If your deity intervenes, you can’t use this feature again for 7 days. Otherwise, you can use it again after you finish a long rest."},
 		]
 	},{
 		"key":"druid",
@@ -546,22 +546,22 @@ var dnd = {
 			[[{"armor":"leatherarmor"}, {"pack":"explorers"}, {"item":"druidicfocus"}]]
 		],
 		"features":[
-			{"level":1, "key":"spellcasting", "name":"Spellcasting", "summary":"Wisdom, 2 cantrips, prepare level+modifier", "description":"TODO", "cantrips":2, "slots":[2], "known":"all", "prepared":"level+wisdom", "ritual":true},
-			{"level":1, "key":"druidic", "name":"Druidic", "summary":"The secret language of druids", "description":"TODO", "languages":["druidic"]},
-			{"level":2, "key":"archetype", "name":"Druid Circle", "summary":"Choose a circle", "description":"TODO"},
-			{"level":2, "key":"shape", "name":"Wild Shape", "summary":"2/rest polymorph into a beast", "description":"TODO", "type":"action", "uses":2},
-			{"level":4, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "description":"TODO", "cantrips":1},
-			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft4"}},
-			{"level":4, "key":"shape", "name":"Wild Shape (swimming)", "summary":"Wild Shape may have a swimming speed", "description":"TODO"},
-			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft8"}},
-			{"level":8, "key":"shape", "name":"Wild Shape (flying)", "summary":"Wild Shape may have a flying speed", "description":"TODO"},
-			{"level":10, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "description":"TODO", "cantrips":1},
-			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft12"}},
-			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft16"}},
-			{"level":18, "key":"timeless", "name":"Timeless Body", "summary":"Age 1 year for every 10", "description":"TODO"},
-			{"level":18, "key":"beast", "name":"Beast Spells", "summary":"Cast spells during Wild Shape", "description":"TODO"},
-			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft19"}},
-			{"level":20, "key":"archdruid", "name":"Archdruid", "summary":"Unlimited Wild Shape uses", "description":"TODO"}
+			{"level":1, "key":"spellcasting", "name":"Spellcasting", "summary":"Wisdom, 2 cantrips, prepare level+modifier", "cantrips":2, "slots":[2], "known":"all", "prepared":"level+wisdom", "ritual":true, "description":"Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will."},
+			{"level":1, "key":"druidic", "name":"Druidic", "summary":"The secret language of druids", "languages":["druidic"], "description":"You know Druidic, the secret language of druids. You can speak the language and use it to leave hidden messages. You and others who know this language automatically spot such a message. Others spot the message’s presence with a successful DC 15 Wisdom (Perception) check but can’t decipher it without magic."},
+			{"level":2, "key":"archetype", "name":"Druid Circle", "summary":"Choose a circle", "description":"At 2nd level, you choose to identify with a circle of druids: the Circle of the Land detailed at the end of the class description or one from the Player's Handbook or other sources. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level."},
+			{"level":2, "key":"shape", "name":"Wild Shape", "summary":"2/rest polymorph into a beast", "type":"action", "uses":2, "description":"Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest.<br/>Your druid level determines the beasts you can transform into, as shown in the Beast Shapes table. At 2nd level, for example, you can transform into any beast that has a challenge rating of 1/4 or lower that doesn’t have a flying or swimming speed.<br/>"},
+			{"level":4, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "cantrips":1, "description":"At 1st level, you know two cantrips of your choice from the druid spell list. You learn additional druid cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Druid table."},
+			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":4, "key":"shape", "name":"Wild Shape (swimming)", "summary":"Wild Shape may have a swimming speed", "description":"At 4th level, you can use your action to magically assume the shape of a beast that you have seen before of challenge rating 1/2 or lower that doesn't have a flying speed. You can use this feature twice. You regain expended uses when you finish a short or long rest."},
+			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":8, "key":"shape", "name":"Wild Shape (flying)", "summary":"Wild Shape may have a flying speed", "description":"At 8th level, you can use your action to magically assume the shape of a beast that you have seen before of challenge rating 1 or lower. You can use this feature twice. You regain expended uses when you finish a short or long rest."},
+			{"level":10, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "cantrips":1, "description":"At 1st level, you know two cantrips of your choice from the druid spell list. You learn additional druid cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Druid table."},
+			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":18, "key":"timeless", "name":"Timeless Body", "summary":"Age 1 year for every 10", "description":"Starting at 18th level, the primal magic that you wield causes you to age more slowly. For every 10 years that pass, your body ages only 1 year."},
+			{"level":18, "key":"beast", "name":"Beast Spells", "summary":"Cast spells during Wild Shape", "description":"Beginning at 18th level, you can cast many of your druid spells in any shape you assume using Wild Shape. You can perform the somatic and verbal components of a druid spell while in a beast shape, but you aren’t able to provide material components."},
+			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":20, "key":"archdruid", "name":"Archdruid", "summary":"Unlimited Wild Shape uses", "description":"At 20th level, you can use your Wild Shape an unlimited number of times.<br/>Additionally, you can ignore the verbal and somatic components of your druid spells, as well as any material components that lack a cost and aren’t consumed by a spell. You gain this benefit in both your normal shape and your beast shape from Wild Shape."}
 		]
 	},{
 		"key":"fighter",
@@ -589,23 +589,23 @@ var dnd = {
 		],
 		"features":[
 			{"level":1, "key":"fightingstyle", "name":"Fighting Style", "summary":"Choose a fighting style", "options":{"dnd":"fightingstyles", "hash":"fs"}},
-			{"level":1, "key":"wind", "name":"Second Wind", "summary":"1/rest heal d10 + level hit points", "description":"You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once you use this feature, you must finish a short or long rest before you can use it again.", "type":"bonusaction"},
-			{"level":2, "key":"surge", "name":"Action Surge (1)", "summary":"1/rest take a second action", "description":"Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action.<br/>Once you use this feature, you must finish a short or long rest before you can use it again.", "uses":1},
+			{"level":1, "key":"wind", "name":"Second Wind", "summary":"1/rest heal d10 + level hit points", "type":"bonusaction", "description":"You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once you use this feature, you must finish a short or long rest before you can use it again."},
+			{"level":2, "key":"surge", "name":"Action Surge (1)", "summary":"1/rest take a second action", "uses":1, "description":"Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action.<br/>Once you use this feature, you must finish a short or long rest before you can use it again."},
 			{"level":3, "key":"archetype", "name":"Martial Archetype", "summary":"Choose an archetype", "description":"At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques. Choose Champion, Battle Master, or Eldritch Knight, all detailed at the end of the class description. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level."},
 			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}},
-			{"level":5, "key":"attack", "name":"Extra Attack (2)", "summary":"Attack twice", "description":"Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.", "attacks":1},
+			{"level":5, "key":"attack", "name":"Extra Attack (2)", "summary":"Attack twice", "attacks":1, "description":"Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."},
 			{"level":6, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft6"}},
 			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}},
-			{"level":9, "key":"indomitable", "name":"Indomitable (1)", "summary":"1/day reroll failed save", "description":"Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can’t use this feature again until you finish a long rest.", "uses":1},
-			{"level":11, "key":"attack", "name":"Extra Attack (3)", "summary":"Attack thrice", "description":"Beginning at 11th level, you can attack three times, instead of twice, whenever you take the Attack action on your turn.", "attacks":1},
+			{"level":9, "key":"indomitable", "name":"Indomitable (1)", "summary":"1/day reroll failed save", "uses":1, "description":"Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can’t use this feature again until you finish a long rest."},
+			{"level":11, "key":"attack", "name":"Extra Attack (3)", "summary":"Attack thrice", "attacks":1, "description":"Beginning at 11th level, you can attack three times, instead of twice, whenever you take the Attack action on your turn."},
 			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}},
-			{"level":13, "key":"indomitable", "name":"Indomitable (2)", "summary":"2/day reroll failed save", "description":"You can use this feature twice between long rests starting at 13th level.", "uses":2},
+			{"level":13, "key":"indomitable", "name":"Indomitable (2)", "summary":"2/day reroll failed save", "uses":2, "description":"You can use this feature twice between long rests starting at 13th level."},
 			{"level":14, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft14"}},
 			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}},
-			{"level":17, "key":"surge", "name":"Action Surge (2)", "summary":"2/rest take a second action", "description":"Starting at 17th level, you can use it twice before a rest, but only once on the same turn.", "uses":2},
-			{"level":17, "key":"indomitable", "name":"Indomitable (3)", "summary":"3/day reroll failed save", "description":"You can use this feature three times between long rests starting at 17th level.", "uses":3},
+			{"level":17, "key":"surge", "name":"Action Surge (2)", "summary":"2/rest take a second action", "uses":2, "description":"Starting at 17th level, you can use it twice before a rest, but only once on the same turn."},
+			{"level":17, "key":"indomitable", "name":"Indomitable (3)", "summary":"3/day reroll failed save", "uses":3, "description":"You can use this feature three times between long rests starting at 17th level."},
 			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}},
-			{"level":20, "key":"attack", "name":"Extra Attack (4)", "summary":"Attack four times", "description":"At 20th level, you can attack four times, instead of three, whenever you take the Attack action on your turn.", "attacks":1}
+			{"level":20, "key":"attack", "name":"Extra Attack (4)", "summary":"Attack four times", "attacks":1, "description":"At 20th level, you can attack four times, instead of three, whenever you take the Attack action on your turn."}
 		]
 	},{
 		"key":"monk",
@@ -630,36 +630,37 @@ var dnd = {
 			[[{"pack":"dungeoneers"}], [{"pack":"explorers"}]]
 		],
 		"features":[
-			{"level":1, "key":"defense", "name":"Unarmored Defence", "summary":"Add Wisdom modifier to armor class when unarmored", "description":"TODO", "requirement":"unarmored", "armorclass":"wisdom"},
-			{"level":1, "key":"martial", "name":"Martial Arts (d4)", "summary":"Bonus unarmed attack, monk weapon finesse", "description":"TODO", "requirement":"unarmored", "type":"bonusaction", "monkweapondamagedie":4},
-			{"level":2, "key":"ki", "name":"Ki", "summary":"1 ki Unarmed strikes, dodge, dash, disengage", "description":"TODO", "requirement":"unarmored", "type":"bonusaction"},
-			{"level":2, "key":"movement", "name":"Unarmored Movement (10)", "summary":"Increase speed while unarmored", "description":"TODO", "requirement":"unarmored", "speed":10},
-			{"level":3, "key":"archetype", "name":"Monastic Tradition", "summary":"Choose a tradition", "description":"TODO"},
-			{"level":3, "key":"deflect", "name":"Deflect Missiles", "summary":"Reduce ranged weapon damage by d10+level+dexterity", "description":"TODO", "type":"reaction"},
-			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft4"}},
-			{"level":4, "key":"fall", "name":"Slow Fall", "summary":"Reduce falling damage by 5 × level", "description":"TODO", "type":"reaction"},
-			{"level":5, "key":"attack", "name":"Extra Attack (2)", "summary":"Attack twice", "description":"TODO", "attacks":1},
-			{"level":5, "key":"stun", "name":"Stunning Strike", "summary":"1 ki on hit to stun", "description":"TODO", "type":"hit"},
-			{"level":5, "key":"martial", "name":"Martial Arts (d6)", "summary":"Increase monk weapon damage", "description":"TODO", "monkweapondamagedie":6},
-			{"level":6, "key":"movement", "name":"Unarmored Movement (15)", "summary":"Increase speed while unarmored", "description":"TODO", "requirement":"unarmored", "speed":5},
-			{"level":7, "key":"evasion", "name":"Evasion", "summary":"Receive half or no damage with Dexterity save"},
-			{"level":7, "key":"stillness", "name":"Stillness of Mind", "summary":"Remove charm or fear effect from self as action", "description":"TODO", "type":"action"},
-			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft8"}},
-			{"level":9, "key":"movement", "name":"Unarmored Movement", "summary":"Move on vertical surfaces or liquids", "description":"TODO", "requirement":"unarmored"},
-			{"level":10, "key":"purity", "name":"Purity of Body", "summary":"Immune to disease and poison", "description":"TODO", "immunities":["disease", "poison"]},
-			{"level":10, "key":"movement", "name":"Unarmored Movement (20)", "summary":"Increase speed while unarmored", "description":"TODO", "requirement":"unarmored", "speed":5},
-			{"level":11, "key":"martial", "name":"Martial Arts (d8)", "summary":"Increase monk weapon damage", "description":"TODO", "monkweapondamagedie":8},
-			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft12"}},
-			{"level":13, "key":"tongues", "name":"Tongue of the Sun and Moon", "summary":"Understand all spoken languages", "description":"TODO"},
-			{"level":14, "key":"diamond", "name":"Diamond Soul", "summary":"Proficiency in all saves, 1 ki to reroll failed save", "description":"TODO", "saves":["constitution", "intelligence", "wisdom", "charisma"]},
-			{"level":14, "key":"movement", "name":"Unarmored Movement (25)", "summary":"Increase speed while unarmored", "description":"TODO", "requirement":"unarmored", "speed":5},
-			{"level":15, "key":"timeless", "name":"Timeless Body", "summary":"Immune to magical aging, no food or water", "description":"TODO", "immunities":["aging"]},
-			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft16"}},
-			{"level":17, "key":"martial", "name":"Martial Arts (d10)", "summary":"Increase monk weapon damage", "description":"TODO", "monkweapondamagedie":10},
-			{"level":18, "key":"empty", "name":"Empty Body", "summary":"4 ki invisibility with resistance", "description":"TODO", "type":"action"},
-			{"level":18, "key":"movement", "name":"Unarmored Movement (30)", "summary":"Increase speed while unarmored", "description":"TODO", "requirement":"unarmored", "speed":5},
-			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft19"}},
-			{"level":20, "key":"perfect", "name":"Perfect Self", "summary":"Regain 4 ki at initiative", "description":"TODO", "type":"initiative"}
+			{"level":1, "key":"defense", "name":"Unarmored Defence", "summary":"Add Wisdom modifier to armor class when unarmored", "requirement":"unarmored", "armorclass":"wisdom", "description":"Beginning at 1st level, while you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier."},
+			{"level":1, "key":"martial", "name":"Martial Arts (d4)", "summary":"Bonus unarmed attack, monk weapon finesse", "requirement":"unarmored", "type":"bonusaction", "monkweapondamagedie":4, "description":"At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons, which are shortswords and any simple melee weapons that don’t have the two-handed or heavy property.<br/>You gain the following benefits while you are unarmed or wielding only monk weapons and you aren’t wearing armor or wielding a shield:<ul><li>You can use Dexterity instead of Strength for the attack and damage rolls of your unarmed strikes and monk weapons.</li><li>You can roll a d4 in place of the normal damage of your unarmed strike or monk weapon. This die changes as you gain monk levels, as shown in the Martial Arts column of the Monk table.</li><li>When you use the Attack action with an unarmed strike or a monk weapon on your turn, you can make one unarmed strike as a bonus action. For example, if you take the Attack action and attack with a quarterstaff, you can also make an unarmed strike as a bonus action, assuming you haven’t already taken a bonus action this turn.</li></ul>Certain monasteries use specialized forms of the monk weapons. For example, you might use a club that is two lengths of wood connected by a short chain (called a nunchaku) or a sickle with a shorter, straighter blade (called a kama). Whatever name you use for a monk weapon, you can use the game statistics provided for the weapon in the Weapons section."},
+			{"level":2, "key":"ki", "name":"Ki", "summary":"1 ki Unarmed strikes, dodge, dash, disengage", "requirement":"unarmored", "type":"bonusaction", "description":"Starting at 2nd level, your training allows you to harness the mystic energy of ki. Your access to this energy is represented by a number of ki points. Your monk level determines the number of points you have, as shown in the Ki Points column of the Monk table.<br/>You can spend these points to fuel various ki features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind. You learn more ki features as you gain levels in this class.<br/>When you spend a ki point, it is unavailable until you finish a short or long rest, at the end of which you draw all of your expended ki back into yourself. You must spend at least 30 minutes of the rest meditating to regain your ki points.<dl><dt>Flurry of Blows</dt><dd>Immediately after you take the Attack action on your turn, you can spend 1 ki point to make two unarmed strikes as a bonus action.</dd><dt>Patient Defense</dt><dd>You can spend 1 ki point to take the Dodge action as a bonus action on your turn.</dd><dt>Step of the Wind</dt><dd>You can spend 1 ki point to take the Disengage or Dash action as a bonus action on your turn, and your jump distance is doubled for the turn.</dd></dl>"},
+			{"level":2, "key":"movement", "name":"Unarmored Movement (10)", "summary":"Increase speed while unarmored", "requirement":"unarmored", "speed":10, "description":"Starting at 2nd level, your speed increases by 10 feet while you are not wearing armor or wielding a shield. This bonus increases when you reach certain monk levels, as shown in the Monk table."},
+			{"level":3, "key":"archetype", "name":"Monastic Tradition", "summary":"Choose a tradition", "description":"When you reach 3rd level, you commit yourself to a monastic tradition: the Way of the Open Hand, detailed at the end of the class description or one from another source. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level."},
+			{"level":3, "key":"deflect", "name":"Deflect Missiles", "summary":"Reduce ranged weapon damage by d10+level+dexterity", "type":"reaction", "description":"Starting at 3rd level, you can use your reaction to deflect or catch the missile when you are hit by a ranged weapon attack. When you do so, the damage you take from the attack is reduced by 1d10 + your Dexterity modifier + your monk level.<br/>If you reduce the damage to 0, you can catch the missile if it is small enough for you to hold in one hand and you have at least one hand free. If you catch a missile in this way, you can spend 1 ki point to make a ranged attack with the weapon or piece of ammunition you just caught, as part of the same reaction. You make this attack with proficiency, regardless of your weapon proficiencies, and the missile counts as a monk weapon for the attack, which has a normal range of 20 feet and a long range of 60 feet."},
+			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":4, "key":"fall", "name":"Slow Fall", "summary":"Reduce falling damage by 5 × level", "type":"reaction", "description":"Beginning at 4th level, you can use your reaction when you fall to reduce any falling damage you take by an amount equal to five times your monk level."},
+			{"level":5, "key":"attack", "name":"Extra Attack (2)", "summary":"Attack twice", "attacks":1, "description":"Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."},
+			{"level":5, "key":"stun", "name":"Stunning Strike", "summary":"1 ki on hit to stun", "type":"hit", "description":"Starting at 5th level, you can interfere with the flow of ki in an opponent’s body. When you hit another creature with a melee weapon attack, you can spend 1 ki point to attempt a stunning strike. The target must succeed on a Constitution saving throw or be stunned until the end of your next turn."},
+			{"level":5, "key":"martial", "name":"Martial Arts (d6)", "summary":"Increase monk weapon damage", "monkweapondamagedie":6, "description":"You can roll a d6 in place of the normal damage of your unarmed strike or monk weapon."},
+			{"level":6, "key":"movement", "name":"Unarmored Movement (15)", "summary":"Increase speed while unarmored", "requirement":"unarmored", "speed":5, "description":"At 6th level, your speed increases by 15 feet while you are not wearing armor or wielding a shield."},
+			{"level":6, "key":"strikes", "name":"Ki Empowered Strikes", "summary":"Unarmed strikes count as magical", "description":"Starting at 6th level, your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage."},
+			{"level":7, "key":"evasion", "name":"Evasion", "summary":"Receive half or no damage with Dexterity save", "description":"At 7th level, your instinctive agility lets you dodge out of the way of certain area effects, such as a blue dragon’s lightning breath or a fireball spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail."},
+			{"level":7, "key":"stillness", "name":"Stillness of Mind", "summary":"Remove charm or fear effect from self as action", "type":"action", "description":"Starting at 7th level, you can use your action to end one effect on yourself that is causing you to be charmed or frightened."},
+			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":9, "key":"movement", "name":"Unarmored Movement", "summary":"Move on vertical surfaces or liquids", "requirement":"unarmored", "description":"At 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move."},
+			{"level":10, "key":"purity", "name":"Purity of Body", "summary":"Immune to disease and poison", "immunities":["disease", "poison"], "description":"At 10th level, your mastery of the ki flowing through you makes you immune to disease and poison."},
+			{"level":10, "key":"movement", "name":"Unarmored Movement (20)", "summary":"Increase speed while unarmored", "requirement":"unarmored", "speed":5, "description":"At 10th level, your speed increases by 20 feet while you are not wearing armor or wielding a shield."},
+			{"level":11, "key":"martial", "name":"Martial Arts (d8)", "summary":"Increase monk weapon damage", "monkweapondamagedie":8, "description":"You can roll a d8 in place of the normal damage of your unarmed strike or monk weapon."},
+			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":13, "key":"tongues", "name":"Tongue of the Sun and Moon", "summary":"Understand all spoken languages", "description":"Starting at 13th level, you learn to touch the ki of other minds so that you understand all spoken languages. Moreover, any creature that can understand a language can understand what you say."},
+			{"level":14, "key":"diamond", "name":"Diamond Soul", "summary":"Proficiency in all saves, 1 ki to reroll failed save", "saves":["constitution", "intelligence", "wisdom", "charisma"], "description":"Beginning at 14th level, your mastery of ki grants you proficiency in all saving throws.<br/>Additionally, whenever you make a saving throw and fail, you can spend 1 ki point to reroll it and take the second result."},
+			{"level":14, "key":"movement", "name":"Unarmored Movement (25)", "summary":"Increase speed while unarmored", "requirement":"unarmored", "speed":5, "description":"At 14th level, your speed increases by 25 feet while you are not wearing armor or wielding a shield."},
+			{"level":15, "key":"timeless", "name":"Timeless Body", "summary":"Immune to magical aging, no food or water", "immunities":["aging"], "description":"At 15th level, your ki sustains you so that you suffer none of the frailty of old age, and you can’t be aged magically. You can still die of old age, however. In addition, you no longer need food or water."},
+			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":17, "key":"martial", "name":"Martial Arts (d10)", "summary":"Increase monk weapon damage", "monkweapondamagedie":10, "description":"You can roll a d10 in place of the normal damage of your unarmed strike or monk weapon."},
+			{"level":18, "key":"empty", "name":"Empty Body", "summary":"4 ki invisibility with resistance", "type":"action", "description":"Beginning at 18th level, you can use your action to spend 4 ki points to become invisible for 1 minute. During that time, you also have resistance to all damage but force damage.<br/>Additionally, you can spend 8 ki points to cast the astral projection spell, without needing material components. When you do so, you can’t take any other creatures with you."},
+			{"level":18, "key":"movement", "name":"Unarmored Movement (30)", "summary":"Increase speed while unarmored", "requirement":"unarmored", "speed":5, "description":"At 18th level, your speed increases by 30 feet while you are not wearing armor or wielding a shield."},
+			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":20, "key":"perfect", "name":"Perfect Self", "summary":"Regain 4 ki at initiative", "type":"initiative", "description":"At 20th level, when you roll for initiative and have no ki points remaining, you regain 4 ki points."}
 		]
 	},{
 		"key":"paladin",
@@ -690,24 +691,24 @@ var dnd = {
 			[[{"pack":"explorers"}], [{"pack":"priests"}]]
 		],
 		"features":[
-			{"level":1, "key":"sense", "name":"Divine Sense", "summary":"Detect celestials, fiends, and undead with radius 60", "description":"TODO", "type":"action"},
-			{"level":1, "key":"hands", "name":"Lay on Hands", "summary":"Heal 5 × level hit points per day", "description":"TODO", "type":"action"},
-			{"level":2, "key":"spellcasting", "name":"Spellcasting", "summary":"Charisma", "description":"TODO", "slots":[2], "known":"all", "prepared":"level/2+charisma", "ritual":false},
-			{"level":2, "key":"fightingstyle", "name":"Fighting Style", "summary":"Choose a fighting style", "description":"TODO", "options":{"dnd":"fightingstyles", "hash":"fs", "exclude":["archery", "dual"]}},
-			{"level":2, "key":"smite", "name":"Divine Smite", "summary":"Increase melee damage using a spell slot", "description":"TODO"},
-			{"level":3, "key":"health", "name":"Divine Health", "summary":"Immune to disease", "description":"TODO", "immunities":["disease"]},
-			{"level":3, "key":"archetype", "name":"Sacred Oath", "summary":"Choose an oath", "description":"TODO"},
-			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft4"}},
-			{"level":5, "key":"attack", "name":"Extra Attack (2)", "summary":"Attack twice", "description":"TODO", "attacks":1},
-			{"level":6, "key":"protection", "name":"Aura of Protection", "summary":"Charisma modifier save bonus with radius 10", "description":"TODO"},
-			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft8"}},
-			{"level":10, "key":"courage", "name":"Aura of Courage", "summary":"Immune to fear with radius 10", "description":"TODO", "immunities":["fear"]},
-			{"level":11, "key":"improved", "name":"Improved Divine Smite", "summary":"Increase melee damage by d8 radiant", "description":"TODO", "type":"damage"},
-			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft12"}},
-			{"level":14, "key":"cleansing", "name":"Cleansing Touch", "summary":"End one spell on self or willing target m/day", "description":"TODO", "type":"action"},
-			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft16"}},
-			{"level":18, "key":"aura", "name":"Improved Aura", "summary":"Aura effects increase to radius 30", "description":"TODO"},
-			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft19"}},
+			{"level":1, "key":"sense", "name":"Divine Sense", "summary":"Detect celestials, fiends, and undead with radius 60", "type":"action", "description":"The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces. Until the end of your next turn, you know the location of any celestial, fiend, or undead within 60 feet of you that is not behind total cover. You know the type (celestial, fiend, or undead) of any being whose presence you sense, but not its identity (the vampire Count Strahd von Zarovich, for instance). Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the hallow spell.<br/>You can use this feature a number of times equal to 1 + your Charisma modifier. When you finish a long rest, you regain all expended uses."},
+			{"level":1, "key":"hands", "name":"Lay on Hands", "summary":"Heal 5 × level hit points per day", "type":"action", "description":"Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you take a long rest. With that pool, you can restore a total number of hit points equal to your paladin level × 5.<br/>As an action, you can touch a creature and draw power from the pool to restore a number of hit points to that creature, up to the maximum amount remaining in your pool.<br/>Alternatively, you can expend 5 hit points from your pool of healing to cure the target of one disease or neutralize one poison affecting it. You can cure multiple diseases and neutralize multiple poisons with a single use of Lay on Hands, expending hit points separately for each one.<br/>This feature has no effect on undead and constructs."},
+			{"level":2, "key":"spellcasting", "name":"Spellcasting", "summary":"Charisma", "slots":[2], "known":"all", "prepared":"level/2+charisma", "ritual":false, "description":"By 2nd level, you have learned to draw on divine magic through meditation and prayer to cast spells as a cleric does."},
+			{"level":2, "key":"fightingstyle", "name":"Fighting Style", "summary":"Choose a fighting style", "options":{"dnd":"fightingstyles", "hash":"fs", "exclude":["archery", "dual"]}, "description":"TODO"},
+			{"level":2, "key":"smite", "name":"Divine Smite", "summary":"Increase melee damage using a spell slot", "description":"Starting at 2nd level, when you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to the weapon’s damage. The extra damage is 2d8 for a 1st-level spell slot, plus 1d8 for each spell level higher than 1st, to a maximum of 5d8. The damage increases by 1d8 if the target is an undead or a fiend, to a maximum of 6d8."},
+			{"level":3, "key":"health", "name":"Divine Health", "summary":"Immune to disease", "immunities":["disease"], "description":"By 3rd level, the divine magic flowing through you makes you immune to disease."},
+			{"level":3, "key":"archetype", "name":"Sacred Oath", "summary":"Choose an oath", "description":"When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose the Oath of Devotion detailed at the end of the class description or one from another source.<br/>Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level. Those features include oath spells and the Channel Divinity feature."},
+			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":5, "key":"attack", "name":"Extra Attack (2)", "summary":"Attack twice", "attacks":1, "description":"Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."},
+			{"level":6, "key":"protection", "name":"Aura of Protection", "summary":"Charisma modifier save bonus with radius 10", "description":"Starting at 6th level, whenever you or a friendly creature within 10 feet of you must make a saving throw, the creature gains a bonus to the saving throw equal to your Charisma modifier (with a minimum bonus of +1). You must be conscious to grant this bonus.<br/>At 18th level, the range of this aura increases to 30 feet."},
+			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":10, "key":"courage", "name":"Aura of Courage", "summary":"Immune to fear with radius 10", "immunities":["fear"], "description":"Starting at 10th level, you and friendly creatures within 10 feet of you can’t be frightened while you are conscious.<br/>At 18th level, the range of this aura increases to 30 feet."},
+			{"level":11, "key":"improved", "name":"Improved Divine Smite", "summary":"Increase melee damage by d8 radiant", "type":"damage", "description":"By 11th level, you are so suffused with righteous might that all your melee weapon strikes carry divine power with them. Whenever you hit a creature with a melee weapon, the creature takes an extra 1d8 radiant damage."},
+			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":14, "key":"cleansing", "name":"Cleansing Touch", "summary":"End one spell on self or willing target m/day", "type":"action", "description":"Beginning at 14th level, you can use your action to end one spell on yourself or on one willing creature that you touch.<br/>You can use this feature a number of times equal to your Charisma modifier (a minimum of once). You regain expended uses when you finish a long rest."},
+			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":18, "key":"aura", "name":"Improved Aura", "summary":"Aura effects increase to radius 30", "description":"At 18th level, the range of your auras increase to 30 feet."},
+			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
 		]
 	},{
 		"key":"ranger",
@@ -738,27 +739,27 @@ var dnd = {
 			[[{"pack":"dungeoneers"}], [{"pack":"explorers"}]]
 		],
 		"features":[
-			{"level":1, "key":"enemy", "name":"Favored Enemy", "summary":"Choose a favored enemy", "description":"TODO"},
-			{"level":1, "key":"explorer", "name":"Natural Explorer", "summary":"Choose a favored terrain", "description":"TODO", "options":{"dnd":"rangerterrain", "hash":"ft"}},
-			{"level":2, "key":"fightingstyle", "name":"Fighting Style", "summary":"Choose a fighting style", "description":"TODO", "options":{"dnd":"fightingstyles", "hash":"fs", "exclude":["great", "block"]}},
-			{"level":2, "key":"spellcasting", "name":"Spellcasting", "summary":"Wisdom", "description":"TODO", "slots":[2], "known":"few", "prepared":"all", "ritual":false},
-			{"level":3, "key":"archetype", "name":"Ranger Archetype", "summary":"Choose an archetype", "description":"TODO"},
-			{"level":3, "key":"awareness", "name":"Primeval Awareness", "summary":"Sense presense of unnatural creatures", "description":"TODO", "type":"action"},
-			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft4"}},
-			{"level":5, "key":"attack", "name":"Extra Attack (2)", "summary":"Attack twice", "description":"TODO", "attacks":1},
-			{"level":6, "key":"enemy", "name":"Favored Enemy", "summary":"Choose a favored enemy", "description":"TODO"},
-			{"level":6, "key":"explorer", "name":"Natural Explorer", "summary":"Choose a favored terrain", "description":"TODO"},
-			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft8"}},
-			{"level":8, "key":"stride", "name":"Land Stride", "summary":"Unhindered by difficult terrain", "description":"TODO"},
-			{"level":10, "key":"hide", "name":"Hide in Plain Site", "summary":"+10 Stealth bonus when stationary", "description":"TODO"},
-			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft12"}},
-			{"level":12, "key":"vanish", "name":"Vanish", "summary":"Hide as a bonus action", "description":"TODO", "type":"bonusaction"},
-			{"level":14, "key":"enemy", "name":"Favored Enemy", "summary":"Choose a favored enemy", "description":"TODO"},
-			{"level":14, "key":"explorer", "name":"Natural Explorer", "summary":"Choose a favored terrain", "description":"TODO"},
-			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft16"}},
-			{"level":18, "key":"feral", "name":"Feral Senses", "summary":"No disadvantage to attack unseen target", "description":"TODO", "blindsense":30},
-			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft19"}},
-			{"level":20, "key":"slayer", "name":"Foe Slayer", "summary":"Add Wisdom modifier to attack or damage 1/turn", "description":"TODO"},
+			{"level":1, "key":"enemy", "name":"Favored Enemy", "summary":"Choose a favored enemy", "description":"Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.<br/>Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.<br/>You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.<br/>When you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.<br/>You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."},
+			{"level":1, "key":"explorer", "name":"Natural Explorer", "summary":"Choose a favored terrain", "options":{"dnd":"rangerterrain", "hash":"ft"}, "description":"You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, swamp, or the Underdark. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you’re proficient in.<br/>While traveling for an hour or more in your favored terrain, you gain the following benefits:<ul><li>Difficult terrain doesn’t slow your group’s travel.</li><li>Your group can’t become lost except by magical means.</li><li>Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.</li><li>If you are traveling alone, you can move stealthily at a normal pace.</li><li>When you forage, you find twice as much food as you normally would.</li><li>While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area.</li></ul>You choose additional favored terrain types at 6th and 10th level."},
+			{"level":2, "key":"fightingstyle", "name":"Fighting Style", "summary":"Choose a fighting style", "options":{"dnd":"fightingstyles", "hash":"fs", "exclude":["great", "block"]}, "description":"TODO"},
+			{"level":2, "key":"spellcasting", "name":"Spellcasting", "summary":"Wisdom", "slots":[2], "known":"few", "prepared":"all", "ritual":false, "description":"By the time you reach 2nd level, you have learned to use the magical essence of nature to cast spells, much as a druid does."},
+			{"level":3, "key":"archetype", "name":"Ranger Archetype", "summary":"Choose an archetype", "description":"At 3rd level, you choose an archetype that you strive to emulate: the Hunter that is detailed at the end of the class description or one from another source. Your choice grants you features at 3rd level and again at 7th, 11th, and 15th level."},
+			{"level":3, "key":"awareness", "name":"Primeval Awareness", "summary":"Sense presense of unnatural creatures", "type":"action", "description":"Beginning at 3rd level, you can use your action and expend one ranger spell slot to focus your awareness on the region around you. For 1 minute per level of the spell slot you expend, you can sense whether the following types of creatures are present within 1 mile of you (or within up to 6 miles if you are in your favored terrain): aberrations, celestials, dragons, elementals, fey, fiends, and undead. This feature doesn’t reveal the creatures’ location or number."},
+			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":5, "key":"attack", "name":"Extra Attack (2)", "summary":"Attack twice", "attacks":1, "description":"Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."},
+			{"level":6, "key":"enemy", "name":"Favored Enemy", "summary":"Choose a favored enemy", "description":"You choose one additional favored enemy, as well as an associated language, at 6th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."},
+			{"level":6, "key":"explorer", "name":"Natural Explorer", "summary":"Choose a favored terrain", "description":"You choose an additional favored terrain type at 6th level."},
+			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":8, "key":"stride", "name":"Land Stride", "summary":"Unhindered by difficult terrain", "description":"Starting at 8th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.<br/>In addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the entangle spell."},
+			{"level":10, "key":"hide", "name":"Hide in Plain Site", "summary":"+10 Stealth bonus when stationary", "description":"Starting at 10th level, you can spend 1 minute creating camouflage for yourself. You must have access to fresh mud, dirt, plants, soot, and other naturally occurring materials with which to create your camouflage.<br/>Once you are camouflaged in this way, you can try to hide by pressing yourself up against a solid surface, such as a tree or wall, that is at least as tall and wide as you are. You gain a +10 bonus to Dexterity (Stealth) checks as long as you remain there without moving or taking actions. Once you move or take an action or a reaction, you must camouflage yourself again to gain this benefit."},
+			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":12, "key":"vanish", "name":"Vanish", "summary":"Hide as a bonus action", "type":"bonusaction", "description":"Starting at 14th level, you can use the Hide action as a bonus action on your turn. Also, you can’t be tracked by nonmagical means, unless you choose to leave a trail."},
+			{"level":14, "key":"enemy", "name":"Favored Enemy", "summary":"Choose a favored enemy", "description":"You choose one additional favored enemy, as well as an associated language, at 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."},
+			{"level":14, "key":"explorer", "name":"Natural Explorer", "summary":"Choose a favored terrain", "description":"You choose an additional favored terrain type at 10th level."},
+			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":18, "key":"feral", "name":"Feral Senses", "summary":"No disadvantage to attack unseen target", "blindsense":30, "description":"At 18th level, you gain preternatural senses that help you fight creatures you can’t see. When you attack a creature you can’t see, your inability to see it doesn’t impose disadvantage on your attack rolls against it.<br/>You are also aware of the location of any invisible creature within 30 feet of you, provided that the creature isn’t hidden from you and you aren’t blinded or deafened."},
+			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":20, "key":"slayer", "name":"Foe Slayer", "summary":"Add Wisdom modifier to attack or damage 1/turn", "description":"At 20th level, you become an unparalleled hunter of your enemies. Once on each of your turns, you can add your Wisdom modifier to the attack roll or the damage roll of an attack you make against one of your favored enemies. You can choose to use this feature before or after the roll, but before any effects of the roll are applied."},
 		]
 	},{
 		"key":"rogue",
@@ -785,25 +786,25 @@ var dnd = {
 			[[{"pack":"burglars"}], [{"pack":"dungeoneers"}], [{"pack":"explorers"}]]
 		],
 		"features":[
-			{"level":1, "key":"expertise", "name":"Expertise", "summary":"Double proficiency in two skills", "description":"TODO"},
-			{"level":1, "key":"sneak", "name":"Sneak Attack", "summary":"Extra damage on attacks with advantage", "description":"TODO"},
-			{"level":1, "key":"cant", "name":"Thieves' Cant", "summary":"The secret language of Thieves", "description":"TODO", "languages":["thieves"]},
-			{"level":2, "key":"cunning", "name":"Cunning Action", "summary":"Bonus action to dash, disengage, hide", "description":"TODO", "type":"bonusaction"},
-			{"level":3, "key":"archetype", "name":"Roguish Archetype", "summary":"Choose an archetype", "description":"TODO"},
-			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft4"}},
-			{"level":5, "key":"uncanny", "name":"Uncanny Dodge", "summary":"Reduce damage from an attack to half as a reaction", "type":"reaction"},
-			{"level":6, "key":"expertise", "name":"Expertise", "summary":"Double proficiency in two skills", "description":"TODO"},
-			{"level":7, "key":"evasion", "name":"Evasion", "summary":"Receive half or no damage with Dexterity save"},
-			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft8"}},
-			{"level":10, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft10"}},
-			{"level":11, "key":"reliable", "name":"Reliable Talent", "summary":"Minimum roll of 10 on proficient skill checks", "description":"TODO"},
-			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft12"}},
-			{"level":14, "key":"blindsense", "name":"Blindsense", "summary":"Blindsense 10", "description":"TODO", "blindsense":10},
-			{"level":15, "key":"slippery", "name":"Slippery Mind", "summary":"Proficiency on Wisdom saves", "description":"TODO", "saves":["wisdom"]},
-			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft16"}},
-			{"level":18, "key":"elusive", "name":"Elusive", "summary":"Attackers do not gain advantage", "description":"TODO"},
-			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft19"}},
-			{"level":20, "key":"luck", "name":"Stroke of Luck", "summary":"Succeed on failed attack or ability check 1/rest", "description":"TODO"},
+			{"level":1, "key":"expertise", "name":"Expertise", "summary":"Double proficiency in two skills", "description":"At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves’ tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.<br/>At 6th level, you can choose two more of your proficiencies (in skills or with thieves’ tools) to gain this benefit."},
+			{"level":1, "key":"sneak", "name":"Sneak Attack", "summary":"Extra damage on attacks with advantage", "description":"Beginning at 1st level, you know how to strike subtly and exploit a foe’s distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack if you have advantage on the attack roll. The attack must use a finesse or a ranged weapon.<br/>You don’t need advantage on the attack roll if another enemy of the target is within 5 feet of it, that enemy isn’t incapacitated, and you don’t have disadvantage on the attack roll.<br/>The amount of the extra damage increases as you gain levels in this class, as shown in the Sneak Attack column of the Rogue table."},
+			{"level":1, "key":"cant", "name":"Thieves' Cant", "summary":"The secret language of Thieves", "languages":["thieves"], "description":"During your rogue training you learned thieves’ cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation. Only another creature that knows thieves’ cant understands such messages. It takes four times longer to convey such a message than it does to speak the same idea plainly.<br/>In addition, you understand a set of secret signs and symbols used to convey short, simple messages, such as whether an area is dangerous or the territory of a thieves’ guild, whether loot is nearby, or whether the people in an area are easy marks or will provide a safe house for thieves on the run."},
+			{"level":2, "key":"cunning", "name":"Cunning Action", "summary":"Bonus action to dash, disengage, hide", "type":"bonusaction", "description":"Starting at 2nd level, your quick thinking and agility allow you to move and act quickly. You can take a bonus action on each of your turns in combat. This action can be used only to take the Dash, Disengage, or Hide action."},
+			{"level":3, "key":"archetype", "name":"Roguish Archetype", "summary":"Choose an archetype", "description":"At 3rd level, you choose an archetype that you emulate in the exercise of your rogue abilities: Thief, detailed at the end of the class description, or one from another source. Your archetype choice grants you features at 3rd level and then again at 9th, 13th, and 17th level."},
+			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":5, "key":"uncanny", "name":"Uncanny Dodge", "summary":"Reduce damage from an attack to half as a reaction", "type":"reaction", "description":"Starting at 5th level, when an attacker that you can see hits you with an attack, you can use your reaction to halve the attack’s damage against you."},
+			{"level":6, "key":"expertise", "name":"Expertise", "summary":"Double proficiency in two skills", "description":"At 6th level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves’ tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies."},
+			{"level":7, "key":"evasion", "name":"Evasion", "summary":"Receive half or no damage with Dexterity save", "description":"Beginning at 7th level, you can nimbly dodge out of the way of certain area effects, such as an ancient red dragon’s fiery breath or an ice storm spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail."},
+			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":10, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft10"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":11, "key":"reliable", "name":"Reliable Talent", "summary":"Minimum roll of 10 on proficient skill checks", "description":"By 11th level, you have refined your chosen skills until they approach perfection. Whenever you make an ability check that lets you add your proficiency bonus, you can treat a d20 roll of 9 or lower as a 10."},
+			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":14, "key":"blindsense", "name":"Blindsense", "summary":"Blindsense 10", "blindsense":10, "description":"Starting at 14th level, if you are able to hear, you are aware of the location of any hidden or invisible creature within 10 feet of you."},
+			{"level":15, "key":"slippery", "name":"Slippery Mind", "summary":"Proficiency on Wisdom saves", "saves":["wisdom"], "description":"By 15th level, you have acquired greater mental strength. You gain proficiency in Wisdom saving throws."},
+			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":18, "key":"elusive", "name":"Elusive", "summary":"Attackers do not gain advantage", "description":"Beginning at 18th level, you are so evasive that attackers rarely gain the upper hand against you. No attack roll has advantage against you while you aren’t incapacitated."},
+			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":20, "key":"luck", "name":"Stroke of Luck", "summary":"1/rest succeed on failed attack or ability check", "description":"At 20th level, you have an uncanny knack for succeeding when you need to. If your attack misses a target within range, you can turn the miss into a hit. Alternatively, if you fail an ability check, you can treat the d20 roll as a 20.<br/>Once you use this feature, you can’t use it again until you finish a short or long rest."},
 		]
 	},{
 		"key":"sorcerer",
@@ -828,14 +829,14 @@ var dnd = {
 			"slots":[[1,1,1,1,4,10], [1,1,2,3], [3,3,4], [5,5,6], [7,8,9], [9,10,18], [11,19], [13,20], [15], [17]],
 		},
 		"metamagic":[
-			{"key":"careful", "name":"Careful Spell", "summary":"Choose targets to succeed on savings throw", "description":"TODO", "cost":1},
-			{"key":"distant", "name":"Distant Spell", "summary":"Double range of spell", "description":"TODO", "cost":1},
-			{"key":"empowered", "name":"Empowered Spell", "summary":"Reroll some damage dice", "description":"TODO", "cost":1},
-			{"key":"extended", "name":"Extended Spell", "summary":"Double duration of spell", "description":"TODO", "cost":1},
-			{"key":"heightened", "name":"Heightened Spell", "summary":"One target has disadvantage on save", "description":"TODO", "cost":3},
-			{"key":"quickened", "name":"Quickened Spell", "summary":"Cast action spell as bonus action", "description":"TODO", "cost":2},
-			{"key":"subtle", "name":"Subtle Spell", "summary":"Cast spell with no verbal or somatic components", "description":"TODO", "cost":1},
-			{"key":"twinned", "name":"Twinned Spell", "summary":"Choose second target for spell", "description":"TODO", "cost":"level"},
+			{"key":"careful", "name":"Careful Spell", "summary":"Choose targets to succeed on savings throw", "cost":1, "description":"TODO"},
+			{"key":"distant", "name":"Distant Spell", "summary":"Double range of spell", "cost":1, "description":"TODO"},
+			{"key":"empowered", "name":"Empowered Spell", "summary":"Reroll some damage dice", "cost":1, "description":"TODO"},
+			{"key":"extended", "name":"Extended Spell", "summary":"Double duration of spell", "cost":1, "description":"TODO"},
+			{"key":"heightened", "name":"Heightened Spell", "summary":"One target has disadvantage on save", "cost":3, "description":"TODO"},
+			{"key":"quickened", "name":"Quickened Spell", "summary":"Cast action spell as bonus action", "cost":2, "description":"TODO"},
+			{"key":"subtle", "name":"Subtle Spell", "summary":"Cast spell with no verbal or somatic components", "cost":1, "description":"TODO"},
+			{"key":"twinned", "name":"Twinned Spell", "summary":"Choose second target for spell", "cost":"level", "description":"TODO"},
 		],
 		"equipment":[
 			[[{"weapon":"lightcrossbow"}, {"item":"bolt", "quantity":20}], [{"weapontype":"simple"}]],
@@ -844,20 +845,20 @@ var dnd = {
 			[[{"pack":"dungeoneers"}], [{"pack":"explorers"}]],
 		],
 		"features":[
-			{"level":1, "key":"spellcasting", "name":"Spellcasting", "summary":"Charisma, 4 cantrips", "description":"TODO", "cantrips":4, "slots":[2], "known":"few", "prepared":"all", "ritual":false},
-			{"level":1, "key":"archetype", "name":"Sorcerous Origin", "summary":"Choose an origin", "description":"TODO"},
-			{"level":2, "key":"font", "name":"Font of Magic", "summary":"Convert between spell slots and sorcery points", "description":"TODO", "type":"bonusaction"},
-			{"level":3, "key":"metamagic", "name":"Metamagic (2)", "summary":"Use sorcery points to enhance spells", "description":"TODO"},
-			{"level":4, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "description":"TODO", "cantrips":1},
-			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft4"}},
-			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft8"}},
-			{"level":10, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "description":"TODO", "cantrips":1},
+			{"level":1, "key":"spellcasting", "name":"Spellcasting", "summary":"Charisma, 4 cantrips", "cantrips":4, "slots":[2], "known":"few", "prepared":"all", "ritual":false, "description":"TODO"},
+			{"level":1, "key":"archetype", "name":"Sorcerous Origin", "summary":"Choose an origin", "description":"Choose a sorcerous origin, which describes the source of your innate magical power: Draconic Bloodline, detailed at the end of the class description, or one from another source.<br/>Your choice grants you features when you choose it at 1st level and again at 6th, 14th, and 18th level."},
+			{"level":2, "key":"font", "name":"Font of Magic", "summary":"Convert between spell slots and sorcery points", "type":"bonusaction", "description":"At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects."},
+			{"level":3, "key":"metamagic", "name":"Metamagic (2)", "summary":"Use sorcery points to enhance spells", "description":"At 3rd level, you gain the ability to twist your spells to suit your needs. You gain two of the following Metamagic options of your choice. You gain another one at 10th and 17th level.<br/>You can use only one Metamagic option on a spell when you cast it, unless otherwise noted."},
+			{"level":4, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "cantrips":1, "description":"At 1st level, you know four cantrips of your choice from the sorcerer spell list. You learn additional sorcerer cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Sorcerer table."},
+			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":10, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "cantrips":1, "description":"At 1st level, you know four cantrips of your choice from the sorcerer spell list. You learn additional sorcerer cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Sorcerer table."},
 			{"level":10, "key":"metamagic", "name":"Metamagic (3)", "summary":"Choose another metamagic option", "description":"TODO"},
-			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft12"}},
-			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft16"}},
+			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
 			{"level":17, "key":"metamagic", "name":"Metamagic (4)", "summary":"Choose another metamagic option", "description":"TODO"},
-			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft19"}},
-			{"level":20, "key":"restoration", "name":"Sorcerous Restoration", "summary":"Regain 4 sorcery points after a short rest", "description":"TODO", "type":"rest"},
+			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":20, "key":"restoration", "name":"Sorcerous Restoration", "summary":"Regain 4 sorcery points after a short rest", "type":"rest", "description":"At 20th level, you regain 4 expended sorcery points whenever you finish a short rest."},
 		]
 	},{
 		"key":"warlock",
@@ -887,51 +888,51 @@ var dnd = {
 		"invocations":[
 			{"key":"agonizing", "name":"Agonizing Blast", "summary":"Increase Eldritch Blast damage by Charisma modifier", "description":"TODO"},
 			{"key":"magearmor", "name":"Armor of Shadows", "summary":"Cast Magearmor at will", "description":"TODO"},
-			{"key":"levitate", "name":"Ascendant Step", "summary":"Cast Levitate at will", "description":"TODO", "requirelevel":9},
+			{"key":"levitate", "name":"Ascendant Step", "summary":"Cast Levitate at will", "requirelevel":9, "description":"TODO"},
 			{"key":"speakwithanimals", "name":"Beast Speech", "summary":"Cast Speak with Animals at will", "description":"TODO"},
-			{"key":"influence", "name":"Beguiling Influence", "summary":"Gain proficiency in Deception and Persuasion", "description":"TODO", "skills":["deception", "persuasion"]},
-			{"key":"compulsion", "name":"Bewitching Whispers", "summary":"Cast Compulsion with spell slot", "description":"TODO", "requirelevel":7},
-			{"key":"ritual", "name":"Book of Ancient Secrets", "summary":"Add ritual spells to tome", "description":"TODO", "requireboon":"tome"},
-			{"key":"hold", "name":"Chains of Carceri", "summary":"Cast Hold Monster at will", "description":"TODO", "requirelevel":15, "requireboon":"chain"},
-			{"key":"darkvision", "name":"Devil's Sight", "summary":"Darkvision 120 including magical darkness", "description":"TODO", "darkvision":120},
-			{"key":"confusion", "name":"Dreadful Word", "summary":"Cast Confusion with spell slot", "description":"TODO", "requirelevel":7},
+			{"key":"influence", "name":"Beguiling Influence", "summary":"Gain proficiency in Deception and Persuasion", "skills":["deception", "persuasion"], "description":"TODO"},
+			{"key":"compulsion", "name":"Bewitching Whispers", "summary":"Cast Compulsion with spell slot", "requirelevel":7, "description":"TODO"},
+			{"key":"ritual", "name":"Book of Ancient Secrets", "summary":"Add ritual spells to tome", "requireboon":"tome", "description":"TODO"},
+			{"key":"hold", "name":"Chains of Carceri", "summary":"Cast Hold Monster at will", "requirelevel":15, "requireboon":"chain", "description":"TODO"},
+			{"key":"darkvision", "name":"Devil's Sight", "summary":"Darkvision 120 including magical darkness", "darkvision":120, "description":"TODO"},
+			{"key":"confusion", "name":"Dreadful Word", "summary":"Cast Confusion with spell slot", "requirelevel":7, "description":"TODO"},
 			{"key":"detectmagic", "name":"Eldritch Sight", "summary":"Cast Detect Magic at will", "description":"TODO"},
 			{"key":"spear", "name":"Eldritch Spear", "summary":"Increase Eldritch Blast range to 300", "description":"TODO"},
 			{"key":"rune", "name":"Eyes of the Rune Keeper", "summary":"Read all writing", "description":"TODO"},
 			{"key":"falselife", "name":"Fiendish Vigor", "summary":"Case False Life at will", "description":"TODO"},
-			{"key":"gaze", "name":"Gaze of Two Minds", "summary":"Clairvoyance through willing target", "description":"TODO", "type":"action"},
-			{"key":"lifedrinker", "name":"Lifedrinker", "summary":"Increase pact weapon damage by Charisma modifier", "description":"TODO", "requirelevel":12, "requireboon":"blade"},
+			{"key":"gaze", "name":"Gaze of Two Minds", "summary":"Clairvoyance through willing target", "type":"action", "description":"TODO"},
+			{"key":"lifedrinker", "name":"Lifedrinker", "summary":"Increase pact weapon damage by Charisma modifier", "requirelevel":12, "requireboon":"blade", "description":"TODO"},
 			{"key":"disguiseself", "name":"Mask of Many Faces", "summary":"Cast Disguise Self at will", "description":"TODO"},
-			{"key":"alterself", "name":"Master of Myriad Forms", "summary":"Cast Alter Self at will", "description":"TODO", "requirelevel":15},
-			{"key":"elemental", "name":"Minions of Chaos", "summary":"Cast Conjure Elemental with spell slot", "description":"TODO", "requirelevel":9},
-			{"key":"slow", "name":"Mire the Mind", "summary":"Cast Slow with spell slot", "description":"TODO", "requirelevel":5},
+			{"key":"alterself", "name":"Master of Myriad Forms", "summary":"Cast Alter Self at will", "requirelevel":15, "description":"TODO"},
+			{"key":"elemental", "name":"Minions of Chaos", "summary":"Cast Conjure Elemental with spell slot", "requirelevel":9, "description":"TODO"},
+			{"key":"slow", "name":"Mire the Mind", "summary":"Cast Slow with spell slot", "requirelevel":5, "description":"TODO"},
 			{"key":"silentimage", "name":"Misty Visions", "summary":"Cast Silent Image at will", "description":"TODO"},
-			{"key":"invisible", "name":"One with Shadows", "summary":"Become invisible in dim light", "description":"TODO", "type":"action", "requirelevel":5},
-			{"key":"jump", "name":"Otherworldly Leap", "summary":"Cast Jump at will", "description":"TODO", "requirelevel":9},
+			{"key":"invisible", "name":"One with Shadows", "summary":"Become invisible in dim light", "type":"action", "requirelevel":5, "description":"TODO"},
+			{"key":"jump", "name":"Otherworldly Leap", "summary":"Cast Jump at will", "requirelevel":9, "description":"TODO"},
 			{"key":"repel", "name":"Repelling Blast", "summary":"Eldritch Blast can push target 10", "description":"TODO"},
-			{"key":"polymorph", "name":"Sculptor of Flesh", "summary":"Cast Polymorph with spell slot", "description":"TODO", "requirelevel":7},
-			{"key":"bestowcurse", "name":"Sign of Ill Omen", "summary":"Cast Bestow Curse with spell slot", "description":"TODO", "requirelevel":5},
+			{"key":"polymorph", "name":"Sculptor of Flesh", "summary":"Cast Polymorph with spell slot", "requirelevel":7, "description":"TODO"},
+			{"key":"bestowcurse", "name":"Sign of Ill Omen", "summary":"Cast Bestow Curse with spell slot", "requirelevel":5, "description":"TODO"},
 			{"key":"bane", "name":"Theif of Five Fates", "summary":"Cast Bane with spell slot", "description":"TODO"},
-			{"key":"attack", "name":"Thirsting Blade", "summary":"Extra Attack with pact weapon", "description":"TODO", "requirelevel":5, "requireboon":"blade", "attacks":1},
-			{"key":"arcaneeye", "name":"Visions of Distant Relams", "summary":"Cast Arcane Eye at will", "description":"TODO", "requirelevel":15},
-			{"key":"voice", "name":"Voice of the Chain Master", "summary":"Percieve and speak through familiar", "description":"TODO", "requireboon":"chain"},
-			{"key":"speakwithdead", "name":"Whispers of the Grave", "summary":"Cast Speak with Dead at will", "description":"TODO", "requirelevel":9},
-			{"key":"truesight", "name":"Witch Sight", "summary":"Truesight 30", "description":"TODO", "requirelevel":15},
+			{"key":"attack", "name":"Thirsting Blade", "summary":"Extra Attack with pact weapon", "requirelevel":5, "requireboon":"blade", "attacks":1, "description":"TODO"},
+			{"key":"arcaneeye", "name":"Visions of Distant Relams", "summary":"Cast Arcane Eye at will", "requirelevel":15, "description":"TODO"},
+			{"key":"voice", "name":"Voice of the Chain Master", "summary":"Percieve and speak through familiar", "requireboon":"chain", "description":"TODO"},
+			{"key":"speakwithdead", "name":"Whispers of the Grave", "summary":"Cast Speak with Dead at will", "requirelevel":9, "description":"TODO"},
+			{"key":"truesight", "name":"Witch Sight", "summary":"Truesight 30", "requirelevel":15, "description":"TODO"},
 			
-			{"key":"awake", "name":"Aspect of the Moon", "summary":"Immune to sleep", "description":"TODO", "requireboon":"tome"},
-			{"key":"flies", "name":"Cloak of Flies", "summary":"1/rest manifest aura granting advantage to Intimidation", "description":"TODO", "requirelevel":5},
-			{"key":"smite", "name":"Eldritch Smite", "summary":"1/turn expend spell slot to increase weapon damage", "description":"TODO", "requirelevel":5, "requireboon":"blade"},
-			{"key":"xray", "name":"Ghostly Gaze", "summary":"1/rest see through solid objects and darkness range 30 for 1 minute", "description":"TODO", "requirelevel":7, "type":"action"},
-			{"key":"amphibious", "name":"Gift of the Depths", "summary":"Breathe Underwater, swim speed 30, cast water breathing 1/day", "description":"TODO", "requirelevel":5},
-			{"key":"healing", "name":"Gift of the Ever—Living Ones", "summary":"Regain maximum hit points when within 100 of familiar", "description":"TODO", "requireboon":"chain"},
+			{"key":"awake", "name":"Aspect of the Moon", "summary":"Immune to sleep", "requireboon":"tome", "description":"TODO"},
+			{"key":"flies", "name":"Cloak of Flies", "summary":"1/rest manifest aura granting advantage to Intimidation", "requirelevel":5, "description":"TODO"},
+			{"key":"smite", "name":"Eldritch Smite", "summary":"1/turn expend spell slot to increase weapon damage", "requirelevel":5, "requireboon":"blade", "description":"TODO"},
+			{"key":"xray", "name":"Ghostly Gaze", "summary":"1/rest see through solid objects and darkness range 30 for 1 minute", "requirelevel":7, "type":"action", "description":"TODO"},
+			{"key":"amphibious", "name":"Gift of the Depths", "summary":"Breathe Underwater, swim speed 30, 1/day cast Water Breathing", "requirelevel":5, "description":"TODO"},
+			{"key":"healing", "name":"Gift of the Ever—Living Ones", "summary":"Regain maximum hit points when within 100 of familiar", "requireboon":"chain", "description":"TODO"},
 			{"key":"grasp", "name":"Grasp of Hadar", "summary":"Eldritch Blast can pull target 10", "description":"TODO"},
-			{"key":"weapon", "name":"Improved Pact Weapon", "summary":"Weapon is arcane focus, weapon is increased to +1, weapon may be bow", "description":"TODO", "requireboon":"blade"},
+			{"key":"weapon", "name":"Improved Pact Weapon", "summary":"Weapon is arcane focus, weapon is increased to +1, weapon may be bow", "requireboon":"blade", "description":"TODO"},
 			{"key":"lethargy", "name":"Lance of Lethargy", "summary":"Eldritch Blast reduces target speed by 10 until your next turn", "description":"TODO"},
-			{"key":"maddening", "name":"Maddening Hex", "summary":"Cause psychic damage centered on hex target radius 5 as bonus action", "description":"TODO", "requirelevel":5, "type":"bonusaction"},
-			{"key":"relentless", "name":"Relentless Hex", "summary":"Teleport 30 to within 5 of hex target as bonus action", "description":"TODO", "requirelevel":7, "type":"bonusaction"},
-			{"key":"invisibility", "name":"Shroud of Shadow", "summary":"Cast invisibility at will", "description":"TODO", "requirelevel":15},
-			{"key":"levistus", "name":"Tomb of Levistus", "summary":"1/rest become incapacitated and gain 10 temporary hit points per level until next turn ends as reaction", "description":"TODO", "requirelevel":5, "type":"reaction"},
-			{"key":"escape", "name":"Tricksters’ Escape", "summary":"Cast freedom of movement on self 1/day", "description":"TODO", "requirelevel":7},
+			{"key":"maddening", "name":"Maddening Hex", "summary":"Cause psychic damage centered on hex target radius 5 as bonus action", "requirelevel":5, "type":"bonusaction", "description":"TODO"},
+			{"key":"relentless", "name":"Relentless Hex", "summary":"Teleport 30 to within 5 of hex target as bonus action", "requirelevel":7, "type":"bonusaction", "description":"TODO"},
+			{"key":"invisibility", "name":"Shroud of Shadow", "summary":"Cast invisibility at will", "requirelevel":15, "description":"TODO"},
+			{"key":"levistus", "name":"Tomb of Levistus", "summary":"1/rest become incapacitated and gain 10 temporary hit points per level until next turn ends as reaction", "requirelevel":5, "type":"reaction", "description":"TODO"},
+			{"key":"escape", "name":"Tricksters’ Escape", "summary":"1/day cast freedom of movement on self", "requirelevel":7, "description":"TODO"},
 		],
 		"equipment":[
 			[[{"weapon":"lightcrossbow"}, {"item":"bolt", "quantity":20}], [{"weapontype":"simple"}]],
@@ -940,22 +941,22 @@ var dnd = {
 			[[{"pack":"dungeoneers"}], [{"pack":"scholars"}]],
 		],
 		"features":[
-			{"level":1, "key":"spellcasting", "name":"Pact Magic", "summary":"Charisma, 2 cantrips", "description":"TODO", "cantrips":2, "ability":"charisma", "slots":[1], "known":"few", "prepared":"all", "ritual":false},
+			{"level":1, "key":"spellcasting", "name":"Pact Magic", "summary":"Charisma, 2 cantrips", "cantrips":2, "ability":"charisma", "slots":[1], "known":"few", "prepared":"all", "ritual":false, "description":"TODO"},
 			{"level":1, "key":"archetype", "name":"Otherworldly Patron", "summary":"Choose a patron", "description":"TODO"},
-			{"level":2, "key":"invocations", "name":"Eldritch Invocations", "summary":"Choose invocations", "description":"TODO"},
-			{"level":3, "key":"boon", "name":"Pact Boon", "summary":"Choose a pact boon", "description":"TODO"},
-			{"level":4, "key":"spellcasting", "name":"Pact Magic", "summary":"Learn a cantrip", "description":"TODO", "cantrips":1},
-			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft4"}},
-			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft8"}},
-			{"level":10, "key":"spellcasting", "name":"Pact Magic", "summary":"Learn a cantrip", "description":"TODO", "cantrips":1},
-			{"level":11, "key":"arcanum6", "name":"Mystic Arcanum", "summary":"Cast 6th level spell 1/day", "description":"TODO"},
-			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft12"}},
-			{"level":13, "key":"arcanum7", "name":"Mystic Arcanum", "summary":"Cast 7th level spell 1/day", "description":"TODO"},
-			{"level":15, "key":"arcanum8", "name":"Mystic Arcanum", "summary":"Cast 8th level spell 1/day", "description":"TODO"},
-			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft16"}},
-			{"level":17, "key":"arcanum9", "name":"Mystic Arcanum", "summary":"Cast 9th level spell 1/day", "description":"TODO"},
-			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft19"}},
-			{"level":20, "key":"master", "name":"Eldritch Master", "summary":"Regain all spell slots 1/day", "description":"TODO"},
+			{"level":2, "key":"invocations", "name":"Eldritch Invocations", "summary":"Choose invocations", "description":"In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability. A level prerequisite refers to your level in this class.<br/>At 2nd level, you gain two eldritch invocations of your choice. Your invocation options are detailed at the end of the class description. When you gain certain warlock levels, you gain additional invocations of your choice, as shown in the Invocations Known column of the Warlock table.<br/>Additionally, when you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you could learn at that level.<br/>If an eldritch invocation has prerequisites, you must meet them to learn it. You can learn the invocation at the same time that you meet its prerequisites. A level prerequisite refers to your level in this class."},
+			{"level":3, "key":"boon", "name":"Pact Boon", "summary":"Choose a pact boon", "description":"At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice."},
+			{"level":4, "key":"spellcasting", "name":"Pact Magic", "summary":"Learn a cantrip", "cantrips":1, "description":"You know two cantrips of your choice from the warlock spell list. You learn additional warlock cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Warlock table."},
+			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":10, "key":"spellcasting", "name":"Pact Magic", "summary":"Learn a cantrip", "cantrips":1, "description":"You know two cantrips of your choice from the warlock spell list. You learn additional warlock cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Warlock table."},
+			{"level":11, "key":"arcanum6", "name":"Mystic Arcanum", "summary":"1/day cast 6th level spell", "description":"At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th-level spell from the warlock spell list as this arcanum.<br/>You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.<br/>At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th-level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest."},
+			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":13, "key":"arcanum7", "name":"Mystic Arcanum", "summary":"1/day cast 7th level spell", "description":"At 13th level, your patron bestows upon you a magical secret called an arcanum. Choose one 7th-level spell from the warlock spell list as this arcanum.<br/>You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again."},
+			{"level":15, "key":"arcanum8", "name":"Mystic Arcanum", "summary":"1/day cast 8th level spell", "description":"At 15th level, your patron bestows upon you a magical secret called an arcanum. Choose one 8th-level spell from the warlock spell list as this arcanum.<br/>You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again."},
+			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":17, "key":"arcanum9", "name":"Mystic Arcanum", "summary":"1/day cast 9th level spell", "description":"At 17th level, your patron bestows upon you a magical secret called an arcanum. Choose one 9th-level spell from the warlock spell list as this arcanum.<br/>You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again."},
+			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":20, "key":"master", "name":"Eldritch Master", "summary":"1/day regain all spell slots", "description":"At 20th level, you can draw on your inner reserve of mystical power while entreating your patron to regain expended spell slots. You can spend 1 minute entreating your patron for aid to regain all your expended spell slots from your Pact Magic feature. Once you regain spell slots with this feature, you must finish a long rest before you can do so again."},
 		]
 	},{
 		"key":"wizard",
@@ -988,115 +989,122 @@ var dnd = {
 			[[{"item":"spellbook"}]],
 		],
 		"features":[
-			{"level":1, "key":"spellcasting", "name":"Spellcasting", "summary":"Intelligence, 3 cantrips, prepare level+modifier", "description":"TODO", "cantrips":3, "slots":[2], "known":"book", "prepared":"level+intelligence", "ritual":true},
-			{"level":1, "key":"recovery", "name":"Arcane Recovery", "summary":"Recover spell slots 1/day", "description":"TODO", "type":"rest"},
-			{"level":2, "key":"archetype", "name":"Arcane Tradition", "summary":"Choose a tradition", "description":"TODO"},
-			{"level":4, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "description":"TODO", "cantrips":1},
-			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft4"}},
-			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft8"}},
-			{"level":10, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "description":"TODO", "cantrips":1},
-			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft12"}},
-			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft16"}},
-			{"level":18, "key":"mastery", "name":"Spell Mastery", "summary":"Cast chosen 1st and 2nd level spells at will", "description":"TODO", "type":"action"},
-			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "description":"TODO", "options":{"dnd":"feats", "hash":"ft19"}},
-			{"level":20, "key":"signature", "name":"Signature Spells", "summary":"Cast two chosen 3rd level spells 1/rest", "description":"TODO", "type":"action"},
+			{"level":1, "key":"spellcasting", "name":"Spellcasting", "summary":"Intelligence, 3 cantrips, prepare level+modifier", "cantrips":3, "slots":[2], "known":"book", "prepared":"level+intelligence", "ritual":true, "description":"TODO"},
+			{"level":1, "key":"recovery", "name":"Arcane Recovery", "summary":"1/day recover spell slots", "type":"rest", "description":"You have learned to regain some of your magical energy by studying your spellbook. Once per day when you finish a short rest, you can choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your wizard level (rounded up), and none of the slots can be 6th level or higher.<br/>For example, if you’re a 4th-level wizard, you can recover up to two levels worth of spell slots. You can recover either a 2nd-level spell slot or two 1st-level spell slots."},
+			{"level":2, "key":"archetype", "name":"Arcane Tradition", "summary":"Choose a tradition", "description":"When you reach 2nd level, you choose an arcane tradition, shaping your practice of magic through one of eight schools: Abjuration, Conjuration, Divination, Enchantment, Evocation, Illusion, Necromancy, or Transmutation. The School of Evocation is detailed at the end of the class description, and more choices are available in other sources.<br/>Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level."},
+			{"level":4, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "cantrips":1, "description":"At 1st level, you know three cantrips of your choice from the wizard spell list. You learn additional wizard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Wizard table."},
+			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":10, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "cantrips":1, "description":"At 1st level, you know three cantrips of your choice from the wizard spell list. You learn additional wizard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Wizard table."},
+			{"level":12, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft12"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":16, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft16"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":18, "key":"mastery", "name":"Spell Mastery", "summary":"Cast chosen 1st and 2nd level spells at will", "type":"action", "description":"At 18th level, you have achieved such mastery over certain spells that you can cast them at will. Choose a 1st-level wizard spell and a 2nd-level wizard spell that are in your spellbook. You can cast those spells at their lowest level without expending a spell slot when you have them prepared. If you want to cast either spell at a higher level, you must expend a spell slot as normal.<br/>By spending 8 hours in study, you can exchange one or both of the spells you chose for different spells of the same levels."},
+			{"level":19, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft19"}, "description":"You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.<br/>Using the optional feats rule, you can forgo taking this feature to take a feat of your choice instead."},
+			{"level":20, "key":"signature", "name":"Signature Spells", "summary":"1/rest cast two chosen 3rd level spells", "type":"action", "description":"When you reach 20th level, you gain mastery over two powerful spells and can cast them with little effort. Choose two 3rd-level wizard spells in your spellbook as your signature spells. You always have these spells prepared, they don’t count against the number of spells you have prepared, and you can cast each of them once at 3rd level without expending a spell slot. When you do so, you can’t do so again until you finish a short or long rest.<br/>If you want to cast either spell at a higher level, you must expend a spell slot as normal."},
 		]
 	}],
 	"archetypes":[{
 		"key":"berserker",
 		"name":"Path of the Berserker",
 		"features":[
-			{"level":3, "key":"frenzy", "name":"Frenzy", "summary":"Melee attack as bonus action during rage", "description":"TODO", "type":"bonusaction"},
-			{"level":6, "key":"mindless", "name":"Mindless Rage", "summary":"Immune to charm and fear during rage", "description":"TODO"},
-			{"level":10, "key":"intimidating", "name":"Intimidating Presence", "summary":"Cause fear in one creature", "description":"TODO", "type":"action"},
-			{"level":14, "key":"retaliation", "name":"Retaliation", "summary":"Melee attack as reaction when damaged", "description":"TODO", "type":"reaction"}
+			{"level":3, "key":"frenzy", "name":"Frenzy", "summary":"Melee attack as bonus action during rage", "type":"bonusaction", "description":"Starting when you choose this path at 3rd level, you can go into a frenzy when you rage. If you do so, for the duration of your rage you can make a single melee weapon attack as a bonus action on each of your turns after this one. When your rage ends, you suffer one level of exhaustion."},
+			{"level":6, "key":"mindless", "name":"Mindless Rage", "summary":"Immune to charm and fear during rage", "description":"Beginning at 6th level, you can’t be charmed or frightened while raging. If you are charmed or frightened when you enter your rage, the effect is suspended for the duration of the rage."},
+			{"level":10, "key":"intimidating", "name":"Intimidating Presence", "summary":"Cause fear in one creature", "type":"action", "description":"Beginning at 10th level, you can use your action to frighten someone with your menacing presence. When you do so, choose one creature that you can see within 30 feet of you. If the creature can see or hear you, it must succeed on a Wisdom saving throw (DC equal to 8 + your proficiency bonus + your Charisma modifier) or be frightened of you until the end of your next turn. On subsequent turns, you can use your action to extend the duration of this effect on the frightened creature until the end of your next turn. This effect ends if the creature ends its turn out of line of sight or more than 60 feet away from you.<br/>If the creature succeeds on its saving throw, you can’t use this feature on that creature again for 24 hours."},
+			{"level":14, "key":"retaliation", "name":"Retaliation", "summary":"Melee attack as reaction when damaged", "type":"reaction", "description":"Starting at 14th level, when you take damage from a creature that is within 5 feet of you, you can use your reaction to make a melee weapon attack against that creature."}
 		]
 	},{
 		"key":"totem",
 		"name":"Path of the Totem Warrior",
 		"features":[
-			{"level":3, "key":"seeker", "name":"Spirit Seeker", "summary":"Learn Beast Sense and Speak with Animals as rituals", "description":"TODO", "type":"action"},
+			{"level":3, "key":"seeker", "name":"Spirit Seeker", "summary":"Learn Beast Sense and Speak with Animals as rituals", "type":"action", "description":"TODO"},
 			{"level":3, "key":"spirit", "name":"Totem Spirit", "summary":"Choose a totem animal", "description":"TODO"},
 			{"level":6, "key":"beast", "name":"Aspect of the Beast", "summary":"Choose a totem animal", "description":"TODO"},
-			{"level":10, "key":"walker", "name":"Spirit Walker", "summary":"Learn Commune with Nature as a ritual", "description":"TODO", "type":"action"},
+			{"level":10, "key":"walker", "name":"Spirit Walker", "summary":"Learn Commune with Nature as a ritual", "type":"action", "description":"TODO"},
 			{"level":14, "key":"attunement", "name":"Totemic Attunement", "summary":"Choose a totem animal", "description":"TODO"},
 		]
 	},{
 		"key":"guardian",
 		"name":"Path of the Ancestral Guardian",
 		"features":[
-			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":10, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":3, "key":"protectors", "name":"Ancestral Protectors", "summary":"First hit each turn imposes disadvantage on attacks against allies until next turn", "description":"TODO"},
+			{"level":6, "key":"shield6", "name":"Spirit Shield (2d6)", "summary":"Reduce damage to ally within 30 by 2d6 as reaction", "type":"reaction", "description":"TODO"},
+			{"level":10, "key":"spirits", "name":"Consult the Spirits", "summary":"1/rest cast Augury or Clairvoyance", "type":"action", "description":"TODO"},
+			{"level":10, "key":"shield10", "name":"Spirit Shield (3d6)", "summary":"Reduce damage to ally within 30 by 3d6 as reaction", "type":"reaction", "description":"TODO"},
+			{"level":14, "key":"ancestors", "name":"Vengeful Ancestors", "summary":"Spirit Shield reflects prevented damage to attacker as force damage", "type":"reaction", "description":"TODO"},
+			{"level":14, "key":"shield14", "name":"Spirit Shield (4d6)", "summary":"Reduce damage to ally within 30 by 4d6 as reaction", "type":"reaction", "description":"TODO"},
 		]
 	},{
 		"key":"herald",
 		"name":"Path of the Storm Herald",
 		"features":[
-			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":10, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":3, "key":"aura", "name":"Storm Aura", "summary":"Gain magical aura within 10 while raging", "type":"bonusaction", "description":"TODO"},
+			{"level":6, "key":"soul", "name":"Storm Soul", "summary":"Gain resistance to fire, lightning or cold damage", "description":"TODO"},
+			{"level":10, "key":"shield", "name":"Shielding Storm", "summary":"Grant resistance from Storm Soul to allies within 10", "description":"TODO"},
+			{"level":14, "key":"storm", "name":"Raging Storm", "summary":"Additional effects of Storm Aura while raging", "description":"TODO"},
 		]
 	},{
 		"key":"zealot",
 		"name":"Path of the Zealot",
 		"features":[
-			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":10, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":3, "key":"fury", "name":"Divine Fury", "summary":"1/turn do level/2 extra necrotic or radiant damage with weapon", "description":"TODO"},
+			{"level":3, "key":"warrior", "name":"Warrior of the Gods", "summary":"Spells that restore your life need no material components", "description":"TODO"},
+			{"level":6, "key":"focus", "name":"Fanatical Focus", "summary":"1/rage reroll failed saving throw", "description":"TODO"},
+			{"level":10, "key":"presence", "name":"Zealous Presence", "summary":"1/day 10 allies within 60 gain advantage on attacks and saves until next turn", "type":"bonusaction", "description":"TODO"},
+			{"level":14, "key":"death", "name":"Rage Beyond Death", "summary":"Immune to death while raging", "description":"TODO"},
 		]
 	},{
 		"key":"lore",
 		"name":"College of Lore",
 		"features":[
-			{"level":3, "key":"skillz", "name":"Bonus Proficiencies", "summary":"Choose 3 skills", "description":"TODO", "skill_options":{"limit":3}},
-			{"level":3, "key":"words", "name":"Cutting Words", "summary":"Impose inspiration die as penalty", "description":"TODO", "type":"reaction"},
-			{"level":6, "key":"secrets", "name":"Additional Magical Secrets", "summary":"Choose 2 spells from any class", "description":"TODO"},
-			{"level":14, "key":"peerless", "name":"Peerless Skill", "summary":"Use inspiration die on ability checks", "description":"TODO"},
+			{"level":3, "key":"skillz", "name":"Bonus Proficiencies", "summary":"Choose 3 skills", "skill_options":{"limit":3}, "description":"When you join the College of Lore at 3rd level, you gain proficiency with three skills of your choice."},
+			{"level":3, "key":"words", "name":"Cutting Words", "summary":"Impose inspiration die as penalty", "type":"reaction", "description":"Also at 3rd level, you learn how to use your wit to distract, confuse, and otherwise sap the confidence and competence of others. When a creature that you can see within 60 feet of you makes an attack roll, an ability check, or a damage roll, you can use your reaction to expend one of your uses of Bardic Inspiration, rolling a Bardic Inspiration die and subtracting the number rolled from the creature’s roll. You can choose to use this feature after the creature makes its roll, but before the DM determines whether the attack roll or ability check succeeds or fails, or before the creature deals its damage. The creature is immune if it can’t hear you or if it’s immune to being charmed."},
+			{"level":6, "key":"secrets", "name":"Additional Magical Secrets", "summary":"Choose 2 spells from any class", "description":"At 6th level, you learn two spells of your choice from any class. A spell you choose must be of a level you can cast, as shown on the Bard table, or a cantrip. The chosen spells count as bard spells for you but don’t count against the number of bard spells you know."},
+			{"level":14, "key":"peerless", "name":"Peerless Skill", "summary":"Use inspiration die on ability checks", "description":"Starting at 14th level, when you make an ability check, you can expend one use of Bardic Inspiration. Roll a Bardic Inspiration die and add the number rolled to your ability check. You can choose to do so after you roll the die for the ability check, but before the DM tells you whether you succeed or fail."},
 		]
 	},{
 		"key":"valor",
 		"name":"College of Valor",
 		"features":[
-			{"level":3, "key":"skillz", "name":"Bonus Proficiencies", "summary":"Gain armor and weapon proficiencies", "description":"TODO", "armor":["medium", "shields"], "weapons":["martial"]},
-			{"level":3, "key":"combat", "name":"Combat Inspiration", "summary":"Use inspiration die for damage or armor class", "description":"TODO", "type":"reaction"},
-			{"level":6, "key":"attack", "name":"Extra Attack", "summary":"Attack twice with the attack action", "description":"TODO", "attacks":1},
-			{"level":14, "key":"battle", "name":"Battle Magic", "summary":"Attack as a bonus action after casting a spell", "description":"TODO", "type":"bonusaction"},
+			{"level":3, "key":"skillz", "name":"Bonus Proficiencies", "summary":"Gain armor and weapon proficiencies", "armor":["medium", "shields"], "weapons":["martial"], "description":"TODO"},
+			{"level":3, "key":"combat", "name":"Combat Inspiration", "summary":"Use inspiration die for damage or armor class", "type":"reaction", "description":"TODO"},
+			{"level":6, "key":"attack", "name":"Extra Attack", "summary":"Attack twice with the attack action", "attacks":1, "description":"TODO"},
+			{"level":14, "key":"battle", "name":"Battle Magic", "summary":"Attack as a bonus action after casting a spell", "type":"bonusaction", "description":"TODO"},
 		]
 	},{
 		"key":"glamour",
 		"name":"College of Glamour",
 		"features":[
-			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":3, "key":"inspiration", "name":"Mantle of Inspiration", "summary":"Use bardic inspiration to give allies temporary hit points and movement", "type":"bonusaction", "description":"TODO"},
+			{"level":3, "key":"enthrall", "name":"Enthralling Performance", "summary":"1/rest charm humanoids within 60 for 1 hour", "description":"TODO"},
+			{"level":6, "key":"mantle", "name":"Mantle of Majesty", "summary":"1/day cast Command as a bonus action each turn for a minute", "type":"bonusaction", "description":"TODO"},
+			{"level":14, "key":"majesty", "name":"Unbreakable Majesty", "summary":"1/rest for 1 minute enemies must succeed on charisma save each turn to target you with attacks", "type":"bonusaction", "description":"TODO"},
 		]
 	},{
 		"key":"swords",
 		"name":"College of Swords",
 		"features":[
-			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":3, "key":"skillz", "name":"Bonus Proficiencies", "summary":"Gain armor and weapon proficiencies", "armor":["medium"], "weapons":["scimitar"], "description":"TODO"},
+			{"level":3, "key":"fightingstyle", "name":"Fighting Style", "summary":"Choose a fighting style", "options":{"dnd":"fightingstyles", "hash":"fs", "exclude":["archery", "defense", "great", "block"]}, "description":"TODO"},
+			{"level":3, "key":"flourish", "name":"Blade Flourish", "summary":"Attack action increases move by 10, use Bardic Inspiration on hit for additional effects", "description":"TODO"},
+			{"level":6, "key":"attack", "name":"Extra Attack", "summary":"Attack twice with the attack action", "attacks":1, "description":"TODO"},
+			{"level":14, "key":"master", "name":"Master's Flourish", "summary":"Use d6 instead of Bardic Inspiration with Blade Flourish", "description":"TODO"},
 		]
 	},{
 		"key":"whispers",
 		"name":"College of Whispers",
 		"features":[
-			{"level":3, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":6, "key":"", "name":"", "summary":"", "description":"TODO"},
-			{"level":14, "key":"", "name":"", "summary":"", "description":"TODO"},
+			{"level":3, "key":"blades", "name":"Psychic Bladed", "summary":"1/turn use Bardic Inspiration to increase weapon damage", "description":"TODO"},
+			{"level":3, "key":"words", "name":"Words of Terror", "summary":"1/rest instill fear for 1 hour with a 1 minute conversation", "description":"TODO"},
+			{"level":6, "key":"whispers", "name":"Mantle of Whispers", "summary":"1/rest capture spirit of slain humanoid to use as a disguise", "description":"TODO"},
+			{"level":14, "key":"lore", "name":"Shadow Lore", "summary":"1/day charm creature within 30 for 8 hours", "type":"action", "description":"TODO"},
 		]
 	},{
 		"key":"knowledge",
 		"name":"Knowledge Domain",
 		"features":[
-			{"level":1, "key":"blessings", "name":"Blessings of Knowledge", "summary":"Gain 2 languages and 2 double profiencies", "description":"TODO", "extra_language":2, "skill_options":{limit:2, "list":["arcana", "history", "nature", "religion"]}},
-			{"level":2, "key":"knowledge", "name":"Channel Divinity: Knowledge of the Ages", "summary":"Gain temporary proficiency as an action", "description":"TODO", "type":"action"},
-			{"level":6, "key":"thoughts", "name":"Channel Divinity: Read Thoughts", "summary":"Read thoughts and cast suggestion", "description":"TODO", "type":"action"},
+			{"level":1, "key":"blessings", "name":"Blessings of Knowledge", "summary":"Gain 2 languages and 2 double profiencies", "extra_language":2, "skill_options":{limit:2, "list":["arcana", "history", "nature", "religion"]}, "description":"TODO"},
+			{"level":2, "key":"knowledge", "name":"Channel Divinity: Knowledge of the Ages", "summary":"Gain temporary proficiency as an action", "type":"action", "description":"TODO"},
+			{"level":6, "key":"thoughts", "name":"Channel Divinity: Read Thoughts", "summary":"Read thoughts and cast suggestion", "type":"action", "description":"TODO"},
 			{"level":8, "key":"potent", "name":"Potent Spellcasting", "summary":"Add Wisdom modifier to cantrip damage", "description":"TODO"},
 			{"level":17, "key":"visions", "name":"Visions of the Past", "summary":"Read auras and objects", "description":"TODO"},
 		]
@@ -1104,32 +1112,32 @@ var dnd = {
 		"key":"life",
 		"name":"Life Domain",
 		"features":[
-			{"level":1, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain heavy armor proficiency", "description":"TODO", "armors":["heavy"]},
-			{"level":1, "key":"disciple", "name":"Disciple of Life", "summary":"Heal 2+spell level more hit points with spells", "description":"TODO"},
-			{"level":2, "key":"preserve", "name":"Channel Divinity: Preserve Life", "summary":"Heal 5 × level hit points of one creature range 30", "description":"TODO"},
-			{"level":6, "key":"blessed", "name":"Blessed Healer", "summary":"Heal 2+spell level hit points when casting a healing spell", "description":"TODO"},
-			{"level":8, "key":"strike", "name":"Divine Strike", "summary":"Add 1d8 radiant damage to one attack each turn", "description":"TODO"},
-			{"level":17, "key":"supreme", "name":"Supreme Healing", "summary":"Treat all dice as maximum in healing spells", "description":"TODO"},
+			{"level":1, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain heavy armor proficiency", "armors":["heavy"], "description":"When you choose this domain at 1st level, you gain proficiency with heavy armor."},
+			{"level":1, "key":"disciple", "name":"Disciple of Life", "summary":"Heal 2+spell level more hit points with spells", "description":"Also starting at 1st level, your healing spells are more effective. Whenever you use a spell of 1st level or higher to restore hit points to a creature, the creature regains additional hit points equal to 2 + the spell’s level."},
+			{"level":2, "key":"preserve", "name":"Channel Divinity: Preserve Life", "summary":"Heal 5 × level hit points of one creature range 30", "type":"action", "description":"Starting at 2nd level, you can use your Channel Divinity to heal the badly injured.<br/>As an action, you present your holy symbol and evoke healing energy that can restore a number of hit points equal to five times your cleric level. Choose any creatures within 30 feet of you, and divide those hit points among them. This feature can restore a creature to no more than half of its hit point maximum. You can’t use this feature on an undead or a construct."},
+			{"level":6, "key":"blessed", "name":"Blessed Healer", "summary":"Heal 2+spell level hit points when casting a healing spell", "description":"Beginning at 6th level, the healing spells you cast on others heal you as well. When you cast a spell of 1st level or higher that restores hit points to a creature other than you, you regain hit points equal to 2 + the spell’s level."},
+			{"level":8, "key":"strike", "name":"Divine Strike", "summary":"Add 1d8 radiant damage to one attack each turn", "description":"At 8th level, you gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 radiant damage to the target. When you reach 14th level, the extra damage increases to 2d8."},
+			{"level":17, "key":"supreme", "name":"Supreme Healing", "summary":"Treat all dice as maximum in healing spells", "description":"Starting at 17th level, when you would normally roll one or more dice to restore hit points with a spell, you instead use the highest number possible for each die. For example, instead of restoring 2d6 hit points to a creature, you restore 12."},
 		]
 	},{
 		"key":"light",
 		"name":"Light Domain",
 		"features":[
-			{"level":1, "key":"light", "name":"Bonus Cantrip", "summary":"Gain the Light cantrip", "description":"TODO", "cantrip":{"key":"light", "ability":"wisdom"}, "type":"cantrip"},
-			{"level":1, "key":"flare", "name":"Warding Flare", "summary":"Impose disadvantage on attack as a reaction", "description":"TODO", "type":"reaction"},
-			{"level":2, "key":"radiance", "name":"Channel Divinity: Radiance of the Dawn", "summary":"Deal 2d10+level radiant damage", "description":"TODO", "type":"action"},
+			{"level":1, "key":"light", "name":"Bonus Cantrip", "summary":"Gain the Light cantrip", "cantrip":{"key":"light", "ability":"wisdom"}, "type":"cantrip", "description":"TODO"},
+			{"level":1, "key":"flare", "name":"Warding Flare", "summary":"Impose disadvantage on attack as a reaction", "type":"reaction", "description":"TODO"},
+			{"level":2, "key":"radiance", "name":"Channel Divinity: Radiance of the Dawn", "summary":"Deal 2d10+level radiant damage", "type":"action", "description":"TODO"},
 			{"level":6, "key":"improved", "name":"Improved Flare", "summary":"Warding flare to defend allies", "description":"TODO"},
 			{"level":8, "key":"potent", "name":"Potent Spellcasting", "summary":"Add Wisdom modifier to cantrip damage", "description":"TODO"},
-			{"level":17, "key":"corona", "name":"Corona of Light", "summary":"Impose disadvantage on fire and radiant saves", "description":"TODO", "type":"action"},
+			{"level":17, "key":"corona", "name":"Corona of Light", "summary":"Impose disadvantage on fire and radiant saves", "type":"action", "description":"TODO"},
 		]
 	},{
 		"key":"nature",
 		"name":"Nature Domain",
 		"features":[
-			{"level":1, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain heavy armor proficiency", "description":"TODO", "armors": ["heavy"]},
-			{"level":1, "key":"nature", "name":"Acolyte of Nature", "summary":"Gain druid cantrip and a skill", "description":"TODO", "cantrip":{"crass":"druid", "ability":"wisdom"}, "type":"cantrip", "skill_options":{limit:1, "list":["animals", "nature", "survival"]}},
-			{"level":2, "key":"charm", "name":"Channel Divinity: Charm Animals and Plants", "summary":"Charm all plants and animals within 30 feet", "description":"TODO", "type":"action"},
-			{"level":6, "key":"dampen", "name":"Dampen Elements", "summary":"Grant resistance to elemental damage", "description":"TODO", "type":"reaction"},
+			{"level":1, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain heavy armor proficiency", "armors": ["heavy"], "description":"TODO"},
+			{"level":1, "key":"nature", "name":"Acolyte of Nature", "summary":"Gain druid cantrip and a skill", "cantrip":{"crass":"druid", "ability":"wisdom"}, "type":"cantrip", "skill_options":{limit:1, "list":["animals", "nature", "survival"]}, "description":"TODO"},
+			{"level":2, "key":"charm", "name":"Channel Divinity: Charm Animals and Plants", "summary":"Charm all plants and animals within 30 feet", "type":"action", "description":"TODO"},
+			{"level":6, "key":"dampen", "name":"Dampen Elements", "summary":"Grant resistance to elemental damage", "type":"reaction", "description":"TODO"},
 			{"level":8, "key":"strike", "name":"Divine Strike", "summary":"Add 1d8 cold, fire or lightning damage to one attack each turn", "description":"TODO"},
 			{"level":17, "key":"master", "name":"Master of Nature", "summary":"Verbally command charmed plants and animals", "description":"TODO"},
 		]
@@ -1137,8 +1145,8 @@ var dnd = {
 		"key":"tempest",
 		"name":"Tempest Domain",
 		"features":[
-			{"level":1, "key":"proficiency", "name":"Bonus Proficiencies", "summary":"Gain heavy armor and martial weapon proficiency", "description":"TODO", "armors":["heavy"], "weapons":["martial"]},
-			{"level":1, "key":"storm", "name":"Wrath of the Storm", "summary":"Retaliate with 2d8 lightning or thunder damage", "description":"TODO", "type":"reaction"},
+			{"level":1, "key":"proficiency", "name":"Bonus Proficiencies", "summary":"Gain heavy armor and martial weapon proficiency", "armors":["heavy"], "weapons":["martial"], "description":"TODO"},
+			{"level":1, "key":"storm", "name":"Wrath of the Storm", "summary":"Retaliate with 2d8 lightning or thunder damage", "type":"reaction", "description":"TODO"},
 			{"level":2, "key":"wrath", "name":"Channel Divinity: Destructive Wrath", "summary":"Deal maximum thunder or lightning damage instead of rolling", "description":"TODO"},
 			{"level":6, "key":"thunderbolt", "name":"Thunderbolt Strike", "summary":"Lightning damage pushes large or smaller creature 10 feet away", "description":"TODO"},
 			{"level":8, "key":"strike", "name":"Divine Strike", "summary":"Add 1d8 thunder damage to one attack each turn", "description":"TODO"},
@@ -1148,9 +1156,9 @@ var dnd = {
 		"key":"trickery",
 		"name":"Trickery Domain",
 		"features":[
-			{"level":1, "key":"blessings", "name":"Blessing of the Trickster", "summary":"Grant advantage on stealth for one hour", "description":"TODO", "type":"action"},
-			{"level":2, "key":"duplicity", "name":"Channel Divinity: Invoke Duplicity", "summary":"Cast spells through illusory duplicate", "description":"TODO", "type":"action"},
-			{"level":6, "key":"shadows", "name":"Channel Divinity: Cloak of Shadows", "summary":"Become invisible for a turn", "description":"TODO", "type":"action"},
+			{"level":1, "key":"blessings", "name":"Blessing of the Trickster", "summary":"Grant advantage on stealth for one hour", "type":"action", "description":"TODO"},
+			{"level":2, "key":"duplicity", "name":"Channel Divinity: Invoke Duplicity", "summary":"Cast spells through illusory duplicate", "type":"action", "description":"TODO"},
+			{"level":6, "key":"shadows", "name":"Channel Divinity: Cloak of Shadows", "summary":"Become invisible for a turn", "type":"action", "description":"TODO"},
 			{"level":8, "key":"strike", "name":"Divine Strike", "summary":"Add 1d8 poison damage to one attack each turn", "description":"TODO"},
 			{"level":17, "key":"improved", "name":"Improved Duplicity", "summary":"Duplicity with four duplicates", "description":"TODO"},
 		]
@@ -1158,12 +1166,12 @@ var dnd = {
 		"key":"war",
 		"name":"War Domain",
 		"features":[
-			{"level":1, "key":"proficiency", "name":"Bonus Proficiencies", "summary":"Gain heavy armor and martial weapon proficiency", "description":"TODO", "armors":["heavy"], "weapons":["martial"]},
-			{"level":1, "key":"war", "name":"War Priest", "summary":"Attack once as a bonus action after an attack", "description":"TODO", "type":"bonusaction"},
+			{"level":1, "key":"proficiency", "name":"Bonus Proficiencies", "summary":"Gain heavy armor and martial weapon proficiency", "armors":["heavy"], "weapons":["martial"], "description":"TODO"},
+			{"level":1, "key":"war", "name":"War Priest", "summary":"Attack once as a bonus action after an attack", "type":"bonusaction", "description":"TODO"},
 			{"level":2, "key":"guided", "name":"Channel Divinity: Guided Strike", "summary":"+10 to hit", "description":"TODO"},
-			{"level":6, "key":"blessing", "name":"Channel Divinity: War God's Blessing", "summary":"Grant +10 to hit", "description":"TODO", "type":"reaction"},
+			{"level":6, "key":"blessing", "name":"Channel Divinity: War God's Blessing", "summary":"Grant +10 to hit", "type":"reaction", "description":"TODO"},
 			{"level":8, "key":"strike", "name":"Divine Strike", "summary":"Add 1d8 damage to one attack each turn", "description":"TODO"},
-			{"level":17, "key":"avatar", "name":"Avatar of Battle", "summary":"Gain resistance to weapon damage", "description":"TODO", "resistance":["slashing", "piercing", "bludgeoning"]},
+			{"level":17, "key":"avatar", "name":"Avatar of Battle", "summary":"Gain resistance to weapon damage", "resistance":["slashing", "piercing", "bludgeoning"], "description":"TODO"},
 		]
 	},{
 		"key":"forge",
@@ -1189,23 +1197,23 @@ var dnd = {
 		"key":"land",
 		"name":"Circle of the Land",
 		"features":[
-			{"level":2, "key":"cantrip", "name":"Bonus Cantrip", "summary":"Gain a druid cantrip", "description":"TODO", "cantrip":{"crass":"druid", "ability":"wisdom"}, "type":"cantrip"},
-			{"level":2, "key":"recovery", "name":"Natural Recovery", "summary":"1/day regain spell slots from short rest", "description":"TODO", "type":"rest"},
-			{"level":3, "key":"circle", "name":"Circle Spells", "summary":"Choose a terrain to expand spell list", "description":"TODO", "options":{"dnd":"druidicterrain", "hash":"cl"}},
-			{"level":6, "key":"stride", "name":"Land's Stride", "summary":"Unhindered by difficult terrain or plants", "description":"TODO"},
-			{"level":10, "key":"ward", "name":"Nature's Ward", "summary":"Immune to charm and fear by fey and elementals", "description":"TODO", "immunities":["poison", "disease"]},
-			{"level":14, "key":"sanctuary", "name":"Nature's Sanctuary", "summary":"Sanctuary from beasts and plants", "description":"TODO"},
+			{"level":2, "key":"cantrip", "name":"Bonus Cantrip", "summary":"Gain a druid cantrip", "cantrip":{"crass":"druid", "ability":"wisdom"}, "type":"cantrip", "description":"When you choose this circle at 2nd level, you learn one additional druid cantrip of your choice."},
+			{"level":2, "key":"recovery", "name":"Natural Recovery", "summary":"1/day regain spell slots from short rest", "type":"rest", "description":"Starting at 2nd level, you can regain some of your magical energy by sitting in meditation and communing with nature. During a short rest, you choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your druid level (rounded up), and none of the slots can be 6th level or higher. You can’t use this feature again until you finish a long rest.<br/>For example, when you are a 4th-level druid, you can recover up to two levels worth of spell slots. You can recover either a 2nd-level slot or two 1st-level slots."},
+			{"level":3, "key":"circle", "name":"Circle Spells", "summary":"Choose a terrain to expand spell list", "options":{"dnd":"druidicterrain", "hash":"cl"}, "description":"Starting at 2nd level, you can regain some of your magical energy by sitting in meditation and communing with nature. During a short rest, you choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your druid level (rounded up), and none of the slots can be 6th level or higher. You can’t use this feature again until you finish a long rest.<br/>For example, when you are a 4th-level druid, you can recover up to two levels worth of spell slots. You can recover either a 2nd-level slot or two 1st-level slots."},
+			{"level":6, "key":"stride", "name":"Land's Stride", "summary":"Unhindered by difficult terrain or plants", "description":"Starting at 6th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.<br/>In addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the entangle spell."},
+			{"level":10, "key":"ward", "name":"Nature's Ward", "summary":"Immune to charm and fear by fey and elementals", "immunities":["poison", "disease"], "description":"When you reach 10th level, you can’t be charmed or frightened by elementals or fey, and you are immune to poison and disease."},
+			{"level":14, "key":"sanctuary", "name":"Nature's Sanctuary", "summary":"Sanctuary from beasts and plants", "description":"When you reach 14th level, creatures of the natural world sense your connection to nature and become hesitant to attack you. When a beast or plant creature attacks you, that creature must make a Wisdom saving throw against your druid spell save DC. On a failed save, the creature must choose a different target, or the attack automatically misses. On a successful save, the creature is immune to this effect for 24 hours.<br/>The creature is aware of this effect before it makes its attack against you."},
 		]
 	},{
 		"key":"moon",
 		"name":"Circle of the Moon",
 		"features":[
-			{"level":2, "key":"combat", "name":"Combat Wild Shape", "summary":"Wild shape, heal as bonus actions", "description":"TODO", "type":"bonusaction"},
+			{"level":2, "key":"combat", "name":"Combat Wild Shape", "summary":"Wild shape, heal as bonus actions", "type":"bonusaction", "description":"TODO"},
 			{"level":2, "key":"forms", "name":"Circle Forms", "summary":"Wild shape CR 1", "description":"TODO"},
 			{"level":6, "key":"forms", "name":"Circle Forms", "summary":"Wild shape CR level / 3", "description":"TODO"},
 			{"level":6, "key":"strike", "name":"Primal Strike", "summary":"Wild Shape attacks count as magical", "description":"TODO"},
 			{"level":10, "key":"elemental", "name":"Elemental Form", "summary":"Wild shape into an elemental", "description":"TODO"},
-			{"level":14, "key":"thousand", "name":"Thousand Forms", "summary":"Cast alter self at will", "description":"TODO", "type":"action"},
+			{"level":14, "key":"thousand", "name":"Thousand Forms", "summary":"Cast alter self at will", "type":"action", "description":"TODO"},
 		]
 	},{
 		"key":"dreams",
@@ -1229,25 +1237,25 @@ var dnd = {
 		"key":"champion",
 		"name":"Champion",
 		"features":[
-			{"level":3, "key":"critical", "name":"Improved Critical", "summary":"Critical hit on 19-20", "description":"Beginning when you choose this archetype at 3rd level, your weapon attacks score a critical hit on a roll of 19 or 20.", "critical_range":1},
+			{"level":3, "key":"critical", "name":"Improved Critical", "summary":"Critical hit on 19-20", "critical_range":1, "description":"Beginning when you choose this archetype at 3rd level, your weapon attacks score a critical hit on a roll of 19 or 20."},
 			{"level":7, "key":"remarkable", "name":"Remarkable Athlete", "summary":"Half proficiency bonus to physical", "description":"Starting at 7th level, you can add half your proficiency bonus (round up) to any Strength, Dexterity, or Constitution check you make that doesn’t already use your proficiency bonus. In addition, when you make a running long jump, the distance you can cover increases by a number of feet equal to your Strength modifier."},
-			{"level":10, "key":"fightingstyle", "name":"Additional Fighting Style", "summary":"Choose an additional fighting style", "description":"At 10th level, you can choose a second option from the Fighting Style class feature.", "options":{"dnd":"fightingstyles", "hash":"fs2"}},
-			{"level":15, "key":"superior", "name":"Superior Critical", "summary":"Critical hit on 18-20", "description":"Starting at 15th level, your weapon attacks score a critical hit on a roll of 18–20.", "critical_range":1},
+			{"level":10, "key":"fightingstyle", "name":"Additional Fighting Style", "summary":"Choose an additional fighting style", "options":{"dnd":"fightingstyles", "hash":"fs2"}, "description":"At 10th level, you can choose a second option from the Fighting Style class feature."},
+			{"level":15, "key":"superior", "name":"Superior Critical", "summary":"Critical hit on 18-20", "critical_range":1, "description":"Starting at 15th level, your weapon attacks score a critical hit on a roll of 18–20."},
 			{"level":18, "key":"survivor", "name":"Survivor", "summary":"Regain 5+ hit points every turn", "description":"At 18th level, you attain the pinnacle of resilience in battle. At the start of each of your turns, you regain hit points equal to 5 + your Constitution modifier if you have no more than half of your hit points left. You don’t gain this benefit if you have 0 hit points."}
 		]
 	},{
 		"key":"battle",
 		"name":"Battle Master",
 		"features":[
-			{"level":3, "key":"superiority", "name":"Combat Superiority (4d8)", "summary":"Choose 3 combat maneuvers", "description":"TODO", "options":{"dnd":"maneuvers", "limit":3, "hash":"cm"}},
+			{"level":3, "key":"superiority", "name":"Combat Superiority (4d8)", "summary":"Choose 3 combat maneuvers", "options":{"dnd":"maneuvers", "limit":3, "hash":"cm"}, "description":"TODO"},
 			{"level":3, "key":"student", "name":"Student of War", "summary":"Gain proficiency with artisan tools", "description":"TODO"},
 			{"level":7, "key":"enemy", "name":"Know Your Enemy", "summary":"Learn capabilities of adversary", "description":"TODO"},
 			{"level":7, "key":"superiority", "name":"Superiority Die (5d8)", "summary":"Gain another superiority die", "description":"TODO"},
-			{"level":7, "key":"maneuvers", "name":"Combat Maneuvers (5)", "summary":"Gain 2 combat maneuvers", "description":"TODO", "options":{"dnd":"maneuvers", "limit":2, "hash":"cm2"}},
+			{"level":7, "key":"maneuvers", "name":"Combat Maneuvers (5)", "summary":"Gain 2 combat maneuvers", "options":{"dnd":"maneuvers", "limit":2, "hash":"cm2"}, "description":"TODO"},
 			{"level":10, "key":"superiority", "name":"Improved Combat Superiority (5d10)", "summary":"Superiority dice are d10", "description":"TODO"},
-			{"level":10, "key":"maneuvers", "name":"Combat Maneuvers (7)", "summary":"Gain 2 combat maneuvers", "description":"TODO", "options":{"dnd":"maneuvers", "limit":2, "hash":"cm3"}},
-			{"level":15, "key":"relentless", "name":"Relentless", "summary":"Regain superiority die at initiative", "description":"TODO", "type":"initiative"},
-			{"level":15, "key":"maneuvers", "name":"Combat Maneuvers (9)", "summary":"Gain 2 combat maneuvers", "description":"TODO", "options":{"dnd":"maneuvers", "limit":2, "hash":"cm4"}},
+			{"level":10, "key":"maneuvers", "name":"Combat Maneuvers (7)", "summary":"Gain 2 combat maneuvers", "options":{"dnd":"maneuvers", "limit":2, "hash":"cm3"}, "description":"TODO"},
+			{"level":15, "key":"relentless", "name":"Relentless", "summary":"Regain superiority die at initiative", "type":"initiative", "description":"TODO"},
+			{"level":15, "key":"maneuvers", "name":"Combat Maneuvers (9)", "summary":"Gain 2 combat maneuvers", "options":{"dnd":"maneuvers", "limit":2, "hash":"cm4"}, "description":"TODO"},
 			{"level":15, "key":"superiority", "name":"Superiority Die (6d10)", "summary":"Gain another superiority die", "description":"TODO"},
 			{"level":18, "key":"superiority", "name":"Improved Combat Superiority (6d12)", "summary":"Superiority dice are d12", "description":"TODO"},
 		]
@@ -1256,11 +1264,11 @@ var dnd = {
 		"name":"Eldritch Knight",
 		"features":[
 			{"level":3, "key":"spellcasting", "name":"Spellcasting", "summary":"Intelligence, 2 cantrips, abjuration and evocation", "description":"TODO"},
-			{"level":3, "key":"bond", "name":"Weapon Bond", "summary":"Teleport bonded weapon to hand, cannot be disarmed", "description":"TODO", "type":"bonusaction"},
-			{"level":7, "key":"magic", "name":"War Magic", "summary":"Attack as a bonus action after casting a cantrip", "description":"TODO", "type":"bonusaction"},
+			{"level":3, "key":"bond", "name":"Weapon Bond", "summary":"Teleport bonded weapon to hand, cannot be disarmed", "type":"bonusaction", "description":"TODO"},
+			{"level":7, "key":"magic", "name":"War Magic", "summary":"Attack as a bonus action after casting a cantrip", "type":"bonusaction", "description":"TODO"},
 			{"level":10, "key":"strike", "name":"Eldritch Strike", "summary":"Attacks impose disadvantage on spell saving throw", "description":"TODO"},
 			{"level":15, "key":"teleport", "name":"Arcane Charge", "summary":"Teleport 30 with Action Surge", "description":"TODO"},
-			{"level":18, "key":"improve", "name":"Improved War Magic", "summary":"Attack as a bonus action after casting a spell", "description":"TODO", "type":"bonusaction"},
+			{"level":18, "key":"improve", "name":"Improved War Magic", "summary":"Attack as a bonus action after casting a spell", "type":"bonusaction", "description":"TODO"},
 		]
 	},{
 		"key":"archer",
@@ -1296,20 +1304,20 @@ var dnd = {
 		"key":"hand",
 		"name":"Way of the Open Hand",
 		"features":[
-			{"level":3, "key":"technique", "name":"Open Hand Technique", "summary":"Flurry of blows push, knock prone, or prevent reactions", "description":"TODO"},
-			{"level":6, "key":"body", "name":"Wholeness of Body", "summary":"1/day regain 3 × level hit points", "description":"TODO"},
-			{"level":11, "key":"sanctuary", "name":"Tranquility", "summary":"1/day sanctuary until next rest", "description":"TODO"},
-			{"level":17, "key":"quivering", "name":"Quivering palm", "summary":"3ki with attack to start fatal vibrations", "description":"TODO", "type":"action"},
+			{"level":3, "key":"technique", "name":"Open Hand Technique", "summary":"Flurry of blows push, knock prone, or prevent reactions", "description":"Starting when you choose this tradition at 3rd level, you can manipulate your enemy’s ki when you harness your own. Whenever you hit a creature with one of the attacks granted by your Flurry of Blows, you can impose one of the following effects on that target:<ul><li>It must succeed on a Dexterity saving throw or be knocked prone.</li><li>It must make a Strength saving throw. If it fails, you can push it up to 15 feet away from you.</li><li>It can’t take reactions until the end of your next turn.</li></ul>"},
+			{"level":6, "key":"body", "name":"Wholeness of Body", "summary":"1/day regain 3 × level hit points", "description":"At 6th level, you gain the ability to heal yourself. As an action, you can regain hit points equal to three times your monk level. You must finish a long rest before you can use this feature again."},
+			{"level":11, "key":"sanctuary", "name":"Tranquility", "summary":"1/day sanctuary until next rest", "description":"Beginning at 11th level, you can enter a special meditation that surrounds you with an aura of peace. At the end of a long rest, you gain the effect of a sanctuary spell that lasts until the start of your next long rest (the spell can end early as normal). The saving throw DC for the spell equals 8 + your Wisdom modifier + your proficiency bonus."},
+			{"level":17, "key":"quivering", "name":"Quivering palm", "summary":"3ki with attack to start fatal vibrations", "type":"action", "description":"At 17th level, you gain the ability to set up lethal vibrations in someone’s body. When you hit a creature with an unarmed strike, you can spend 3 ki points to start these imperceptible vibrations, which last for a number of days equal to your monk level. The vibrations are harmless unless you use your action to end them. To do so, you and the target must be on the same plane of existence. When you use this action, the creature must make a Constitution saving throw. If it fails, it is reduced to 0 hit points. If it succeeds, it takes 10d10 necrotic damage.<br/>You can have only one creature under the effect of this feature at a time. You can choose to end the vibrations harmlessly without using an action."},
 		]
 	},{
 		"key":"shadow",
 		"name":"Way of Shadow",
 		"features":[
-			{"level":3, "key":"arts", "name":"Shadow Arts", "summary":"2 ki darkness, darkvision, pass without trace, silence", "description":"TODO", "type":"spell"},
-			{"level":3, "key":"arts", "name":"Shadow Arts", "summary":"Gain Minor Illusion cantrip", "description":"TODO", "cantrip":{"key":"minorillusion", "ability":"wisdom"}, "type":"cantrip"},
-			{"level":6, "key":"step", "name":"Shadow Step", "summary":"Teleport 60 and gain advantage on attack", "description":"TODO", "type":"bonusaction"},
-			{"level":11, "key":"cloak", "name":"Cloak of Shadows", "summary":"Become invisible while in dim light", "description":"TODO", "type":"action"},
-			{"level":17, "key":"opportunist", "name":"Opportunist", "summary":"Melee attack on creature hit by another", "description":"TODO", "type":"reaction"}
+			{"level":3, "key":"arts", "name":"Shadow Arts", "summary":"2 ki darkness, darkvision, pass without trace, silence", "type":"spell", "description":"TODO"},
+			{"level":3, "key":"arts", "name":"Shadow Arts", "summary":"Gain Minor Illusion cantrip", "cantrip":{"key":"minorillusion", "ability":"wisdom"}, "type":"cantrip", "description":"TODO"},
+			{"level":6, "key":"step", "name":"Shadow Step", "summary":"Teleport 60 and gain advantage on attack", "type":"bonusaction", "description":"TODO"},
+			{"level":11, "key":"cloak", "name":"Cloak of Shadows", "summary":"Become invisible while in dim light", "type":"action", "description":"TODO"},
+			{"level":17, "key":"opportunist", "name":"Opportunist", "summary":"Melee attack on creature hit by another", "type":"reaction", "description":"TODO"}
 		]
 	},{
 		"key":"elements",
@@ -1351,30 +1359,30 @@ var dnd = {
 		"key":"devotion",
 		"name":"Oath of Devotion",
 		"features":[
-			{"level":3, "key":"weapon", "name":"Channel Divinity: Sacred Weapon", "summary":"Charisma modifier attack bonus, weapon sheds light", "description":"TODO", "type":"action"},
-			{"level":3, "key":"turn", "name":"Channel Divinity: Turn the Unholy", "summary":"Turn undead and fiends", "description":"TODO", "type":"action"},
-			{"level":7, "key":"devotion", "name":"Aura of Devotion", "summary":"Immune to charm radius 10", "description":"TODO", "immunities":["charm"]},
-			{"level":15, "key":"purity", "name":"Purity of Spirit", "summary":"Continuous Protection from Evil and Good", "description":"TODO"},
-			{"level":20, "key":"nimbus", "name":"Holy Nimbus", "summary":"1/day aura of light deals 10 radiant damage", "description":"TODO", "type":"action"},
+			{"level":3, "key":"weapon", "name":"Channel Divinity: Sacred Weapon", "summary":"Charisma modifier attack bonus, weapon sheds light", "type":"action", "description":"As an action, you can imbue one weapon that you are holding with positive energy, using your Channel Divinity. For 1 minute, you add your Charisma modifier to attack rolls made with that weapon (with a minimum bonus of +1). The weapon also emits bright light in a 20-foot radius and dim light 20 feet beyond that. If the weapon is not already magical, it becomes magical for the duration.<br/>You can end this effect on your turn as part of any other action. If you are no longer holding or carrying this weapon, or if you fall unconscious, this effect ends."},
+			{"level":3, "key":"turn", "name":"Channel Divinity: Turn the Unholy", "summary":"Turn undead and fiends", "type":"action", "description":"As an action, you present your holy symbol and speak a prayer censuring fiends and undead, using your Channel Divinity. Each fiend or undead that can see or hear you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is turned for 1 minute or until it takes damage.<br/>A turned creature must spend its turns trying to move as far away from you as it can, and it can’t willingly move to a space within 30 feet of you. It also can’t take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there’s nowhere to move, the creature can use the Dodge action."},
+			{"level":7, "key":"devotion", "name":"Aura of Devotion", "summary":"Immune to charm radius 10", "immunities":["charm"], "description":"Starting at 7th level, you and friendly creatures within 10 feet of you can’t be charmed while you are conscious.<br/>At 18th level, the range of this aura increases to 30 feet."},
+			{"level":15, "key":"purity", "name":"Purity of Spirit", "summary":"Continuous Protection from Evil and Good", "description":"Beginning at 15th level, you are always under the effects of a protection from evil and good spell."},
+			{"level":20, "key":"nimbus", "name":"Holy Nimbus", "summary":"1/day aura of light deals 10 radiant damage", "type":"action", "description":"At 20th level, as an action, you can emanate an aura of sunlight. For 1 minute, bright light shines from you in a 30-foot radius, and dim light shines 30 feet beyond that.<br/>Whenever an enemy creature starts its turn in the bright light, the creature takes 10 radiant damage.<br/>In addition, for the duration, you have advantage on saving throws against spells cast by fiends or undead.<br/>Once you use this feature, you can’t use it again until you finish a long rest."},
 		]
 	},{
 		"key":"ancients",
 		"name":"Oath of the Ancients",
 		"features":[
-			{"level":3, "key":"wrath", "name":"Channel Divinity: Nature's Wrath", "summary":"Entangle", "description":"TODO", "type":"action"},
-			{"level":3, "key":"turn", "name":"Channel Divinity: Turn the Faithless", "summary":"Turn fey and fiends", "description":"TODO", "type":"action"},
-			{"level":7, "key":"warding", "name":"Aura of Warding", "summary":"Resistance to spell damage radius 10", "description":"TODO", "resistance":["spell-damage"]},
-			{"level":15, "key":"sentinel", "name":"Undying Sentinel", "summary":"1/day avoid death", "description":"TODO", "immunities":["aging"]},
+			{"level":3, "key":"wrath", "name":"Channel Divinity: Nature's Wrath", "summary":"Entangle", "type":"action", "description":"TODO"},
+			{"level":3, "key":"turn", "name":"Channel Divinity: Turn the Faithless", "summary":"Turn fey and fiends", "type":"action", "description":"TODO"},
+			{"level":7, "key":"warding", "name":"Aura of Warding", "summary":"Resistance to spell damage radius 10", "resistance":["spell-damage"], "description":"TODO"},
+			{"level":15, "key":"sentinel", "name":"Undying Sentinel", "summary":"1/day avoid death", "immunities":["aging"], "description":"TODO"},
 			{"level":20, "key":"elder", "name":"Elder Champion", "summary":"1/day heal, quick spells, impose disadvantage on saves", "description":"TODO"},
 		]
 	},{
 		"key":"vengeance",
 		"name":"Oath of Vengeance",
 		"features":[
-			{"level":3, "key":"abjure", "name":"Channel Divinity: Abjure Enemy", "summary":"Turn creature", "description":"TODO", "type":"action"},
-			{"level":3, "key":"enmity", "name":"Channel Divinity: Vow of Enmity", "summary":"Advantage on attacks", "description":"TODO", "type":"action"},
+			{"level":3, "key":"abjure", "name":"Channel Divinity: Abjure Enemy", "summary":"Turn creature", "type":"action", "description":"TODO"},
+			{"level":3, "key":"enmity", "name":"Channel Divinity: Vow of Enmity", "summary":"Advantage on attacks", "type":"action", "description":"TODO"},
 			{"level":7, "key":"avenger", "name":"Relentless Avenger", "summary":"Move when opportunity attack hits", "description":"TODO"},
-			{"level":15, "key":"vengeance", "name":"Soul of Vengeance", "summary":"Vow of Enmity retaliate as reaction", "description":"TODO", "type":"reaction"},
+			{"level":15, "key":"vengeance", "name":"Soul of Vengeance", "summary":"Vow of Enmity retaliate as reaction", "type":"reaction", "description":"TODO"},
 			{"level":20, "key":"angel", "name":"Avenging Angel", "summary":"1/day angels wings 1 hour, fly 60, menacing aura", "description":"TODO"},
 		]
 	},{
@@ -1399,17 +1407,17 @@ var dnd = {
 		"key":"hunter",
 		"name":"Hunter",
 		"features":[
-			{"level":3, "key":"prey", "name":"Hunter's Prey", "summary":"Choose a tactic", "description":"At 3rd level, you gain one of the following features of your choice.", "options":{"dnd":"huntertactics3", "hash":"ht3"}},
-			{"level":7, "key":"tactics", "name":"Defensive Tactics", "summary":"Choose a tactic", "description":"At 7th level, you gain one of the following features of your choice.", "options":{"dnd":"huntertactics7", "hash":"ht7"}},
-			{"level":11, "key":"multiattack", "name":"Multiattack", "summary":"Choose a tactic", "description":"At 11th level, you gain one of the following features of your choice.", "options":{"dnd":"huntertactics11", "hash":"ht11"}},
-			{"level":15, "key":"defense", "name":"Superior Hunter's Defense", "summary":"Choose a defense", "description":"At 15th level, you gain one of the following features of your choice.", "options":{"dnd":"huntertactics15", "hash":"ht15"}},
+			{"level":3, "key":"prey", "name":"Hunter's Prey", "summary":"Choose a tactic", "options":{"dnd":"huntertactics3", "hash":"ht3"}, "description":"At 3rd level, you gain one of the following features of your choice."},
+			{"level":7, "key":"tactics", "name":"Defensive Tactics", "summary":"Choose a tactic", "options":{"dnd":"huntertactics7", "hash":"ht7"}, "description":"At 7th level, you gain one of the following features of your choice."},
+			{"level":11, "key":"multiattack", "name":"Multiattack", "summary":"Choose a tactic", "options":{"dnd":"huntertactics11", "hash":"ht11"}, "description":"At 11th level, you gain one of the following features of your choice."},
+			{"level":15, "key":"defense", "name":"Superior Hunter's Defense", "summary":"Choose a defense", "options":{"dnd":"huntertactics15", "hash":"ht15"}, "description":"At 15th level, you gain one of the following features of your choice."},
 		]
 	},{
 		"key":"beast",
 		"name":"Beast Master",
 		"features":[
 			{"level":3, "key":"companion", "name":"Ranger's Companion", "summary":"Gain beast companion up to CP 1/4", "description":"TODO"},
-			{"level":7, "key":"training", "name":"Exceptional Training", "summary":"Companion dash, dodge, help, disengage as bonus action", "description":"TODO", "type":"bonusaction"},
+			{"level":7, "key":"training", "name":"Exceptional Training", "summary":"Companion dash, dodge, help, disengage as bonus action", "type":"bonusaction", "description":"TODO"},
 			{"level":11, "key":"fury", "name":"Bestial Fury", "summary":"Companion attacks twice with the attack action", "description":"TODO"},
 			{"level":15, "key":"share", "name":"Share Spells", "summary":"Spells affecting self also affect companion", "description":"TODO"},
 		]
@@ -1418,11 +1426,11 @@ var dnd = {
 		"name":"Gloom Stalker",
 		"features":[
 			{"level":3, "key":"magic", "name":"Gloom Stalker Magic", "summary":"Learn additional spells", "description":"TODO"},
-			{"level":3, "key":"ambusher", "name":"Dread Ambusher", "summary":"Increase speed by 10 and attacks by 1 on first turn of combat, and increase initiative", "description":"TODO", "initiative":"wisdom", "type":"initiative"},
-			{"level":3, "key":"sight", "name":"Umbral Sight", "summary":"Invisible to darkvision, increase darkvision by 30", "description":"TODO", "darkvision":30},
-			{"level":7, "key":"mind", "name":"Iron Mind", "summary":"Gain proficiency in Wisdom saving throws", "description":"TODO", "saves":["wisdom"]},
+			{"level":3, "key":"ambusher", "name":"Dread Ambusher", "summary":"Increase speed by 10 and attacks by 1 on first turn of combat, and increase initiative", "initiative":"wisdom", "type":"initiative", "description":"TODO"},
+			{"level":3, "key":"sight", "name":"Umbral Sight", "summary":"Invisible to darkvision, increase darkvision by 30", "darkvision":30, "description":"TODO"},
+			{"level":7, "key":"mind", "name":"Iron Mind", "summary":"Gain proficiency in Wisdom saving throws", "saves":["wisdom"], "description":"TODO"},
 			{"level":11, "key":"flurry", "name":"Stalker's Flurry", "summary":"1/turn attack again after a missed attack", "description":"TODO"},
-			{"level":15, "key":"dodge", "name":"Shadowy Dodge", "summary":"Impose disadvantage on one attack roll as reaction", "description":"TODO", "type":"reaction"},
+			{"level":15, "key":"dodge", "name":"Shadowy Dodge", "summary":"Impose disadvantage on one attack roll as reaction", "type":"reaction", "description":"TODO"},
 		]
 	},{
 		"key":"walker",
@@ -1430,10 +1438,10 @@ var dnd = {
 		"features":[
 			{"level":3, "key":"magic", "name":"Horizon Walker Magic", "summary":"Learn additional spells", "description":"TODO"},
 			{"level":3, "key":"detect", "name":"Detect Portal", "summary":"1/rest detect nearest planar portal within 1 mile", "description":"TODO"},
-			{"level":3, "key":"warrior", "name":"Planar Warrior", "summary":"Increase damage of next weapon attack by d8 and convert damage to force", "description":"TODO", "type":"bonusaction"},
-			{"level":7, "key":"step", "name":"Ethereal Step", "summary":"1/rest cast etherealness for remainder of turn", "description":"TODO", "type":"bonusaction"},
+			{"level":3, "key":"warrior", "name":"Planar Warrior", "summary":"Increase damage of next weapon attack by d8 and convert damage to force", "type":"bonusaction", "description":"TODO"},
+			{"level":7, "key":"step", "name":"Ethereal Step", "summary":"1/rest cast etherealness for remainder of turn", "type":"bonusaction", "description":"TODO"},
 			{"level":11, "key":"strike", "name":"Distant Strike", "summary":"Teleport 10 before each attack and gain extra attack against third creature", "description":"TODO"},
-			{"level":15, "key":"defense", "name":"Spectral Defense", "summary":"Gain resistance to damage from attack as a reaction", "description":"TODO", "type":"reaction"},
+			{"level":15, "key":"defense", "name":"Spectral Defense", "summary":"Gain resistance to damage from attack as a reaction", "type":"reaction", "description":"TODO"},
 		]
 	},{
 		"key":"slayer",
@@ -1441,26 +1449,26 @@ var dnd = {
 		"features":[
 			{"level":3, "key":"magic", "name":"Monter Slayer Magic", "summary":"Learn additional spells", "description":"TODO"},
 			{"level":3, "key":"sense", "name":"Hunter's Sense", "summary":"m/rest divine immunities, vulnerabilities and resistances of target creature within 60", "description":"TODO"},
-			{"level":3, "key":"prey", "name":"Slayer's Prey", "summary":"Designate creature within 60 as prey, 1/turn increase damage by d6 against prey", "description":"TODO", "type":"bonusaction"},
+			{"level":3, "key":"prey", "name":"Slayer's Prey", "summary":"Designate creature within 60 as prey, 1/turn increase damage by d6 against prey", "type":"bonusaction", "description":"TODO"},
 			{"level":7, "key":"defense", "name":"Supernatural Defense", "summary":"Add d6 to saves and grapple checks against current prey", "description":"TODO"},
-			{"level":11, "key":"nemesis", "name":"Magic-User's Nemesis", "summary":"1/rest force target within 60 to make wisdom save or waste spell", "description":"TODO", "type":"reaction"},
-			{"level":15, "key":"counter", "name":"Slayer's Counter", "summary":"Gain bonus attack before current prey forces saving throw", "description":"TODO", "type":"reaction"},
+			{"level":11, "key":"nemesis", "name":"Magic-User's Nemesis", "summary":"1/rest force target within 60 to make wisdom save or waste spell", "type":"reaction", "description":"TODO"},
+			{"level":15, "key":"counter", "name":"Slayer's Counter", "summary":"Gain bonus attack before current prey forces saving throw", "type":"reaction", "description":"TODO"},
 		]
 	},{
 		"key":"thief",
 		"name":"Thief",
 		"features":[
-			{"level":3, "key":"hands", "name":"Fast Hands", "summary":"Cunning action includes sleight of hand, thieves tool or use item", "description":"TODO", "type":"bonusaction"},
-			{"level":3, "key":"climb", "name":"Second-Story Work", "summary":"Unhindered while climbing, increase running jump", "description":"TODO"},
-			{"level":9, "key":"sneak", "name":"Supreme Sneak", "summary":"Gain advantage on stealth checks while slow", "description":"TODO"},
-			{"level":13, "key":"device", "name":"Use Magic Device", "summary":"Ignore class, race and level requirements of magic items", "description":"TODO"},
-			{"level":17, "key":"reflexes", "name":"Thief's Reflexes", "summary":"Second turn on first round of combat", "description":"TODO"},
+			{"level":3, "key":"hands", "name":"Fast Hands", "summary":"Cunning action includes sleight of hand, thieves tool or use item", "type":"bonusaction", "description":"Starting at 3rd level, you can use the bonus action granted by your Cunning Action to make a Dexterity (Sleight of Hand) check, use your thieves’ tools to disarm a trap or open a lock, or take the Use an Object action."},
+			{"level":3, "key":"climb", "name":"Second-Story Work", "summary":"Unhindered while climbing, increase running jump", "description":"When you choose this archetype at 3rd level, you gain the ability to climb faster than normal; climbing no longer costs you extra movement.<br/>In addition, when you make a running jump, the distance you cover increases by a number of feet equal to your Dexterity modifier."},
+			{"level":9, "key":"sneak", "name":"Supreme Sneak", "summary":"Gain advantage on stealth checks while slow", "description":"Starting at 9th level, you have advantage on a Dexterity (Stealth) check if you move no more than half your speed on the same turn."},
+			{"level":13, "key":"device", "name":"Use Magic Device", "summary":"Ignore class, race and level requirements of magic items", "description":"By 13th level, you have learned enough about the workings of magic that you can improvise the use of items even when they are not intended for you. You ignore all class, race, and level requirements on the use of magic items."},
+			{"level":17, "key":"reflexes", "name":"Thief's Reflexes", "summary":"Second turn on first round of combat", "description":"When you reach 17th level, you have become adept at laying ambushes and quickly escaping danger. You can take two turns during the first round of any combat. You take your first turn at your normal initiative and your second turn at your initiative minus 10. You can’t use this feature when you are surprised."},
 		]
 	},{
 		"key":"assassin",
 		"name":"Assassin",
 		"features":[
-			{"level":3, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain proficiency with poison and disguise kits", "description":"TODO", "tools":["disguise", "poison"]},
+			{"level":3, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain proficiency with poison and disguise kits", "tools":["disguise", "poison"], "description":"TODO"},
 			{"level":3, "key":"assassinate", "name":"Assassinate", "summary":"Advantage before first turn, Critical on surprise", "description":"TODO"},
 			{"level":9, "key":"infiltration", "name":"Infiltration Expertise", "summary":"Unfailingly create false identities for yourself", "description":"TODO"},
 			{"level":13, "key":"imposter", "name":"Imposter", "summary":"Unerringly mimic another's speech, writing and behavior", "description":"TODO"},
@@ -1473,7 +1481,7 @@ var dnd = {
 			{"level":3, "key":"spellcasting", "name":"Spellcasting", "summary":"Intelligence, 2 cantrips", "description":"TODO"},
 			{"level":3, "key":"hand", "name":"Mage Hand Legerdemain", "summary":"Mage Hand is invisible, picks locks, picks pockets", "description":"TODO"},
 			{"level":9, "key":"ambush", "name":"Magical Ambush", "summary":"Impose disadvantage on saves when hidden from targets", "description":"TODO"},
-			{"level":13, "key":"trickster", "name":"Versatile Trickster", "summary":"Advantage on attack using Mage Hand as distraction", "description":"TODO", "type":"bonusaction"},
+			{"level":13, "key":"trickster", "name":"Versatile Trickster", "summary":"Advantage on attack using Mage Hand as distraction", "type":"bonusaction", "description":"TODO"},
 			{"level":17, "key":"thief", "name":"Spell Thief", "summary":"1/day counter spell and steal knowledge of how to cast it", "description":"TODO"},
 		]
 	},{
@@ -1507,11 +1515,11 @@ var dnd = {
 		"key":"draconic",
 		"name":"Draconic Bloodline",
 		"features":[
-			{"level":1, "key":"ancestor", "name":"Dragon Ancestor", "summary":"Choose dragon ancestor", "description":"TODO", "options":{"dnd":"draconicancestry", "hash":"sa"}, "languages":["draconic"]},
-			{"level":1, "key":"resilience", "name":"Draconic Resilience", "summary":"AC +3, hit points +level", "description":"TODO", "requirement":"unarmored", "armorclass":3, "toughness":1},
-			{"level":6, "key":"potent", "name":"Elemental Affinity", "summary":"Resist ancestral damage for 1 sorcery point, increase spell damage", "description":"TODO"},
-			{"level":14, "key":"wings", "name":"Dragon Wings", "summary":"Sprout dragon wings and fly", "description":"TODO", "type":"bonusaction"},
-			{"level":18, "key":"presense", "name":"Draconic Presense", "summary":"Cause fear or awe in 60 foot radius for 5 sorcery points", "description":"TODO", "type":"action"},
+			{"level":1, "key":"ancestor", "name":"Dragon Ancestor", "summary":"Choose dragon ancestor", "options":{"dnd":"draconicancestry", "hash":"sa"}, "languages":["draconic"], "description":"At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later."},
+			{"level":1, "key":"resilience", "name":"Draconic Resilience", "summary":"AC +3, hit points +level", "requirement":"unarmored", "armorclass":3, "toughness":1, "description":"As magic flows through your body, it causes physical traits of your dragon ancestors to emerge. At 1st level, your hit point maximum increases by 1 and increases by 1 again whenever you gain a level in this class.<br/>Additionally, parts of your skin are covered by a thin sheen of dragon-like scales. When you aren’t wearing armor, your AC equals 13 + your Dexterity modifier."},
+			{"level":6, "key":"potent", "name":"Elemental Affinity", "summary":"Resist ancestral damage for 1 sorcery point, increase spell damage", "description":"Starting at 6th level, when you cast a spell that deals damage of the type associated with your draconic ancestry, you can add your Charisma modifier to one damage roll of that spell. At the same time, you can spend 1 sorcery point to gain resistance to that damage type for 1 hour."},
+			{"level":14, "key":"wings", "name":"Dragon Wings", "summary":"Sprout dragon wings and fly", "type":"bonusaction", "description":"At 14th level, you gain the ability to sprout a pair of dragon wings from your back, gaining a flying speed equal to your current speed. You can create these wings as a bonus action on your turn. They last until you dismiss them as a bonus action on your turn.<br/>You can’t manifest your wings while wearing armor unless the armor is made to accommodate them, and clothing not made to accommodate your wings might be destroyed when you manifest them."},
+			{"level":18, "key":"presense", "name":"Draconic Presense", "summary":"Cause fear or awe in 60 foot radius for 5 sorcery points", "type":"action", "description":"Beginning at 18th level, you can channel the dread presence of your dragon ancestor, causing those around you to become awestruck or frightened. As an action, you can spend 5 sorcery points to draw on this power and exude an aura of awe or fear (your choice) to a distance of 60 feet. For 1 minute or until you lose your concentration (as if you were casting a concentration spell), each hostile creature that starts its turn in this aura must succeed on a Wisdom saving throw or be charmed (if you chose awe) or frightened (if you chose fear) until the aura ends. A creature that succeeds on this saving throw is immune to your aura for 24 hours."},
 		]
 	},{
 		"key":"wild",
@@ -1519,7 +1527,7 @@ var dnd = {
 		"features":[
 			{"level":1, "key":"surge", "name":"Wild Magic Surge", "summary":"Rolling 1 on d20 after casting spell unleashes wild magic surge", "description":"TODO"},
 			{"level":1, "key":"tides", "name":"Tides of Chaos", "summary":"1/day gain advantage on attack, save or ability check", "description":"TODO"},
-			{"level":6, "key":"luck", "name":"Bend Luck", "summary":"Add bonus or penalty d4 to attack, save or ability check for 2 sorcery points", "description":"TODO", "type":"reaction"},
+			{"level":6, "key":"luck", "name":"Bend Luck", "summary":"Add bonus or penalty d4 to attack, save or ability check for 2 sorcery points", "type":"reaction", "description":"TODO"},
 			{"level":14, "key":"chaos", "name":"Controlled Chaos", "summary":"Roll twice and choose either number when rolling a wild magic surge", "description":"TODO"},
 			{"level":18, "key":"bombardment", "name":"Spell Bombardment", "summary":"1/turn add 1 die to spell damage when highest number was rolled", "description":"TODO"},
 		]
@@ -1555,20 +1563,20 @@ var dnd = {
 		"name":"The Archfey",
 		"features":[
 			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn", "description":"TODO"},
-			{"level":1, "key":"fey", "name":"Fey Presence", "summary":"1/rest charm or fear radius 5 for 1 turn", "description":"TODO", "type":"action"},
-			{"level":6, "key":"escape", "name":"Misty Escape", "summary":"1/rest teleport 60 and turn invisible for 1 turn as reaction", "description":"TODO", "type":"reaction"},
-			{"level":10, "key":"beguile", "name":"Beguiling Defenses", "summary":"Charm creature attempting to charm you for 1 minute as reaction", "description":"TODO", "immunities":["charm"], "type":"reaction"},
-			{"level":14, "key":"delirium", "name":"Dark Delirium", "summary":"1/rest charm or fear on one creature with immersive illusion for 1 minute", "description":"TODO", "type":"action"}
+			{"level":1, "key":"fey", "name":"Fey Presence", "summary":"1/rest charm or fear radius 5 for 1 turn", "type":"action", "description":"TODO"},
+			{"level":6, "key":"escape", "name":"Misty Escape", "summary":"1/rest teleport 60 and turn invisible for 1 turn as reaction", "type":"reaction", "description":"TODO"},
+			{"level":10, "key":"beguile", "name":"Beguiling Defenses", "summary":"Charm creature attempting to charm you for 1 minute as reaction", "immunities":["charm"], "type":"reaction", "description":"TODO"},
+			{"level":14, "key":"delirium", "name":"Dark Delirium", "summary":"1/rest charm or fear on one creature with immersive illusion for 1 minute", "type":"action", "description":"TODO"}
 		]
 	},{
 		"key":"fiend",
 		"name":"The Fiend",
 		"features":[
 			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn", "description":"TODO"},
-			{"level":1, "key":"blessing", "name":"Dark One’s Blessing", "summary":"Gain temporary hit points of Charisma modifier+level on kill", "description":"TODO"},
-			{"level":6, "key":"luck", "name":"Dark One’s Luck", "summary":"1/rest add d10 to save or ability check", "description":"TODO"},
-			{"level":10, "key":"resilience", "name":"Fiendish Resilience", "summary":"After rest gain resistance to one damage type until next rest ends", "description":"TODO"},
-			{"level":14, "key":"hurl", "name":"Hurl Through Hell", "summary":"1/day send creature to hell for a turn and inflict 10d10 psychic damage", "description":"TODO"}
+			{"level":1, "key":"blessing", "name":"Dark One’s Blessing", "summary":"Gain temporary hit points of Charisma modifier+level on kill", "description":"Starting at 1st level, when you reduce a hostile creature to 0 hit points, you gain temporary hit points equal to your Charisma modifier + your warlock level (minimum of 1)."},
+			{"level":6, "key":"luck", "name":"Dark One’s Luck", "summary":"1/rest add d10 to save or ability check", "description":"Starting at 6th level, you can call on your patron to alter fate in your favor. When you make an ability check or a saving throw, you can use this feature to add a d10 to your roll. You can do so after seeing the initial roll but before any of the roll’s effects occur.<br/>Once you use this feature, you can’t use it again until you finish a short or long rest."},
+			{"level":10, "key":"resilience", "name":"Fiendish Resilience", "summary":"After rest gain resistance to one damage type until next rest ends", "description":"Starting at 10th level, you can choose one damage type when you finish a short or long rest. You gain resistance to that damage type until you choose a different one with this feature. Damage from magical weapons or silver weapons ignores this resistance."},
+			{"level":14, "key":"hurl", "name":"Hurl Through Hell", "summary":"1/day send creature to hell for a turn and inflict 10d10 psychic damage", "description":"Starting at 14th level, when you hit a creature with an attack, you can use this feature to instantly transport the target through the lower planes. The creature disappears and hurtles through a nightmare landscape.<br/>At the end of your next turn, the target returns to the space it previously occupied, or the nearest unoccupied space. If the target is not a fiend, it takes 10d10 psychic damage as it reels from its horrific experience.<br/>Once you use this feature, you can’t use it again until you finish a long rest."}
 		]
 	},{
 		"key":"old",
@@ -1577,17 +1585,17 @@ var dnd = {
 			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn", "description":"TODO"},
 			{"level":1, "key":"mind", "name":"Awakened Mind", "summary":"Telepathy to radius 30 with creatures that understand any language", "description":"TODO"},
 			{"level":6, "key":"ward", "name":"Entropic Ward", "summary":"1/rest impose disadvantage on attack and gain attack advantage on miss", "description":"TODO"},
-			{"level":10, "key":"shield", "name":"Thought Shield", "summary":"Immune to mind reading, reflect psychic damage at attacker", "description":"TODO", "resistance":["psychic"], "immunities":["thought-reading"]},
-			{"level":14, "key":"thrall", "name":"Create Thrall", "summary":"Charm incapacitated humanoid until remove curse or another thrall is created", "description":"TODO", "type":"action"}
+			{"level":10, "key":"shield", "name":"Thought Shield", "summary":"Immune to mind reading, reflect psychic damage at attacker", "resistance":["psychic"], "immunities":["thought-reading"], "description":"TODO"},
+			{"level":14, "key":"thrall", "name":"Create Thrall", "summary":"Charm incapacitated humanoid until remove curse or another thrall is created", "type":"action", "description":"TODO"}
 		]
 	},{
 		"key":"celestial",
 		"name":"The Celestial",
 		"features":[
 			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn", "description":"TODO"},
-			{"level":1, "key":"light", "name":"Bonus Cantrip", "summary":"Gain the Light and Sacred Flame cantrips", "description":"TODO", "cantrip":{"keys":["light", "sacredflame"], "ability":"charisma"}, "type":"cantrip"},
-			{"level":1, "key":"healing", "name":"Healing Light", "summary":"1/day gain pool of 1+level d6, use dice to heal creature within 60", "description":"TODO", "type":"bonusaction"},
-			{"level":6, "key":"soul", "name":"Radiant Soul", "summary":"Add Charisma modifier to radiant or fire damage of one target of spells", "description":"TODO", "resistance":["radiant"]},
+			{"level":1, "key":"light", "name":"Bonus Cantrip", "summary":"Gain the Light and Sacred Flame cantrips", "cantrip":{"keys":["light", "sacredflame"], "ability":"charisma"}, "type":"cantrip", "description":"TODO"},
+			{"level":1, "key":"healing", "name":"Healing Light", "summary":"1/day gain pool of 1+level d6, use dice to heal creature within 60", "type":"bonusaction", "description":"TODO"},
+			{"level":6, "key":"soul", "name":"Radiant Soul", "summary":"Add Charisma modifier to radiant or fire damage of one target of spells", "resistance":["radiant"], "description":"TODO"},
 			{"level":10, "key":"resilience", "name":"Celestial Resilience", "summary":"After rest grant temporary hit points to self and 5 allies", "description":"TODO"},
 			{"level":14, "key":"vengeance", "name":"Searing Vengeance", "summary":"1/day avoid death saving throw, regain half maximum hit points, stand, damage and blind enemies", "description":"TODO"}
 		]
@@ -1596,10 +1604,10 @@ var dnd = {
 		"name":"The Hexblade",
 		"features":[	
 			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn", "description":"TODO"},
-			{"level":1, "key":"curse", "name":"Hexblades Curse", "summary":"1/rest curse target within 30 for 1 minute to receive proficiency bonus as added damage", "description":"TODO", "type":"bonusaction"},
-			{"level":1, "key":"warrior", "name":"Hex Warrior", "summary":"Use Charisma modifier with single weapon, gain proficiency in medium armor and all weapons", "description":"TODO", "armor":["medium", "shields"], "weapons":["martial"]},
+			{"level":1, "key":"curse", "name":"Hexblades Curse", "summary":"1/rest curse target within 30 for 1 minute to receive proficiency bonus as added damage", "type":"bonusaction", "description":"TODO"},
+			{"level":1, "key":"warrior", "name":"Hex Warrior", "summary":"Use Charisma modifier with single weapon, gain proficiency in medium armor and all weapons", "armor":["medium", "shields"], "weapons":["martial"], "description":"TODO"},
 			{"level":6, "key":"specter", "name":"Accursed Specter", "summary":"1/day raise slain humanoid as obedient specter with temporary hit points of level/2", "description":"TODO"},
-			{"level":10, "key":"armor", "name":"Armor of Hexes", "summary":"Hexblades curse target misses you on roll of 4+ on d6 as reaction", "description":"TODO", "type":"reaction"},
+			{"level":10, "key":"armor", "name":"Armor of Hexes", "summary":"Hexblades curse target misses you on roll of 4+ on d6 as reaction", "type":"reaction", "description":"TODO"},
 			{"level":14, "key":"hexes", "name":"Master of Hexes", "summary":"Transfer hexblade curse to new target within 30 on death instead of regaining hit points", "description":"TODO"},
 		]
 	},{
@@ -1608,17 +1616,17 @@ var dnd = {
 		"features":[
 			{"level":2, "key":"savant", "name":"Abjuration Savant", "summary":"Half gold and time to copy abjuration spells", "description":"TODO"},
 			{"level":2, "key":"ward", "name":"Arcane Ward", "summary":"Abjuration spells power ward that absorbs damage", "description":"TODO"},
-			{"level":6, "key":"project", "name":"Projected Ward", "summary":"Use arcane ward to aid creatures within 30 feet", "description":"TODO", "type":"reaction"},
+			{"level":6, "key":"project", "name":"Projected Ward", "summary":"Use arcane ward to aid creatures within 30 feet", "type":"reaction", "description":"TODO"},
 			{"level":10, "key":"improve", "name":"Improved Abjuration", "summary":"Add proficiency bonus to abjuration spell ability checks", "description":"TODO"},
-			{"level":14, "key":"resist", "name":"Spell Resistance", "summary":"Advantage on spell saves and resistance to spell damage", "description":"TODO", "resistance":["spell-damage"], "advantage_on_saves":["spells"]},
+			{"level":14, "key":"resist", "name":"Spell Resistance", "summary":"Advantage on spell saves and resistance to spell damage", "resistance":["spell-damage"], "advantage_on_saves":["spells"], "description":"TODO"},
 		]
 	},{
 		"key":"conjuration",
 		"name":"School of Conjuration",
 		"features":[
 			{"level":2, "key":"savant", "name":"Conjuration Savant", "summary":"Half gold and time to copy conjuration spells", "description":"TODO"},
-			{"level":2, "key":"conjure", "name":"Minor Conjuration", "summary":"Conjure small inanimate object", "description":"TODO", "type":"action"},
-			{"level":6, "key":"transpose", "name":"Benign Transposition", "summary":"1/day teleport 30 feet or transpose with willing target", "description":"TODO", "type":"action"},
+			{"level":2, "key":"conjure", "name":"Minor Conjuration", "summary":"Conjure small inanimate object", "type":"action", "description":"TODO"},
+			{"level":6, "key":"transpose", "name":"Benign Transposition", "summary":"1/day teleport 30 feet or transpose with willing target", "type":"action", "description":"TODO"},
 			{"level":10, "key":"focus", "name":"Focused Conjuration", "summary":"Concentration on conjuration spells unaffected by taking damage", "description":"TODO"},
 			{"level":14, "key":"durable", "name":"Durable Summons", "summary":"Conjured creatures have 30 temporary hit points", "description":"TODO"},
 		]
@@ -1629,7 +1637,7 @@ var dnd = {
 			{"level":2, "key":"savant", "name":"Divination Savant", "summary":"Half gold and time to copy divination spells", "description":"TODO"},
 			{"level":2, "key":"portent", "name":"Portent", "summary":"2/day replace any attack, save or ability check with chosen roll", "description":"TODO"},
 			{"level":6, "key":"expert", "name":"Expert Divination", "summary":"Restore spell slots when casting divination spells", "description":"TODO"},
-			{"level":10, "key":"eye", "name":"The Third Eye", "summary":"1/rest see ethereal, invisible, in darkness, or read any language", "description":"TODO", "type":"action"},
+			{"level":10, "key":"eye", "name":"The Third Eye", "summary":"1/rest see ethereal, invisible, in darkness, or read any language", "type":"action", "description":"TODO"},
 			{"level":14, "key":"potent", "name":"Greater Portent", "summary":"Gain third portent die", "description":"TODO"},
 		]
 	},{
@@ -1637,8 +1645,8 @@ var dnd = {
 		"name":"School of Enchantment",
 		"features":[
 			{"level":2, "key":"savant", "name":"Enchantment Savant", "summary":"Half gold and time to copy enchantment spells", "description":"TODO"},
-			{"level":2, "key":"gaze", "name":"Hypnotic Gaze", "summary":"1/day daze creature that fails Wisdom save", "description":"TODO", "type":"action"},
-			{"level":6, "key":"charm", "name":"Instinctive Charm", "summary":"Force nearby attacker to attack a different target", "description":"TODO", "type":"reaction"},
+			{"level":2, "key":"gaze", "name":"Hypnotic Gaze", "summary":"1/day daze creature that fails Wisdom save", "type":"action", "description":"TODO"},
+			{"level":6, "key":"charm", "name":"Instinctive Charm", "summary":"Force nearby attacker to attack a different target", "type":"reaction", "description":"TODO"},
 			{"level":10, "key":"split", "name":"Split Enchantment", "summary":"Enchantment spells with a single target can have a second target", "description":"TODO"},
 			{"level":14, "key":"alter", "name":"Alter Memories", "summary":"Enchantment spells cause single target to forget being enchanted", "description":"TODO"},
 		]
@@ -1646,11 +1654,11 @@ var dnd = {
 		"key":"evocation",
 		"name":"School of Evocation",
 		"features":[
-			{"level":2, "key":"savant", "name":"Evocation Savant", "summary":"Half gold and time to copy evocation spells", "description":"TODO"},
-			{"level":2, "key":"sculpt", "name":"Sculpt Spells", "summary":"Choose creatures to be unaffected by evocation spells", "description":"TODO"},
-			{"level":6, "key":"potent", "name":"Potent Cantrip", "summary":"Damaging cantrips with savings throws cause half damage on save", "description":"TODO"},
-			{"level":10, "key":"empower", "name":"Empowered Evocation", "summary":"Add Intelligence modifier to evocation spell damage", "description":"TODO"},
-			{"level":14, "key":"overchannel", "name":"Overchannel", "summary":"1/day evocation spell up to fifth level deals maximum damage", "description":"TODO"},
+			{"level":2, "key":"savant", "name":"Evocation Savant", "summary":"Half gold and time to copy evocation spells", "description":"Beginning when you select this school at 2nd level, the gold and time you must spend to copy an evocation spell into your spellbook is halved."},
+			{"level":2, "key":"sculpt", "name":"Sculpt Spells", "summary":"Choose creatures to be unaffected by evocation spells", "description":"Beginning at 2nd level, you can create pockets of relative safety within the effects of your evocation spells. When you cast an evocation spell that affects other creatures that you can see, you can choose a number of them equal to 1 + the spell’s level. The chosen creatures automatically succeed on their saving throws against the spell, and they take no damage if they would normally take half damage on a successful save."},
+			{"level":6, "key":"potent", "name":"Potent Cantrip", "summary":"Damaging cantrips with savings throws cause half damage on save", "description":"Starting at 6th level, your damaging cantrips affect even creatures that avoid the brunt of the effect. When a creature succeeds on a saving throw against your cantrip, the creature takes half the cantrip’s damage (if any) but suffers no additional effect from the cantrip."},
+			{"level":10, "key":"empower", "name":"Empowered Evocation", "summary":"Add Intelligence modifier to evocation spell damage", "description":"Beginning at 10th level, you can add your Intelligence modifier to one damage roll of any wizard evocation spell you cast."},
+			{"level":14, "key":"overchannel", "name":"Overchannel", "summary":"1/day evocation spell up to fifth level deals maximum damage", "description":"Starting at 14th level, you can increase the power of your simpler spells. When you cast a wizard spell of 1st through 5th level that deals damage, you can deal maximum damage with that spell.<br/>The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a long rest, you take 2d12 necrotic damage for each level of the spell, immediately after you cast it. Each time you use this feature again before finishing a long rest, the necrotic damage per spell level increases by 1d12. This damage ignores resistance and immunity."},
 		]
 	},{
 		"key":"illusion",
@@ -1658,9 +1666,9 @@ var dnd = {
 		"features":[
 			{"level":2, "key":"savant", "name":"Illusion Savant", "summary":"Half gold and time to copy illusion spells", "description":"TODO"},
 			{"level":2, "key":"minor", "name":"Improved Minor Illusion", "summary":"Minor illusion cantrip creates both sound and image", "description":"TODO"},
-			{"level":6, "key":"malleable", "name":"Malleable Illusions", "summary":"Lasting illusion spells may be reshaped", "description":"TODO", "type":"action"},
-			{"level":10, "key":"deflect", "name":"Illusory Self", "summary":"1/rest cause attack to automatically miss", "description":"TODO", "type":"reaction"},
-			{"level":14, "key":"reality", "name":"Illusory Reality", "summary":"Make inanimate part of illusion spell real for a minute", "description":"TODO", "type":"bonusaction"},
+			{"level":6, "key":"malleable", "name":"Malleable Illusions", "summary":"Lasting illusion spells may be reshaped", "type":"action", "description":"TODO"},
+			{"level":10, "key":"deflect", "name":"Illusory Self", "summary":"1/rest cause attack to automatically miss", "type":"reaction", "description":"TODO"},
+			{"level":14, "key":"reality", "name":"Illusory Reality", "summary":"Make inanimate part of illusion spell real for a minute", "type":"bonusaction", "description":"TODO"},
 		]
 	},{
 		"key":"necromancy",
@@ -1669,8 +1677,8 @@ var dnd = {
 			{"level":2, "key":"savant", "name":"Necromancy Savant", "summary":"Half gold and time to copy necromancy spells", "description":"TODO"},
 			{"level":2, "key":"harvest", "name":"Grim Harvest", "summary":"Regain hit points by killing creatures with spells", "description":"TODO"},
 			{"level":6, "key":"thralls", "name":"Undead Thralls", "summary":"Created undead have bonus hit points and damage", "description":"TODO"},
-			{"level":10, "key":"inured", "name":"Inured to Undeath", "summary":"Hit point maximum cannot be reduced, resist necrotic damage", "description":"TODO", "resistance":["necrotic"]},
-			{"level":14, "key":"command", "name":"Command Undead", "summary":"Control one undead target that fails a Charisma save", "description":"TODO", "type":"action"},
+			{"level":10, "key":"inured", "name":"Inured to Undeath", "summary":"Hit point maximum cannot be reduced, resist necrotic damage", "resistance":["necrotic"], "description":"TODO"},
+			{"level":14, "key":"command", "name":"Command Undead", "summary":"Control one undead target that fails a Charisma save", "type":"action", "description":"TODO"},
 		]
 	},{
 		"key":"transmutation",
@@ -1679,18 +1687,18 @@ var dnd = {
 			{"level":2, "key":"savant", "name":"Transmutation Savant", "summary":"Half gold and time to copy transmutation spells", "description":"TODO"},
 			{"level":2, "key":"alchemy", "name":"Minor Alchemy", "summary":"Alter material of a simple object for an hour", "description":"TODO"},
 			{"level":6, "key":"stone", "name":"Transmuter's Stone", "summary":"Create a magical stone that grants a chosen benefit", "description":"TODO"},
-			{"level":10, "key":"shapechanger", "name":"Shapechanger", "summary":"1/rest cast polymorph on self limited to challenge rating 1 beast", "description":"TODO", "type":"action"},
-			{"level":14, "key":"master", "name":"Master Transmuter", "summary":"Consume transmuter's stone to cast a spell or effect", "description":"TODO", "type":"action"},
+			{"level":10, "key":"shapechanger", "name":"Shapechanger", "summary":"1/rest cast polymorph on self limited to challenge rating 1 beast", "type":"action", "description":"TODO"},
+			{"level":14, "key":"master", "name":"Master Transmuter", "summary":"Consume transmuter's stone to cast a spell or effect", "type":"action", "description":"TODO"},
 		]
 	},{
 		"key":"combat",
 		"name":"War Magic",
 		"features":[
-			{"level":2, "key":"deflection", "name":"Arcane Deflection", "summary":"+2 AC or +4 to savings throw as reaction, no spell slots next turn", "description":"TODO", "type":"reaction"},
-			{"level":2, "key":"wit", "name":"Tactical Wit", "summary":"Add intelligence modifier to initiative", "description":"TODO", "initiative":"intelligence"},
+			{"level":2, "key":"deflection", "name":"Arcane Deflection", "summary":"+2 AC or +4 to savings throw as reaction, no spell slots next turn", "type":"reaction", "description":"TODO"},
+			{"level":2, "key":"wit", "name":"Tactical Wit", "summary":"Add intelligence modifier to initiative", "initiative":"intelligence", "description":"TODO"},
 			{"level":6, "key":"surge", "name":"Power Surge", "summary":"Add force damage to spell", "description":"TODO"},
 			{"level":10, "key":"durable", "name":"Durable Magic", "summary":"+2 AC and +2 savings throws while maintaining concentration", "description":"TODO"},
-			{"level":14, "key":"shroud", "name":"Deflecting Shroud", "summary":"Do level/2 force damage to 3 creatures within 60 with Arcane Deflection", "description":"TODO", "type":"reaction"},
+			{"level":14, "key":"shroud", "name":"Deflecting Shroud", "summary":"Do level/2 force damage to 3 creatures within 60 with Arcane Deflection", "type":"reaction", "description":"TODO"},
 		]
 	}],
 	"names":{
@@ -1847,9 +1855,9 @@ var dnd = {
 		"advantage_on_saves":["charm"],
 		"immunities":["sleep"],
 		"features":[
-			{"level":0, "key":"fey", "name":"Fey Ancestry", "summary":"Advantage on charm saves", "description":"TODO"},
-			{"level":0, "key":"trance", "name":"Trance", "summary":"Long rest is 4 hour meditation", "description":"TODO"},
-			{"level":1, "key":"cantrip", "name":"Cantrip", "summary":"Choose one wizard cantrip", "description":"TODO", "cantrip":{"crass":"wizard", "ability":"intelligence"}, "type":"cantrip"}
+			{"level":0, "key":"fey", "name":"Fey Ancestry", "summary":"Advantage on charm saves", "description":"You have advantage on saving throws against being charmed, and magic can’t put you to sleep."},
+			{"level":0, "key":"trance", "name":"Trance", "summary":"Long rest is 4 hour meditation", "description":"Elves don’t need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day. (The Common word for such meditation is “trance.”) While meditating, you can dream after a fashion; such dreams are actually mental exercises that have become reflexive through years of practice. After resting in this way, you gain the same benefit that a human does from 8 hours of sleep."},
+			{"level":1, "key":"cantrip", "name":"Cantrip", "summary":"Choose one wizard cantrip", "cantrip":{"crass":"wizard", "ability":"intelligence"}, "type":"cantrip", "description":"You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it."}
 		]
 	},{
 		"key":"elfwood",
@@ -1872,9 +1880,9 @@ var dnd = {
 		"advantage_on_saves":["charm"],
 		"immunities":["sleep"],
 		"features":[
-			{"level":0, "key":"fey", "name":"Fey Ancestry", "summary":"Advantage on charm saves", "description":"TODO"},
-			{"level":0, "key":"trance", "name":"Trance", "summary":"Long rest is 4 hour meditation", "description":"TODO"},
-			{"level":0, "key":"wild", "name":"Mask of the Wild", "summary":"Hide when lightly obscured by natural phenomena", "description":"TODO"}
+			{"level":0, "key":"fey", "name":"Fey Ancestry", "summary":"Advantage on charm saves", "description":"You have advantage on saving throws against being charmed, and magic can’t put you to sleep."},
+			{"level":0, "key":"trance", "name":"Trance", "summary":"Long rest is 4 hour meditation", "description":"Elves don’t need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day. (The Common word for such meditation is “trance.”) While meditating, you can dream after a fashion; such dreams are actually mental exercises that have become reflexive through years of practice. After resting in this way, you gain the same benefit that a human does from 8 hours of sleep."},
+			{"level":0, "key":"wild", "name":"Mask of the Wild", "summary":"Hide when lightly obscured by natural phenomena", "description":"You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena."}
 		]
 	},{
 		"key":"elfdark",
@@ -1897,12 +1905,12 @@ var dnd = {
 		"advantage_on_saves":["charm"],
 		"immunities":["sleep"],
 		"features":[
-			{"level":0, "key":"fey", "name":"Fey Ancestry", "summary":"Advantage on charm saves", "description":"TODO"},
-			{"level":0, "key":"trance", "name":"Trance", "summary":"Long rest is 4 hour meditation", "description":"TODO"},
-			{"level":0, "key":"sensitive", "name":"Sunlight Sensitivity", "summary":"Disadvantage in direct sunlight", "description":"TODO"},
-			{"level":1, "key":"magic1", "name":"Drow Magic", "summary":"Gain Dancing Lights cantrip", "description":"TODO", "cantrip":{"key":"dancinglights", "ability":"charisma"}, "type":"cantrip"},
-			{"level":3, "key":"magic3", "name":"Drow Magic", "summary":"Cast Fairie Fire 1/day", "description":"TODO", "type":"spell"},
-			{"level":5, "key":"magic5", "name":"Drow Magic", "summary":"Cast Darkness 1/day", "description":"TODO", "type":"spell"}
+			{"level":0, "key":"fey", "name":"Fey Ancestry", "summary":"Advantage on charm saves", "description":"You have advantage on saving throws against being charmed, and magic can’t put you to sleep."},
+			{"level":0, "key":"trance", "name":"Trance", "summary":"Long rest is 4 hour meditation", "description":"Elves don’t need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day. (The Common word for such meditation is “trance.”) While meditating, you can dream after a fashion; such dreams are actually mental exercises that have become reflexive through years of practice. After resting in this way, you gain the same benefit that a human does from 8 hours of sleep."},
+			{"level":0, "key":"sensitive", "name":"Sunlight Sensitivity", "summary":"Disadvantage in direct sunlight", "description":"You have disadvantage on attack rolls and on Wisdom (Perception) checks that rely on sight when you, the target of your attack, or whatever you are trying to perceive is in direct sunlight."},
+			{"level":1, "key":"magic1", "name":"Drow Magic", "summary":"Gain Dancing Lights cantrip", "cantrip":{"key":"dancinglights", "ability":"charisma"}, "type":"cantrip", "description":"You know the dancing lights cantrip. Charisma is your spellcasting ability for these spells."},
+			{"level":3, "key":"magic3", "name":"Drow Magic", "summary":"1/day cast Fairie Fire", "type":"spell", "description":"When you reach 3rd level, you can cast the faerie fire spell once per day. Charisma is your spellcasting ability for these spells."},
+			{"level":5, "key":"magic5", "name":"Drow Magic", "summary":"1/day cast Darkness", "type":"spell", "description":"When you reach 5th level, you can also cast the darkness spell once per day. Charisma is your spellcasting ability for these spells."}
 		]
 	},{
 		"key":"gnomeforest",
@@ -1924,8 +1932,8 @@ var dnd = {
 		"alignment_default":"ng",
 		"advantage_on_saves":["mental-magic"],
 		"features":[
-			{"level":0, "key":"speak", "name":"Speak with Small Beasts", "summary":"Communicate simple ideas", "description":"TODO"},
-			{"level":1, "key":"illusionist", "name":"Natural Illusionist", "summary":"Gain Minor Illusion cantrip", "description":"TODO", "cantrip":{"key":"minorillusion", "ability":"intelligence"}, "type":"cantrip"}
+			{"level":0, "key":"speak", "name":"Speak with Small Beasts", "summary":"Communicate simple ideas", "description":"Through sounds and gestures, you can communicate simple ideas with Small ar smaller beasts. Forest gnomes love animals and often keep squirrels, badgers, rabbits, moles, woodpeckers, and other creatures as beloved pets."},
+			{"level":1, "key":"illusionist", "name":"Natural Illusionist", "summary":"Gain Minor Illusion cantrip", "cantrip":{"key":"minorillusion", "ability":"intelligence"}, "type":"cantrip", "description":"You know the minor illusion cantrip. Intelligence is your spellcasting ability for it."}
 		]
 	},{
 		"key":"gnomerock",
@@ -1947,8 +1955,8 @@ var dnd = {
 		"alignment_default":"ng",
 		"advantage_on_saves":["mental-magic"],
 		"features":[
-			{"level":0, "key":"lore", "name":"Artificer's Lore", "summary":"Double proficiency on magical History", "description":"TODO"},
-			{"level":0, "key":"tinker", "name":"Tinker", "summary":"Create simple devices and mechanisms", "description":"TODO"}
+			{"level":0, "key":"lore", "name":"Artificer's Lore", "summary":"Double proficiency on magical History", "description":"Whenever you make an Intelligence (History) check related to magic items, alchemical objects, or technological devices, you can add twice your proficiency bonus, instead of any proficiency bonus you normally apply."},
+			{"level":0, "key":"tinker", "name":"Tinker", "summary":"Create simple devices and mechanisms", "description":"You have proficiency with artisan’s tools (tinker’s tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device (AC 5, 1 hp). The device ceases to function after 24 hours (unless you spend 1 hour repairing it to keep the device functioning), or when you use your action to dismantle it; at that time, you can reclaim the materials used to create it. You can have up to three such devices active at a time.<br/>When you create a device, choose one of the following options:<br/>Clockwork Toy. This toy is a clockwork animal, monster, or person, such as a frog, mouse, bird, dragon, or soldier. When placed on the ground, the toy moves 5 feet across the ground on each of your turns in a random direction. It makes noises as appropriate to the creature it represents.<br/>Fire Starter. The device produces a miniature flame, which you can use to light a candle, torch, or campfire. Using the device requires your action.<br/>Music Box. When opened, this music box plays a single song at a moderate volume.<br/>The box stops playing when it reaches the song’s end or when it is closed."}
 		]
 	},{
 		"key":"halfelf",
@@ -1973,7 +1981,7 @@ var dnd = {
 		"advantage_on_saves":["charm"],
 		"immunities":["sleep"],
 		"features":[
-			{"level":0, "key":"fey", "name":"Fey Ancestry", "summary":"Advantage on charm saves", "description":"TODO"}
+			{"level":0, "key":"fey", "name":"Fey Ancestry", "summary":"Advantage on charm saves", "description":"You have advantage on saving throws against being charmed, and magic can’t put you to sleep."}
 		]
 	},{
 		"key":"halflinglightfoot",
@@ -1995,10 +2003,10 @@ var dnd = {
 		"alignment_default":"lg",
 		"advantage_on_saves":["fear"],
 		"features":[
-			{"level":0, "key":"lucky", "name":"Lucky", "summary":"Reroll a 1 on attack, save, or check", "description":"TODO"},
-			{"level":0, "key":"brave", "name":"Brave", "summary":"Advantage on fear saves", "description":"TODO"},
-			{"level":0, "key":"nimble", "name":"Halfling Nimbleness", "summary":"Move through space of larger creatures", "description":"TODO"},
-			{"level":0, "key":"stealthy", "name":"Naturally Stealthy", "summary":"Hide when obscured by larger creatures", "description":"TODO"}
+			{"level":0, "key":"lucky", "name":"Lucky", "summary":"Reroll a 1 on attack, save, or check", "description":"When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."},
+			{"level":0, "key":"brave", "name":"Brave", "summary":"Advantage on fear saves", "description":"You have advantage on saving throws against being frightened."},
+			{"level":0, "key":"nimble", "name":"Halfling Nimbleness", "summary":"Move through space of larger creatures", "description":"You can move through the space of any creature that is of a size larger than yours."},
+			{"level":0, "key":"stealthy", "name":"Naturally Stealthy", "summary":"Hide when obscured by larger creatures", "description":"You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you."}
 		]
 	},{
 		"key":"halflingstout",
@@ -2021,10 +2029,10 @@ var dnd = {
 		"advantage_on_saves":["fear", "poison"],
 		"resistance":["poison"],
 		"features":[
-			{"level":0, "key":"lucky", "name":"Lucky", "summary":"Reroll a 1 on attack, save, or check", "description":"TODO"},
-			{"level":0, "key":"brave", "name":"Brave", "summary":"Advantage on fear saves", "description":"TODO"},
-			{"level":0, "key":"nimble", "name":"Halfling Nimbleness", "summary":"Move through space of larger creatures", "description":"TODO"},
-			{"level":0, "key":"resilience", "name":"Stout Resilience", "summary":"Advantage on poison saves", "description":"TODO"}
+			{"level":0, "key":"lucky", "name":"Lucky", "summary":"Reroll a 1 on attack, save, or check", "description":"When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."},
+			{"level":0, "key":"brave", "name":"Brave", "summary":"Advantage on fear saves", "description":"You have advantage on saving throws against being frightened."},
+			{"level":0, "key":"nimble", "name":"Halfling Nimbleness", "summary":"Move through space of larger creatures", "description":"You can move through the space of any creature that is of a size larger than yours."},
+			{"level":0, "key":"resilience", "name":"Stout Resilience", "summary":"Advantage on poison saves", "description":"You have advantage on saving throws against poison, and you have resistance against poison damage."}
 		]
 	},{
 		"key":"halforc",
@@ -2045,8 +2053,8 @@ var dnd = {
 		"weight":{"base":140, "times":{"roll":2, "die":6}},
 		"alignment_default":"ce",
 		"features":[
-			{"level":0, "key":"relentless", "name":"Relentless Endurance", "summary":"Avoid death 1/day", "description":"TODO"},
-			{"level":0, "key":"savage", "name":"Savage Attacks", "summary":"Extra damage die on critical hit", "description":"TODO", "criticaldice":1}
+			{"level":0, "key":"relentless", "name":"Relentless Endurance", "summary":"1/day avoid death", "description":"When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. You can’t use this feature again until you finish a long rest."},
+			{"level":0, "key":"savage", "name":"Savage Attacks", "summary":"Extra damage die on critical hit", "criticaldice":1, "description":"When you score a critical hit with a melee weapon attack, you can roll one of the weapon’s damage dice one additional time and add it to the extra damage of the critical hit."}
 		]
 	},{
 		"key":"dragonborn",
@@ -2067,12 +2075,12 @@ var dnd = {
 		"weight":{"base":175, "times":{"roll":2, "die":6}},
 		"alignment_default":"ng",
 		"features":[
-			{"level":0, "key":"draconic", "name":"Draconic Ancestry", "summary":"Choose ancestry", "description":"TODO", "options":{"dnd":"dragonbornancestry", "hash":"da"}},
-			{"level":0, "key":"resistance", "name":"Damage Resistance", "summary":"Resist damage of ancestry", "description":"TODO"},
-			{"level":1, "key":"breathweapon1", "name":"Breath Weapon", "summary":"Dragon Breath for 2d6 damage 1/rest", "description":"TODO", "type":"action"},
-			{"level":6, "key":"breathweapon6", "name":"Breath Weapon", "summary":"Dragon Breath for 3d6 damage 1/rest", "description":"TODO"},
-			{"level":11, "key":"breathweapon11", "name":"Breath Weapon", "summary":"Dragon Breath for 4d6 damage 1/rest", "description":"TODO"},
-			{"level":16, "key":"breathweapon16", "name":"Breath Weapon", "summary":"Dragon Breath for 5d6 damage 1/rest", "description":"TODO"}
+			{"level":0, "key":"draconic", "name":"Draconic Ancestry", "summary":"Choose ancestry", "options":{"dnd":"dragonbornancestry", "hash":"da"}, "description":"You have draconic ancestry. Choose one type of dragon from the Draconic Ancestry table. Your breath weapon and damage resistance are determined by the dragon type, as shown in the table."},
+			{"level":0, "key":"resistance", "name":"Damage Resistance", "summary":"Resist damage of ancestry", "description":"You have resistance to the damage type associated with your draconic ancestry."},
+			{"level":1, "key":"breathweapon1", "name":"Breath Weapon", "summary":"1/rest Dragon Breath for 2d6 damage", "type":"action", "description":"You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation. When you use your breath weapon, each creature in the area of the exhalation must make a saving throw, the type of which is determined by your draconic ancestry. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes 2d6 damage on a failed save, and half as much damage on a successful one. The damage increases to 3d6 at 6th level, 4d6 at 11th level, and 5d6 at 16th level. After you use your breath weapon, you can’t use it again until you complete a short or long rest."},
+			{"level":6, "key":"breathweapon6", "name":"Breath Weapon", "summary":"1/rest Dragon Breath for 3d6 damage", "type":"action", "description":"You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation. When you use your breath weapon, each creature in the area of the exhalation must make a saving throw, the type of which is determined by your draconic ancestry. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes 2d6 damage on a failed save, and half as much damage on a successful one. The damage increases to 3d6 at 6th level, 4d6 at 11th level, and 5d6 at 16th level. After you use your breath weapon, you can’t use it again until you complete a short or long rest."},
+			{"level":11, "key":"breathweapon11", "name":"Breath Weapon", "summary":"1/rest Dragon Breath for 4d6 damage", "type":"action", "description":"You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation. When you use your breath weapon, each creature in the area of the exhalation must make a saving throw, the type of which is determined by your draconic ancestry. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes 2d6 damage on a failed save, and half as much damage on a successful one. The damage increases to 3d6 at 6th level, 4d6 at 11th level, and 5d6 at 16th level. After you use your breath weapon, you can’t use it again until you complete a short or long rest."},
+			{"level":16, "key":"breathweapon16", "name":"Breath Weapon", "summary":"1/rest Dragon Breath for 5d6 damage", "type":"action", "description":"You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation. When you use your breath weapon, each creature in the area of the exhalation must make a saving throw, the type of which is determined by your draconic ancestry. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes 2d6 damage on a failed save, and half as much damage on a successful one. The damage increases to 3d6 at 6th level, 4d6 at 11th level, and 5d6 at 16th level. After you use your breath weapon, you can’t use it again until you complete a short or long rest."}
 		]
 	},{
 		"key":"tiefling",
@@ -2094,10 +2102,10 @@ var dnd = {
 		"alignment_default":"cn",
 		"resistance":["fire"],
 		"features":[
-			{"level":0, "key":"resistance", "name":"Hellish Resistance", "summary":"Resist fire damage", "description":"TODO"},
-			{"level":1, "key":"legacy1", "name":"Infernal Legacy", "summary":"Gain Thaumaturgy cantrip", "description":"TODO", "cantrip":{"key":"thaumaturgy", "ability":"charisma"}, "type":"cantrip"},
-			{"level":3, "key":"legacy3", "name":"Infernal Legacy", "summary":"Cast Hellish Rebuke 1/day", "description":"TODO", "type":"spell"},
-			{"level":5, "key":"legacy5", "name":"Infernal Legacy", "summary":"Cast Darkness 1/day", "description":"TODO", "type":"spell"}
+			{"level":0, "key":"resistance", "name":"Hellish Resistance", "summary":"Resist fire damage", "description":"You have resistance to fire damage."},
+			{"level":1, "key":"legacy1", "name":"Infernal Legacy", "summary":"Gain Thaumaturgy cantrip", "cantrip":{"key":"thaumaturgy", "ability":"charisma"}, "type":"cantrip", "description":"You know the thaumaturgy cantrip. When you reach 3rd level, you can cast the hellish rebuke spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the darkness spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells."},
+			{"level":3, "key":"legacy3", "name":"Infernal Legacy", "summary":"1/day cast Hellish Rebuke", "type":"spell", "description":"You know the thaumaturgy cantrip. When you reach 3rd level, you can cast the hellish rebuke spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the darkness spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells."},
+			{"level":5, "key":"legacy5", "name":"Infernal Legacy", "summary":"1/day cast Darkness", "type":"spell", "description":"You know the thaumaturgy cantrip. When you reach 3rd level, you can cast the hellish rebuke spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the darkness spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells."}
 		]
 	},{
 		"key":"aarakocra",
@@ -2119,8 +2127,8 @@ var dnd = {
 		"alignment_default":"ng",
 		"resistance":[],
 		"features":[
-			{"level":0, "key":"flight", "name":"Flight", "summary":"Flying speed 50 when lightly armored", "description":"TODO", "flying":50, "hover":false},
-			{"level":0, "key":"talons", "name":"Talons", "summary":"Proficient with talons, d4 damage", "description":"TODO"},
+			{"level":0, "key":"flight", "name":"Flight", "summary":"Flying speed 50 when lightly armored", "flying":50, "hover":false, "description":"You have a flying speed of 50 feet. To use this speed, you can’t be wearing medium or heavy armor."},
+			{"level":0, "key":"talons", "name":"Talons", "summary":"Proficient with talons, d4 damage", "description":"Your talons are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal slashing damage equal to 1d4 + your Strength modifier, instead of the bludgeoning damage normal for an unarmed strike."},
 		]
 	},{
 		"key":"warforgedjuggernaut",

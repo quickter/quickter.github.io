@@ -131,6 +131,7 @@ tr.features.reaction > td.name { font-style:oblique; }
 tr.features.bonusaction > td.name { font-weight:bold; }
 td.level { text-align:right; }
 tr.features > td.summary { font-size:60%; vertical-align:middle; }
+td.feature > br { content:""; display:block; margin-top:0.5em; }
 
 br.tall + * { margin-top:1.5em; }
 .tiny { font-size:60%; }
