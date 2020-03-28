@@ -2488,7 +2488,7 @@
 				populateRadioItems(_element(key), dnd[key], prefix, false, templateContent)
 			}
 			
-			function populateOptionSet(element, optionSet) {
+			function populateOptionSet(element, optionSet, level) {
 				var index
 				var items = dnd[optionSet.dnd]
 				var node = _element(element)
@@ -2508,14 +2508,17 @@
 					var beginTag = "<div id='"+prefix+"' data-dnd='"+optionSet.dnd+"' data-hash='"+hash+"' class='"+style+" cycle-option advance' onclick='handleCycleOptionSet(\""+prefix+"\")'>"
 					var closeTag = "</div>"
 					var templateList = "<span id='"+prefix+"-{key}' data-key='{key}' class='"+style+" "+prefix+" hidden toggle nose'><b>{name}</b>: {summary}</span>"
-					var included = optionSet.exclude ? items.filter(i => optionSet.exclude.indexOf(i.key) < 0) : items
+					var filterByExclude = optionSet.exclude ? items.filter(i => optionSet.exclude.indexOf(i.key) < 0) : items
+					var filterByLevel = level < 20 ? filterByExclude.filter(i => (i.requirelevel || 0) <= level) : filterByExclude
+					var included = filterByLevel
 					var list = included.map((item) => replaceKeys(templateList, item))
 					
 					for ( index = 0 ; index < included.length ; ++index ) {
 						if ( included[index].key === character[hash] ) { break }
 					}
 					
-					list[index % list.length] = list[index % list.length].replace('hidden', 'chosen')
+					index = index % list.length
+					list[index] = list[index].replace('hidden', 'chosen')
 					
 					node.innerHTML = beginTag + list.join(" ") + closeTag
 				}
@@ -2525,8 +2528,9 @@
 			}
 			
 			function populateFeatureArchetype(feature, details) {
+				var summary = details.archetype.name || feature.summary
 				var node = _element('feature-' + feature.key + '-' + (feature.level || '') + '-summary')
-				var html = "<div id='cycle-archetype' class='archetype cycle-option advance' onclick='advanceArchetype()'><span id='cycle-archetype-summary' class='archetype chosen toggle nose'><b>" + (details.archetype.name || feature.summary) + "</b></span></div>"
+				var html = "<div id='cycle-archetype' class='archetype cycle-option advance' onclick='advanceArchetype()'><span id='cycle-archetype-summary' class='archetype chosen toggle nose'><b>" + summary + "</b></span></div>"
 				
 				node.innerHTML = html
 			}
@@ -2542,8 +2546,9 @@
 				
 				var layout = optionSet.layout || (optionSet.limit > 0 ? 'checkbox' : 'cycle')
 				var suffix = (layout === 'cycle') ? '-summary' : '-options'
+				var level = Math.max(details.level || 1, feature.level || 0)
 				
-				populateOptionSet('feature-' + feature.key + '-' + (feature.level || '') + suffix, optionSet)
+				populateOptionSet('feature-' + feature.key + '-' + (feature.level || '') + suffix, optionSet, level)
 			}
 			
 			function populateRaces() {
@@ -2710,7 +2715,6 @@
 			
 			function prepareLookup() {
 				if ( location.protocol.startsWith('file') ) {
-					console.log("Adding test class")
 					dnd.classes.push({
 						"key":"test",
 						"name":"Test",
@@ -2748,8 +2752,10 @@
 				
 				lookup.optionHash = []
 				
-				for ( var crass of dnd.classes ) {
-					for ( var feature of crass.features ) {
+				var haveFeaturesWithOptions = dnd.classes.concat(dnd.archetypes, dnd.races)
+				
+				for ( var entry of haveFeaturesWithOptions ) {
+					for ( var feature of entry.features ) {
 						if ( feature.options && feature.options.hash && lookup.optionHash.indexOf(feature.options.hash) < 0 ) {
 							lookup.optionHash.push(feature.options.hash)
 						}
