@@ -1101,7 +1101,6 @@ var dnd = {
 	"archetypes":[{
 		"key":"berserker",
 		"name":"Path of the Berserker",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"frenzy", "name":"Frenzy", "summary":"Melee attack as bonus action during rage", "type":"bonusaction", "description":"Starting when you choose this path at 3rd level, you can go into a frenzy when you rage. If you do so, for the duration of your rage you can make a single melee weapon attack as a bonus action on each of your turns after this one. When your rage ends, you suffer one level of exhaustion."},
 			{"level":6, "key":"mindless", "name":"Mindless Rage", "summary":"Immune to charm and fear during rage", "description":"Beginning at 6th level, you can’t be charmed or frightened while raging. If you are charmed or frightened when you enter your rage, the effect is suspended for the duration of the rage."},
@@ -1111,7 +1110,6 @@ var dnd = {
 	},{
 		"key":"totem",
 		"name":"Path of the Totem Warrior",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"seeker", "name":"Spirit Seeker", "summary":"Learn Beast Sense and Speak with Animals as rituals", "type":"action", "description":"Yours is a path that seeks attunement with the natural world, giving you a kinship with beasts. At 3rd level when you adopt this path, you gain the ability to cast the Beast Sense and Speak with Animals spells, but only as rituals."},
 			{"level":3, "key":"spirit", "name":"Totem Spirit", "summary":"Choose a totem animal", "description":"At 3rd level, when you adopt this path, you choose a totem spirit and gain its feature. You must make or acquire a physical totem object – an amulet or similar adornment – that incorporates fur or feathers, claws, teeth, or bones of the totem animal. At your option, you also gain minor physical attributes that are reminiscent of your totem spirit. For example, if you have a bear totem spirit, you might be unusually hairy and thick-skinned, or if your totem is the eagle, your eyes turn bright yellow.<br/>Your totem animal might be an animal related to those listed here but more appropriate to your homeland. For example, you could choose a hawk or vulture in place of an eagle.<dl></dt>Bear</dt><dd>While raging, you have resistance to all damage except psychic damage. The spirit of the bear makes you tough enough to stand up to any punishment.</dd></dt>Eagle</dt><dd>While you're raging and aren't wearing heavy armor, other creatures have disadvantage on opportunity attack rolls against you, and you can use the Dash action as a bonus action on your turn. The spirit of the eagle makes you into a predator who can weave through the fray with ease.</dd></dt>Elk</dt><dd>While you're raging and aren't wearing heavy armor, your walking speed increases by 15 feet. The spirit of the elk makes you extraordinarily swift.</dd></dt>Tiger</dt><dd>While raging, you can add 10 feet to your long jump distance and 3 feet to your high jump distance. The spirit of the tiger empowers your leaps.</dd></dt>Wolf</dt><dd>While you're raging, your friends have advantage on melee attack rolls against any creature within 5 feet of you that is hostile to you. The spirit of the wolf makes you a leader of hunters.</dd></dl>"},
@@ -1122,7 +1120,6 @@ var dnd = {
 	},{
 		"key":"guardian",
 		"name":"Path of the Ancestral Guardian",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"protectors", "name":"Ancestral Protectors", "summary":"First hit each turn imposes disadvantage on attacks against allies until next turn", "description":"Starting when you choose this path at 3rd level, spectral warriors appear when you enter your rage. While you’re raging, the first creature you hit with an attack on your turn becomes the target of the warriors, which hinder its attacks. Until the start of your next turn, that target has disadvantage on any attack roll that isn't against you, and when the target hits a creature other than you with an attack, that creature has resistance to the damage of the target’s attacks."},
 			{"level":6, "key":"shield6", "name":"Spirit Shield (2d6)", "summary":"Reduce damage to ally within 30 by 2d6 as reaction", "type":"reaction", "description":"Beginning at 6th level, the guardian spirits that aid you can provide supernatural protection to those you defend. If you are raging and a creature you can see within 30 feet of you takes damage, you can use your reaction to reduce that damage by 2d6.<br/>When you reach certain levels in this class, you can reduce the damage by more: by 3d6 at 10th level and by 4d6 at 14th level."},
@@ -1134,7 +1131,6 @@ var dnd = {
 	},{
 		"key":"herald",
 		"name":"Path of the Storm Herald",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"aura", "name":"Storm Aura", "summary":"Gain magical aura within 10 while raging", "type":"bonusaction", "description":"When you select this path at 3rd level, you emanate a stormy, magical aura while you rage. The aura extends 10 feet from you in every direction, but not through total cover.<br/>Your aura has an effect that activates when you enter your rage, and you can activate the effect again on each of your turns as a bonus action. Choose desert, sea, or tundra. Your aura's effect depends on that chosen environment, as detailed below. You can change your environment choice whenever you gain a level in this class.<br/>If your aura's effects require a saving throw, the DC equals 8 + your proficiency bonus + your Constitution modifier.<dl><dt>Desert</dt><dd>When this effect is activated, all other creatures in your aura take 2 fire damage each. The damage increases when you reach certain levels in this class, increasing to 3 at 5th level, 4 at 10th level, 5 at 15th level, and 6 at 20th level.</dd><dt>Sea</dt><dd>When this effect is activated, you can choose one other creature you can see in your aura. The target must make a Dexterity saving throw. The target takes 1d6 lightning damage on a failed save, or half as much damage on a successful one. The damage increases when you reach certain levels in this class, increasing to 2d6 at 10th level, 3d6 at 15th level, and 4d6 at 20th level.</dd><dt>Tundra</dt><dd>When this effect is activated, each creature of your choice in your aura gains 2 temporary hit points, as icy spirits inure it to suffering. The temporary hit points increase when you reach certain levels in this class, increasing to 3 at 5th level, 4 at 10th level, 5 at 15th level, and 6 at 20th level.</dd></dl>"},
 			{"level":6, "key":"soul", "name":"Storm Soul", "summary":"Gain resistance to fire, lightning or cold damage", "description":"At 6th level, the storm grants you benefits even when your aura isn't active. The benefits are based on the environment you chose for your Storm Aura.<dl><dt>Desert</dt><dd>You gain resistance to fire damage, and you don’t suffer the effects of extreme heat, as described in the Dungeon Master's Guide. Moreover, as an action, you can touch a flammable object that isn't being worn or carried by anyone else and set it on fire.</dd><dt>Sea</dt><dd>You gain resistance to lightning damage, and you can breathe underwater. You also gain a swimming speed of 30 feet.</dd><dt>Tundra</dt><dd>You gain resistance to cold damage, and you don’t suffer the effects of extreme cold, as described in the Dungeon Master's Guide. Moreover, as an action, you can touch water and turn a 5-foot cube of it into ice, which melts after 1 minute. This action fails if a creature is in the cube.</dd></dl>"},
@@ -1144,7 +1140,6 @@ var dnd = {
 	},{
 		"key":"zealot",
 		"name":"Path of the Zealot",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"fury", "name":"Divine Fury", "summary":"1/turn do level/2 extra necrotic or radiant damage with weapon", "description":"Starting when you choose this path at 3rd level, you can channel divine fury into your weapon strikes. While you're raging, the first creature you hit on each of your turns with a weapon attack takes extra damage equal to 1d6 + half your Barbarian level. The extra damage is necrotic or radiant; you choose the type of damage when you gain this feature."},
 			{"level":3, "key":"warrior", "name":"Warrior of the Gods", "summary":"Spells that restore your life need no material components", "description":"At 3rd level, your soul is marked for endless battle. If a spell, such as Raise Dead, has the sole effect of restoring you to life (but not undeath), the caster doesn't need material components to cast the spell on you."},
@@ -1155,7 +1150,6 @@ var dnd = {
 	},{
 		"key":"lore",
 		"name":"College of Lore",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"skillz", "name":"Bonus Proficiencies", "summary":"Choose 3 skills", "skill_options":{"limit":3}, "description":"When you join the College of Lore at 3rd level, you gain proficiency with three skills of your choice."},
 			{"level":3, "key":"words", "name":"Cutting Words", "summary":"Impose inspiration die as penalty", "type":"reaction", "description":"Also at 3rd level, you learn how to use your wit to distract, confuse, and otherwise sap the confidence and competence of others. When a creature that you can see within 60 feet of you makes an attack roll, an ability check, or a damage roll, you can use your reaction to expend one of your uses of Bardic Inspiration, rolling a Bardic Inspiration die and subtracting the number rolled from the creature’s roll. You can choose to use this feature after the creature makes its roll, but before the DM determines whether the attack roll or ability check succeeds or fails, or before the creature deals its damage. The creature is immune if it can’t hear you or if it’s immune to being charmed."},
@@ -1165,7 +1159,6 @@ var dnd = {
 	},{
 		"key":"valor",
 		"name":"College of Valor",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"skillz", "name":"Bonus Proficiencies", "summary":"Gain armor and weapon proficiencies", "armor":["medium", "shields"], "weapons":["martial"], "description":"When you join the College of Valor at 3rd level, you gain proficiency with medium armor, shields, and martial weapons."},
 			{"level":3, "key":"combat", "name":"Combat Inspiration", "summary":"Use inspiration die for damage or armor class", "type":"reaction", "description":"Also at 3rd level, you learn to inspire others in battle. A creature that has a Bardic Inspiration die from you can roll that die and add the number rolled to a weapon damage roll it just made. Alternatively, when an attack roll is made against the creature, it can use its reaction to roll the Bardic Inspiration die and add the number rolled to its AC against that attack, after seeing the roll but before knowing whether it hits or misses."},
@@ -1175,7 +1168,6 @@ var dnd = {
 	},{
 		"key":"glamour",
 		"name":"College of Glamour",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"inspiration", "name":"Mantle of Inspiration", "summary":"Use bardic inspiration to give allies temporary hit points and movement", "type":"bonusaction", "description":"When you join the College of Glamour at 3rd level, you gain the ability to weave a song of fey magic that imbues your allies with vigor and speed.<br/>As a bonus action, you can expend one use of your Bardic Inspiration to grant yourself a wondrous appearance. When you do so, choose a number of creatures you can see and who can see you within 60 feet of you, up to a number equal to your Charisma modifier (minimum of one). Each of them gains 5 temporary hit points. When a creature gains these temporary hit points, it can immediately use its reaction to move up to its speed, without provoking opportunity attacks.<br/>The number of temporary hit points increases when you reach certain levels in this class, increasing to 8 at 5th level, 11 at 10th level, and 14 at 15th level."},
 			{"level":3, "key":"enthrall", "name":"Enthralling Performance", "summary":"1/rest charm humanoids within 60 for 1 hour", "description":"Starting at 3rd level, you can charge your performance with seductive, fey magic.<br/>If you perform for at least 1 minute, you can attempt to inspire wonder in your audience by singing, reciting a poem, or dancing. At the end of the performance, choose a number of humanoids within 60 feet of you who watched and listened to all of it, up to a number equal to your Charisma modifier (minimum of one). Each target must succeed on a Wisdom saving throw against your spell save DC or be charmed by you. While charmed in this way, the target idolizes you, it speaks glowingly of you to anyone who speaks to it, and it hinders anyone who opposes you, avoiding violence unless it was already inclined to fight on your behalf. This effect ends on a target after 1 hour, if it takes any damage, if you attack it, or if it witnesses you attacking or damaging any of its allies.<br/>If a target succeeds on its saving throw, the target has no hint that you tried to charm it.<br/>Once you use this feature, you can’t use it again until you finish a short or long rest."},
@@ -1185,7 +1177,6 @@ var dnd = {
 	},{
 		"key":"swords",
 		"name":"College of Swords",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"skillz", "name":"Bonus Proficiencies", "summary":"Gain armor and weapon proficiencies", "armor":["medium"], "weapons":["scimitar"], "description":"When you join the College of Swords at 3rd level, you gain proficiency with medium armor and the scimitar.<br/>If you’re proficient with a simple or martial melee weapon, you can use it as a spellcasting focus for your bard spells."},
 			{"level":3, "key":"fightingstyle", "name":"Fighting Style", "summary":"Choose a fighting style", "options":{"dnd":"fightingstyles", "hash":"fs", "exclude":["archery", "defense", "great", "block"]}, "description":"At 3rd level, you adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again."},
@@ -1196,9 +1187,8 @@ var dnd = {
 	},{
 		"key":"whispers",
 		"name":"College of Whispers",
-		"description":"TODO",
 		"features":[
-			{"level":3, "key":"blades", "name":"Psychic Bladed", "summary":"1/turn use Bardic Inspiration to increase weapon damage", "description":"When you join the College of Whispers at 3rd level, you gain the ability to make your weapon attacks magically toxic to a creature's mind.<br/>When you hit a creature with a weapon attack, you can expend one use of your Bardic Inspiration to deal an additional 2d6 psychic damage to that target. You can do so only once per round on your turn.<br/>The psychic damage increases when you reach certain levels in this class, increasing to 3d6 at 5th level, 5d6 at 10th level, and 8d6 at 15th level."},
+			{"level":3, "key":"blades", "name":"Psychic Blades", "summary":"1/turn use Bardic Inspiration to increase weapon damage", "description":"When you join the College of Whispers at 3rd level, you gain the ability to make your weapon attacks magically toxic to a creature's mind.<br/>When you hit a creature with a weapon attack, you can expend one use of your Bardic Inspiration to deal an additional 2d6 psychic damage to that target. You can do so only once per round on your turn.<br/>The psychic damage increases when you reach certain levels in this class, increasing to 3d6 at 5th level, 5d6 at 10th level, and 8d6 at 15th level."},
 			{"level":3, "key":"words", "name":"Words of Terror", "summary":"1/rest instill fear for 1 hour with a 1 minute conversation", "description":"At 3rd level, you learn to infuse innocent-seeming words with an insidious magic that can inspire terror.<br/>If you speak to a humanoid alone for at least 1 minute, you can attempt to seed paranoia and fear into its mind. At the end of the conversation, the target must succeed on a Wisdom saving throw against your spell save DC or be frightened of you or another creature of your choice. The target is frightened in this way for 1 hour, until it is attacked or damaged, or until it witnesses its allies being attacked or damaged.<br/>If the target succeeds on its saving throw, the target has no hint that you tried to frighten it.<br/>Once you use this feature, you can’t use it again until you finish a short rest or long rest."},
 			{"level":6, "key":"whispers", "name":"Mantle of Whispers", "summary":"1/rest capture spirit of slain humanoid to use as a disguise", "description":"At 6th level, you gain the ability to adopt a humanoid's persona. When a humanoid dies within 30 feet of you, you can magically capture its shadow using your reaction. You retain this shadow until you use it or you finish a long rest.<br/>You can use the shadow as an action. When you do so, it vanishes, magically transforming into a disguise that appears on you. You now look like the dead person, but healthy and alive. This disguise lasts for 1 hour or until you end it as a bonus action.<br/>While you're in the disguise, you gain access to all information that the humanoid would freely share with a casual acquaintance. Such information includes general details on its background and personal life, but doesn't include secrets. The information is enough that you can pass yourself off as the person by drawing on its memories.<br/>Another creature can see through this disguise by succeeding on a Wisdom (Insight) check contested by your Charisma (Deception) check. You gain a +5 bonus to your check.<br/>Once you capture a shadow with this feature, you can't capture another one with it until you finish a short or long rest."},
 			{"level":14, "key":"lore", "name":"Shadow Lore", "summary":"1/day charm creature within 30 for 8 hours", "type":"action", "description":"At 14th level, you gain the ability to weave dark magic into your words and tap into a creature’s deepest fears.<br/>As an action, you magically whisper a phrase that only one creature of your choice within 30 feet of you can hear. The target must make a Wisdom saving throw against your spell save DC. It automatically succeeds if it doesn’t share a language with you or if it can’t hear you. On a successful saving throw, your whisper sounds like unintelligible mumbling and has no effect.<br/>If the target fails its saving throw, it is charmed by you for the next 8 hours or until you or your allies attack or damage it. It interprets the whispers as a description of its most mortifying secret.<br/>While you gain no knowledge of this secret, the target is convinced you know it. While charmed in this way, the creature obeys your commands for fear that you will reveal its secret. It won’t risk its life for you or fight for you, unless it was already inclined to do so. It grants you favors and gifts it would offer to a close friend.<br/>When the effect ends, the creature has no understanding of why it held you in such fear.<br/>Once you use this feature, you can’t use it again until you finish a long rest."},
@@ -1206,7 +1196,6 @@ var dnd = {
 	},{
 		"key":"knowledge",
 		"name":"Knowledge Domain",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"spells", "name":"Domain Spells", "summary":"Gain bonus prepared spells", "description":"Each domain has a list of spells, its domain spells, that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day.<br/>If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.<ol><li value=1>Command, Identify</li><li value=3>Augury, Suggestion</li><li value=5>Nondetection, Speak with Dead</li><li value=7>Arcane Eye, Confusion</li><li value=9>Legend Lore, Scrying</li></ol>"},
 			{"level":1, "key":"blessings", "name":"Blessings of Knowledge", "summary":"Gain 2 languages and 2 double profiencies", "extra_language":2, "skill_options":{limit:2, "list":["arcana", "history", "nature", "religion"]}, "description":"At 1st level, you learn two languages of your choice. You also become proficient in your choice of two of the following skills: Arcana, History, Nature, or Religion.<br/>Your proficiency bonus is doubled for any ability check you make that uses either of those skills."},
@@ -1218,7 +1207,6 @@ var dnd = {
 	},{
 		"key":"life",
 		"name":"Life Domain",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"spells", "name":"Domain Spells", "summary":"Gain bonus prepared spells", "description":"Each domain has a list of spells, its domain spells, that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day.<br/>If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.<ol><li value=1>Bless, Cure Wounds</li><li value=3>Lesser Restoration, Spiritual Weapon</li><li value=5>Beacon of Hope, Revivify</li><li value=7>Death Ward, Guardian of Faith</li><li value=9>Mass Cure Wounds, Raise Dead</li></ol>"},
 			{"level":1, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain heavy armor proficiency", "armors":["heavy"], "description":"When you choose this domain at 1st level, you gain proficiency with heavy armor."},
@@ -1231,7 +1219,6 @@ var dnd = {
 	},{
 		"key":"light",
 		"name":"Light Domain",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"spells", "name":"Light Domain Spells", "summary":"Gain bonus prepared spells", "description":"Each domain has a list of spells, its domain spells, that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day.<br/>If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.<ol><li value=1>Burning Hands, Faerie Fire</li><li value=3>Flaming Sphere, Scorching Ray</li><li value=5>Daylight, Fireball</li><li value=7>Guardian of Faith, Wall of Fire</li><li value=9>Flame Strike, Scrying</li></ol>"},
 			{"level":1, "key":"light", "name":"Bonus Cantrip", "summary":"Gain the Light cantrip", "cantrip":{"key":"light", "ability":"wisdom"}, "type":"cantrip", "description":"When you choose this domain at 1st level, you gain the Light cantrip if you don't already know it."},
@@ -1244,7 +1231,6 @@ var dnd = {
 	},{
 		"key":"nature",
 		"name":"Nature Domain",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"spells", "name":"Domain Spells", "summary":"Gain bonus prepared spells", "description":"Each domain has a list of spells, its domain spells, that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day.<br/>If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.<ol><li value=1>Animal Friendship, Speak with Animals</li><li value=3>Barkskin, Spike Growth</li><li value=5>Plant Growth, Wind Wall</li><li value=7>Dominate Beast, Grasping Vine</li><li value=9>Insect Plague, Tree Stride</li></ol>"},
 			{"level":1, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain heavy armor proficiency", "armors": ["heavy"], "description":"Also at 1st level, you gain proficiency with heavy armor."},
@@ -1257,7 +1243,6 @@ var dnd = {
 	},{
 		"key":"tempest",
 		"name":"Tempest Domain",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"spells", "name":"Domain Spells", "summary":"Gain bonus prepared spells", "description":"Each domain has a list of spells, its domain spells, that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day.<br/>If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.<ol><li value=1>Fog Cloud, Thunderwave</li><li value=3>Gust of Wind, Shatter</li><li value=5>Call Lightning, Sleet Storm</li><li value=7>Control Water, Ice Storm</li><li value=9>Destructive Wave, Insect Plague</li></ol>"},
 			{"level":1, "key":"proficiency", "name":"Bonus Proficiencies", "summary":"Gain heavy armor and martial weapon proficiency", "armors":["heavy"], "weapons":["martial"], "description":"At 1st level, you gain proficiency with martial weapons and heavy armor."},
@@ -1270,7 +1255,6 @@ var dnd = {
 	},{
 		"key":"trickery",
 		"name":"Trickery Domain",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"spells", "name":"Trickery Domain Spells", "summary":"Gain bonus prepared spells", "description":"Each domain has a list of spells, its domain spells, that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day.<br/>If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.<ol><li value=1>Charm Person, Disguise Self</li><li value=3>Mirror Image, Pass without Trace</li><li value=5>Blink, Dispel Magic</li><li value=7>Dimension Door, Polymorph</li><li value=9>Dominate Person, Modify Memory</li></ol>"},
 			{"level":1, "key":"blessings", "name":"Blessing of the Trickster", "summary":"Grant advantage on stealth for one hour", "type":"action", "description":"Starting when you choose this domain at 1st level, you can use your action to touch a willing creature other than yourself to give it advantage on Dexterity (Stealth) checks. This blessing lasts for 1 hour or until you use this feature again."},
@@ -1282,7 +1266,6 @@ var dnd = {
 	},{
 		"key":"war",
 		"name":"War Domain",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"spells", "name":"Domain Spells", "summary":"Gain bonus prepared spells", "description":"Each domain has a list of spells, its domain spells, that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day.<br/>If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.<ol><li value=1>Divine Favor, Shield of Faith</li><li value=3>Magic Weapon, Spiritual Weapon</li><li value=5>Crusader's Mantle, Spirit Guardians</li><li value=7>Freedom of Movement, Stoneskin</li><li value=9>Flame Strike, Hold Monster</li></ol>"},
 			{"level":1, "key":"proficiency", "name":"Bonus Proficiencies", "summary":"Gain heavy armor and martial weapon proficiency", "armors":["heavy"], "weapons":["martial"], "description":"At 1st level, you gain proficiency with martial weapons and heavy armor."},
@@ -1295,7 +1278,6 @@ var dnd = {
 	},{
 		"key":"arcana",
 		"name":"Arcana Domain",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"spells", "name":"Domain Spells", "summary":"Gain bonus prepared spells", "description":"Each domain has a list of spells, its domain spells, that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day.<br/>If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.<ol><li value=1>Detect Magic, Magic Missile</li><li value=3>Magic Weapon, Nystul's Magic Aura</li><li value=5>Dispel Magic, Magic Circle</li><li value=7>Arcane Eye, Leomund's Secret Chest</li><li value=9>Planar Binding, Teleportation Circle</li></ol>"},
 			{"level":1, "key":"initiate", "name":"Arcane Initiate", "summary":"Gana arcana proficiency and 2 cantrips", "skills":["arcana"], "cantrip":{"crass":"wizard", "limit":2, "ability":"wisdom"}, "description":"When you choose this domain at 1st level, you gain proficiency in the Arcana skill, and you gain two cantrips of your choice from the wizard spell list. For you, these cantrips count as cleric cantrips."},
@@ -1307,7 +1289,6 @@ var dnd = {
 	},{
 		"key":"forge",
 		"name":"Forge Domain",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"spells", "name":"Domain Spells", "summary":"Gain bonus prepared spells", "description":"Each domain has a list of spells, its domain spells, that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day.<br/>If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.<ol><li value=1>Identify, Searing Smite</li><li value=3>Heat Metal, Magic Weapon</li><li value=5>Elemental Weapon, Protection from Energy</li><li value=7>Fabricate, Wall of Fire</li><li value=9>Animate Objects, Creation</li></ol>"},
 			{"level":1, "key":"proficiency", "name":"Bonus Proficiencies", "summary":"Gain proficiency with heavy armor and smith tools", "armors":["heavy"], "tools":["smith"], "description":"When you choose this domain at 1st level, you gain proficiency with heavy armor and smith's tools."},
@@ -1320,7 +1301,6 @@ var dnd = {
 	},{
 		"key":"grave",
 		"name":"Grave Domain",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"spells", "name":"Grave Domain Spells", "summary":"Gain bonus prepared spells", "description":"Each domain has a list of spells, its domain spells, that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day.<br/>If you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you.<ol><li value=1>Bane, False Life</li><li value=3>Gentle Repose, Ray of Enfeeblement</li><li value=5>Revivify, Vampiric Touch</li><li value=7>Blight, Death Ward</li><li value=9>Antilife Shell, Raise Dead</li></ol>"},
 			{"level":1, "key":"mortality", "name":"Circle of Mortality", "summary":"Maximize healing on targets with 0 HP", "cantrip":{"key":"sparethedying", "ability":"wisdom"}, "type":"cantrip", "description":"At 1st level, you gain the ability to manipulate the line between life and death. When you would normally roll one or more dice to restore hit points with a spell to a creature at 0 hit points, you instead use the highest number possible for each die.<br/>In addition, you learn the Spare the Dying cantrip, which doesn't count against the number of cleric cantrips you know. For you, it has a range of 30 feet, and you can cast it as a bonus action."},
@@ -1333,7 +1313,6 @@ var dnd = {
 	},{
 		"key":"land",
 		"name":"Circle of the Land",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"cantrip", "name":"Bonus Cantrip", "summary":"Gain a druid cantrip", "cantrip":{"crass":"druid", "ability":"wisdom"}, "type":"cantrip", "description":"When you choose this circle at 2nd level, you learn one additional druid cantrip of your choice."},
 			{"level":2, "key":"recovery", "name":"Natural Recovery", "summary":"1/day regain spell slots from short rest", "type":"rest", "description":"Starting at 2nd level, you can regain some of your magical energy by sitting in meditation and communing with nature. During a short rest, you choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your druid level (rounded up), and none of the slots can be 6th level or higher. You can’t use this feature again until you finish a long rest.<br/>For example, when you are a 4th-level druid, you can recover up to two levels worth of spell slots. You can recover either a 2nd-level slot or two 1st-level slots."},
@@ -1345,7 +1324,6 @@ var dnd = {
 	},{
 		"key":"moon",
 		"name":"Circle of the Moon",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"combat", "name":"Combat Wild Shape", "summary":"Wild shape, heal as bonus actions", "type":"bonusaction", "description":"When you choose this circle at 2nd level, you gain the ability to use Wild Shape on your turn as a bonus action, rather than as an action.<br/>Additionally, while you are transformed by Wild Shape, you can use a bonus action to expend one spell slot to regain 1d8 hit points per level of the spell slot expended."},
 			{"level":2, "key":"forms", "name":"Circle Forms", "summary":"Wild shape CR 1", "description":"The rites of your circle grant you the ability to transform into more dangerous animal forms. Starting at 2nd level, you can use your Wild Shape to transform into a beast with a challenge rating as high as 1. You ignore the Max. CR column of the Beast Shapes table, but must abide by the other limitations there.<br/>Starting at 6th level, you can transform into a beast with a challenge rating as high as your druid level divided by 3, rounded down."},
@@ -1357,7 +1335,6 @@ var dnd = {
 	},{
 		"key":"dreams",
 		"name":"Circle of Dreams",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"balm", "name":"Balm of the Summer Court", "summary":"1/day gain bonus healing as pool of d6", "type":"bonusaction", "description":"At 2nd level, you become imbued with the blessings of the Summer Court. You are a font of energy that offers respite from injuries. You have a pool of fey energy represented by a number of d6s equal to your druid level.<br/>As a bonus action, you can choose an ally you can see within 120 feet of you and spend a number of those dice equal to half your druid level or less. Roll the spent dice and add them together. The target regains a number of hit points equal to the total. The target also gains 1 temporary hit point per die spent.<br/>You regain the expended dice when you finish a long rest."},
 			{"level":6, "key":"hearth", "name":"Hearth of Moonlight and Shadow", "summary":"Hide area chosen for rest", "description":"At 6th level, home can be wherever you are. During a short or long rest, you can invoke the shadowy power of the Gloaming Court to help guard your respite. At the start of the rest, you touch a point in space, and an invisible, 30-foot-radius sphere of magic appears, centered on that point. Total cover blocks the sphere.<br/>While within the sphere, you and your allies gain a +5 bonus to Dexterity (Stealth) and Wisdom (Perception) checks, and any light from open flames in the sphere (a campfire, torches, or the like) isn't visible outside it.<br/>The sphere vanishes at the end of the rest or when you leave the sphere."},
@@ -1367,7 +1344,6 @@ var dnd = {
 	},{
 		"key":"shepherd",
 		"name":"Circle of the Shepherd",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"speech", "name":"Speech of the Woods", "summary":"Learn Sylvan, speak with beast", "languages":["sylvan"], "description":"At 2nd level, you gain the ability to converse with beasts and many fey.<br/>You learn to speak, read, and write Sylvan. In addition, beasts can understand your speech, and you gain the ability to decipher their noises and motions. Most beasts lack the intelligence to convey or understand sophisticated concepts, but a friendly beast could relay what it has seen or heard in the recent past. This ability doesn’t grant you any special friendship with beasts, though you can combine this ability with gifts to curry favor with them as you would with any nonplayer character."},
 			{"level":2, "key":"totem", "name":"Spirit Totem", "summary":"1/rest summon totem with aura 30 for 1 minute", "type":"bonusaction", "description":"Starting at 2nd level, you gain the ability to call forth nature spirits and use them to influence the world around you.<br/>As a bonus action, you can magically summon an incorporeal spirit to a point you can see within 60 feet of you. The spirit creates an aura in a 30-foot radius around that point. It counts as neither a creature nor an object, though it has the spectral appearance of the creature it represents. As a bonus action, you can move the spirit up to 60 feet to a point you can see.<br/>The spirit persists for 1 minute. Once you use this feature, you can’t use it again until you finish a short or long rest.<br/>The effect of the spirit’s aura depends on the type of spirit you summon from the options below.<dl><dt>Bear Spirit</dt><dd>The bear spirit grants you and your allies its might and endurance. Each creature of your choice in the aura when the spirit appears gains temporary hit points equal to 5 + your druid level. In addition, you and your allies gain advantage on Strength checks and Strength saving throws while in the aura.</dd><dt>Hawk Spirit</dt><dd>The hawk spirit is a consummate hunter, aiding you and your allies with its keen sight. When a creature makes an attack roll against a target in the spirit’s aura, you can use your reaction to grant advantage to that attack roll. In addition, you and your allies have advantage on Wisdom (Perception) checks while in the aura.</dd><dt>Unicorn Spirit</dt><dd>The unicorn spirit lends its protection to those nearby. You and your allies gain advantage on all ability checks made to detect creatures in the spirit’s aura. In addition, if you cast a spell using a spell slot that restores hit points to any creature inside or outside the aura, each creature of your choice in the aura also regains hit points equal to your druid level.</dd></dl>"},
@@ -1378,7 +1354,6 @@ var dnd = {
 	},{
 		"key":"champion",
 		"name":"Champion",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"critical", "name":"Improved Critical", "summary":"Critical hit on 19-20", "critical_range":1, "description":"Beginning when you choose this archetype at 3rd level, your weapon attacks score a critical hit on a roll of 19 or 20."},
 			{"level":7, "key":"remarkable", "name":"Remarkable Athlete", "summary":"Half proficiency bonus to physical", "description":"Starting at 7th level, you can add half your proficiency bonus (round up) to any Strength, Dexterity, or Constitution check you make that doesn’t already use your proficiency bonus. In addition, when you make a running long jump, the distance you can cover increases by a number of feet equal to your Strength modifier."},
@@ -1389,7 +1364,6 @@ var dnd = {
 	},{
 		"key":"battle",
 		"name":"Battle Master",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"superiority", "name":"Combat Superiority (4d8)", "summary":"Learn combat maneuvers", "description":"When you choose this archetype at 3rd level, you learn maneuvers that are fueled by special dice called superiority dice.<dl><dt>Maneuvers</dt><dd>You learn three maneuvers of your choice. Many maneuvers enhance an attack in some way. You can use only one maneuver per attack. You learn two additional maneuvers of your choice at 7th, 10th, and 15th level. Each time you learn new maneuvers, you can also replace one maneuver you know with a different one.</dd><dt>Superiority Dice</dt><dd>You have four superiority dice, which are d8s. A superiority die is expended when you use it. You regain all of your expended superiority dice when you finish a short or long rest. You gain another superiority die at 7th level and one more at 15th level.</dd><dt>Saving Throws</dt><dd>Some of your maneuvers require your target to make a saving throw to resist the maneuver's effects. The saving throw DC is calculated as follows:<br/>Maneuver save DC = 8 + your proficiency bonus + your Strength or Dexterity modifier (your choice)</dd></dl>"},
 			{"level":3, "key":"maneuvers1", "name":"Combat Maneuvers (1)", "summary":"Gain 1 combat maneuver", "options":{"dnd":"maneuvers", "hash":"cm1"}},
@@ -1412,7 +1386,6 @@ var dnd = {
 	},{
 		"key":"knight",
 		"name":"Eldritch Knight",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"spellcasting", "name":"Spellcasting", "summary":"Intelligence, 2 cantrips, abjuration and evocation", "description":"TODO"},
 			{"level":3, "key":"bond", "name":"Weapon Bond", "summary":"Teleport bonded weapon to hand, cannot be disarmed", "type":"bonusaction", "description":"At 3rd level, you learn a ritual that creates a magical bond between yourself and one weapon. You perform the ritual over the course of 1 hour, which can be done during a short rest. The weapon must be within your reach throughout the ritual, at the conclusion of which you touch the weapon and forge the bond.<br/>Once you have bonded a weapon to yourself, you can't be disarmed of that weapon unless you are incapacitated. If it is on the same plane of existence, you can summon that weapon as a bonus action on your turn, causing it to teleport instantly to your hand.<br/>You can have up to two bonded weapons, but can summon only one at a time with your bonus action. If you attempt to bond with a third weapon, you must break the bond with one of the other two."},
@@ -1424,7 +1397,6 @@ var dnd = {
 	},{
 		"key":"archer",
 		"name":"Arcane Archer",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"TODO", "name":"", "summary":"TODO", "description":"TODO"},
 			{"level":7, "key":"TODO", "name":"", "summary":"TODO", "description":"TODO"},
@@ -1435,31 +1407,29 @@ var dnd = {
 	},{
 		"key":"cavalier",
 		"name":"Cavalier",
-		"description":"TODO",
 		"features":[
-			{"level":3, "key":"TODO", "name":"Bonus Proficiency", "summary":"TODO", "description":"When you choose this archetype at 3rd level, you gain proficiency in one of the following skills of your choice: Animal Handling, History, Insight, Performance, or Persuasion. Alternatively, you learn one language of your choice."},
-			{"level":3, "key":"TODO", "name":"Born to the Saddle", "summary":"TODO", "description":"Starting at 3rd level, your mastery as a rider becomes apparent. You have advantage on saving throws made to avoid falling off your mount. If you fall off your mount and descend no more than 10 feet, you can land on your feet if you’re not incapacitated.<br/>Finally, mounting or dismounting a creature costs you only 5 feet of movement, rather than half your speed."},
-			{"level":3, "key":"TODO", "name":"Unwavering Mark", "summary":"TODO", "description":"Starting at 3rd level, you can menace your foes, foiling their attacks and punishing them for harming others. When you hit a creature with a melee weapon attack, you can mark the creature until the end of your next turn. This effect ends early if you are incapacitated or you die, or if someone else marks the creature.<br/>While it is within 5 feet of you, a creature marked by you has disadvantage on any attack roll that doesn't target you.<br/>In addition, if a creature marked by you deals damage to anyone other than you, you can make a special melee weapon attack against the marked creature as a bonus action on your next turn. You have advantage on the attack roll, and if it hits, the attack's weapon deals extra damage to the target equal to half your fighter level.<br/>Regardless of the number of creatures you mark, you can make this special attack a number of times equal to your Strength modifier (a minimum of once), and you regain all expended uses of it when you finish a long rest."},
-			{"level":7, "key":"TODO", "name":"Warding Maneuver", "summary":"TODO", "description":"At 7th level, you learn to fend off strikes directed at you, your mount, or other creatures nearby. If you or a creature you can see within 5 feet of you is hit by an attack, you can roll 1d8 as a reaction if you're wielding a melee weapon or a shield. Roll the die, and add the number rolled to the target's AC against that attack. If the attack still hits, the target has resistance against the attack's damage.<br/>You can use this feature a number of times equal to your Constitution modifier (a minimum of once), and you regain all expended uses of it when you finish a long rest."},
-			{"level":10, "key":"TODO", "name":"Hold the Line", "summary":"TODO", "description":"At 10th level, you become a master of locking down your enemies. Creatures provoke an opportunity attack from you when they move 5 feet or more while within your reach, and if you hit a creature with an opportunity attack, the target's speed is reduced to 0 until the end of the current turn."},
-			{"level":15, "key":"TODO", "name":"Ferocious Charger", "summary":"TODO", "description":"Starting at 15th level, you can run down your foes, whether you're mounted or not. If you move at least 10 feet in a straight line right before attacking a creature and you hit it with the attack, that target must succeed on a Strength saving throw (DC 8 + your proficiency bonus + your Strength modifier) or be knocked prone. You can use this feature only once on each of your turns."},
-			{"level":18, "key":"TODO", "name":"Vigilant Defender", "summary":"TODO", "description":"Starting at 18th level, you respond to danger with extraordinary vigilance. In combat, you get a special reaction that you can take once on every creature's turn, except your turn. You can use this special reaction only to make an opportunity attack, and you can't use it on the same turn that you take your normal reaction."},
+			{"level":3, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain proficiency in skill or language", "skill_options":{limit:1, "list":["animals", "history", "insight", "performance", "persuasion"]}, "description":"When you choose this archetype at 3rd level, you gain proficiency in one of the following skills of your choice: Animal Handling, History, Insight, Performance, or Persuasion. Alternatively, you learn one language of your choice."},
+			{"level":3, "key":"saddle", "name":"Born to the Saddle", "summary":"Land on feet when falling from mount", "description":"Starting at 3rd level, your mastery as a rider becomes apparent. You have advantage on saving throws made to avoid falling off your mount. If you fall off your mount and descend no more than 10 feet, you can land on your feet if you’re not incapacitated.<br/>Finally, mounting or dismounting a creature costs you only 5 feet of movement, rather than half your speed."},
+			{"level":3, "key":"mark", "name":"Unwavering Mark", "summary":"Hit imposes disadvantage when attacking allies", "description":"Starting at 3rd level, you can menace your foes, foiling their attacks and punishing them for harming others. When you hit a creature with a melee weapon attack, you can mark the creature until the end of your next turn. This effect ends early if you are incapacitated or you die, or if someone else marks the creature.<br/>While it is within 5 feet of you, a creature marked by you has disadvantage on any attack roll that doesn't target you.<br/>In addition, if a creature marked by you deals damage to anyone other than you, you can make a special melee weapon attack against the marked creature as a bonus action on your next turn. You have advantage on the attack roll, and if it hits, the attack's weapon deals extra damage to the target equal to half your fighter level.<br/>Regardless of the number of creatures you mark, you can make this special attack a number of times equal to your Strength modifier (a minimum of once), and you regain all expended uses of it when you finish a long rest."},
+			{"level":7, "key":"ward", "name":"Warding Maneuver", "summary":"m/day add d8 to ally AC", "description":"At 7th level, you learn to fend off strikes directed at you, your mount, or other creatures nearby. If you or a creature you can see within 5 feet of you is hit by an attack, you can roll 1d8 as a reaction if you're wielding a melee weapon or a shield. Roll the die, and add the number rolled to the target's AC against that attack. If the attack still hits, the target has resistance against the attack's damage.<br/>You can use this feature a number of times equal to your Constitution modifier (a minimum of once), and you regain all expended uses of it when you finish a long rest."},
+			{"level":10, "key":"hold", "name":"Hold the Line", "summary":"Opportunity attack reduces speed to 0", "description":"At 10th level, you become a master of locking down your enemies. Creatures provoke an opportunity attack from you when they move 5 feet or more while within your reach, and if you hit a creature with an opportunity attack, the target's speed is reduced to 0 until the end of the current turn."},
+			{"level":15, "key":"charge", "name":"Ferocious Charger", "summary":"1/turn charge 10 then attack to knock prone", "description":"Starting at 15th level, you can run down your foes, whether you're mounted or not. If you move at least 10 feet in a straight line right before attacking a creature and you hit it with the attack, that target must succeed on a Strength saving throw (DC 8 + your proficiency bonus + your Strength modifier) or be knocked prone. You can use this feature only once on each of your turns."},
+			{"level":18, "key":"defend", "name":"Vigilant Defender", "summary":"Opportunity attack reaction any turn", "description":"Starting at 18th level, you respond to danger with extraordinary vigilance. In combat, you get a special reaction that you can take once on every creature's turn, except your turn. You can use this special reaction only to make an opportunity attack, and you can't use it on the same turn that you take your normal reaction."},
 		]
 	},{
 		"key":"samurai",
 		"name":"Samurai",
 		"features":[
-			{"level":3, "key":"TODO", "name":"Bonus Proficiency", "summary":"TODO", "description":"When you choose this archetype at 3rd level, you gain proficiency in one of the following skills of your choice: History, Insight, Performance, or Persuasion. Alternatively, you learn one language of your choice."},
-			{"level":3, "key":"TODO", "name":"Fighting Spirit", "summary":"TODO", "description":"Starting at 3rd level, your intensity in battle can shield you and help you strike true. As a bonus action on your turn, you can give yourself advantage on all weapon attack rolls until the end of the current turn. When you do so, you also gain 5 temporary hit points. The number of hit points increases when you reach certain levels in this class, increasing to 10 at 10th level and 15 at 15th level.<br/>You can use this feature three times. You regain all expended uses of it when you finish a long rest."},
-			{"level":7, "key":"TODO", "name":"Elegant Courtier", "summary":"TODO", "description":"Starting at 7th level, your discipline and attention to detail allow you to excel in social situations. Whenever you make a Charisma (Persuasion) check, you gain a bonus to the check equal to your Wisdom modifier.<br/>Your self-control also causes you to gain proficiency in Wisdom saving throws. If you already have this proficiency, you instead gain proficiency in Intelligence of Charisma saving throws (your choice)."},
-			{"level":10, "key":"TODO", "name":"Tireless Spirit", "summary":"TODO", "description":"Starting at 10th level, when you roll initiative and have no uses of Fighting Spirit remaining, you regain one use."},
-			{"level":15, "key":"TODO", "name":"Rapid Strike", "summary":"TODO", "description":"Starting at 15th level, you learn to trade accuracy for swift strikes. If you take the Attack action on your turn and have advantage on an attack roll against against one of the targets, you can forgo the advantage for that roll to make an additional weapon attack against that target, as part of the same action. You can do so no more than once per turn."},
-			{"level":18, "key":"TODO", "name":"Strength Before Death", "summary":"TODO", "description":"Starting at 18th level, your fighting spirit can delay the grasp of death. If you take damage that reduces you to 0 hit points, you can use your reaction to delay falling unconscious, and you can immediately take an extra turn. While you have 0 hit points during that extra turn, taking damage causes death saving throw failures as normal, and three death saving throw failures can still kill you. When the extra turn ends, you fall unconscious if you still have 0 hit points.<br/>Once you use this feature, you can’t use it again until you finish a long rest."},
+			{"level":3, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain proficiency in skill or language", "skill_options":{limit:1, "list":["history", "insight", "performance", "persuasion"]}, "description":"When you choose this archetype at 3rd level, you gain proficiency in one of the following skills of your choice: History, Insight, Performance, or Persuasion. Alternatively, you learn one language of your choice."},
+			{"level":3, "key":"spirit", "name":"Fighting Spirit", "summary":"3/day gain advantage on attacks and temporary hit points", "description":"Starting at 3rd level, your intensity in battle can shield you and help you strike true. As a bonus action on your turn, you can give yourself advantage on all weapon attack rolls until the end of the current turn. When you do so, you also gain 5 temporary hit points. The number of hit points increases when you reach certain levels in this class, increasing to 10 at 10th level and 15 at 15th level.<br/>You can use this feature three times. You regain all expended uses of it when you finish a long rest."},
+			{"level":7, "key":"elegant", "name":"Elegant Courtier", "summary":"Gain proficiency in Wisdom saving throws, bonus to persuasion", "saves":["wisdom"], "description":"Starting at 7th level, your discipline and attention to detail allow you to excel in social situations. Whenever you make a Charisma (Persuasion) check, you gain a bonus to the check equal to your Wisdom modifier.<br/>Your self-control also causes you to gain proficiency in Wisdom saving throws. If you already have this proficiency, you instead gain proficiency in Intelligence of Charisma saving throws (your choice)."},
+			{"level":10, "key":"tireless", "name":"Tireless Spirit", "summary":"Always start combat with Fighting Spirit", "description":"Starting at 10th level, when you roll initiative and have no uses of Fighting Spirit remaining, you regain one use."},
+			{"level":15, "key":"rapid", "name":"Rapid Strike", "summary":"1/turn forgo advantage to gain extra attack", "description":"Starting at 15th level, you learn to trade accuracy for swift strikes. If you take the Attack action on your turn and have advantage on an attack roll against one of the targets, you can forgo the advantage for that roll to make an additional weapon attack against that target, as part of the same action. You can do so no more than once per turn."},
+			{"level":18, "key":"death", "name":"Strength Before Death", "summary":"1/day take extra turn when reduced to 0 hit points", "description":"Starting at 18th level, your fighting spirit can delay the grasp of death. If you take damage that reduces you to 0 hit points, you can use your reaction to delay falling unconscious, and you can immediately take an extra turn. While you have 0 hit points during that extra turn, taking damage causes death saving throw failures as normal, and three death saving throw failures can still kill you. When the extra turn ends, you fall unconscious if you still have 0 hit points.<br/>Once you use this feature, you can’t use it again until you finish a long rest."},
 		]
 	},{
 		"key":"hand",
 		"name":"Way of the Open Hand",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"technique", "name":"Open Hand Technique", "summary":"Flurry of blows push, knock prone, or prevent reactions", "description":"Starting when you choose this tradition at 3rd level, you can manipulate your enemy’s ki when you harness your own. Whenever you hit a creature with one of the attacks granted by your Flurry of Blows, you can impose one of the following effects on that target:<ul><li>It must succeed on a Dexterity saving throw or be knocked prone.</li><li>It must make a Strength saving throw. If it fails, you can push it up to 15 feet away from you.</li><li>It can’t take reactions until the end of your next turn.</li></ul>"},
 			{"level":6, "key":"body", "name":"Wholeness of Body", "summary":"1/day regain 3 × level hit points", "description":"At 6th level, you gain the ability to heal yourself. As an action, you can regain hit points equal to three times your monk level. You must finish a long rest before you can use this feature again."},
@@ -1469,7 +1439,6 @@ var dnd = {
 	},{
 		"key":"shadow",
 		"name":"Way of Shadow",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"arts", "name":"Shadow Arts", "summary":"2 ki darkness, darkvision, pass without trace, silence", "type":"spell", "description":"Starting when you choose this tradition at 3rd level, you can use your ki to duplicate the effects of certain spells. As an action, you can spend 2 ki points to cast Darkness, Darkvision, Pass without Trace, or Silence, without providing material components."},
 			{"level":3, "key":"arts", "name":"Shadow Arts", "summary":"Gain Minor Illusion cantrip", "cantrip":{"key":"minorillusion", "ability":"wisdom"}, "type":"cantrip", "description":"Starting when you choose this tradition at 3rd level, you gain the Minor Illusion cantrip if you don't already know it."},
@@ -1480,7 +1449,6 @@ var dnd = {
 	},{
 		"key":"elements",
 		"name":"Way of the Four Elements",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"discipline", "name":"Disciple of the Elements (0)", "summary":"Elemental Attunement", "description":"TODO"},
 			{"level":3, "key":"discipline", "name":"Disciple of the Elements (1)", "summary":"Choose an Elemental Discipline", "description":"TODO"},
@@ -1491,7 +1459,6 @@ var dnd = {
 	},{
 		"key":"drunken",
 		"name":"Way of the Drunken Master",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"TODO", "name":"Bonus Proficiencies", "summary":"TODO", "description":"When you choose this tradition at 3rd level, you gain proficiency in the Performance skill if you don't already have it. Your martial arts technique mixes combat training with the precision of a dancer and the antics of a jester. You also gain proficiency with brewer's supplies if you don't already have it."},
 			{"level":3, "key":"TODO", "name":"Drunken Technique", "summary":"TODO", "description":"At 3rd level, you learn how to twist and turn quickly as part of your Flurry of Blows. Whenever you use Flurry of Blows, you gain the benefit of the Disengage action, and your walking speed increases by 10 feet until the end of the current turn."},
@@ -1503,7 +1470,6 @@ var dnd = {
 	},{
 		"key":"kensei",
 		"name":"Way of the Kensei",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"TODO", "name":"Path of the Kensei: Kensei Weapons", "summary":"TODO", "description":"Choose two types of weapons to be your kensei weapons: one melee weapon and one ranged weapon. Each of these weapons can be any simple or martial weapon that lacks the heavy and special properties. The longbow is also a valid choice. You gain proficiency with these weapons if you don't already have it. Weapons of the chosen types are monk weapons for you. Many of this tradition's features work only with your kensei weapons. When you reach 6th, 11th, and 17th level in this class, you can choose another type of weapon – either melee or ranged – to be a kensei weapon for you, following the criteria above."},
 			{"level":3, "key":"TODO", "name":"Path of the Kensei: Agile Parry", "summary":"TODO", "description":"If you make an unarmed strike as part of the Attack action on your turn and are holding a kensei weapon, you can use it to defend yourself if it is a melee weapon. You gain a +2 bonus to AC until the start of your next turn, while the weapon is in your hand and you aren’t incapacitated."},
@@ -1517,7 +1483,6 @@ var dnd = {
 	},{
 		"key":"death",
 		"name":"Way of the Long Death",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"TODO", "name":"Touch of Death", "summary":"TODO", "description":"Starting when you choose this tradition at 3rd level, your study of death allows you to extract vitality from another creature as it nears its demise. When you reduce a creature within 5 feet of you to 0 hit points, you gain temporary hit points equal to your Wisdom modifier + your monk level (minimum of 1 temporary hit point)."},
 			{"level":6, "key":"TODO", "name":"Hour of Reaping", "summary":"TODO", "description":"At 6th level, you gain the ability to unsettle or terrify those around you as an action, for your soul has been touched by the shadow of death. When you take this action, each creature within 30 feet of you that can see you must succeed on a Wisdom saving throw or be frightened of you until the end of your next turn."},
@@ -1527,7 +1492,6 @@ var dnd = {
 	},{
 		"key":"sun",
 		"name":"Way of the Sun Soul",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"TODO", "name":"Radiant Sun Bolt", "summary":"TODO", "description":"Starting when you choose this tradition at 3rd level, you can hurl searing bolts of magical radiance.<br/>You gain a new attack option that you can use with the Attack action. This special attack is a ranged spell attack with a range of 30 feet. You are proficient with it, and you add your Dexterity modifier to its attack and damage rolls. Its damage is radiant, and its damage die is a d4. This die changes as you gain monk levels, as shown in the Martial Arts column of the Monk table.<br/>When you take the Attack action on your turn and use this special attack as part of it, you can spend 1 ki point to make the special attack twice as a bonus action.<br/>When you gain the Extra Attack feature, this special attack can be used for any of the attacks you make as part of the Attack action."},
 			{"level":6, "key":"TODO", "name":"Searing Arc Strike", "summary":"TODO", "description":"At 6th level, you gain the ability to channel your ki into searing waves of energy. Immediately after you take the Attack action on your turn, you can spend 2 ki points to cast the Burning Hands spell as a bonus action.<br/>You can spend additional ki points to cast Burning Hands as a higher level spell. Each additional ki point you spend increases the spell's level by 1. The maximum number of ki points (2 plus any additional points) that you can spend on the spell equals half your monk level."},
@@ -1537,7 +1501,6 @@ var dnd = {
 	},{
 		"key":"devotion",
 		"name":"Oath of Devotion",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"tenets", "name":"Tenets of Devotion", "summary":"TODO", "description":"TODO"},
 			{"level":3, "key":"spells", "name":"Oath Spells", "summary":"Gain bonus prepared spells.", "description":"Each oath has a list of associated spells. You gain access to these spells at the levels specified in the oath description. Once you gain access to an oath spell, you always have it prepared. Oath spells don't count against the number of spells you can prepare each day.<br/>If you gain an oath spell that doesn't appear on the paladin spelllist, the spell is nonetheless a paladin spell for you.<ol><li value=3>Protection from Evil and Good, Sanctuary</li><li value=5>Lesser Restoration, Zone of Truth</li><li value=9>Beacon of Hope, Dispel Magic</li><li value=13>Freedom of Movement, Guardian of Faith</li><li value=17>Commune, Flame Strike</li></ol>"},
@@ -1550,7 +1513,6 @@ var dnd = {
 	},{
 		"key":"ancients",
 		"name":"Oath of the Ancients",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"tenets", "name":"Tenets of the Ancients", "summary":"TODO", "description":"TODO"},
 			{"level":3, "key":"spells", "name":"Oath Spells", "summary":"Gain bonus prepared spells.", "description":"Each oath has a list of associated spells. You gain access to these spells at the levels specified in the oath description. Once you gain access to an oath spell, you always have it prepared. Oath spells don't count against the number of spells you can prepare each day.<br/>If you gain an oath spell that doesn't appear on the paladin spelllist, the spell is nonetheless a paladin spell for you.<ol><li value=3>Ensnaring Strike, Speak with Animals</li><li value=5>Moonbeam, Misty Step</li><li value=9>Plant Growth, Protection from Energy</li><li value=13>Ice Storm, Stoneskin</li><li value=17>Commune with Nature, Tree Stride</li></ol>"},
@@ -1563,7 +1525,6 @@ var dnd = {
 	},{
 		"key":"vengeance",
 		"name":"Oath of Vengeance",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"tenets", "name":"Tenets of Vengeance", "summary":"TODO", "description":"TODO"},
 			{"level":3, "key":"spells", "name":"Oath Spells", "summary":"Gain bonus prepared spells.", "description":"Each oath has a list of associated spells. You gain access to these spells at the levels specified in the oath description. Once you gain access to an oath spell, you always have it prepared. Oath spells don't count against the number of spells you can prepare each day.<br/>If you gain an oath spell that doesn't appear on the paladin spelllist, the spell is nonetheless a paladin spell for you.<ol><li value=3>Bane, Hunter's Mark</li><li value=5>Hold Person, Misty Step</li><li value=9>Haste, Protection from Energy</li><li value=13>Banishment, Dimension Door</li><li value=17>Hold Monster, Scrying</li></ol>"},
@@ -1576,7 +1537,6 @@ var dnd = {
 	},{
 		"key":"conquest",
 		"name":"Oath of Conquest",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"tenets", "name":"Tenets of Conquest", "summary":"TODO", "description":"TODO"},
 			{"level":3, "key":"spells", "name":"Oath Spells", "summary":"Gain bonus prepared spells.", "description":"Each oath has a list of associated spells. You gain access to these spells at the levels specified in the oath description. Once you gain access to an oath spell, you always have it prepared. Oath spells don't count against the number of spells you can prepare each day.<br/>If you gain an oath spell that doesn't appear on the paladin spelllist, the spell is nonetheless a paladin spell for you.<ol><li value=3>Armor of Agathys, Command</li><li value=5>Hold Person, Spiritual Weapon</li><li value=9>Bestow Curse, Fear</li><li value=13>Dominate Beast, Stoneskin</li><li value=17>Cloudkill, Dominate Person</li></ol>"},
@@ -1589,7 +1549,6 @@ var dnd = {
 	},{
 		"key":"redemption",
 		"name":"Oath of Redemption",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"tenets", "name":"Tenets of Redemption", "summary":"TODO", "description":"TODO"},
 			{"level":3, "key":"spells", "name":"Oath Spells", "summary":"Gain bonus prepared spells.", "description":"Each oath has a list of associated spells. You gain access to these spells at the levels specified in the oath description. Once you gain access to an oath spell, you always have it prepared. Oath spells don't count against the number of spells you can prepare each day.<br/>If you gain an oath spell that doesn't appear on the paladin spelllist, the spell is nonetheless a paladin spell for you.<ol><li value=3>Sanctuary, Sleep</li><li value=5>Calm Emotions, Hold Person</li><li value=9>Counterspell, Hypnotic Pattern</li><li value=13>Otiluke's Resilient Sphere, Stoneskin</li><li value=17>Hold Monster, Wall of Force</li></ol>"},
@@ -1602,7 +1561,6 @@ var dnd = {
 	},{
 		"key":"hunter",
 		"name":"Hunter",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"prey", "name":"Hunter's Prey", "summary":"Choose a tactic", "options":{"dnd":"huntertactics3", "hash":"ht3"}, "description":"At 3rd level, you gain one of the following features of your choice."},
 			{"level":7, "key":"tactics", "name":"Defensive Tactics", "summary":"Choose a tactic", "options":{"dnd":"huntertactics7", "hash":"ht7"}, "description":"At 7th level, you gain one of the following features of your choice."},
@@ -1612,7 +1570,6 @@ var dnd = {
 	},{
 		"key":"beast",
 		"name":"Beast Master",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"companion", "name":"Ranger's Companion", "summary":"Gain beast companion up to CP 1/4", "description":"TODO"},
 			{"level":7, "key":"training", "name":"Exceptional Training", "summary":"Companion dash, dodge, help, disengage as bonus action", "type":"bonusaction", "description":"TODO"},
@@ -1622,7 +1579,6 @@ var dnd = {
 	},{
 		"key":"stalker",
 		"name":"Gloom Stalker",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"magic", "name":"Gloom Stalker Magic", "summary":"Learn additional spells", "description":"Starting at 3rd level, you learn an additional spell when you reach certain levels in this class, as shown in the Gloom Stalker Spells table. The spell counts as a ranger spell for you, but it doesn't count against the number of ranger spells you know.<ol><li value=3>Disguise Self</li><li value=5>Rope Trick</li><li value=9>Fear</li><li value=13>Greater Invisibility</li><li value=17>Seeming</li></ol>"},
 			{"level":3, "key":"ambusher", "name":"Dread Ambusher", "summary":"Increase speed by 10 and attacks by 1 on first turn of combat, and increase initiative", "initiative":"wisdom", "type":"initiative", "description":"At 3rd level, you master the art of the ambush. You can give yourself a bonus to your initiative rolls equal to your Wisdom modifier.<br/>At the start of your first turn of each combat, your walking speed increases by 10 feet, which lasts until the end of that turn. If you take the Attack action on that turn, you can make one additional weapon attack as part of that action. If that attack hits, the target takes an extra 1d8 damage of the weapon's damage type."},
@@ -1634,7 +1590,6 @@ var dnd = {
 	},{
 		"key":"walker",
 		"name":"Horizon Walker",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"magic", "name":"Horizon Walker Magic", "summary":"Learn additional spells", "description":"Starting at 3rd level, you learn an additional spell when you reach certain levels in this class, as shown in the Horizon Walker Spells table. The spell counts as a ranger spell for you, but it doesn’t count against the number of ranger spells you know.<ol><li value=3>Protection from Evil and Good</li><li value=5>Misty Step</li><li value=9>Haste</li><li value=13>Banishment</li><li value=17>Teleportation Circle</li></ol>"},
 			{"level":3, "key":"detect", "name":"Detect Portal", "summary":"1/rest detect nearest planar portal within 1 mile", "description":"At 3rd level, you gain the ability to magically sense the presence of a planar portal. As an action, you detect the distance and direction to the closest planar portal within 1 mile of you.<br/>Once you use this feature, you can't use it again until you finish a short or long rest.<br/>See the \"Planar Travel\" section in chapter 2 of the Dungeon Master's Guide for examples of planar portals."},
@@ -1646,7 +1601,6 @@ var dnd = {
 	},{
 		"key":"slayer",
 		"name":"Monster Slayer",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"magic", "name":"Monter Slayer Magic", "summary":"Learn additional spells", "description":"Starting at 3rd level, you learn an additional spell when you reach certain levels in this class, as shown in the Monster Slayer Spells table. The spell counts as a ranger spell for you, but it doesn't count against the number of ranger spells you know.<ol><li value=3>Protection from Evil and Good</li><li value=5>Zone of Truth</li><li value=9>Magic Circle</li><li value=13>Banishment</li><li value=17>Hold Monster</li></ol>"},
 			{"level":3, "key":"sense", "name":"Hunter's Sense", "summary":"m/rest divine immunities, vulnerabilities and resistances of target creature within 60", "description":"At 3rd level, you gain the ability to peer at a creature and magically discern how best to hurt it. As an action, choose one creature you can see within 60 feet of you. You immediately learn whether the creature has any damage immunities, resistances, or vulnerabilities and what they are. If the creature is hidden from divination magic, you sense that it has no damage immunities, resistances, or vulnerabilities.<br/>You can use this feature a number of times equal to your Wisdom modifier (minimum of once). You regain all expended uses of it when you finish a long rest."},
@@ -1658,7 +1612,6 @@ var dnd = {
 	},{
 		"key":"thief",
 		"name":"Thief",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"hands", "name":"Fast Hands", "summary":"Cunning action includes sleight of hand, thieves tool or use item", "type":"bonusaction", "description":"Starting at 3rd level, you can use the bonus action granted by your Cunning Action to make a Dexterity (Sleight of Hand) check, use your thieves’ tools to disarm a trap or open a lock, or take the Use an Object action."},
 			{"level":3, "key":"climb", "name":"Second-Story Work", "summary":"Unhindered while climbing, increase running jump", "description":"When you choose this archetype at 3rd level, you gain the ability to climb faster than normal; climbing no longer costs you extra movement.<br/>In addition, when you make a running jump, the distance you cover increases by a number of feet equal to your Dexterity modifier."},
@@ -1669,7 +1622,6 @@ var dnd = {
 	},{
 		"key":"assassin",
 		"name":"Assassin",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"proficiency", "name":"Bonus Proficiency", "summary":"Gain proficiency with poison and disguise kits", "tools":["disguise", "poison"], "description":"When you choose this archetype at 3rd level, you gain proficiency with the disguise kit and the poisoner's kit."},
 			{"level":3, "key":"assassinate", "name":"Assassinate", "summary":"Advantage before first turn, Critical on surprise", "description":"Starting at 3rd level, you are at your deadliest when you get the drop on your enemies. You have advantage on attack rolls against any creature that hasn't taken a turn in the combat yet. In addition, any hit you score against a creature that is surprised is a critical hit."},
@@ -1680,7 +1632,6 @@ var dnd = {
 	},{
 		"key":"trickster",
 		"name":"Arcane Trickster",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"spellcasting", "name":"Spellcasting", "summary":"Intelligence, 2 cantrips", "description":"When you reach 3rd level, you augment your martial prowess with the ability to cast spells."},
 			{"level":3, "key":"hand", "name":"Mage Hand Legerdemain", "summary":"Mage Hand is invisible, picks locks, picks pockets", "description":"Starting at 3rd level, when you cast Mage Hand, you can make the spectral hand invisible, and you can perform the following additional tasks with it:<ul><li>You can stow one object the hand is holding in a container worn or carried by another creature.</li><li>You can retrieve an object in a container worn or carried by another creature.</li><li>You can use thieves' tools to pick locks and disarm traps at range.</li></ul>You can perform one of these tasks without being noticed by a creature if you succeed on a Dexterity (Sleight of Hand) check contested by the creature's Wisdom (Perception) check.<br/>In addition, you can use the bonus action granted by your Cunning Action to control the hand."},
@@ -1691,7 +1642,6 @@ var dnd = {
 	},{
 		"key":"inquisitive",
 		"name":"Inquisitive",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"TODO", "name":"Ear for Deceit", "summary":"TODO", "description":"When you choose this archetype at 3rd level, you develop a keen ear for picking out lies. Whenever you make a Wisdom (Insight) check to determine whether a creature is lying, treat a roll of 7 or lower on the d20 as an 8."},
 			{"level":3, "key":"TODO", "name":"Eye for Detail", "summary":"TODO", "description":"Starting at 3rd level, you can use a bonus action to make a Wisdom (Perception) check to spot a hidden creature or object or to make an Intelligence (Investigation) check to uncover or decipher clues."},
@@ -1703,7 +1653,6 @@ var dnd = {
 	},{
 		"key":"mastermind",
 		"name":"Mastermind",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"TODO", "name":"Master of Intrigue", "summary":"TODO", "description":"When you choose this archetype at 3rd level, you gain proficiency with the disguise kit, the forgery kit, and one gaming set of your choice. You also learn two languages of your choice.<br/>Additionally, you can unerringly mimic the speech patterns and accent of a creature that you hear speak for at least 1 minute, enabling you to pass yourself off as a native speaker of a particular land, provided that you know the language."},
 			{"level":3, "key":"TODO", "name":"Master of Tactics", "summary":"TODO", "description":"Starting at 3rd level, you can use the Help action as a bonus action. Additionally, when you use the Help action to aid an ally in attacking a creature, the target of that attack can be within 30 feet of you, rather than 5 feet of you, if the target can see or hear you."},
@@ -1714,7 +1663,6 @@ var dnd = {
 	},{
 		"key":"scout",
 		"name":"Scout",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"skirmisher", "name":"Skirmisher", "summary":"Move half speed as reaction", "type":"reaction", "description":"Starting at 3rd level, you are difficult to pin down during a fight. You can move up to half your speed as a reaction when an enemy ends its turn within 5 feet of you. This movement doesn’t provoke opportunity attacks."},
 			{"level":3, "key":"survivalist", "name":"Survivalist", "summary":"Gain double proficiency in Nature and Survival", "skills":["nature", "survival"], "description":"When you choose this archetype at 3rd level, you gain proficiency in the Nature and Survival skills if you don't already have it. Your proficiency bonus is doubled for any ability check you make that uses either of those proficiencies."},
@@ -1725,7 +1673,6 @@ var dnd = {
 	},{
 		"key":"swashbuckler",
 		"name":"Swashbuckler",
-		"description":"TODO",
 		"features":[
 			{"level":3, "key":"TODO", "name":"Fancy Footwork", "summary":"TODO", "description":"When you choose this archetype at 3rd level, you learn how to land a strike and then slip away without reprisal. During your turn, if you make a melee attack against a creature, that creature can't make opportunity attacks against you for the rest of your turn."},
 			{"level":3, "key":"TODO", "name":"Rakish Audacity", "summary":"TODO", "description":"Starting at 3rd level, your confidence propels you into battle. You can give yourself a bonus to your initiative rolls equal to your Charisma modifier.<br/>You also gain an additional way to use your Sneak Attack; you don't need advantage on the attack roll to use your Sneak Attack against a creature if you are within 5 feet of it, no other creatures are within 5 feet of you, and you don't have disadvantage on the attack roll. All the other rules for Sneak Attack still apply to you."},
@@ -1736,7 +1683,6 @@ var dnd = {
 	},{
 		"key":"draconic",
 		"name":"Draconic Bloodline",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"ancestor", "name":"Dragon Ancestor", "summary":"Choose dragon ancestor", "options":{"dnd":"draconicancestry", "hash":"sa"}, "languages":["draconic"], "description":"At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.<br/>You can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."},
 			{"level":1, "key":"resilience", "name":"Draconic Resilience", "summary":"AC +3, hit points +level", "requirement":"unarmored", "armorclass":3, "toughness":1, "description":"As magic flows through your body, it causes physical traits of your dragon ancestors to emerge. At 1st level, your hit point maximum increases by 1 and increases by 1 again whenever you gain a level in this class.<br/>Additionally, parts of your skin are covered by a thin sheen of dragon-like scales. When you aren’t wearing armor, your AC equals 13 + your Dexterity modifier."},
@@ -1747,7 +1693,6 @@ var dnd = {
 	},{
 		"key":"wild",
 		"name":"Wild Magic",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"surge", "name":"Wild Magic Surge", "summary":"Rolling 1 on d20 after casting spell unleashes wild magic surge", "description":"Starting when you choose this origin at 1st level, your spellcasting can unleash surges of untamed magic. Immediately after you cast a sorcerer spell of 1st level or higher, the DM can have you roll a d20. If you roll a 1, roll on the Wild Magic Surge table to create a random magical effect."},
 			{"level":1, "key":"tides", "name":"Tides of Chaos", "summary":"1/day gain advantage on attack, save or ability check", "description":"Starting at 1st level, you can manipulate the forces of chance and chaos to gain advantage on one attack roll, ability check, or saving throw. Once you do so, you must finish a long rest before you can use this feature again.<br/>Any time before you regain the use of this feature, the DM can have you roll on the Wild Magic Surge table immediately after you cast a sorcerer spell of 1st level or higher. You then regain the use of this feature."},
@@ -1758,7 +1703,6 @@ var dnd = {
 	},{
 		"key":"divine",
 		"name":"Divine Soul",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"divine", "name":"Divine Magic", "summary":"Access Cleric spell list, learn bonus spell", "options":{"dnd":"divineaffinity", "hash":"sa"}, "description":"Your link to the divine allows you to learn spells normally associated with the cleric class. When your Spellcasting feature lets you learn a sorcerer cantrip or a sorcerer spell of 1st level or higher, you can choose the new spell from the cleric spell list or the sorcerer spell list. You must otherwise obey all the restrictions for selecting the spell, and it becomes a sorcerer spell for you.<br/>In addition, choose an affinity for the source of your divine power: good, evil, law, chaos, or neutrality. You learn an additional spell based on that affinity, as shown below. It is a sorcerer spell for you, but it doesn't count against your number of sorcerer spells known. If you later replace this spell, you must replace it with a spell from the cleric spell list."},
 			{"level":1, "key":"favor", "name":"Favored by the Gods", "summary":"1/rest add 2d4 to failed attack or saving throw", "description":"Starting at 1st level, divine power guards your destiny. If you fail a saving throw or miss with an attack roll, you can roll 2d4 and add it to the total, possibly changing the outcome.<br/>Once you use this feature, you can’t use it again until you finish a short or long rest."},
@@ -1769,7 +1713,6 @@ var dnd = {
 	},{
 		"key":"phoenix",
 		"name":"Phoenix Sorcery",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"ignite", "name":"Ignite", "summary":"Ignite flammable objects by touch", "type":"action", "description":"At 1st level, you gain the ability to start fires with a touch. As an action, you can magically ignite a flammable object you touch with your hand—an object such as a torch, a piece of tinder, or the hem of drapes."},
 			{"level":1, "key":"mantle", "name":"Mantle of Flame", "summary":"1/day gain damaging aura and increase fire damage for 1 minute", "type":"bonusaction", "description":"Starting at 1st level, you can unleash the phoenix fire that blazes within you.<br/>As a bonus action, you magically wreathe yourself in swirling fire, and your eyes glow like hot coals. For 1 minute, you gain the following benefits:<ul><li>You shed bright light in a 30-foot radius and dim light for an additional 30 feet.</li><li>Any creature takes fire damage equal to your Charisma modifier if it hits you with a melee attack from within 5 feet of you or if it touches you.</li><li>Whenever you roll fire damage on your turn, the roll gains a bonus equal to your Charisma modifier.</li></ul>Once you use this feature, you can’t use it again until you finish a long rest."},
@@ -1780,7 +1723,6 @@ var dnd = {
 	},{
 		"key":"shade",
 		"name":"Shadow Magic",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"eyes", "name":"Eyes of the Dark", "summary":"Darkvision 120, learn Darkness spell", "darkvision":120, "description":"From 1st level, you have darkvision with a range of 120 feet.<br/>When you reach 3rd level in this class, you learn the Darkness spell, which doesn't count against your number of sorcerer spells known. In addition, you can cast it by spending 2 sorcery points or by expending a spell slot. If you cast it with sorcery points, you can see through the darkness created by the spell."},
 			{"level":1, "key":"grave", "name":"Strength of the Grave", "summary":"1/day avoid death with Charisma save", "description":"Starting at 1st level, your existence in a twilight state between life and death makes you difficult to defeat. When damage reduces you to 0 hit points, you can make a Charisma saving throw (DC 5 + the damage taken). On a success, you instead drop to 1 hit point. You can't use this feature if you are reduced to 0 hit points by radiant damage or by a critical hit.<br/>After the saving throw succeeds, you can't use this feature again until you finish a long rest."},
@@ -1792,7 +1734,6 @@ var dnd = {
 	},{
 		"key":"storm",
 		"name":"Storm Sorcery",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"wind", "name":"Wind Speaker", "summary":"Learn Primordial", "languages":["primordial"], "description":"The arcane magic you command is infused with elemental air. You can speak, read, and write Primordial. Knowing this language allows you to understand and be understood by those who speak its dialects: Aquan, Auran, Ignan, and Terran."},
 			{"level":1, "key":"tempest", "name":"Tempestuous Magic", "summary":"Fly 10 feet when casting a spell", "type":"bonusaction", "description":"Starting at 1st level, you can use a bonus action on your turn to cause whirling gusts of elemental air to briefly surround you, immediately before or after you cast a spell of 1st level or higher. Doing so allows you to fly up to 10 feet without provoking opportunity attacks."},
@@ -1804,7 +1745,6 @@ var dnd = {
 	},{
 		"key":"fey",
 		"name":"The Archfey",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn", "description":"TODO"},
 			{"level":1, "key":"fey", "name":"Fey Presence", "summary":"1/rest charm or fear radius 5 for 1 turn", "type":"action", "description":"Starting at 1st level, your patron bestows upon you the ability to project the beguiling and fearsome presence of the fey. As an action, you can cause each creature in a 10-foot cube originating from you to make a Wisdom saving throw against your warlock spell save DC. The creatures that fail their saving throws are all charmed or frightened by you (your choice) until the end of your next turn.<br/>Once you use this feature, you can't use it again until you finish a short or long rest."},
@@ -1815,7 +1755,6 @@ var dnd = {
 	},{
 		"key":"fiend",
 		"name":"The Fiend",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn", "description":"TODO"},
 			{"level":1, "key":"blessing", "name":"Dark One’s Blessing", "summary":"Gain temporary hit points of Charisma modifier+level on kill", "description":"Starting at 1st level, when you reduce a hostile creature to 0 hit points, you gain temporary hit points equal to your Charisma modifier + your warlock level (minimum of 1)."},
@@ -1826,7 +1765,6 @@ var dnd = {
 	},{
 		"key":"old",
 		"name":"The Great Old One",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn", "description":"TODO"},
 			{"level":1, "key":"mind", "name":"Awakened Mind", "summary":"Telepathy to radius 30 with creatures that understand any language", "description":"Starting at 1st level, your alien knowledge gives you the ability to touch the minds of other creatures. You can communicate telepathically with any creature you can see within 30 feet of you. You don't need to share a language with the creature for it to understand your telepathic utterances, but the creature must be able to understand at least one language."},
@@ -1837,7 +1775,6 @@ var dnd = {
 	},{
 		"key":"celestial",
 		"name":"The Celestial",
-		"description":"TODO",
 		"features":[
 			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn", "description":"TODO"},
 			{"level":1, "key":"light", "name":"Bonus Cantrip", "summary":"Gain the Light and Sacred Flame cantrips", "cantrip":{"keys":["light", "sacredflame"], "ability":"charisma"}, "type":"cantrip", "description":"At 1st level, you learn the Light and Sacred Flame cantrips. They count as warlock cantrips for you, but they don’t count against your number of cantrips known."},
@@ -1849,7 +1786,6 @@ var dnd = {
 	},{
 		"key":"hexblade",
 		"name":"The Hexblade",
-		"description":"TODO",
 		"features":[	
 			{"level":1, "key":"list", "name":"Expanded Spell List", "summary":"Expand spells available to learn", "description":"TODO"},
 			{"level":1, "key":"curse", "name":"Hexblades Curse", "summary":"1/rest curse target within 30 for 1 minute to receive proficiency bonus as added damage", "type":"bonusaction", "description":"Starting at 1st level, you gain the ability to place a baleful curse on someone. As a bonus action, choose one creature you can see within 30 feet of you. The target is cursed for 1 minute. The curse ends early if the target dies, you die, or you are incapacitated. Until the curse ends, you gain the following benefits:<ul><li>You gain a bonus to damage rolls against the cursed target. The bonus equals your proficiency bonus.</li><li>Any attack roll you make against the cursed target is a critical hit on a roll of 19 or 20 on the d20.</li><li>If the cursed target dies, you regain hit points equal to your warlock level + your Charisma modifier (minimum of 1 hit point).</li></ul>You can’t use this feature again until you finish a short or long rest."},
@@ -1861,7 +1797,6 @@ var dnd = {
 	},{
 		"key":"abjuration",
 		"name":"School of Abjuration",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"savant", "name":"Abjuration Savant", "summary":"Half gold and time to copy abjuration spells", "description":"Beginning when you select this school at 2nd level, the gold and time you must spend to copy a abjuration spell into your spellbook is halved."},
 			{"level":2, "key":"ward", "name":"Arcane Ward", "summary":"Abjuration spells power ward that absorbs damage", "description":"Starting at 2nd level, you can weave magic around yourself for protection. When you cast an abjuration spell of 1st level or higher, you can simultaneously use a strand of the spell's magic to create a magical ward on yourself that lasts until you finish a long rest. The ward has hit points equal to twice your wizard level + your Intelligence modifier. Whenever you take damage, the ward takes the damage instead. If this damage reduces the ward to 0 hit points, you take any remaining damage.<br/>While the ward has 0 hit points, it can't absorb damage, but its magic remains. Whenever you cast an abjuration spell of 1st level or higher, the ward regains a number of hit points equal to twice the level of the spell.<br/>Once you create the ward, you can't create it again until you finish a long rest."},
@@ -1872,7 +1807,6 @@ var dnd = {
 	},{
 		"key":"conjuration",
 		"name":"School of Conjuration",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"savant", "name":"Conjuration Savant", "summary":"Half gold and time to copy conjuration spells", "description":"Beginning when you select this school at 2nd level, the gold and time you must spend to copy a Conjuration spell into your spellbook is halved."},
 			{"level":2, "key":"conjure", "name":"Minor Conjuration", "summary":"Conjure small inanimate object", "type":"action", "description":"Starting at 2nd level when you select this school, you can use your action to conjure up an inanimate object in your hand or on the ground in an unoccupied space that you can see within 10 feet of you. This object can be no larger than 3 feet on a side and weigh no more than 10 pounds, and its form must be that of a nonmagical object that you have seen. The object is visibly magical, radiating dim light out to 5 feet.<br/>The object disappears after 1 hour, when you use this feature again, or if it takes any damage."},
@@ -1883,7 +1817,6 @@ var dnd = {
 	},{
 		"key":"divination",
 		"name":"School of Divination",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"savant", "name":"Divination Savant", "summary":"Half gold and time to copy divination spells", "description":"Beginning when you select this school at 2nd level, the gold and time you must spend to copy a Divination spell into your spellbook is halved."},
 			{"level":2, "key":"portent", "name":"Portent", "summary":"2/day replace any attack, save or ability check with chosen roll", "description":"Starting at 2nd level when you choose this school, glimpses of the future begin to press in on your awareness. When you finish a long rest, roll two d20s and record the numbers rolled. You can replace any attack roll, saving throw, or ability check made by you or a creature that you can see with one of these foretelling rolls. You must choose to do so before the roll, and you can replace a roll in this way only once per turn.<br/>Each foretelling roll can be used only once. When you finish a long rest, you lose any unused foretelling rolls."},
@@ -1894,7 +1827,6 @@ var dnd = {
 	},{
 		"key":"enchantment",
 		"name":"School of Enchantment",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"savant", "name":"Enchantment Savant", "summary":"Half gold and time to copy enchantment spells", "description":"Beginning when you select this school at 2nd level, the gold and time you must spend to copy a Enchantment spell into your spellbook is halved."},
 			{"level":2, "key":"gaze", "name":"Hypnotic Gaze", "summary":"1/day daze creature that fails Wisdom save", "type":"action", "description":"Starting at 2nd level when you choose this school, your soft words and enchanting gaze can magically enthrall another creature. As an action, choose one creature that you can see within 5 feet of you. If the target can see or hear you, it must succeed on a Wisdom saving throw against your wizard spell save DC or be charmed by you until the end of your next turn. The charmed creature's speed drops to 0, and the creature is incapacitated and visibly dazed.<br/>On subsequent turns, you can use your action to maintain this effect, extending its duration until the end of your next turn. However, the effect ends if you move more than 5 feet away from the creature, if the creature can neither see nor hear you, or if the creature takes damage.<br/>Once the effect ends, or if the creature succeeds on its initial saving throw against this effect, you can't use this feature on that creature again until you finish a long rest."},
@@ -1905,7 +1837,6 @@ var dnd = {
 	},{
 		"key":"evocation",
 		"name":"School of Evocation",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"savant", "name":"Evocation Savant", "summary":"Half gold and time to copy evocation spells", "description":"Beginning when you select this school at 2nd level, the gold and time you must spend to copy an evocation spell into your spellbook is halved."},
 			{"level":2, "key":"sculpt", "name":"Sculpt Spells", "summary":"Choose creatures to be unaffected by evocation spells", "description":"Beginning at 2nd level, you can create pockets of relative safety within the effects of your evocation spells. When you cast an evocation spell that affects other creatures that you can see, you can choose a number of them equal to 1 + the spell’s level. The chosen creatures automatically succeed on their saving throws against the spell, and they take no damage if they would normally take half damage on a successful save."},
@@ -1916,7 +1847,6 @@ var dnd = {
 	},{
 		"key":"illusion",
 		"name":"School of Illusion",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"savant", "name":"Illusion Savant", "summary":"Half gold and time to copy illusion spells", "description":"Beginning when you select this school at 2nd level, the gold and time you must spend to copy a Illusion spell into your spellbook is halved."},
 			{"level":2, "key":"minor", "name":"Improved Minor Illusion", "summary":"Minor illusion cantrip creates both sound and image", "description":"When you choose this school at 2nd level, you learn the Minor Illusion cantrip. If you already know this cantrip, you learn a different wizard cantrip of your choice. The cantrip doesn't count against your number of cantrips known.<br/>When you cast Minor Illusion, you can create both a sound and an image with a single casting of the spell."},
@@ -1927,7 +1857,6 @@ var dnd = {
 	},{
 		"key":"necromancy",
 		"name":"School of Necromancy",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"savant", "name":"Necromancy Savant", "summary":"Half gold and time to copy necromancy spells", "description":"Beginning when you select this school at 2nd level, the gold and time you must spend to copy a Necromancy spell into your spellbook is halved."},
 			{"level":2, "key":"harvest", "name":"Grim Harvest", "summary":"Regain hit points by killing creatures with spells", "description":"At 2nd level, you gain the ability to reap life energy from creatures you kill with your spells. Once per turn when you kill one or more creatures with a spell of 1st level or higher, you regain hit points equal to twice the spell's level, or three times its level if the spell belongs to the School of Necromancy. You don't gain this benefit for killing constructs or undead."},
@@ -1938,7 +1867,6 @@ var dnd = {
 	},{
 		"key":"transmutation",
 		"name":"School of Transmutation",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"savant", "name":"Transmutation Savant", "summary":"Half gold and time to copy transmutation spells", "description":"Beginning when you select this school at 2nd level, the gold and time you must spend to copy a Transmutation spell into your spellbook is halved."},
 			{"level":2, "key":"alchemy", "name":"Minor Alchemy", "summary":"Alter material of a simple object for an hour", "description":"Starting at 2nd level when you select this school, you can temporarily alter the physical properties of one nonmagical object, changing it from one substance into another. You perform a special alchemical procedure on one object composed entirely of wood, stone (but not a gemstone), iron, copper, or silver, transforming it into a different one of those materials. For each 10 minutes you spend performing the procedure, you can transform up to 1 cubic foot of material. After 1 hour, or until you lose your concentration (as if you were concentrating on a spell), the material reverts to its original substance."},
@@ -1949,7 +1877,6 @@ var dnd = {
 	},{
 		"key":"bladesinger",
 		"name":"Bladesinger",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"training", "name":"Training in War and Song", "summary":"Gain proficiency in light armor, 1 melee weapon, Performance", "armor":["light"], "skills":["performance"], "description":"When you adopt this tradition at 2nd level, you gain proficiency with light armor, and you gain proficiency with one type of one-handed melee weapon of your choice.<br/>You also gain proficiency in the Performance skill if you don't already have it."},
 			{"level":2, "key":"bladesong", "name":"Bladesong", "summary":"2/rest increase AC by Intelligence modifier, speed by 10", "type":"bonusaction", "description":"Starting at 2nd level, you can invoke a secret elven magic called the Bladesong, provided that you aren't wearing medium or heavy armor or using a shield. It graces you with supernatural speed, agility, and focus.<br/>You can use a bonus action to start the Bladesong, which lasts for 1 minute. It ends early if you are incapacitated, if you don medium or heavy armor or a shield, or if you use two hands to make an attack with a weapon. You can also dismiss the Bladesong at any time you choose (no action required).<br/>While your Bladesong is active, you gain the following benefits:<ul><li>You gain a bonus to your AC equal to your Intelligence modifier (minimum of +1).</li><li>Your walking speed increases by 10 feet.</li><li>You have advantage on Dexterity (Acrobatics) checks.</li><li>You gain a bonus to any Constitution saving throw you make to maintain your concentration on a spell. The bonus equals your Intelligence modifier (minimum of +1).</li></ul>You can use this feature twice. You regain all expended uses of it when you finish a short or long rest."},
@@ -1960,7 +1887,6 @@ var dnd = {
 	},{
 		"key":"combat",
 		"name":"War Magic",
-		"description":"TODO",
 		"features":[
 			{"level":2, "key":"deflection", "name":"Arcane Deflection", "summary":"+2 AC or +4 to savings throw as reaction, no spell slots next turn", "type":"reaction", "description":"At 2nd level, you have learned to weave your magic to fortify yourself against harm. When you are hit by an attack or you fail a saving throw, you can use your reaction to gain a +2 bonus to your AC against that attack or a +4 bonus to that saving throw.<br/>When you use this feature, you can’t cast spells other than cantrips until the end of your next turn."},
 			{"level":2, "key":"wit", "name":"Tactical Wit", "summary":"Add intelligence modifier to initiative", "initiative":"intelligence", "description":"Starting at 2nd level, your keen ability to assess tactical situations allows you to act quickly in battle. You can give yourself a bonus to your initiative rolls equal to your Intelligence modifier."},
