@@ -472,7 +472,7 @@
 					}
 					
 					if ( abilities.limit > 0 ) {
-						featuresWithLimits.push(abilities)
+						abilitiesWithLimits.push(abilities)
 						continue
 					}
 					
@@ -1717,17 +1717,35 @@
 				_element('character-name').value = character.name
 			}
 			
+			function randomFrequencyElement(array) {
+				var sum = array.reduce((s, e) => s + (e.frequency | 0), 0)
+				
+				if ( sum > 0 ) {
+					var value = randomInteger(sum)
+					
+					for ( var element of array ) {
+						if ( value < element.frequency ) {
+							return element
+						}
+						
+						value -= (element.frequency | 0)
+					}
+				}
+				
+				return array[randomInteger(array.length)]
+			}
+			
 			function randomCharacter() {
 				var crass, classKey
 				var background = dnd.backgrounds[randomInteger(dnd.backgrounds.length)]
-				var race = dnd.races[randomInteger(dnd.races.length)]
+				var race = randomFrequencyElement(dnd.races)
 				var raceKey = race.key
 				
 				if ( Math.random() < 0.5 ) {
 					classKey = race.classes[randomInteger(race.classes.length)]
 					crass = lookup.classes[classKey]
 				} else {
-					crass = dnd.classes[randomInteger(dnd.classes.length)]
+					crass = randomFrequencyElement(dnd.classes)
 					classKey = crass.key
 				}
 				
@@ -2684,10 +2702,10 @@
 					'size', 'skills', 'spells', 'tools', 'weapons'
 				]
 				
-				for (var key of keys) {
+				for ( var key of keys ) {
 					lookup[key] = new Object()
 					
-					for (var value of dnd[key]) { lookup[key][value.key] = value }
+					for ( var value of dnd[key] ) { lookup[key][value.key] = value }
 				}
 				
 				lookup.optionHash = []
