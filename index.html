@@ -356,7 +356,7 @@
 				this.criticalDice = sources.reduce((t, f) => t + (f.criticaldice | 0), 0) + 0
 				this.criticalRange = sources.reduce((t, f) => t + (f.criticalrange | 0), 0) + 1
 				this.initiative = initiative < 0 ? initiative : "+" + initiative
-				this.darkvision = sources.reduce((t, f) => t + (f.darkvision || 0), 0)
+				this.darkvision = sources.reduce((t, f) => Math.max(t, f.darkvision || 0), 0) + sources.reduce((t, f) => t + (f.increasedarkvision || 0), 0)
 				this.attacksPerAction = attacksPerAction
 				this.difficultyClass = 8 + pb + (modifiers[spellcasting] | 0)
 				this.passivePerception = 10 + (modifiers['wisdom'] | 0) + (this.proficiencies.skills.indexOf('perception') < 0 ? 0 : pb)
@@ -2325,7 +2325,7 @@
 				_assignClass(_element('language'), 'incomplete', details.unchosenLanguages > 0 ? 1 : -1)
 				_assignClass(_element('skill'), 'incomplete', details.unchosenSkills > 0 ? 1 : -1)
 				
-				details.features.forEach(populateFeatureOptionSet)
+				details.features.forEach((f) => populateFeatureOptionSet(f, details))
 			}
 			
 			function renderCharacter(character, prefix, applyToForm) {
@@ -2519,9 +2519,23 @@
 					
 					node.innerHTML = beginTag + list.join(" ") + closeTag
 				}
+				
+				if ( layout === 'checkbox' ) {
+				}
 			}
 			
-			function populateFeatureOptionSet(feature) {
+			function populateFeatureArchetype(feature, details) {
+				var node = _element('feature-' + feature.key + '-' + (feature.level || '') + '-summary')
+				var html = "<div id='cycle-archetype' class='archetype cycle-option advance' onclick='advanceArchetype()'><span id='cycle-archetype-summary' class='archetype chosen toggle nose'><b>" + (details.archetype.name || feature.summary) + "</b></span></div>"
+				
+				node.innerHTML = html
+			}
+			
+			function populateFeatureOptionSet(feature, details) {
+				if ( feature.key === 'archetype' ) {
+					return populateFeatureArchetype(feature, details)
+				}
+				
 				var optionSet = feature.options
 				
 				if ( !optionSet ) { return }
@@ -2695,6 +2709,30 @@
 			// MARK: Prepare
 			
 			function prepareLookup() {
+				if ( location.protocol.startsWith('file') ) {
+					console.log("Adding test class")
+					dnd.classes.push({
+						"key":"test",
+						"name":"Test",
+						"frequency":0,
+						"races":["human"],
+						"style":"intelligence",
+						"hd":4,
+						"spellcasting":"intelligence",
+						"armor":[],
+						"weapons":["dagger"],
+						"tools":[],
+						"saves":["intelligence"],
+						"skill_options":{"limit":2, "list":["nature", "perception", "survival"]},
+						"archetype_name":"Archetype",
+						"archetypes":dnd.archetypes.map(a => a.key),
+						"archetype_default":"knowledge",
+						"background_default":"none",
+						"equipment":[[[{"weapon":"dagger"}]]],
+						"features":[{"level":0, "key":"archetype", "name":"Archetype", "summary":"Choose archetype"}]
+					})
+				}
+				
 				var keys = [
 					'alignment', 'archetypes', 'armors', 'abilities', 'backgrounds',
 					'cantrips', 'classes', 'equipment', 'feats', 'fightingstyles',
