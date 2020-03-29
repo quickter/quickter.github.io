@@ -2282,6 +2282,7 @@
 				//	eldritch invocations | sorcerous metamagic | battle maneuvers
 				
 				_element('level').innerHTML = "Level " + details.level
+				_element('level').title = details.level < 20 ? "Next Level at " + dnd.experience[details.level] + "xp" : "Maximum Level"
 				_element('race').innerHTML = details.race.name || placeholder("Race")
 				_element('crass').innerHTML = details.crass.name || placeholder("Class")
 				_element('archetype').innerHTML = details.archetype.name || placeholder("Archetype")
