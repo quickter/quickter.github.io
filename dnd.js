@@ -2409,7 +2409,7 @@ var dnd = {
 		"frequency":1,
 		"classes":["cleric", "fighter", "paladin"],
 		"names":["warforged"],
-		"style":"strength",
+		"style":"constitution",
 		"size":"medium",
 		"speed":30,
 		"darkvision":0,

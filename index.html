@@ -20,6 +20,7 @@
 				"rolls": [15, 14, 13, 12, 10, 8],
 				"race":"human",
 				"increase":0,
+				"maximumLevel":20,
 				"maximumAbility":20,
 				"effectivenessArmorclass":16,
 			};
@@ -1947,8 +1948,8 @@
 				var x = event ? normalizeX(event) : 1
 				var level = (character.level | 0) || 1
 				
-				if ( x < 0 ) { level = level > 1 ? level - 1 : 20 }
-				else { level = level < 20 ? level + 1 : 1 }
+				if ( x < 0 ) { level = level > 1 ? level - 1 : defaults.maximumLevel }
+				else { level = level < defaults.maximumLevel ? level + 1 : 1 }
 				
 				valueChanged('level', level)
 				character.level = level
@@ -2282,7 +2283,7 @@
 				//	eldritch invocations | sorcerous metamagic | battle maneuvers
 				
 				_element('level').innerHTML = "Level " + details.level
-				_element('level').title = details.level < 20 ? "Next Level at " + dnd.experience[details.level] + "xp" : "Maximum Level"
+				_element('level').title = details.level < defaults.maximumLevel ? "Next Level at " + dnd.experience[details.level] + "xp" : "Maximum Level"
 				_element('race').innerHTML = details.race.name || placeholder("Race")
 				_element('crass').innerHTML = details.crass.name || placeholder("Class")
 				_element('archetype').innerHTML = details.archetype.name || placeholder("Archetype")
@@ -2512,7 +2513,7 @@
 					var closeTag = "</div>"
 					var templateList = "<span id='"+prefix+"-{key}' data-key='{key}' class='"+style+" "+prefix+" hidden toggle nose'><b>{name}</b>: {summary}</span>"
 					var filterByExclude = optionSet.exclude ? items.filter(i => optionSet.exclude.indexOf(i.key) < 0) : items
-					var filterByLevel = level < 20 ? filterByExclude.filter(i => (i.requirelevel || 0) <= level) : filterByExclude
+					var filterByLevel = level < defaults.maximumLevel ? filterByExclude.filter(i => (i.requirelevel || 0) <= level) : filterByExclude
 					var included = filterByLevel
 					var list = included.map((item) => replaceKeys(templateList, item))
 					
