@@ -1931,12 +1931,14 @@
 				renderCharacter(character, prefix, false)
 			}
 			
-			function handleCycleOptionSet(prefix) {
+			function handleCycleOptionSet(event, prefix) {
+				//var previous = event && normalizeX(event) < 0
+				var previous = event && event.altKey
 				var element = _element(prefix)
 				var chosen = element.getElementsByClassName('chosen')
 				var current = chosen && chosen[0]
-				var sibling = current && current.nextElementSibling
-				var next = sibling || element.firstElementChild
+				var sibling = current && (previous ? current.previousElementSibling : current.nextElementSibling)
+				var next = sibling || (previous ? element.lastElementChild : element.firstElementChild)
 				
 				optionChanged(prefix, element.dataset.hash, next.dataset.key)
 			}
@@ -2505,7 +2507,7 @@
 				else if ( character.options.indexOf(hash) < 0 ) { character.options.push(hash) }
 				
 				if ( layout === 'cycle' ) {
-					var beginTag = "<div id='"+prefix+"' data-dnd='"+optionSet.dnd+"' data-hash='"+hash+"' class='"+style+" cycle-option advance' onclick='handleCycleOptionSet(\""+prefix+"\")'>"
+					var beginTag = "<div id='"+prefix+"' data-dnd='"+optionSet.dnd+"' data-hash='"+hash+"' class='"+style+" cycle-option advance' onclick='handleCycleOptionSet(event, \""+prefix+"\")'>"
 					var closeTag = "</div>"
 					var templateList = "<span id='"+prefix+"-{key}' data-key='{key}' class='"+style+" "+prefix+" hidden toggle nose'><b>{name}</b>: {summary}</span>"
 					var filterByExclude = optionSet.exclude ? items.filter(i => optionSet.exclude.indexOf(i.key) < 0) : items
@@ -2530,7 +2532,7 @@
 			function populateFeatureArchetype(feature, details) {
 				var summary = details.archetype.name || feature.summary
 				var node = _element('feature-' + feature.key + '-' + (feature.level || '') + '-summary')
-				var html = "<div id='cycle-archetype' class='archetype cycle-option advance' onclick='advanceArchetype()'><span id='cycle-archetype-summary' class='archetype chosen toggle nose'><b>" + summary + "</b></span></div>"
+				var html = "<div id='cycle-archetype' class='archetype cycle-option' onclick='advanceArchetype()'><span id='cycle-archetype-summary' class='archetype toggle nose'><b>" + summary + "</b></span></div>"
 				
 				node.innerHTML = html
 			}
