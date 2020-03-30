@@ -1222,7 +1222,7 @@
 			function inflateHash(string, keyMap) {
 				if ( string.charAt(0) === "#" ) { string = string.slice(1) }
 				
-				var parts = string.split("|")
+				var parts = decodeURIComponent(string).split("|")
 				var object = new Object()
 				
 				for ( var index = 0 ; index < parts.length ; ++index ) {
@@ -1513,7 +1513,7 @@
 				}
 			}
 			
-			function valueChanged(key, value) {
+			function valueChanged(key, value, isBrowse) {
 				if ( key === 'race' && character.race !== value ) {
 					delete character.height
 					delete character.weight
@@ -1560,15 +1560,15 @@
 					character.ordered = false
 				}
 				
-				if ( key === 'race' ) {
+				if ( key === 'race' && !isBrowse ) {
 					_assignClass(_element('races'), 'hidden', 1)
 				}
 				
-				if ( key.indexOf('-archetype') > 0 ) {
+				if ( key.indexOf('-archetype') > 0 && !isBrowse ) {
 					_assignClass(_element('classes'), 'hidden', 1)
 				}
 				
-				if ( key === 'background' ) {
+				if ( key === 'background' && !isBrowse ) {
 					_assignClass(_element('backgrounds'), 'hidden', 1)
 				}
 			}
@@ -1958,58 +1958,57 @@
 			
 			function advanceRace(event) {
 				var x = event ? normalizeX(event) : 1
-				if ( _assignClass(_element('races'), 'hidden', Math.abs(x) > 0.5 ? character.race ? 1 : -1 : 0) ) { return }
+				if ( Math.abs(x) < 0.75 ) { _assignClass(_element('races'), 'hidden', 0); return }
 				
-				var key = character.race
-				var index = dnd.races.map(item => item.key).indexOf(key)
+				var raceKey = character.race
+				var index = dnd.races.map(item => item.key).indexOf(raceKey)
 				
 				if ( x < 0 ) { index = index > 0 ? index - 1 : dnd.races.length - 1 }
 				else { index = index + 1 < dnd.races.length ? index + 1 : 0 }
 				
-				key = dnd.races[index].key
-				valueChanged('race', key)
-				character.race = key
-				_element('character-form').race.value = key
+				raceKey = dnd.races[index].key
+				valueChanged('race', raceKey, true)
+				character.race = raceKey
+				_element('character-form').race.value = raceKey
 				renderCharacter(character, 'race', false)
 			}
 			
 			function advanceArchetype(event) {
 				var x = event ? normalizeX(event) : 1
-				if ( _assignClass(_element('classes'), 'hidden', Math.abs(x) > 0.5 ? character.crass ? 1 : -1 : 0) ) { return }
+				if ( Math.abs(x) < 0.75 ) { _assignClass(_element('classes'), 'hidden', 0); return }
 				if ( !character.crass ) { return }
 				
 				var classKey = character.crass
 				var crass = lookup.classes[classKey]
-				var key = character.archetype[classKey]
-				var index = crass.archetypes.indexOf(key)
+				var archetypeKey = character.archetype[classKey]
+				var index = crass.archetypes.indexOf(archetypeKey)
 				
 				if ( x < 0 ) { index = index > 0 ? index - 1 : crass.archetypes.length - 1 }
 				else { index = index + 1 < crass.archetypes.length ? index + 1 : 0 }
 				
-				key = crass.archetypes[index]
-				valueChanged(classKey + '-archetype', key)
-				character.archetype[classKey] = key
-				_element('character-form')[classKey + '-archetype'].value = key
+				archetypeKey = crass.archetypes[index]
+				valueChanged(classKey + '-archetype', archetypeKey, true)
+				character.archetype[classKey] = archetypeKey
+				_element('character-form')[classKey + '-archetype'].value = archetypeKey
 				renderCharacter(character, 'archetype', false)
-				_assignClass(_element('classes'), 'hidden', 1)
 			}
 			
 			function advanceClass(event) {
 				var x = event ? normalizeX(event) : 1
-				if ( _assignClass(_element('classes'), 'hidden', Math.abs(x) > 0.5 ? character.crass ? 1 : -1 : 0) ) { return }
+				if ( Math.abs(x) < 0.75 ) { _assignClass(_element('classes'), 'hidden', 0); return }
 				
-				var key = character.crass
-				var index = dnd.classes.map(item => item.key).indexOf(key)
+				var classKey = character.crass
+				var index = dnd.classes.map(item => item.key).indexOf(classKey)
 				
 				if ( x < 0 ) { index = index > 0 ? index - 1 : dnd.classes.length - 1 }
 				else { index = index + 1 < dnd.classes.length ? index + 1 : 0 }
 				
-				key = dnd.classes[index].key
-				valueChanged('crass', key)
-				character.crass = key
-				_element('character-form').crass.value = key
+				classKey = dnd.classes[index].key
+				valueChanged('crass', classKey, true)
+				character.crass = classKey
+				_element('character-form').crass.value = classKey
 				
-				if ( character.archetype[key] ) {
+				if ( character.archetype[classKey] ) {
 					renderCharacter(character, 'crass', false)
 				} else {
 					advanceArchetype()
@@ -2018,7 +2017,7 @@
 			
 			function advanceBackground(event) {
 				var x = event ? normalizeX(event) : 1
-				if ( _assignClass(_element('backgrounds'), 'hidden', Math.abs(x) > 0.5 ? character.background ? 1 : -1 : 0) ) { return }
+				if ( Math.abs(x) < 0.75 ) { _assignClass(_element('backgrounds'), 'hidden', 0); return }
 				
 				var key = character.background
 				var index = dnd.backgrounds.map(item => item.key).indexOf(key)
@@ -2027,7 +2026,7 @@
 				else { index = index + 1 < dnd.backgrounds.length ? index + 1 : 0 }
 				
 				key = dnd.backgrounds[index].key
-				valueChanged('background', key)
+				valueChanged('background', key, true)
 				character.background = key
 				_element('character-form').background.value = key
 				renderCharacter(character, 'background', false)
@@ -2076,7 +2075,7 @@
 				} else {
 					var x = event ? normalizeX(event) : 1
 					
-					if ( Math.abs(x) > 0.5 && isValid ) {
+					if ( Math.abs(x) > 0.75 && isValid ) {
 						plusHeight = character.height - race.height.base
 						timesWeight = Math.floor((character.weight - race.weight.base) / plusHeight)
 						
@@ -2492,6 +2491,21 @@
 				populateRadioItems(_element(key), dnd[key], prefix, false, templateContent)
 			}
 			
+			function populateRadioTableRows(element, items, prefix, templateColumns) {
+				var templateInput = "<input type='radio' id='"+prefix+"-{key}' name='"+prefix+"' value='{key}' onchange='handleRadioChange(\""+prefix+"\")' class='menu' />"
+				var templateCells = templateColumns.map(c => "<td class='menu'><label for='"+prefix+"-{key}' class='menu {style}'>" + c + "</label></td>")
+				var templateRow = "<tr>" + templateCells.join("").replace("<label", templateInput + "<label") + "</tr>"
+				var list = items.map((item) => replaceKeys(templateRow, item))
+				var beginTag = "<div class='menu-content'><table class='"+prefix+"-list radio menu' id='"+prefix+"-list'>"
+				var closeTag = "</table></div>"
+				
+				element.innerHTML = beginTag + list.join("") + closeTag
+			}
+			
+			function populateRadioTable(key, prefix, templateColumns) {
+				populateRadioTableRows(_element(key), dnd[key], prefix, templateColumns)
+			}
+			
 			function populateOptionSet(element, optionSet, level) {
 				var index
 				var items = dnd[optionSet.dnd]
@@ -2556,9 +2570,8 @@
 			}
 			
 			function populateRaces() {
-				var templateContent = "<div id='race-{key}-content'>Speed: {speed} • Size: {size} • Darkvision: {darkvision}<br/>{benefits}</div>"
-				
 				populateRadio("races", "race", "")
+				//populateRadioTable("races", "race", ["{name}", "{style}", "Speed: {speed}", "{size}", "Darkvision: {darkvision}"])
 			}
 			
 			function populateClasses() {
@@ -2576,9 +2589,8 @@
 			}
 			
 			function populateBackgrounds() {
-				var templateContent = "<div id='background-{key}-content'>{gold}gp<br/>{skills}</div>"
-				
 				populateRadio("backgrounds", "background", "")
+				//populateRadioTable("backgrounds", "background", ["{name}", "{gold}gp", "{skills}", "{tools}"])
 			}
 			
 			function populateLanguages() {
@@ -2661,7 +2673,7 @@
 				var notesItem = key ? window.localStorage.getItem(storageNotesKey(key)) : ""
 				var notes = _element('character-notes').value
 				var hash = location.hash
-				var hashEqual = hash ? hash === '#' + item : true
+				var hashEqual = hash ? decodeURIComponent(hash) === '#' + item : true
 				var notesEqual = notesItem == notes
 				var equal = hashEqual && notesEqual
 				
@@ -2824,7 +2836,7 @@
 			<span id='crass' class='advances tall' title='Class' onclick='advanceClass(event)'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='archetype' class='advances tall' title='Archetype' onclick='advanceArchetype(event)'> </span>
-			<p id='races' class='choices hidden'></p>
+			<p id='races' class='choices hidden menu-container'></p>
 			<p id='classes' class='choices hidden'></p>
 			
 			<br/>
@@ -2833,7 +2845,7 @@
 			<span id='sex' class='advances tall' title='Sex' onclick='advanceSex(event)'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='background' class='advances tall' title='Background' onclick='advanceBackground(event)'> </span>
-			<p id='backgrounds' class='choices hidden'></p>
+			<p id='backgrounds' class='choices hidden menu-container'></p>
 			
 			<br class='tall'/>
 			<span id='armor-class' title='Armor Class' class='listable'> </span>

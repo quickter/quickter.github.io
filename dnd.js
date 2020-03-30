@@ -441,12 +441,12 @@ var dnd = {
 		{"key":"amphibious", "name":"Gift of the Depths", "summary":"Breathe Underwater, swim speed 30, 1/day cast Water Breathing", "requirelevel":5, "description":"Prerequisite: 5th level<br/>You can breathe underwater, and you gain a swimming speed equal to your walking speed.<br/>You can also cast Water Breathing without expending a spell slot. You regain the ability to do so when you finish a long rest."},
 		{"key":"healing", "name":"Gift of the Ever-Living Ones", "summary":"Regain maximum hit points when within 100 of familiar", "requireboon":"chain", "description":"Prerequisite: Pact of the Chain feature<br/>Whenever you regain hit points while your familiar is within 100 feet of you, treat any dice rolled to determine the hit points you regain as having rolled their maximum value for you."},
 		{"key":"grasp", "name":"Grasp of Hadar", "summary":"Eldritch Blast can pull target 10", "description":"Prerequisite: Eldritch Blast cantrip<br/>Once on each of your turns when you hit a creature with your Eldritch Blast, you can move that creature in a straight line 10 feet closer to yourself."},
-		{"key":"weapon", "name":"Improved Pact Weapon", "summary":"Weapon is arcane focus, weapon is increased to +1, weapon may be bow", "requireboon":"blade", "description":"Prerequisite: Pact of the Blade feature<br/>You can use any weapon you summon with your Pact of the Blade feature as a spellcasting focus for your warlock spells.<br/>In addition, the weapon gains a +1 bonus to its attack and damage rolls, unless it is a magic weapon that already has a bonus to those rolls.<br/>Finally, the weapon you conjure can be a shortbow, longbow, light crossbow, or heavy crossbow."},
+		{"key":"weapon", "name":"Improved Pact Weapon", "summary":"Weapon is arcane focus, increased to +1, may be bow", "requireboon":"blade", "description":"Prerequisite: Pact of the Blade feature<br/>You can use any weapon you summon with your Pact of the Blade feature as a spellcasting focus for your warlock spells.<br/>In addition, the weapon gains a +1 bonus to its attack and damage rolls, unless it is a magic weapon that already has a bonus to those rolls.<br/>Finally, the weapon you conjure can be a shortbow, longbow, light crossbow, or heavy crossbow."},
 		{"key":"lethargy", "name":"Lance of Lethargy", "summary":"Eldritch Blast reduces target speed by 10 until your next turn", "description":"Prerequisite: Eldritch Blast cantrip<br/>Once on each of your turns when you hit a creature with your Eldritch Blast, you can reduce that creature’s speed by 10 feet until the end of your next turn."},
-		{"key":"maddening", "name":"Maddening Hex", "summary":"Cause psychic damage centered on hex target radius 5 as bonus action", "requirelevel":5, "type":"bonusaction", "description":"Prerequisite: 5th level, Hex spell or a warlock feature that curses<br/>As a bonus action, you cause a psychic disturbance around the target cursed by your Hex spell or by a warlock feature of yours, such as Hexblade’s Curse and Sign of Ill Omen. When you do so, you deal psychic damage to the cursed target and each creature of your choice within 5 feet of it. The psychic damage equals your Charisma modifier (minimum of 1 damage). To use this invocation, you must be able to see the cursed target, and it must be within 30 feet of you."},
+		{"key":"maddening", "name":"Maddening Hex", "summary":"Cause psychic damage centered on hex target radius 5", "requirelevel":5, "type":"bonusaction", "description":"Prerequisite: 5th level, Hex spell or a warlock feature that curses<br/>As a bonus action, you cause a psychic disturbance around the target cursed by your Hex spell or by a warlock feature of yours, such as Hexblade’s Curse and Sign of Ill Omen. When you do so, you deal psychic damage to the cursed target and each creature of your choice within 5 feet of it. The psychic damage equals your Charisma modifier (minimum of 1 damage). To use this invocation, you must be able to see the cursed target, and it must be within 30 feet of you."},
 		{"key":"relentless", "name":"Relentless Hex", "summary":"Teleport 30 to within 5 of hex target as bonus action", "requirelevel":7, "type":"bonusaction", "description":"Prerequisite: 7th level, Hex spell or a warlock feature that curses<br/>Your curse creates a temporary bond between you and your target. As a bonus action, you can magically teleport up to 30 feet to an unoccupied space you can see within 5 feet of the target cursed by your Hex spell or by a warlock feature of yours, such as Hexblade’s Curse and Sign of Ill Omen. To teleport in this way, you must be able to see the cursed target."},
 		{"key":"invisibility", "name":"Shroud of Shadow", "summary":"Cast invisibility at will", "requirelevel":15, "description":"Prerequisite: 15th level<br/>You can cast Invisibility at will, without expending a spell slot."},
-		{"key":"levistus", "name":"Tomb of Levistus", "summary":"1/rest become incapacitated and gain 10 temporary hit points per level until next turn ends as reaction", "requirelevel":5, "type":"reaction", "description":"Prerequisite: 5th level<br/>As a reaction when you take damage, you can entomb yourself in ice, which melts away at the end of your next turn. You gain 10 temporary hit points per warlock level, which take as much of the triggering damage as possible. Immediately after you take the damage, you gain vulnerability to fire damage, your speed is reduced to 0, and you are incapacitated. These effects, including any remaining temporary hit points, all end when the ice melts.<br/>Once you use this invocation, you can’t use it again until you finish a short or long rest."},
+		{"key":"levistus", "name":"Tomb of Levistus", "summary":"1/rest become incapacitated and gain 10 × level temporary hit points as reaction", "requirelevel":5, "type":"reaction", "description":"Prerequisite: 5th level<br/>As a reaction when you take damage, you can entomb yourself in ice, which melts away at the end of your next turn. You gain 10 temporary hit points per warlock level, which take as much of the triggering damage as possible. Immediately after you take the damage, you gain vulnerability to fire damage, your speed is reduced to 0, and you are incapacitated. These effects, including any remaining temporary hit points, all end when the ice melts.<br/>Once you use this invocation, you can’t use it again until you finish a short or long rest."},
 		{"key":"escape", "name":"Tricksters’ Escape", "summary":"1/day cast freedom of movement on self", "requirelevel":7, "description":"Prerequisite: 7th level<br/>You can cast Freedom of Movement once on yourself without expending a spell slot. You regain the ability to do so when you finish a long rest."}
 	],
 	"feats":[
@@ -2378,6 +2378,31 @@ var dnd = {
 		"features":[
 			{"level":0, "key":"flight", "name":"Flight", "summary":"Flying speed 50 when lightly armored", "flying":50, "hover":false, "description":"You have a flying speed of 50 feet. To use this speed, you can’t be wearing medium or heavy armor."},
 			{"level":0, "key":"talons", "name":"Talons", "summary":"Proficient with talons, d4 damage", "description":"Your talons are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal slashing damage equal to 1d4 + your Strength modifier, instead of the bludgeoning damage normal for an unarmed strike."},
+		]
+	},{
+		"key":"goliath",
+		"name":"Goliath",
+		"adjective":"Go",
+		"frequency":2,
+		"classes":["fighter", "barbarian", "paladin"],
+		"names":["goliath"],
+		"style":"strength",
+		"size":"medium",
+		"speed":30,
+		"darkvision":0,
+		"skills":["athletics"],
+		"languages":["common", "giant"],
+		"abilities":{"strength":2, "constitution":1},
+		"weapons":[],
+		"benefits":["Stone's Endurance", "Powerful Build", "Mountain Born"],
+		"height":{"base":80, "plus":{"roll":2, "die":8}},
+		"weight":{"base":270, "times":{"roll":2, "die":4}},
+		"alignment_default":"ln",
+		"resistance":[],
+		"features":[
+			{"level":0, "key":"", "name":"Stone's Endurance", "summary":"1/rest reduce damage by d12 + Constitution modifier as reaction", "type":"reaction", "description":"You can focus yourself to occasionally shrug off injury. When you take damage, you can use your reaction to roll a d12. Add your Constitution modifier to the number rolled, and reduce the damage by that total. After you use this trait, you can’t use it again until you finish a short or long rest."},
+			{"level":0, "key":"powerful", "name":"Powerful Build", "summary":"Push, drag, lift, and carry more", "description":"You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift."},
+			{"level":0, "key":"mountain", "name":"Mountain Born", "summary":"Adapted to mountain peaks", "description":"You’re acclimated to high altitude, including elevations above 20,000 feet. You’re also naturally adapted to cold climates."},
 		]
 	},{
 		"key":"tabaxi",

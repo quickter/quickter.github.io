@@ -67,15 +67,18 @@ label.option.intelligence { border-color:#8AC; }
 label.option.wisdom { border-color:#AC8; }
 label.option.charisma { border-color:#CC8; }
 
-/*
-label.any { background-color:#EEE; }
-label.strength { background-color:#EFF; }
-label.dexterity { background-color:#EFE; }
-label.constitution { background-color:#FEE; }
-label.intelligence { background-color:#DEF; }
-label.wisdom { background-color:#EDF; }
-label.charisma { background-color:#FFE; }
-*/
+.menu-container { position:relative; }
+.menu-content { position:absolute; z-index:1; background-color:#FFF; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); }
+table.menu { margin:0 auto; border-spacing:0; border-collapse:collapse; }
+table.menu tr:not(:last-of-type) { border-bottom:1px solid #EEE; }
+input.menu { display:none; }
+input.menu + label.menu { position:relative; }
+input.menu:checked + label.menu { text-shadow:0px 0px 1px #666; }
+input.menu:checked + label.menu::before { content:"▶︎"; position:absolute; left:-1.25em; top:1px; }
+td.menu:first-of-type { padding-left:1.5em; }
+td.menu:last-of-type { padding-right:1.5em; }
+td.menu:not(:first-of-type) { font-size:80%; padding-left:1em; }
+td.menu > label { display:block; cursor:pointer; }
 
 table.abilities { padding:0; margin:0; border-spacing:0; border-collapse:collapse; }
 tr.abilities > th { font-size:60%; text-align:right; }
