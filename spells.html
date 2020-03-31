@@ -320,7 +320,7 @@
 				if ( string.charAt(0) === leading ) { string = string.slice(1) }
 				
 				var part, parts = string.split(separator)
-				var object = result || new Object()
+				var object = result || {}
 				
 				for ( part of parts ) {
 					var equals = part.indexOf("=")

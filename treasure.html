@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Treasure</title>
+		<meta name="author" content="Eric Cole">
+		<meta name="version" content="0.5">
+		<meta name="keywords" content="dnd,5e,dungeons,dragons,treasure">
+		<meta name="description" content="Treasure">
+		<script src="treasure.js"></script>
+		
+		<script lang="javascript">
+			var defaults = {
+				minimumPoundsToDisplayWeight: 20
+			}
+			
+			function _element(id) {
+				if ( id && Node.ELEMENT_NODE === id.nodeType ) return id;
+				else if ( 'body' === id || 'head' === id ) return document[id];
+				else return document.getElementById(id);
+			}
+			
+			function _assignClass(element, c) {
+				var result = 0;
+				var action = ( arguments.length > 2 ) ? arguments[2] || 0 : 1
+				
+				if ( element.classList && 'function' === typeof element.classList.contains ) {
+					if ( !(action > 0 || action < 0) ) {
+						result = element.classList.toggle(c) ? 1 : -1
+					} else if ( element.classList.contains(c) ) {
+						result = !( action > 0 ) ? element.classList.remove(c) || -1 : 0
+					} else {
+						result = !( action < 0 ) ? element.classList.add(c) || 1 : 0
+					}
+				} else if ( element.className && 'function' === typeof element.className.search ) {
+					var pattern = new RegExp('(^|\\s+)'+c+'(\\s+|$)');
+					
+					if ( element.className.search(pattern) < 0 ) {
+						if ( !(action < 0) ) {
+							element.className = element.className !== "" ? element.className + " " + c : c
+							result = 1
+						}
+					} else {
+						if ( !(action > 0) ) {
+							element.className = element.className.replace(pattern, " ").trim()
+							result = -1
+						}
+					}
+				} else if ( !(action < 0) ) {
+					element.className = c
+					result = 1
+				}
+				
+				return result;
+			}
+			
+			function randomInteger(count) {
+				if ( crypto && crypto.getRandomValues ) {
+					var randomValues = new Uint32Array(1)
+					
+					crypto.getRandomValues(randomValues)
+					
+					return randomValues[0] % count
+				} else {
+					return Math.floor(Math.random() * Math.floor(count)) | 0
+				}
+			}
+			
+			function randomFrequencyElement(array) {
+				var sum = array.reduce((s, e) => s + (e.frequency | 0), 0)
+				
+				if ( sum > 0 ) {
+					var value = randomInteger(sum)
+					var save = value
+					
+					for ( var element of array ) {
+						if ( value < element.frequency ) {
+							return element
+						}
+						
+						value -= (element.frequency | 0)
+					}
+				}
+				
+				return array[randomInteger(array.length)]
+			}
+			
+			function frequencyPrefix(string) {
+				var index = string.indexOf(':')
+				var frequency = 1
+				
+				if ( index > 0 ) {
+					frequency = parseInt(string.slice(0, index))
+					string = string.slice(index + 1)
+					
+					if ( isNaN(frequency) ) {
+						frequency = 1
+					}
+				}
+				
+				return {'frequency':frequency, 'value':string}
+			}
+			
+			function randomFrequencyPrefix(array) {
+				return randomFrequencyElement(array.map(frequencyPrefix)).value
+			}
+			
+			function randomDieRoll(dice, quantity) {
+				var roll = parseInt(dice.roll) || 1
+				var sides = parseInt(dice.die) || 1
+				var times = parseInt(dice.times) || 1
+				var add = parseInt(dice.add) || 0
+				var sum = 0
+				
+				if ( quantity > 1 ) {
+					roll *= quantity
+					add *= quantity
+				}
+				
+				while ( roll --> 0 ) {
+					sum += 1 + randomInteger(sides)
+				}
+				
+				return sum * times + add
+			}
+			
+			function randomQuantity(quantity) {
+				return randomDieRoll(quantity)
+			}
+			
+			function lookupArmor(armor) {
+				if ( Array.isArray(armor) ) {
+					armor = randomFrequencyPrefix(armor)
+				}
+				
+				var item = lookup.armors && lookup.armors[armor]
+				
+				return item && item.name || armor
+			}
+			
+			function lookupWeapon(weapon) {
+				if ( Array.isArray(weapon) ) {
+					if ( weapon.length > 0 ) {
+						weapon = randomFrequencyPrefix(weapon)
+					} else {
+						weapon = randomFrequencyElement(treasure.magic.weapons).weapon
+					}
+				}
+				
+				var item = lookup.weapons && lookup.weapons[weapon]
+				
+				return item && item.name || weapon
+			}
+			
+			function lookupVariant(variant) {
+				if ( Array.isArray(variant) ) {
+					variant = randomFrequencyPrefix(variant)
+				}
+				
+				return variant
+			}
+			
+			function lookupMagicItem(entry) {
+				if ( entry.item === 'armor' && entry.armor && entry.bonus > 0 && !entry.variant ) {
+					return lookupArmor(entry.armor) + " +" + entry.bonus
+				}
+				
+				//if ( entry.item === 'weapon' && entry.weapon && entry.bonus > 0 && !entry.variant ) {
+				//	return lookupWeapon(entry.weapon) + " +" + entry.bonus
+				//}
+				
+				var item = lookup.items[entry.item]
+				var description = item && item.name || entry.item
+				var quantity = entry.quantity ? randomQuantity(entry.quantity) : 0
+				
+				if ( entry.bonus ) { description += " +" + entry.bonus }
+				
+				if ( quantity > 0 ) {
+					if ( entry.variant && Array.isArray(entry.variant) ) {
+						var variants = []
+						
+						while ( quantity --> 0 ) {
+							variants.push(lookupVariant(entry.variant))
+						}
+						
+						description += " (" + variants.join(", ") + ")"
+					} else if ( entry.unit ) {
+						description += " (" + quantity + " " + entry.unit + ")"
+					} else {
+						description += " × " + quantity
+					}
+				} else {
+					if ( entry.variant ) { description += " (" + lookupVariant(entry.variant) + ")" }
+				}
+				
+				
+				if ( entry.armor ) { description += ", " + lookupArmor(entry.armor) }
+				if ( entry.weapon ) { description += ", " + lookupWeapon(entry.weapon) }
+				
+				return description
+			}
+			
+			function generateCoins(treasure, tables, quantity) {
+				var descriptions = []
+				var coins = treasure.coins
+				var total = 0
+				var sum = 0
+				var table, value
+				
+				for ( var coin of coins ) {
+					value = 0
+					
+					for ( table of tables ) {
+						if ( coin.key && table[coin.key] ) {
+							value += randomDieRoll(table[coin.key], quantity)
+						
+						}
+					}
+					
+					if ( value > 0 ) {
+						sum += value * coin.cp
+						total += value
+						descriptions.push(value + coin.key)
+					}
+				}
+				
+				return {"sum":sum, "descriptions":descriptions, "total":total, "pounds":total / 50}
+			}
+			
+			function generateValuables(treasure, entry, key) {
+				var value = entry.value
+				var names = treasure[key][value]
+				var count = randomDieRoll(entry)
+				var name = names[randomInteger(names.length)]
+				
+				return {"sum":count * value * 100, "descriptions":[count + " × " + value + "gp " + name]}
+			}
+			
+			function generateMagicItems(treasure, entry, key) {
+				if ( defaults.useMagicItemTable ) {
+					key = defaults.useMagicItemTable
+				}
+				
+				var index, count = randomDieRoll(entry)
+				var entry, item, list = treasure.magic[key]
+				var items = []
+				
+				if ( list.length < 5 ) {
+					while ( count --> 0 ) { items.push(randomInteger(100)) }
+					
+					items.sort((a, b) => (a || 100) > (b || 100))
+					
+					return items.map(i => "Item " + (i < 10 ? "0" + i : i) + " from  table " + key.toUpperCase())
+				}
+				
+				while ( count --> 0 ) {
+					entry = randomFrequencyElement(list)
+					
+					while ( entry.items && treasure.magic[entry.items] ) {
+						entry = randomFrequencyElement(treasure.magic[entry.items])
+					}
+					
+					items.push(lookupMagicItem(entry))
+				}
+				
+				return items
+			}
+			
+			function valueSummary(sum, pounds) {
+				if ( pounds > defaults.minimumPoundsToDisplayWeight ) {
+					return "(Total " + (sum / 100) + "gp, Weighs " + (pounds > 4000 ? Math.floor(pounds / 20) / 100 + " tons" : Math.floor(pounds) + "lb") + ")"
+				} else {
+					return "(Total " + (sum / 100) + "gp)"
+				}
+			}
+			
+			function generateIndividual(treasure, individual, quantity) {
+				var index, entry, entries = []
+				
+				for ( index = 0 ; index < quantity ; ++index ) {
+					entries.push(randomFrequencyElement(individual.table))
+				}
+				
+				var coins = generateCoins(treasure, entries, 1)
+				
+				if ( coins.pounds > defaults.minimumPoundsToDisplayWeight || coins.descriptions.length > 2 ) {
+					coins.descriptions.push(valueSummary(coins.sum, coins.pounds))
+				}
+				
+				displayTreasure(coins.descriptions)
+			}
+			
+			function generateHoard(treasure, hoard, quantity) {
+				var valuableTables = ['gem', 'art']
+				var magicTables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
+				var coins = generateCoins(treasure, [hoard.coins], quantity)
+				var descriptions = []
+				var index, entry, entries = []
+				var valuables, items, key
+				var sum = coins.sum
+				
+				for ( index = 0 ; index < quantity ; ++index ) {
+					entries.push(randomFrequencyElement(hoard.table))
+				}
+				
+				for ( entry of entries ) {
+					for ( key of magicTables ) {
+						if ( entry['magic_' + key] ) {
+							items = generateMagicItems(treasure, entry['magic_' + key], key)
+							
+							descriptions.push.apply(descriptions, items)
+						}
+					}
+				}
+				
+				for ( entry of entries ) {
+					for ( key of valuableTables ) {
+						if ( entry[key] ) {
+							valuables = generateValuables(treasure, entry[key], key)
+							sum += valuables.sum | 0
+						
+							descriptions.push.apply(descriptions, valuables.descriptions)
+						}
+					}
+				}
+				
+				descriptions.push.apply(descriptions, coins.descriptions)
+				descriptions.push(valueSummary(sum, coins.pounds))
+				
+				displayTreasure(descriptions)
+			}
+			
+			function generateTreasure() {
+				var treasure = window.treasure
+				var form = _element('treasure-form')
+				var kind = form.kind.value
+				var challenge = form.challenge.value
+				var quantity = form.quantity.value || 1
+				var list = treasure[kind]
+				var entry = list.filter(i => i.cr <= challenge).pop()
+				
+				if ( kind === 'hoard' ) {
+					generateHoard(treasure, entry, quantity)
+				} else {
+					generateIndividual(treasure, entry, quantity)
+				}
+			}
+			
+			function displayTreasure(list) {
+				var items = list.map(i => "<li>" + i + "</li>")
+				var html = "<ul class='treasure'>" + items.join("") + "</ul>"
+				
+				_element('treasure-list').innerHTML = html
+			}
+			
+			function inflateParameters(result, string, leading, separator) {
+				if ( string.charAt(0) === leading ) { string = string.slice(1) }
+				
+				var part, parts = string.split(separator)
+				var object = result || {}
+				
+				for ( part of parts ) {
+					var equals = part.indexOf("=")
+					var value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
+					var key = equals < 0 ? part : part.slice(0, equals)
+					
+					object[key] = value
+				}
+				
+				return object
+			}
+			
+			function applyParameters() {
+				var hash = inflateParameters(null, location.hash, '#', '|')
+				var object = inflateParameters(hash, location.search, '?', '&')
+				var form = _element('treasure-form')
+				var key, value
+				
+				value = object['k']
+				if ( value ) { form.kind.value = value == 1 || value.startsWith('i') ? 'individual' : 'hoard' }
+				
+				value = object['c'] | 0
+				if ( value > 0 ) { form.challenge.value = value > 16 ? 17 : value > 10 ? 11 : value > 4 ? 5 : 0 }
+				
+				value = object['n'] | 0
+				if ( value > 1 ) { form.quantity.value = value }
+				
+				value = object['w'] | 0
+				if ( value > 1 ) { defaults.minimumPoundsToDisplayWeight = value }
+				
+				value = object['m']
+				if ( value && treasure.magic[value] ) { defaults.useMagicItemTable = value }
+			}
+			
+			function validateTreasure() {
+				var magicTables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'i-armor']
+				var index, keys = treasure.items.map(i => i.key)
+				
+				for ( var table of magicTables ) {
+					var sum = treasure.magic[table].reduce((s, e) => s + e.frequency, 0)
+					
+					if ( sum != 100 && table.length == 1 ) {
+						console.log("Incorrect frequency sum " + sum + " on table " + table)
+					}
+					
+					for ( var entry of treasure.magic[table] ) {
+						index = keys.indexOf(entry.item)
+						if ( index >= 0 ) {
+							keys.splice(index, 1)
+						}
+						
+						if ( !lookup.items[entry.item] ) {
+							console.log("Missing item " + entry.item)
+						}
+						if ( entry.armor && !lookup.armors[entry.armor] && !Array.isArray(entry.armor) ) {
+							console.log("Missing armor " + entry.armor)
+						}
+						if ( entry.weapon ) {
+							if ( Array.isArray(entry.weapon) ) {
+								for ( weapon of entry.weapon ) {
+									if ( !lookup.weapons[weapon.slice(weapon.indexOf(':') + 1)] ) {
+										console.log("Missing weapon " + weapon)
+									}
+								}
+							} else {
+								if ( !lookup.weapons[entry.weapon] ) {
+									console.log("Missing weapon " + entry.weapon)
+								}
+							}
+						}
+					}
+				}
+				
+				for ( var key of keys ) {
+					console.log("Unreferenced item " + key)
+				}
+			}
+			
+			function populateLookup() {
+				var keys = ['armors', 'weapons', 'items']
+				var valueByKey = new Object()
+				
+				for ( var key of keys ) {
+					valueByKey[key] = new Object()
+					
+					for ( var value of treasure[key] ) { valueByKey[key][value.key] = value }
+				}
+				
+				window.lookup = valueByKey
+				
+				validateTreasure()
+			}
+			
+			function populatePage() {
+				populateLookup()
+				applyParameters()
+				generateTreasure()
+			}
+		</script>
+		
+		<style>
+			html {
+				background: #EEE;
+			}
+			
+			body {
+				-webkit-font-smoothing: antialiased;
+				-webkit-touch-callout: none;
+				color: #555;
+				background: #FFF;
+				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+				font-size: 14px;
+				line-height: 1.75;
+				padding: 2em;
+				margin: 0 auto;
+				max-width: 50em;
+			}
+			
+			html { background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%); }
+			body { position:relative; box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
+		</style>
+	</head>
+	<body onload='populatePage()'>
+		<h4>Treasure</h4>
+		
+		<form id='treasure-form'>
+		<select name='kind' id='treasure-kind'>
+			<option value="individual">Individual Treasure</option>
+			<option value="hoard" selected>Treasure Hoard</option>
+		</select>
+		<select name='challenge' id='treasure-source'>
+			<option value="0" >Challenge 0 - 4</option>
+			<option value="5" >Challenge 5 - 10</option>
+			<option value="11">Challenge 11 - 16</option>
+			<option value="17">Challenge 17+</option>
+		</select>
+		&times; <input type='number' name='quantity' min='1' max='99' id='treasure-quantity' />
+		<input type='button' value='Roll' onclick="generateTreasure()" />
+		
+		<p id='treasure-list'></p>
+		<table id='treasure'></table>
+		</form>
+	</body>
+</html>
