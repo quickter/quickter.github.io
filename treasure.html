@@ -308,7 +308,7 @@
 					coins.descriptions.push(valueSummary(coins.sum, coins.pounds))
 				}
 				
-				displayTreasure(coins.descriptions)
+				return coins.descriptions
 			}
 			
 			function generateHoard(treasure, hoard, quantity) {
@@ -351,7 +351,7 @@
 				descriptions.push.apply(descriptions, coins.descriptions)
 				descriptions.push(valueSummary(sum, coins.pounds))
 				
-				displayTreasure(descriptions)
+				return descriptions
 			}
 			
 			function generateTreasure() {
@@ -362,12 +362,26 @@
 				var quantity = form.quantity.value || 1
 				var list = treasure[kind]
 				var entry = list.filter(i => i.cr <= challenge).pop()
+				var descriptions
 				
 				if ( kind === 'hoard' ) {
-					generateHoard(treasure, entry, quantity)
+					if ( quantity > 1 && defaults.partition ) {
+						descriptions = []
+						
+						while ( quantity --> 0 ) {
+							descriptions.push.apply(descriptions, generateHoard(treasure, entry, 1))
+							descriptions.push("")
+						}
+						
+						descriptions.pop()
+					} else {
+						descriptions = generateHoard(treasure, entry, quantity)
+					}
 				} else {
-					generateIndividual(treasure, entry, quantity)
+					descriptions = generateIndividual(treasure, entry, quantity)
 				}
+				
+				displayTreasure(descriptions)
 			}
 			
 			function displayTreasure(list) {
@@ -414,6 +428,9 @@
 				
 				value = object['m']
 				if ( value && treasure.magic[value] ) { defaults.useMagicItemTable = value }
+				
+				value = object['p']
+				if ( value ) { defaults.partition = true }
 			}
 			
 			function validateTreasure() {
