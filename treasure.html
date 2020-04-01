@@ -13,6 +13,7 @@
 		
 		<script lang="javascript">
 			var defaults = {
+				times: " × ",
 				minimumPoundsToDisplayWeight: 20
 			}
 			
@@ -54,6 +55,26 @@
 				}
 				
 				return result;
+			}
+			
+			function coalesceArrayElements(array) {
+				var result = []
+				var count, counts = new Object()
+				var element
+				
+				for ( element of array ) {
+					counts[element] = (counts[element] || 0) + 1
+				}
+				
+				for ( element of array ) {
+					if ( counts[element] > 1 ) { result.push(element + defaults.times + counts[element]) }
+					else if ( counts[element] > 0 ) { result.push(element) }
+					else { continue }
+					
+					delete counts[element]
+				}
+				
+				return result
 			}
 			
 			function randomInteger(count) {
@@ -167,32 +188,30 @@
 					return lookupArmor(entry.armor) + " +" + entry.bonus
 				}
 				
-				//if ( entry.item === 'weapon' && entry.weapon && entry.bonus > 0 && !entry.variant ) {
-				//	return lookupWeapon(entry.weapon) + " +" + entry.bonus
-				//}
-				
 				var item = lookup.items[entry.item]
 				var description = item && item.name || entry.item
-				var quantity = entry.quantity ? randomQuantity(entry.quantity) : 0
+				var quantity = item.quantity ? randomQuantity(item.quantity) : 0
+				var variant = entry.variant || item.variant
 				
 				if ( entry.bonus ) { description += " +" + entry.bonus }
 				
 				if ( quantity > 0 ) {
-					if ( entry.variant && Array.isArray(entry.variant) ) {
+					if ( variant && Array.isArray(variant) ) {
 						var variants = []
 						
 						while ( quantity --> 0 ) {
-							variants.push(lookupVariant(entry.variant))
+							variants.push(lookupVariant(variant))
 						}
 						
+						variants = coalesceArrayElements(variants)
 						description += " (" + variants.join(", ") + ")"
-					} else if ( entry.unit ) {
-						description += " (" + quantity + " " + entry.unit + ")"
+					} else if ( item.unit ) {
+						description += " (" + quantity + " " + item.unit + ")"
 					} else {
-						description += " × " + quantity
+						description += defaults.times + quantity
 					}
 				} else {
-					if ( entry.variant ) { description += " (" + lookupVariant(entry.variant) + ")" }
+					if ( variant ) { description += " (" + lookupVariant(variant) + ")" }
 				}
 				
 				
@@ -235,7 +254,7 @@
 				var count = randomDieRoll(entry)
 				var name = names[randomInteger(names.length)]
 				
-				return {"sum":count * value * 100, "descriptions":[count + " × " + value + "gp " + name]}
+				return {"sum":count * value * 100, "descriptions":[count + defaults.times + value + "gp " + name]}
 			}
 			
 			function generateMagicItems(treasure, entry, key) {
@@ -314,6 +333,9 @@
 						}
 					}
 				}
+				
+				descriptions = coalesceArrayElements(descriptions)
+				descriptions.sort()
 				
 				for ( entry of entries ) {
 					for ( key of valuableTables ) {
