@@ -1004,7 +1004,7 @@ var treasure = {
 				{"frequency": 3, "gem":{"roll":3, "die":6, "value":500}},
 				{"frequency": 3, "gem":{"roll":3, "die":6, "value":1000}},
 				{"frequency": 4, "art":{"roll":2, "die":4, "value":250}, "magic_a":{"roll":1, "die":4}, "magic_b":{"roll":1, "die":6}},
-				{"frequency": 3, "art":{"roll":2, "die":4, "value":750}, "magic_a":{"roll":1, "die":4}, "magic_b":{"roll":1, "die":6}},
+				{"frequency": 4, "art":{"roll":2, "die":4, "value":750}, "magic_a":{"roll":1, "die":4}, "magic_b":{"roll":1, "die":6}},
 				{"frequency": 3, "gem":{"roll":3, "die":6, "value":500}, "magic_a":{"roll":1, "die":4}, "magic_b":{"roll":1, "die":6}},
 				{"frequency": 3, "gem":{"roll":3, "die":6, "value":1000}, "magic_a":{"roll":1, "die":4}, "magic_b":{"roll":1, "die":6}},
 				{"frequency": 6, "art":{"roll":2, "die":4, "value":250}, "magic_c":{"roll":1, "die":6}},

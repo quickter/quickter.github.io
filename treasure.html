@@ -13,7 +13,10 @@
 		
 		<script lang="javascript">
 			var defaults = {
+				raw: false,
 				times: " × ",
+				forceMagicItemTable: false,
+				includeMagicItemTable: false,
 				minimumPoundsToDisplayWeight: 20
 			}
 			
@@ -128,27 +131,32 @@
 				return randomFrequencyElement(array.map(frequencyPrefix)).value
 			}
 			
-			function randomDieRoll(dice, quantity) {
+			function randomDieRoll(sides, rolls) {
+				var sum = 0
+				
+				while ( rolls --> 0 ) {
+					sum += 1 + randomInteger(sides)
+				}
+				
+				return sum
+			}
+			
+			function randomDiceRoll(dice, quantity) {
 				var roll = parseInt(dice.roll) || 1
 				var sides = parseInt(dice.die) || 1
 				var times = parseInt(dice.times) || 1
 				var add = parseInt(dice.add) || 0
-				var sum = 0
 				
 				if ( quantity > 1 ) {
 					roll *= quantity
 					add *= quantity
 				}
 				
-				while ( roll --> 0 ) {
-					sum += 1 + randomInteger(sides)
-				}
-				
-				return sum * times + add
+				return randomDieRoll(sides, roll) * times + add
 			}
 			
 			function randomQuantity(quantity) {
-				return randomDieRoll(quantity)
+				return randomDiceRoll(quantity)
 			}
 			
 			function lookupArmor(armor) {
@@ -233,7 +241,7 @@
 					
 					for ( table of tables ) {
 						if ( coin.key && table[coin.key] ) {
-							value += randomDieRoll(table[coin.key], quantity)
+							value += randomDiceRoll(table[coin.key], quantity)
 						
 						}
 					}
@@ -251,37 +259,34 @@
 			function generateValuables(treasure, entry, key) {
 				var value = entry.value
 				var names = treasure[key][value]
-				var count = randomDieRoll(entry)
+				var count = randomDiceRoll(entry)
 				var name = names[randomInteger(names.length)]
 				
 				return {"sum":count * value * 100, "descriptions":[count + defaults.times + value + "gp " + name]}
 			}
 			
-			function generateMagicItems(treasure, entry, key) {
-				if ( defaults.useMagicItemTable ) {
-					key = defaults.useMagicItemTable
+			function generateMagicItem(treasure, key) {
+				if ( defaults.forceMagicItemTable ) {
+					key = defaults.forceMagicItemTable
 				}
 				
-				var index, count = randomDieRoll(entry)
-				var entry, item, list = treasure.magic[key]
+				var prefix = defaults.includeMagicItemTable ? key.toUpperCase() + ": " : ""
+				var item = null
+				
+				while ( key && treasure.magic[key] ) {
+					item = randomFrequencyElement(treasure.magic[key])
+					key = item.items
+				}
+				
+				return item && (prefix + lookupMagicItem(item))
+			}
+			
+			function generateMagicItems(treasure, entry, key) {
+				var index, count = randomDiceRoll(entry)
 				var items = []
 				
-				if ( list.length < 5 ) {
-					while ( count --> 0 ) { items.push(randomInteger(100)) }
-					
-					items.sort((a, b) => (a || 100) > (b || 100))
-					
-					return items.map(i => "Item " + (i < 10 ? "0" + i : i) + " from  table " + key.toUpperCase())
-				}
-				
 				while ( count --> 0 ) {
-					entry = randomFrequencyElement(list)
-					
-					while ( entry.items && treasure.magic[entry.items] ) {
-						entry = randomFrequencyElement(treasure.magic[entry.items])
-					}
-					
-					items.push(lookupMagicItem(entry))
+					items.push(generateMagicItem(treasure, key))
 				}
 				
 				return items
@@ -311,7 +316,7 @@
 				return coins.descriptions
 			}
 			
-			function generateHoard(treasure, hoard, quantity) {
+			function generateRawHoard(treasure, hoard, quantity) {
 				var valuableTables = ['gem', 'art']
 				var magicTables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
 				var coins = generateCoins(treasure, [hoard.coins], quantity)
@@ -354,6 +359,63 @@
 				return descriptions
 			}
 			
+			function generateColeHoard(treasure, hoard, quantity) {
+				var valuableTables = ['gem', 'art']
+				var magicTables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
+				var coins = generateCoins(treasure, [hoard.coins], quantity)
+				var descriptions = []
+				var pointsLimit = 24, pointsDie = 6
+				var index, entry, sum = coins.sum
+				var valuables, points, die, key, prefix
+				
+				for ( index = 0 ; index < quantity ; ++index ) {
+					points = randomDieRoll(pointsDie, pointsLimit / pointsDie)
+					
+					while ( points > 0 ) {
+						entry = randomFrequencyElement(hoard.table)
+						die = 0
+						
+						for ( key of magicTables ) {
+							if ( entry['magic_' + key] ) {
+								die = Math.max(die, entry['magic_' + key].die)
+								descriptions.push(generateMagicItem(treasure, key))
+							}
+						}
+						
+						points -= pointsLimit / (die > 0 ? die : 4)
+					}
+				}
+				
+				descriptions = coalesceArrayElements(descriptions)
+				descriptions.sort()
+				
+				for ( index = 0 ; index < quantity ; ++index ) {
+					entry = randomFrequencyElement(hoard.table)
+					
+					for ( key of valuableTables ) {
+						if ( entry[key] ) {
+							valuables = generateValuables(treasure, entry[key], key)
+							sum += valuables.sum | 0
+						
+							descriptions.push.apply(descriptions, valuables.descriptions)
+						}
+					}
+				}
+				
+				descriptions.push.apply(descriptions, coins.descriptions)
+				descriptions.push(valueSummary(sum, coins.pounds))
+				
+				return descriptions
+			}
+			
+			function generateHoard(treasure, hoard, quantity) {
+				if ( defaults.raw ) {
+					return generateRawHoard(treasure, hoard, quantity)
+				} else {
+					return generateColeHoard(treasure, hoard, quantity)
+				}
+			}
+			
 			function generateTreasure() {
 				var treasure = window.treasure
 				var form = _element('treasure-form')
@@ -363,6 +425,8 @@
 				var list = treasure[kind]
 				var entry = list.filter(i => i.cr <= challenge).pop()
 				var descriptions
+				
+				defaults.raw = form.raw.checked
 				
 				if ( kind === 'hoard' ) {
 					if ( quantity > 1 && defaults.partition ) {
@@ -427,21 +491,44 @@
 				if ( value > 1 ) { defaults.minimumPoundsToDisplayWeight = value }
 				
 				value = object['m']
-				if ( value && treasure.magic[value] ) { defaults.useMagicItemTable = value }
+				if ( value && treasure.magic[value] ) { defaults.forceMagicItemTable = value }
+				
+				value = object['d']
+				if ( value ) { defaults.includeMagicItemTable = true }
 				
 				value = object['p']
 				if ( value ) { defaults.partition = true }
+				
+				value = object['raw']
+				if ( value ) { form.raw.checked = true }
 			}
 			
 			function validateTreasure() {
 				var magicTables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'i-armor']
 				var index, keys = treasure.items.map(i => i.key)
+				var table, sum
 				
-				for ( var table of magicTables ) {
-					var sum = treasure.magic[table].reduce((s, e) => s + e.frequency, 0)
+				for ( table of treasure.hoard ) {
+					sum = table.table.reduce((s, e) => s + e.frequency, 0)
+					
+					if ( sum != 100 ) {
+						console.log("Incorrect frequency sum " + sum + " on individual table CR " + table.cr)
+					}
+				}
+				
+				for ( table of treasure.individual ) {
+					sum = table.table.reduce((s, e) => s + e.frequency, 0)
+					
+					if ( sum != 100 ) {
+						console.log("Incorrect frequency sum " + sum + " on hoard table CR " + table.cr)
+					}
+				}
+				
+				for ( table of magicTables ) {
+					sum = treasure.magic[table].reduce((s, e) => s + e.frequency, 0)
 					
 					if ( sum != 100 && table.length == 1 ) {
-						console.log("Incorrect frequency sum " + sum + " on table " + table)
+						console.log("Incorrect frequency sum " + sum + " on magic table " + table)
 					}
 					
 					for ( var entry of treasure.magic[table] ) {
@@ -519,12 +606,14 @@
 			
 			html { background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%); }
 			body { position:relative; box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
+			
+			p.explanation { font-size:80%; color:#999; }
 		</style>
 	</head>
 	<body onload='populatePage()'>
 		<h4>Treasure</h4>
 		
-		<form id='treasure-form'>
+		<form id='treasure-form' onsubmit="generateTreasure(); return false">
 		<select name='kind' id='treasure-kind'>
 			<option value="individual">Individual Treasure</option>
 			<option value="hoard" selected>Treasure Hoard</option>
@@ -536,10 +625,13 @@
 			<option value="17">Challenge 17+</option>
 		</select>
 		&times; <input type='number' name='quantity' min='1' max='99' id='treasure-quantity' />
-		<input type='button' value='Roll' onclick="generateTreasure()" />
+		<input type='submit' value='Roll' />
+		<input type='checkbox' name='raw' id='treasure-raw' /><label for='treasure-raw'> RaW</label>
+		</form>
 		
 		<p id='treasure-list'></p>
 		<table id='treasure'></table>
-		</form>
+		
+		<p class='explanation'>RaW rolls from the DMG treasure hoard tables, choosing all items from the same magic item table.  The Cole method uses the same tables in a slightly different way to mix items of different rarity.</p>
 	</body>
 </html>
