@@ -162,6 +162,7 @@ table#features-table { width:100%; }
 .advances.tall { line-height:2.0; min-width:8em; }
 .advances.narrow { line-height:1.5; min-width:4em; }
 .listable { display:inline-block; min-width:6em; text-align:center; line-height:1.5; }
+.listable.wide { min-width:12em; }
 span.advances { position:relative; padding:0 1em; }
 
 @media screen {

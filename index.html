@@ -370,7 +370,6 @@
 				var spells = this.archetype.spells || this.crass.spells || new Object()
 				var spellsKnown = spells.known || 0
 				var spellsRatio = spells.ratio || 0
-				var slotsGained = this.archetype.spell_slots_gained || this.crass.spell_slots_gained || []
 				
 				if ( spellsRatio > 0 ) {
 					this.spellsPrepared = Math.floor(level / spellsRatio) + Math.max(modifiers[spellcasting] | 0, 1)
@@ -381,9 +380,24 @@
 				}
 				
 				if ( this.spellsPrepared > 0 && spells.slots ) {
-					this.slots = spells.slots.map(g => g.reduce((s, l) => s + (l > level ? 0 : 1), 0) || "_")
+					this.slots = spells.slots.map(a => a.reduce((s, l) => s + (l > level ? 0 : 1), 0) || 0)
 					
 					if ( !this.slots[1] ) { this.spellsPrepared = 0 }
+				} else if ( this.spellsPrepared > 0 && spells.slot_count_increase && spells.slot_level_increase ) {
+					this.slots = [0,0,0,0,0,0,0,0,0,0]
+					
+					var count = spells.slot_count_increase.reduce((s, l) => s + (l > level ? 0 : 1), 0)
+					var index = spells.slot_level_increase.reduce((s, l) => s + (l > level ? 0 : 1), 0)
+					
+					if ( spells.cantrips_increase ) {
+						this.slots[0] = spells.cantrips_increase.reduce((s, l) => s + (l > level ? 0 : 1), 0)
+					}
+					
+					this.slots[index] = count
+					
+					if ( !count ) { this.spellsPrepared = 0 }
+				} else {
+					this.slots = []
 				}
 			}
 			
@@ -2295,6 +2309,7 @@
 				_element('passive-perception').innerHTML = "PP " + details.passivePerception
 				_element('difficulty-class').innerHTML = "DC " + details.difficultyClass
 				_element('spells-prepared').innerHTML = "Spells " + (details.spellsPrepared || "-")
+				_element('spell-slots').innerHTML = slotsHTML(details.slots) || placeholder("Spell Slots")
 				_element('size').innerHTML = details.size.name ? "Size " + details.size.name : placeholder("Size")
 				_element('speed').innerHTML = details.speed > 0 ? "Speed " + details.speed : placeholder("Speed")
 				_element('darkvision').innerHTML = "Darkvision " + (details.darkvision || "-")
@@ -2424,6 +2439,17 @@
 				if ( details.saveAdvantageNames.length > 0 ) { resistances.push("Advantage on Saves: " + details.saveAdvantageNames.join(", ")) }
 				
 				return resistances.length > 0 ? resistances.join("<br/>") : ""
+			}
+			
+			function slotsHTML(slots) {
+				if ( slots.length > 0 ) {
+					var cantrips = slots[0] > 0 ? "(" + (slots[0] || "-") + ") " : ""
+					var slotsPerLevel = slots.slice(1).map(s => s || "-").join(", ")
+					
+					return cantrips + slotsPerLevel
+				} else {
+					return ""
+				}
 			}
 			
 			// MARK: Populate
@@ -2878,6 +2904,8 @@
 			<span id='spells-prepared' title='Spells Prepared or Known' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='difficulty-class' title='Difficulty Class' class='listable'> </span>
+			<span class='bullet'>&bull;</span>
+			<span id='spell-slots' title='Spell Slots' class='listable wide'> </span>
 			
 			<br class='tall'/>
 			<p><span class='caption'>Abilities</span>
