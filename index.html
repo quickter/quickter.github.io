@@ -251,6 +251,7 @@
 				this.computeFeatures()
 				this.computeProficiencies()
 				this.computeAbilities()
+				this.computeTracking()
 				this.computeCharacteristics()
 				this.computeEssentials()
 				this.computeSpellcasting()
@@ -330,6 +331,45 @@
 				this.activeFeatures = activeFeatures
 				this.displayFeatures = displayFeatures
 				this.sources = sources
+			}
+			
+			Character.prototype.computeTracking = function Character_computeTracking() {
+				var feature, activeFeatures = this.activeFeatures
+				var track, tracking = []
+				var level = this.level
+				var modifiers = this.modifiers
+				var uses, key, name, restore, format
+				
+				for ( feature of activeFeatures ) {
+					track = feature.track
+					if ( !track ) { continue }
+					
+					format = 'pips'
+					restore = track.restore === 'long' ? 'long-rest rest' : 'short-rest rest'
+					uses = track.uses
+					name = track.name || feature.name
+					key = feature.key
+					
+					if ( Array.isArray(uses) ) {
+						uses = uses.reduce((s, l) => s + (l > level ? 0 : 1), 0)
+					} else if ( uses === 'level' ) {
+						uses = level * (track.times || 1) + (track.plus || 0)
+						if ( uses > 5 ) { format = 'number' }
+					} else if ( modifiers[uses] !== undefined ) {
+						uses = Math.max(+modifiers[uses], 1)
+					} else {
+						uses = uses | 0
+					}
+					
+					if ( !uses || !name ) { continue }
+					if ( track.unlimited > 0 && level >= track.unlimited ) { uses = 'unlimited' }
+					
+					tracking.push({'key':key, 'name':name, 'level':feature.level, 'uses':uses, 'restore':restore, 'format':format})
+				}
+				
+				tracking.sort((a, b) => a.format === b.format ? a.level === b.level ? a.name > b.name : a.level > b.level : a.format > b.format)
+				
+				this.tracking = tracking
 			}
 			
 			Character.prototype.computeEssentials = function Character_computeEssentials() {
@@ -2201,6 +2241,7 @@
 				c.computeFeatures()
 				c.computeProficiencies()
 				c.computeAbilities()
+				c.computeTracking()
 				
 				var index = dnd.abilities.map(a => a.key).indexOf(ability)
 				
@@ -2327,6 +2368,7 @@
 				_element('treasure').innerHTML = (details.background.gold || 0) + "gp"
 				_element('abilities').innerHTML = abilitiesTableHTML(details.abilityItems)
 				_element('feature').innerHTML = featuresTableHTML(details.displayFeatures)
+				_element('tracking').innerHTML = trackingTableHTML(details.tracking)
 				_element('attacks').innerHTML = attacksTableHTML(details.attacks, details.effectivenessArmorclass)
 				_element('proficiency').innerHTML = proficienciesHTML(details)
 				_element('resistances').innerHTML = resistancesHTML(details) || placeholder("None")
@@ -2398,37 +2440,68 @@
 			// MARK: Format
 			
 			function abilitiesTableHTML(items) {
-				var abilitiesTableTemplate = "<table class='abilities' id='abilities-table'><tr class='abilities'><th>Ability</th><th>Roll</th><th>Score</th><th>Modifier</th></tr>{rows}</table>"
-				var abilitiesRowTemplate = "<tr id='{key}-row' class='abilities'><td id='{key}-name' class='name {styles}'>{name}</td><td id='{key}-roll' class='roll number' onclick='orderAbility(\"{key}\")'>{roll}</td><td id='{key}-score' class='score number action {styles}' onclick='increaseAbility(\"{key}\")'>{score}</td><td id='{key}-modifier' class='modifier number'>{modifier}</td></tr>"
-				var abilitiesRows = items.map(item => replaceKeys(abilitiesRowTemplate, item))
-				var abilitiesHTML = replaceKeys(abilitiesTableTemplate, {"rows":abilitiesRows.join(" ")})
+				var tableTemplate = "<table class='abilities' id='abilities-table'><tr class='abilities'><th>Ability</th><th>Roll</th><th>Score</th><th>Modifier</th></tr>{rows}</table>"
+				var rowTemplate = "<tr id='{key}-row' class='abilities'><td id='{key}-name' class='name {styles}'>{name}</td><td id='{key}-roll' class='roll number' onclick='orderAbility(\"{key}\")'>{roll}</td><td id='{key}-score' class='score number action {styles}' onclick='increaseAbility(\"{key}\")'>{score}</td><td id='{key}-modifier' class='modifier number'>{modifier}</td></tr>"
+				var rows = items.map(item => replaceKeys(rowTemplate, item))
+				var html = replaceKeys(tableTemplate, {"rows":rows.join(" ")})
 				
-				return abilitiesHTML
+				return html
 			}
 			
 			function featuresTableHTML(items) {
-				var featuresTableTemplate = "<table class='features' id='features-table'>{rows}</table>"
-				var featuresRowTemplate = "<tr class='features {type}'><td class='feature level'>{level}</td><td class='feature {key} name toggle' onclick='toggleFeature(\"{key}-{level}\")'>{name}</td><td id='feature-{key}-{level}-summary' class='feature summary'><span class='summary'>{summary}</span></td></tr><tr id='feature-{key}-{level}-description' class='hidden'><td></td><td class='feature description' colspan='2'>{description}</td></tr><tr id='feature-{key}-{level}-drawer' class='features drawer hidden'><td id='feature-{key}-{level}-options' colspan='3'></td></tr>"
-				var featuresRows = items.map(f => replaceKeys(featuresRowTemplate, f))
-				var featuresHTML = replaceKeys(featuresTableTemplate, {"rows":featuresRows.join(" ")})
+				var tableTemplate = "<table class='features' id='features-table'>{rows}</table>"
+				var rowTemplate = "<tr class='features {type}'><td class='feature level'>{level}</td><td class='feature {key} name toggle' onclick='toggleFeature(\"{key}-{level}\")'>{name}</td><td id='feature-{key}-{level}-summary' class='feature summary'><span class='summary'>{summary}</span></td></tr><tr id='feature-{key}-{level}-description' class='hidden'><td></td><td class='feature description' colspan='2'>{description}</td></tr><tr id='feature-{key}-{level}-drawer' class='features drawer hidden'><td id='feature-{key}-{level}-options' colspan='3'></td></tr>"
+				var rows = items.map(f => replaceKeys(rowTemplate, f))
+				var html = replaceKeys(tableTemplate, {"rows":rows.join(" ")})
 				
-				return featuresHTML
+				return html
+			}
+			
+			function trackingTableHTML(items) {
+				// AC, HP, Initiative, Inspiration, Death saves, Spell Slots
+				var numberTemplate = "<input type='number' value='{uses}' min='0' max='{uses}' class='tracking-number {key} {restore}' />"
+				var pipTemplate = "<input type='checkbox' id='{key}-{order}-tracking' class='tracking-mark {key} {restore}' /><label for='{key}-{order}-tracking' class='tracking-mark'></label> "
+				var index
+				
+				//items.unshift({'key':'inspiration', 'name':"Inspiration", 'level':0, 'uses':1, 'restore':'never-restore', 'format':'pips'})
+				
+				for ( item of items ) {
+					item.style = [item.format, item.rest]
+					
+					if ( item.uses === 'unlimited' ) {
+						item.html = "&infin;"
+					} else if ( item.format === 'number' ) {
+						item.html = replaceKeys(numberTemplate, item)
+					} else if ( item.format === 'pips' ) {
+						item.html = ""
+						for ( index = 0 ; index < item.uses ; ++index ) { item.html += replaceKeys(pipTemplate, {'key':item.key, 'restore':item.restore, 'order':index + 1}) }
+					} else {
+						item.html = item.uses
+					}
+				}
+				
+				var tableTemplate = "<table class='tracking' id='tracking-table'>{rows}</table>"
+				var rowTemplate = "<tr class='tracking {format} {restore}'><td id='{key}-tracking' class='tracking {format} nose'>{html}</td><td>{name}</td></tr>"
+				var rows = items.map(f => replaceKeys(rowTemplate, f))
+				var html = replaceKeys(tableTemplate, {"rows":rows.join(" ")})
+				
+				return html
 			}
 			
 			function attacksTableHTML(items, effectivenessArmorclass) {
-				var attacksTableTemplate = "<table class='attacks' id='attacks-table'><tr class='attacks equipment'><th>Weapon</th><th>Hit</th><th>Damage</th><th class='rate toggled'>rate</th><th class='attacks type'>Type</th><th>Range</th><th class='attacks summary'></th></tr>{rows}</table><span class='small toggled'>Hitting <span id='effectiveness-armor-class' class='advances' onclick='advanceEffectivenessArmorClass(event)'>AC {ac}</span></span>"
-				var attacksRowTemplate = "<tr class='attacks {key} {type} {attributes} toggle' onclick='toggleEquipment(\"{key}\")'><td class='attacks name'>{name}</td><td class='attacks hit'>{hit}</td><td class='attacks damage'>{damage}</td><td class='attacks rate toggled'>{rate}</td><td class='attacks type'>{type}</td><td class='attacks range'>{range}</td><td class='attacks summary'>{summary}</td></tr>"
-				var attacksRows = items.map(weapon => replaceKeys(attacksRowTemplate, weapon))
-				var attacksHTML = replaceKeys(attacksTableTemplate, {"rows":attacksRows.join(" "), "ac":effectivenessArmorclass})
+				var tableTemplate = "<table class='attacks' id='attacks-table'><tr class='attacks equipment'><th>Weapon</th><th>Hit</th><th>Damage</th><th class='rate toggled'>Rate</th><th class='attacks type'>Type</th><th>Range</th><th class='attacks summary'></th></tr>{rows}</table><span class='small toggled'>Hitting <span id='effectiveness-armor-class' class='advances' onclick='advanceEffectivenessArmorClass(event)'>AC {ac}</span></span>"
+				var rowTemplate = "<tr class='attacks {key} {type} {attributes} toggle' onclick='toggleEquipment(\"{key}\")'><td class='attacks name'>{name}</td><td class='attacks hit'>{hit}</td><td class='attacks damage'>{damage}</td><td class='attacks rate toggled'>{rate}</td><td class='attacks type'>{type}</td><td class='attacks range'>{range}</td><td class='attacks summary'>{summary}</td></tr>"
+				var rows = items.map(weapon => replaceKeys(rowTemplate, weapon))
+				var html = replaceKeys(tableTemplate, {"rows":rows.join(" "), "ac":effectivenessArmorclass})
 				
-				return attacksHTML
+				return html
 			}
 			
 			function proficienciesHTML(details) {
 				var proficiencies = [details.proficiencyNames.saves, details.proficiencyNames.armor, details.proficiencyNames.weapons, details.proficiencyNames.tools]
-				var proficienciesHTML = proficiencies.filter(p => p && p.length > 0).map(p => p.join(", ")).join("<br/>")
+				var html = proficiencies.filter(p => p && p.length > 0).map(p => p.join(", ")).join("<br/>")
 				
-				return proficienciesHTML
+				return html
 			}
 			
 			function resistancesHTML(details) {
@@ -2853,7 +2926,7 @@
 			<p id="rolled"></p>
 			<hr/>
 			
-			<p class='name'><span class='cycle-option advance' onclick='randomName()'></span><input type='text' id='character-name' size='40' placeholder='Name' onchange='nameChanged()'></p>
+			<p class='name'><span class='cycle-option advance nose' onclick='randomName()'></span><input type='text' id='character-name' size='40' placeholder='Name' onchange='nameChanged()'></p>
 			
 			<span id='level' class='advances tall' title='Level' onclick='advanceLevel(event)'> </span>
 			<span class='bullet'>&bull;</span>
@@ -2906,6 +2979,12 @@
 			<span id='difficulty-class' title='Difficulty Class' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='spell-slots' title='Spell Slots' class='listable wide'> </span>
+			
+			<br class='tall'/>
+			<p></p><span class='caption'>Tracking</span>
+			<input id='toggle-tracking' class='toggle' type='checkbox' />
+			<label for='toggle-tracking' class='toggle'> </label>
+			<p id='tracking' class='choices toggled'> </p>
 			
 			<br class='tall'/>
 			<p><span class='caption'>Abilities</span>

@@ -40,7 +40,7 @@ var spells = [
 		"level": 0,
 		"school": "Conjuration",
 		"casting_time": "1 Action",
-		"range": "60",
+		"range": 60,
 		"components": ["V", "S"],
 		"duration": "Instantaneous",
 		"save": "dexterity",

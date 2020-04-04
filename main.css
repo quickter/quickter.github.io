@@ -80,6 +80,13 @@ td.menu:last-of-type { padding-right:1.5em; }
 td.menu:not(:first-of-type) { font-size:80%; padding-left:1em; }
 td.menu > label { display:block; cursor:pointer; }
 
+input.tracking-mark { display:none; }
+input.tracking-mark + label.tracking-mark::before { content:"◯"; }
+@media screen {
+	input.tracking-mark + label.tracking-mark::before { content:"⚫️"; }
+	input.tracking-mark:checked + label.tracking-mark::before { content:"⚪️"; }
+}
+
 table.abilities { padding:0; margin:0; border-spacing:0; border-collapse:collapse; }
 tr.abilities > th { font-size:60%; text-align:right; }
 table.abilities tr { border:solid; border-width:0 0 0.25px 0; }
