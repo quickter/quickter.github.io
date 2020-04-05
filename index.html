@@ -336,16 +336,16 @@
 			Character.prototype.computeTracking = function Character_computeTracking() {
 				var feature, activeFeatures = this.activeFeatures
 				var track, tracking = []
-				var level = this.level
+				var level = this.level | 0
 				var modifiers = this.modifiers
 				var uses, key, name, restore, format
 				
 				for ( feature of activeFeatures ) {
 					track = feature.track
-					if ( !track ) { continue }
+					if ( !track || track.restore === 'turn' || track.restore === 'combat' ) { continue }
 					
 					format = 'pips'
-					restore = track.restore === 'long' ? 'long-rest rest' : 'short-rest rest'
+					restore = track.restore === 'rest' ? 'restore-long-rest restore-short-rest' : 'restore-long-rest'
 					uses = track.uses
 					name = track.name || feature.name
 					key = feature.key
@@ -353,7 +353,9 @@
 					if ( Array.isArray(uses) ) {
 						uses = uses.reduce((s, l) => s + (l > level ? 0 : 1), 0)
 					} else if ( uses === 'level' ) {
-						uses = level * (track.times || 1) + (track.plus || 0)
+						uses = level
+						if ( track.times ) { uses *= +track.times }
+						if ( track.plus ) { uses += +modifiers[track.plus] || track.plus }
 						if ( uses > 5 ) { format = 'number' }
 					} else if ( modifiers[uses] !== undefined ) {
 						uses = Math.max(+modifiers[uses], 1)
@@ -368,6 +370,7 @@
 				}
 				
 				tracking.sort((a, b) => a.format === b.format ? a.level === b.level ? a.name > b.name : a.level > b.level : a.format > b.format)
+				tracking.unshift({'key':'recovery-hit-dice', 'name':"Recovery Hit Dice", 'level':0, 'uses':level, 'restore':'restore-long-rest-half', 'format':(level > 3 ? 'number' : 'pips')})
 				
 				this.tracking = tracking
 			}
@@ -439,6 +442,8 @@
 				} else {
 					this.slots = []
 				}
+				
+				this.restoreSlots = spells.restore || 'long'
 			}
 			
 			Character.prototype.computeProficiencies = function Character_computeProficiencies() {
@@ -1215,15 +1220,33 @@
 			
 			// MARK: Dice
 			
-			function dieRoll(sides) {
-				return 1 + Math.floor(Math.random() * sides)
+			function randomInteger(count) {
+				if ( crypto && crypto.getRandomValues ) {
+					var randomValues = new Uint32Array(1)
+					
+					crypto.getRandomValues(randomValues)
+					
+					return randomValues[0] % count
+				} else {
+					return Math.floor(Math.random() * Math.floor(count)) | 0
+				}
+			}
+			
+			function randomDieRoll(sides, rolls) {
+				var sum = 0
+				
+				while ( rolls --> 0 ) {
+					sum += 1 + randomInteger(sides)
+				}
+				
+				return sum
 			}
 			
 			function diceRoll(sides, diceToRoll, diceToKeep) {
 				var rolls = []
 				
 				for ( var index = 0 ; index < diceToRoll ; ++index ) {
-					rolls.push(dieRoll(sides))
+					rolls.push(1 + randomInteger(sides))
 				}
 				
 				if ( diceToKeep > 0 && diceToKeep < diceToRoll ) {
@@ -1723,10 +1746,6 @@
 				storageDisplay()
 			}
 			
-			function randomInteger(count) {
-				return Math.floor(Math.random() * Math.floor(count)) | 0
-			}
-			
 			function randomElements(array, count) {
 				if ( count >= array.length ) { return array }
 				
@@ -1996,6 +2015,47 @@
 				var next = sibling || (previous ? element.lastElementChild : element.firstElementChild)
 				
 				optionChanged(prefix, element.dataset.hash, next.dataset.key)
+			}
+			
+			function handleRest(style) {
+				var element, elements
+				
+				elements = document.getElementsByClassName(style)
+				
+				for ( element of elements ) {
+					if ( element.max > element.value ) { element.value = +element.max }
+					if ( element.checked ) { element.checked = false }
+				}
+				
+				elements = document.getElementsByClassName('clear-rest')
+				
+				for ( element of elements ) {
+					if ( element.value ) { element.value = '' }
+					if ( element.checked ) { element.checked = false }
+				}
+			}
+			
+			function handleLongRest() {
+				handleRest('restore-long-rest')
+				
+				var amount = Math.ceil(character.level / 2)
+				var element, elements = document.getElementsByClassName('restore-long-rest-half recovery-dice')
+				
+				for ( element of elements ) {
+					if ( element.max > element.value ) { element.value = Math.min(element.max, +element.value + amount); amount = 0; }
+					if ( element.checked && amount > 0 ) { element.checked = false; amount -= 1 }
+				}
+			}
+			
+			function handleShortRest() {
+				handleRest('restore-short-rest')
+			}
+			
+			function handleInitiative() {
+				var d20 = randomDieRoll(20, 1)
+				var modifier = _element('initiative-roll').modifier | 0
+				
+				_element('initiative-tracking').value = d20 + modifier
 			}
 			
 			function advanceLevel(event) {
@@ -2334,7 +2394,6 @@
 				//	equipment
 				//	cantrips
 				//	spells
-				//	eldritch invocations | sorcerous metamagic | battle maneuvers
 				
 				_element('level').innerHTML = "Level " + details.level
 				_element('level').title = details.level < defaults.maximumLevel ? "Next Level at " + dnd.experience[details.level] + "xp" : "Maximum Level"
@@ -2345,7 +2404,10 @@
 				_element('sex').innerHTML = details.sex.name || placeholder("Sex")
 				_element('background').innerHTML = details.background.name || placeholder("Background")
 				_element('armor-class').innerHTML = "AC " + details.armorclass
+				_element('armorclass-tracking').value = details.armorclass
 				_element('hit-points').innerHTML = "HP " + details.hitpoints
+				_element('hitpoint-tracking').value = details.hitpoints
+				_element('hitpoint-tracking').max = details.hitpoints
 				_element('proficiency-bonus').innerHTML = "PB +" + details.proficiencyBonus
 				_element('passive-perception').innerHTML = "PP " + details.passivePerception
 				_element('difficulty-class').innerHTML = "DC " + details.difficultyClass
@@ -2355,6 +2417,7 @@
 				_element('speed').innerHTML = details.speed > 0 ? "Speed " + details.speed : placeholder("Speed")
 				_element('darkvision').innerHTML = "Darkvision " + (details.darkvision || "-")
 				_element('initiative').innerHTML = "Initiative " + (details.initiative || "+0")
+				_element('initiative-roll').modifier = details.initiative || ''
 				_element('attacks-per-action').innerHTML = "Attacks " + details.attacksPerAction
 				_element('criticals').innerHTML = details.criticalDice > 0 ? ("Critical + " + details.criticalDice + "d") : "Critical on " + (21 - (details.criticalRange | 0))
 				_element('trait-0').innerHTML = (details.traits && details.traits[0]) || placeholder("Trait")
@@ -2368,7 +2431,8 @@
 				_element('treasure').innerHTML = (details.background.gold || 0) + "gp"
 				_element('abilities').innerHTML = abilitiesTableHTML(details.abilityItems)
 				_element('feature').innerHTML = featuresTableHTML(details.displayFeatures)
-				_element('tracking').innerHTML = trackingTableHTML(details.tracking)
+				_element('tracking').innerHTML = trackingTableHTML(details)
+				_element('tracking-slots').innerHTML = trackingSlotsHTML(details)
 				_element('attacks').innerHTML = attacksTableHTML(details.attacks, details.effectivenessArmorclass)
 				_element('proficiency').innerHTML = proficienciesHTML(details)
 				_element('resistances').innerHTML = resistancesHTML(details) || placeholder("None")
@@ -2457,13 +2521,12 @@
 				return html
 			}
 			
-			function trackingTableHTML(items) {
-				// AC, HP, Initiative, Inspiration, Death saves, Spell Slots
+			function trackingTableHTML(details) {
+				// TODO: Inspiration, Hero Points, Death saves
+				var items = details.tracking
 				var numberTemplate = "<input type='number' value='{uses}' min='0' max='{uses}' class='tracking-number {key} {restore}' />"
 				var pipTemplate = "<input type='checkbox' id='{key}-{order}-tracking' class='tracking-mark {key} {restore}' /><label for='{key}-{order}-tracking' class='tracking-mark'></label> "
 				var index
-				
-				//items.unshift({'key':'inspiration', 'name':"Inspiration", 'level':0, 'uses':1, 'restore':'never-restore', 'format':'pips'})
 				
 				for ( item of items ) {
 					item.style = [item.format, item.rest]
@@ -2481,9 +2544,40 @@
 				}
 				
 				var tableTemplate = "<table class='tracking' id='tracking-table'>{rows}</table>"
-				var rowTemplate = "<tr class='tracking {format} {restore}'><td id='{key}-tracking' class='tracking {format} nose'>{html}</td><td>{name}</td></tr>"
+				var rowTemplate = "<tr class='tracking {format} {restore}-row'><td id='{key}-tracking' class='tracking {format} nose'>{html}</td><td class='name'>{name}</td></tr>"
 				var rows = items.map(f => replaceKeys(rowTemplate, f))
 				var html = replaceKeys(tableTemplate, {"rows":rows.join(" ")})
+				
+				return html
+			}
+			
+			function trackingSlotsHTML(details) {
+				var slots = details.slots
+				
+				if ( !slots || !slots.length ) { return "" }
+				
+				var restore = details.restoreSlots === 'rest' ? 'restore-long-rest restore-short-rest' : 'restore-long-rest'
+				var pipTemplate = "<input type='checkbox' id='{key}-{order}-tracking' class='tracking-mark {key} {restore}' /><label for='{key}-{order}-tracking' class='tracking-mark'></label>"
+				var column, columns = []
+				var header, headers = []
+				var index, level
+				
+				for ( level = 1 ; level < slots.length ; ++level ) {
+					slot = slots[level] || 0
+					if ( !slot ) { continue }
+					
+					column = []
+					
+					for ( index = 0 ; index < slot ; ++index ) {
+						column.push(replaceKeys(pipTemplate, {'key':'slot-' + level, 'order':index + 1, 'restore':restore}))
+					}
+					
+					headers.push(replaceKeys("<th>{level}</th>", {'level':level}))
+					columns.push("<td class='slot-tracking'>" + column.join("<br/>") + "</td>")
+				}
+				
+				var tableTemplate = "<table class='slot-tracking'><tr><td>Level</td>{headers}</tr><tr><td>Spell<br/>Slots</td>{columns}</tr></table>"
+				var html = replaceKeys(tableTemplate, {"headers":headers.join(""), "columns":columns.join("")})
 				
 				return html
 			}
@@ -2516,8 +2610,8 @@
 			
 			function slotsHTML(slots) {
 				if ( slots.length > 0 ) {
-					var cantrips = slots[0] > 0 ? "(" + (slots[0] || "-") + ") " : ""
-					var slotsPerLevel = slots.slice(1).map(s => s || "-").join(", ")
+					var cantrips = slots[0] > 0 ? "(" + (slots[0] || "-") + ")&nbsp; " : ""
+					var slotsPerLevel = slots.slice(1).map(s => s || "-").join("&nbsp; ")
 					
 					return cantrips + slotsPerLevel
 				} else {
@@ -2982,9 +3076,26 @@
 			
 			<br class='tall'/>
 			<p></p><span class='caption'>Tracking</span>
-			<input id='toggle-tracking' class='toggle' type='checkbox' />
+			<input id='toggle-tracking' checked class='toggle' type='checkbox' />
 			<label for='toggle-tracking' class='toggle'> </label>
-			<p id='tracking' class='choices toggled'> </p>
+			<div id='tracking-container' class='toggled horizontal-content'>
+				<div id='tracking-combat'>
+					<span>AC: </span><input id='armorclass-tracking' type='number' value='10' min='5' max='50' />
+					<span>HP: </span><input id='hitpoint-tracking' type='number' class='restore-long-rest' value='1' min='0' max='1' />
+					<span>Temporary HP: </span><input id='temporary-hitpoint-tracking' type='number' class='clear-rest' value='' min='0' max='200' />
+					<span>Initiative: </span><input id='initiative-tracking' type='number' class='clear-rest' value='' min='0' max='30' />
+					<input id='initiative-roll' type='button' class='action' onclick='handleInitiative()' />
+					<label for='initiative-roll' title='Roll Initiative' class='action'>Roll</label>
+				</div>
+				<div id='tracking-actions'>
+					<input id='perform-short-rest' type='button' class='action' onclick='handleShortRest()' />
+					<label for='perform-short-rest' title='Recover after Short Rest' class='action'>Short Rest</label>
+					<input id='perform-long-rest' type='button' class='action' onclick='handleLongRest()' />
+					<label for='perform-long-rest' title='Recover after Long Rest' class='action'>Long Rest</label>
+				</div>
+				<div id='tracking'></div>
+				<div id='tracking-slots'></div>
+			</div>
 			
 			<br class='tall'/>
 			<p><span class='caption'>Abilities</span>
@@ -3023,12 +3134,6 @@
 			
 			<span class='caption'>Features</span>
 			<p id='feature'></p>
-			
-			<!-- fighter:maneuvers 3 3 3 7 7 10 10 15 15 monk:disciplines 3 3 6 11 17 ranger:terrain+enemy sorcerer:metamagic 3 3 10 17 warlock:invocations 2 2 5 7 9 12 15 18 -->
-			<!-- span id='feature-options-caption' class='caption feature-options'>Feature Options</span>
-			<input id='feature-options-toggle' class='toggle feature-options' type='checkbox' />
-			<label for='feature-options-toggle' class='feature-options'><p id='feature-options-chosen' title='Tap to change selection' class='toggle'> </p></label>
-			<p id='feature-options' class='feature-options toggled'></p -->
 			
 			<span class='caption'>Characteristics</span>
 			<p id='characteristics' class='small'>

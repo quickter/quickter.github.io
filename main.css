@@ -80,6 +80,11 @@ td.menu:last-of-type { padding-right:1.5em; }
 td.menu:not(:first-of-type) { font-size:80%; padding-left:1em; }
 td.menu > label { display:block; cursor:pointer; }
 
+.horizontal-content { position:relative; display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:flex-start; }
+td.tracking { text-align:right; }
+td.slot-tracking { min-width:2em; text-align:center; vertical-align:top; }
+table.slot-tracking { margin-left:1em; padding-left:1em; border-left:1px solid black; }
+tr.restore-short-rest-row > td.name { font-style:oblique; }
 input.tracking-mark { display:none; }
 input.tracking-mark + label.tracking-mark::before { content:"◯"; }
 @media screen {
@@ -125,7 +130,7 @@ p.toggle::after, label.toggle::after { color:#CCC; }
 p.toggle.incomplete::after { color:#F99; }
 
 input.toggle { display:none; }
-input.toggle:not(:checked) + label + p.toggled { display:none; }
+input.toggle:not(:checked) + label + .toggled { display:none; }
 @media screen {
 	input.toggle:checked + label.toggle:after { content:" ▲"; }
 	input.toggle:not(:checked) + label.toggle:after { content:" ▼"; }
