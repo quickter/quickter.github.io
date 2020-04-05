@@ -271,7 +271,7 @@
 				}
 				
 				var prefix = defaults.includeMagicItemTable ? key.toUpperCase() + ": " : ""
-				var item = null
+				var table, item = null
 				
 				while ( key && treasure.magic[key] ) {
 					item = randomFrequencyElement(treasure.magic[key])
@@ -359,7 +359,7 @@
 				return descriptions
 			}
 			
-			function generateColeHoard(treasure, hoard, quantity) {
+			function generateColeHoard(treasure, hoard, quantity, singlePointsTotal) {
 				var valuableTables = ['gem', 'art']
 				var magicTables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
 				var coins = generateCoins(treasure, [hoard.coins], quantity)
@@ -368,8 +368,17 @@
 				var index, entry, sum = coins.sum
 				var valuables, points, die, key, prefix
 				
+				quantity = quantity > 0 ? quantity : 1
+				
 				for ( index = 0 ; index < quantity ; ++index ) {
-					points = randomDieRoll(pointsDie, pointsLimit / pointsDie)
+					points = quantity - index
+					
+					if ( points < 1 || singlePointsTotal ) {
+						points = randomDieRoll(pointsDie, Math.ceil(points * pointsLimit / pointsDie))
+						index = quantity
+					} else {
+						points = randomDieRoll(pointsDie, Math.ceil(pointsLimit / pointsDie))
+					}
 					
 					while ( points > 0 ) {
 						entry = randomFrequencyElement(hoard.table)
@@ -412,8 +421,109 @@
 				if ( defaults.raw ) {
 					return generateRawHoard(treasure, hoard, quantity)
 				} else {
-					return generateColeHoard(treasure, hoard, quantity)
+					return generateColeHoard(treasure, hoard, quantity, false)
 				}
+			}
+			
+			function generateRawParty(treasure, level, quantity) {
+				var valuableTables = ['gem', 'art']
+				var list = treasure['hoard']
+				var count = list.length
+				var table, items, hoard, tally, rolls
+				var index, entry, descriptions, aggregate = []
+				var coins, valuables, sum, key
+				
+				for ( index = 0 ; index < count && list[index].cr <= level ; ++index ) {
+					descriptions = []
+					hoard = list[index]
+					table = hoard.party_items
+					
+					for ( items of table ) {
+						rolls = quantity * items.quantity
+						rolls = Math.floor(rolls) + (Math.random() < (rolls - Math.floor(rolls)) ? 1 : 0)
+						
+						for ( tally = 0 ; tally < rolls ; ++tally ) {
+							descriptions.push(generateMagicItem(treasure, items.magic))
+						}
+					}
+					
+					descriptions = coalesceArrayElements(descriptions)
+					descriptions.sort()
+					
+					rolls = hoard.party_hoards.reduce((s, v) => s + v, 0)
+					rolls = Math.round(rolls * quantity)
+					coins = generateCoins(treasure, [hoard.coins], rolls)
+					sum = coins.sum
+					
+					for ( tally = 0 ; tally < rolls ; ++tally ) {
+						entry = randomFrequencyElement(hoard.table)
+						
+						for ( key of valuableTables ) {
+							if ( entry[key] ) {
+								valuables = generateValuables(treasure, entry[key], key)
+								sum += valuables.sum | 0
+								
+								descriptions.push.apply(descriptions, valuables.descriptions)
+							}
+						}
+					}
+					
+					descriptions.push.apply(descriptions, coins.descriptions)
+					descriptions.push(valueSummary(sum, coins.pounds))
+					
+					aggregate.push(descriptions)
+				}
+				
+				aggregate.reverse()
+				
+				return aggregate.concat.apply([], aggregate)
+			}
+			
+			function generateColeParty(treasure, level, quantity) {
+				var list = treasure['hoard']
+				var count = list.length
+				var index, entry, aggregate = []
+				var hoards = []
+				var limit, range, rolls
+				
+				for ( index = 0 ; index < count ; ++index ) {
+					entry = list[index]
+					rolls = 0
+					range = level - entry.cr + 1
+					limit = entry.party_hoards.length
+					
+					if ( range > 0 ) {
+						rolls = entry.party_hoards.slice(0, range).reduce((s, v) => s + v, 0)
+					}
+					
+					if ( range > limit && index + 1 >= count ) {
+						rolls += (range - limit) * entry.party_hoards[limit - 1]
+					}
+					
+					hoards.push(rolls)
+				}
+				
+				for ( index = 0 ; index < count && hoards[index] > 0 ; ++index ) {
+					entry = list[index]
+					rolls = hoards[index]
+					aggregate.push(generateColeHoard(treasure, entry, quantity * rolls))
+				}
+				
+				aggregate.reverse()
+				
+				return aggregate.concat.apply([], aggregate)
+			}
+			
+			function generateParty(treasure, level, quantity) {
+				if ( defaults.raw ) {
+					return generateRawParty(treasure, level, quantity)
+				} else {
+					return generateColeParty(treasure, level, quantity)
+				}
+			}
+			
+			function generatePlayer(treasure, level, quantity) {
+				return generateParty(treasure, level, quantity / 4)
 			}
 			
 			function generateTreasure() {
@@ -422,7 +532,7 @@
 				var kind = form.kind.value
 				var challenge = form.challenge.value
 				var quantity = form.quantity.value || 1
-				var list = treasure[kind]
+				var list = treasure[kind === 'individual' ? kind : 'hoard']
 				var entry = list.filter(i => i.cr <= challenge).pop()
 				var descriptions
 				
@@ -441,15 +551,46 @@
 					} else {
 						descriptions = generateHoard(treasure, entry, quantity)
 					}
+				} else if ( kind === 'party' ) {
+					descriptions = generateParty(treasure, challenge, quantity)
+				} else if ( kind === 'player' ) {
+					descriptions = generatePlayer(treasure, challenge, quantity)
 				} else {
 					descriptions = generateIndividual(treasure, entry, quantity)
 				}
 				
-				displayTreasure(descriptions)
+				displayTreasure(treasure, descriptions)
 			}
 			
-			function displayTreasure(list) {
-				var items = list.map(i => "<li>" + i + "</li>")
+			function handleReroll(key, identifier) {
+				var item = generateMagicItem(treasure, key.toLowerCase())
+				
+				_element(identifier).innerHTML = item.slice(1)
+			}
+			
+			function displayTreasure(treasure, list) {
+				var items
+				
+				if ( defaults.includeMagicItemTable ) {
+					var key, identifier, item, index, count = list.length
+					
+					items = []
+					
+					for ( index = 0 ; index < count ; ++index ) {
+						item = list[index]
+						key = item.slice(0, 1)
+						
+						if ( item.slice(1, 2) === ':' && treasure.magic[key.toLowerCase()] ) {
+							identifier = "item-" + (index + 1)
+							item = "<span class='reroll' onclick='handleReroll(\"" + key + "\", \""+identifier+"\")'>" + key + "</span><span id='" + identifier + "'>" + item.slice(1) + "</span>"
+						}
+						
+						items.push("<li>" + item + "</li>")
+					}
+				} else {
+					items = list.map(i => "<li>" + i + "</li>")
+				}
+				
 				var html = "<ul class='treasure'>" + items.join("") + "</ul>"
 				
 				_element('treasure-list').innerHTML = html
@@ -479,10 +620,15 @@
 				var key, value
 				
 				value = object['k']
-				if ( value ) { form.kind.value = value == 1 || value.startsWith('i') ? 'individual' : 'hoard' }
+				if ( value ) {
+					if ( value.startsWith('i') ) { form.kind.value = 'individual' }
+					else if ( value.startsWith('play') ) { form.kind.value = 'player' }
+					else if ( value.startsWith('p') ) { form.kind.value = 'party' }
+					else { form.kind.value = 'hoard' }
+				}
 				
 				value = object['c'] | 0
-				if ( value > 0 ) { form.challenge.value = value > 16 ? 17 : value > 10 ? 11 : value > 4 ? 5 : 0 }
+				if ( value > 0 ) { form.challenge.value = value }
 				
 				value = object['n'] | 0
 				if ( value > 1 ) { form.quantity.value = value }
@@ -608,6 +754,16 @@
 			body { position:relative; box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
 			
 			p.explanation { font-size:80%; color:#999; }
+			span.reroll { color:#123; cursor:pointer; }
+			
+			.nose, .reroll {
+				-webkit-touch-callout:none;
+				-webkit-user-select:none;
+				-moz-user-select:none;
+				-ms-user-select:none;
+				-o-user-select:none;
+				user-select:none;
+			}
 		</style>
 	</head>
 	<body onload='populatePage()'>
@@ -617,14 +773,11 @@
 		<select name='kind' id='treasure-kind'>
 			<option value="individual">Individual Treasure</option>
 			<option value="hoard" selected>Treasure Hoard</option>
+			<option value="party">Party Treasure</option>
+			<option value="player">Player (&frac14; Party)</option>
 		</select>
-		<select name='challenge' id='treasure-source'>
-			<option value="0" >Challenge 0 - 4</option>
-			<option value="5" >Challenge 5 - 10</option>
-			<option value="11">Challenge 11 - 16</option>
-			<option value="17">Challenge 17+</option>
-		</select>
-		&times; <input type='number' name='quantity' min='1' max='99' id='treasure-quantity' />
+		<input name='challenge' id='treasure-challenge' type='number' value='4' min='0' max='30' />
+		&times; <input type='number' name='quantity' value='1' min='1' max='99' id='treasure-quantity' />
 		<input type='submit' value='Roll' />
 		<input type='checkbox' name='raw' id='treasure-raw' /><label for='treasure-raw'> RaW</label>
 		</form>

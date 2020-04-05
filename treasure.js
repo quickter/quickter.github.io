@@ -66,7 +66,7 @@ var treasure = {
 		{"key":"apparatuskwalish", "name":"Apparatus of Kwalish", "category":"Wondrous item", "rarity":"legendary", "description":"This item first appears to be a Large sealed iron barrel weighing 500 pounds. The barrel has a hidden catch, which can be found with a successful DC 20 Intelligence (Investigation) check. Releasing the catch unlocks a hatch at one end of the barrel, allowing two Medium or smaller creatures to crawl inside. Ten levers are set in a row at the far end, each in a neutral position, able to move either up or down. When certain levers are used, the apparatus transforms to resemble a giant lobster."},
 		{"key":"armor", "name":"Armor", "title":"Armor, +1, +2, or +3", "category":"Armor (light, medium, or heavy)", "rarity":"rare (+1), very rare (+2), or legendary (+3)", "description":"You have a bonus to AC while wearing this armor. The bonus is determined by its rarity."},
 		{"key":"armorinvulnerability", "name":"Armor of Invulnerability", "category":"Armor (plate)", "rarity":"legendary", "attunement":"requires attunement", "description":"You have resistance to nonmagical damage while you wear this armor. Additionally, you can use an action to make yourself immune to nonmagical damage for 10 minutes or until you are no longer wearing the armor. Once this special action is used, it can't be used again until the next dawn."},
-		{"key":"armorresistance", "name":"Armor of Resistance", "category":"Armor (light, medium, or heavy)", "rarity":"rare", "attunement":"requires attunement", "description":"You have resistance to one type of damage while you wear this armor. The DM chooses the type or determines it randomly from the options below."},
+		{"key":"armorresistance", "name":"Armor of Resistance", "category":"Armor (light, medium, or heavy)", "rarity":"rare", "attunement":"requires attunement", "variant":["Acid", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Poison", "Psychic", "Radiant", "Thunder"], "description":"You have resistance to one type of damage while you wear this armor. The DM chooses the type or determines it randomly from the options below."},
 		{"key":"armorvulnerability", "name":"Armor of Vulnerability", "category":"Armor (plate)", "rarity":"rare", "attunement":"requires attunement", "description":"While wearing this armor, you have resistance to one of the following damage types: bludgeoning, piercing, or slashing. The DM chooses the type or determines it randomly. Curse. This armor is cursed, a fact that is revealed only when an identify spell is cast on the armor or you attune to it. Attuning to the armor curses you until you are targeted by the remove curse spell or similar magic; removing the armor fails to end the curse. While cursed, you have vulnerability to two of the three damage types associated with the armor (not the one to which it grants resistance)."},
 		{"key":"arrowcatchingshield", "name":"Arrow-Catching Shield", "category":"Armor (shield)", "rarity":"rare", "attunement":"requires attunement", "description":"You gain a +2 bonus to AC against ranged attacks while you wield this shield. This bonus is in addition to the shield's normal bonus to AC. In addition, whenever an attacker makes a ranged attack against a target within 5 feet of you, you can use your reaction to become the target of the attack instead."},
 		{"key":"arrowslaying", "name":"Arrow of Slaying", "category":"Weapon (arrow)", "rarity":"very rare", "description":"An arrow of slaying is a magic weapon meant to slay a particular kind of creature. Some are more focused than others; for example, there are both arrows of dragon slaying and arrows of blue dragon slaying. If a creature belonging to the type, race, or group associated with an arrow of slaying takes damage from the arrow, the creature must make a DC 17 Constitution saving throw, taking an extra 6d10 piercing damage on a failed save, or half as much extra damage on a successful one. Once an arrow of slaying deals its extra damage to a creature, it becomes a nonmagical arrow. Other types of magic ammunition of this kind exist, such as bolts of slaying meant for a crossbow, though arrows are most common."},
@@ -924,6 +924,13 @@ var treasure = {
 		{
 			"cr":0,
 			"name":"Challenge 0 - 4",
+			"party_hoards":[0, 1, 1, 2, 3],
+			"party_items":[
+				{"magic":"a", "quantity":6},
+				{"magic":"b", "quantity":2},
+				{"magic":"c", "quantity":1},
+				{"magic":"f", "quantity":2},
+			],
 			"coins":{
 				"cp":{"roll":6, "die":6, "times":100},
 				"sp":{"roll":3, "die":6, "times":100},
@@ -952,6 +959,15 @@ var treasure = {
 		{
 			"cr":5,
 			"name":"Challenge 5 - 10",
+			"party_hoards":[2, 3, 3, 3, 3, 4],
+			"party_items":[
+				{"magic":"a", "quantity":10},
+				{"magic":"b", "quantity":12},
+				{"magic":"c", "quantity":5},
+				{"magic":"d", "quantity":1},
+				{"magic":"f", "quantity":5},
+				{"magic":"g", "quantity":1},
+			],
 			"coins":{
 				"cp":{"roll":2, "die":6, "times":100},
 				"sp":{"roll":2, "die":6, "times":1000},
@@ -993,6 +1009,18 @@ var treasure = {
 		{
 			"cr":11,
 			"name":"Challenge 11 - 16",
+			"party_hoards":[1, 2, 2, 2, 2, 3],
+			"party_items":[
+				{"magic":"a", "quantity":3},
+				{"magic":"b", "quantity":6},
+				{"magic":"c", "quantity":9},
+				{"magic":"d", "quantity":5},
+				{"magic":"e", "quantity":1},
+				{"magic":"f", "quantity":1},
+				{"magic":"g", "quantity":2},
+				{"magic":"h", "quantity":2},
+				{"magic":"i", "quantity":1},
+			],
 			"coins":{
 				"gp":{"roll":4, "die":6, "times":1000},
 				"pp":{"roll":5, "die":6, "times":100}
@@ -1036,6 +1064,15 @@ var treasure = {
 		{
 			"cr":17,
 			"name":"Challenge 17+",
+			"party_hoards":[2, 2, 2, 2],
+			"party_items":[
+				{"magic":"c", "quantity":4},
+				{"magic":"d", "quantity":9},
+				{"magic":"e", "quantity":6},
+				{"magic":"g", "quantity":1},
+				{"magic":"h", "quantity":2},
+				{"magic":"i", "quantity":3},
+			],
 			"coins":{
 				"gp":{"roll":12, "die":6, "times":1000},
 				"pp":{"roll":8, "die":6, "times":1000}
@@ -1067,7 +1104,7 @@ var treasure = {
 				{"frequency": 5, "art":{"roll":1, "die":4, "value":7500}, "magic_i":{"roll":1, "die":4}},
 				{"frequency": 5, "gem":{"roll":1, "die":8, "value":5000}, "magic_i":{"roll":1, "die":4}},
 			]
-		},
+		}
 	],
 	"the_end": true
 };
