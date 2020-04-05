@@ -342,10 +342,16 @@
 				
 				for ( feature of activeFeatures ) {
 					track = feature.track
-					if ( !track || track.restore === 'turn' || track.restore === 'combat' ) { continue }
+					if ( !track ) { continue }
+					
+					switch ( track.restore ) {
+					case 'turn':   restore = 'restore-every-turn'; break
+					case 'rest':   restore = 'restore-long-rest restore-short-rest'; break
+					case 'combat': restore = 'restore-initiative'; break
+					default:       restore = 'restore-long-rest'; break
+					}
 					
 					format = 'pips'
-					restore = track.restore === 'rest' ? 'restore-long-rest restore-short-rest' : 'restore-long-rest'
 					uses = track.uses
 					name = track.name || feature.name
 					key = feature.key
@@ -369,8 +375,8 @@
 					tracking.push({'key':key, 'name':name, 'level':feature.level, 'uses':uses, 'restore':restore, 'format':format})
 				}
 				
-				tracking.sort((a, b) => a.format === b.format ? a.level === b.level ? a.name > b.name : a.level > b.level : a.format > b.format)
-				tracking.unshift({'key':'recovery-hit-dice', 'name':"Recovery Hit Dice", 'level':0, 'uses':level, 'restore':'restore-long-rest-half', 'format':(level > 3 ? 'number' : 'pips')})
+				tracking.sort((a, b) => a.format === b.format ? a.level === b.level ? a.name > b.name : a.level > b.level : a.format < b.format)
+				tracking.push({'key':'recovery-hit-dice', 'name':"Recovery Hit Dice", 'level':0, 'uses':level, 'restore':'restore-long-rest-half', 'format':(level > 3 ? 'number' : 'pips')})
 				
 				this.tracking = tracking
 			}
@@ -390,7 +396,8 @@
 				var hitpointsPerLevel = averageHitpoints + toughness + (modifiers['constitution'] | 0)
 				var hitpoints = hitpointsPerLevel * level + (hitdie - averageHitpoints)
 				var attacksPerAction = sources.reduce((t, f) => t + (f.attacks || 0), 0) + 1
-				var initiative = +modifiers['dexterity'] + sources.reduce((t, f) => t + +(modifiers[f.initiative] || f.initiative || 0), 0)
+				var initiative = +modifiers['dexterity'] + sources.reduce((s, f) => s + +(modifiers[f.initiative] || f.initiative || 0), 0)
+				var initiativeAdvantage = sources.reduce((r, f) => r || (f.advantage === 'initiative'), 0)
 				
 				this.proficiencyBonus = pb
 				this.toughness = toughness
@@ -399,7 +406,8 @@
 				this.speed = sources.reduce((t, f) => t + (f.speed || 0), 0)
 				this.criticalDice = sources.reduce((t, f) => t + (f.criticaldice | 0), 0) + 0
 				this.criticalRange = sources.reduce((t, f) => t + (f.criticalrange | 0), 0) + 1
-				this.initiative = initiative < 0 ? initiative : "+" + initiative
+				this.initiative = (initiative < 0 ? initiative : "+" + initiative) + (initiativeAdvantage ? "@" : "")
+				this.initiativeAdvantage = initiativeAdvantage
 				this.darkvision = sources.reduce((t, f) => Math.max(t, f.darkvision || 0), 0) + sources.reduce((t, f) => t + (f.increasedarkvision || 0), 0)
 				this.attacksPerAction = attacksPerAction
 				this.difficultyClass = 8 + pb + (modifiers[spellcasting] | 0)
@@ -2017,38 +2025,65 @@
 				optionChanged(prefix, element.dataset.hash, next.dataset.key)
 			}
 			
-			function handleRest(style) {
-				var element, elements
+			function restoreTracking(style, limit) {
+				var element, elements, changed
+				var clear = limit < 0
 				
 				elements = document.getElementsByClassName(style)
 				
 				for ( element of elements ) {
-					if ( element.max > element.value ) { element.value = +element.max }
-					if ( element.checked ) { element.checked = false }
-				}
-				
-				elements = document.getElementsByClassName('clear-rest')
-				
-				for ( element of elements ) {
-					if ( element.value ) { element.value = '' }
-					if ( element.checked ) { element.checked = false }
+					changed = 0
+					
+					if ( element.type === 'checkbox' || element.type === 'radio' ) {
+						if ( element.checked ) {
+							changed = 1
+							element.checked = false
+						}
+					}
+					
+					if ( element.type === 'number' || element.type === 'range' ) {
+						if ( clear ) {
+							if ( element.value !== '' ) {
+								changed = 1
+								element.value = ''
+							}
+						} else {
+							if ( +element.value < +element.max ) {
+								changed = element.max - element.value
+								
+								if ( limit > 0 ) {
+									element.value = Math.min(+element.max, +element.value + limit)
+								} else {
+									element.value = element.max
+								}
+							}
+						}
+					}
+					
+					if ( changed && element.oninput ) {
+						element.oninput()
+					}
+					
+					if ( limit > 0 ) {
+						limit -= changed
+						
+						if ( limit <= 0 ) { break }
+					}
 				}
 			}
 			
 			function handleLongRest() {
-				handleRest('restore-long-rest')
-				
-				var amount = Math.ceil(character.level / 2)
-				var element, elements = document.getElementsByClassName('restore-long-rest-half recovery-dice')
-				
-				for ( element of elements ) {
-					if ( element.max > element.value ) { element.value = Math.min(element.max, +element.value + amount); amount = 0; }
-					if ( element.checked && amount > 0 ) { element.checked = false; amount -= 1 }
-				}
+				restoreTracking('restore-long-rest')
+				restoreTracking('recovery-hit-dice restore-long-rest-half', Math.ceil(character.level / 2))
+				handleShortRest()
 			}
 			
 			function handleShortRest() {
-				handleRest('restore-short-rest')
+				restoreTracking('restore-short-rest')
+				restoreTracking('clear-rest', -1)
+				
+				restoreTracking('restore-initiative')
+				restoreTracking('restore-every-turn')
 			}
 			
 			function handleInitiative() {
@@ -2056,6 +2091,13 @@
 				var modifier = _element('initiative-roll').modifier | 0
 				
 				_element('initiative-tracking').value = d20 + modifier
+				
+				restoreTracking('restore-initiative')
+				restoreTracking('restore-every-turn')
+			}
+			
+			function handleTurn() {
+				restoreTracking('restore-every-turn')
 			}
 			
 			function advanceLevel(event) {
@@ -2524,7 +2566,8 @@
 			function trackingTableHTML(details) {
 				// TODO: Inspiration, Hero Points, Death saves
 				var items = details.tracking
-				var numberTemplate = "<input type='number' value='{uses}' min='0' max='{uses}' class='tracking-number {key} {restore}' />"
+				//var numberTemplate = "<input type='number' value='{uses}' min='0' max='{uses}' class='tracking-number {key} {restore}' />"
+				var numberTemplate = "<input type='range' id='{key}-tracking' value={uses} min=0 max={uses} step=1 class='tracking-number {key} {restore}' oninput='form[\"{key}-output\"].value = value' /><output for='{key}-tracking' name='{key}-output' class='tracking-number-output'>{uses}</output>"
 				var pipTemplate = "<input type='checkbox' id='{key}-{order}-tracking' class='tracking-mark {key} {restore}' /><label for='{key}-{order}-tracking' class='tracking-mark'></label> "
 				var index
 				
