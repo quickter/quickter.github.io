@@ -1728,12 +1728,13 @@
 			
 			// MARK: Actions
 			
-			function normalizeX(event) {
+			function normalizeX(event, relativeToChild) {
 				var target = event && event.target
-				if ( !target ) return 0
+				if ( !target ) { return 0 }
+				if ( relativeToChild ) { target = target.firstElementChild || target }
 				
 				var bounds = target.getBoundingClientRect()
-				if ( !bounds ) return 0
+				if ( !bounds ) { return 0 }
 				
 				var x = (event.clientX - bounds.left) / (bounds.right - bounds.left)
 				
@@ -2087,13 +2088,31 @@
 			}
 			
 			function handleInitiative() {
-				var d20 = randomDieRoll(20, 1)
-				var modifier = _element('initiative-roll').modifier | 0
+				var value = _element('initiative-roll').modifier
+				var modifier = value | 0
+				var hasAdvantage = value.endsWith('@')
+				var d20 = hasAdvantage ? diceRoll(20, 2, 1)[0] : randomDieRoll(20, 1)
 				
 				_element('initiative-tracking').value = d20 + modifier
 				
 				restoreTracking('restore-initiative')
 				restoreTracking('restore-every-turn')
+			}
+			
+			function handleTrackingNumber(event, identifier) {
+				var x = event ? normalizeX(event, true) : 1
+				
+				if ( Math.abs(x) < 1 ) { return true }
+				
+				var element = _element(identifier)
+				var value = +element.value
+				
+				if ( x < 0 ) { value = Math.max(+element.min, value - 1) }
+				else { value = Math.min(+element.max, value + 1) }
+				
+				element.value = value
+				
+				return false
 			}
 			
 			function handleTurn() {
@@ -3118,23 +3137,47 @@
 			<span id='spell-slots' title='Spell Slots' class='listable wide'> </span>
 			
 			<br class='tall'/>
-			<p></p><span class='caption'>Tracking</span>
-			<input id='toggle-tracking' checked class='toggle' type='checkbox' />
+			<p></p><span class='caption'>Transitory</span>
+			<input id='toggle-tracking' class='toggle' type='checkbox' />
 			<label for='toggle-tracking' class='toggle'> </label>
 			<div id='tracking-container' class='toggled horizontal-content'>
 				<div id='tracking-combat'>
-					<span>AC: </span><input id='armorclass-tracking' type='number' value='10' min='5' max='50' />
-					<span>HP: </span><input id='hitpoint-tracking' type='number' class='restore-long-rest' value='1' min='0' max='1' />
-					<span>Temporary HP: </span><input id='temporary-hitpoint-tracking' type='number' class='clear-rest' value='' min='0' max='200' />
-					<span>Initiative: </span><input id='initiative-tracking' type='number' class='clear-rest' value='' min='0' max='30' />
-					<input id='initiative-roll' type='button' class='action' onclick='handleInitiative()' />
-					<label for='initiative-roll' title='Roll Initiative' class='action'>Roll</label>
+					<span class='tracking-number-wrapper'>
+						<span class='tracking-number-handler advances nose' onclick='return handleTrackingNumber(event, "armorclass-tracking")'><input id='armorclass-tracking' type='number' value='10' min='5' max='50' class='tracking-number-input' /></span>
+						<span class='tracking-caption'>Armor Class</span>
+					</span>
+					<span class='tracking-number-wrapper'>
+						<span class='tracking-number-handler advances nose' onclick='return handleTrackingNumber(event, "initiative-tracking")'><input id='initiative-tracking' type='number' value='0' min='0' max='30' class='tracking-number-input clear-rest' /></span>
+						<span class='tracking-caption'>Initiative</span>
+					</span>
+					<br/>
+					<span class='tracking-number-wrapper'>
+						<span class='tracking-number-handler advances nose' onclick='return handleTrackingNumber(event, "hitpoint-tracking")'><input id='hitpoint-tracking' type='number' value='1' min='0' max='1' class='tracking-number-input restore-long-rest' /></span>
+						<span class='tracking-caption'>Hit Points</span>
+					</span>
+					<span class='tracking-number-wrapper'>
+						<span class='tracking-number-handler advances nose' onclick='return handleTrackingNumber(event, "temporary-hitpoint-tracking")'><input id='temporary-hitpoint-tracking' type='number' value='0' min='0' max='200' class='tracking-number-input clear-rest' /></span>
+						<span class='tracking-caption'>Temporary Hit Points</span>
+					</span>
 				</div>
 				<div id='tracking-actions'>
-					<input id='perform-short-rest' type='button' class='action' onclick='handleShortRest()' />
-					<label for='perform-short-rest' title='Recover after Short Rest' class='action'>Short Rest</label>
-					<input id='perform-long-rest' type='button' class='action' onclick='handleLongRest()' />
-					<label for='perform-long-rest' title='Recover after Long Rest' class='action'>Long Rest</label>
+					<span class='tracking-action-wrapper'>
+						<input id='initiative-roll' type='button' class='action' onclick='handleInitiative()' />
+						<label for='initiative-roll' title='Roll Initiative' class='action'><span>Initiative</span></label>
+					</span>
+					<span class='tracking-action-wrapper'>
+						<input id='perform-turn' type='button' class='action' onclick='handleTurn()' />
+						<label for='perform-turn' title='Start Next Turn' class='action'><span>Turn</span></label>
+					</span>
+					<br/>
+					<span class='tracking-action-wrapper'>
+						<input id='perform-short-rest' type='button' class='action' onclick='handleShortRest()' />
+						<label for='perform-short-rest' title='Recover after Short Rest' class='action'><span>Short Rest</span></label>
+					</span>
+					<span class='tracking-action-wrapper'>
+						<input id='perform-long-rest' type='button' class='action' onclick='handleLongRest()' />
+						<label for='perform-long-rest' title='Recover after Long Rest' class='action'><span>Long Rest</span></label>
+					</span>
 				</div>
 				<div id='tracking'></div>
 				<div id='tracking-slots'></div>

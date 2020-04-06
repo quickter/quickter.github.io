@@ -81,18 +81,30 @@ td.menu:not(:first-of-type) { font-size:80%; padding-left:1em; }
 td.menu > label { display:block; cursor:pointer; }
 
 .horizontal-content { position:relative; display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:flex-start; }
-td.tracking { text-align:right; padding-right:1em; white-space:nowrap; }
+td.tracking { position:relative; text-align:right; padding-right:1em; white-space:nowrap; }
 td.slot-tracking { min-width:2em; text-align:center; vertical-align:top; }
 table.slot-tracking { margin-left:1em; padding-left:1em; border-left:1px solid black; }
 tr.restore-short-rest-row > td.name { font-style:oblique; }
 tr.restore-every-turn-row > td.name { font-weight:bold; }
 tr.restore-initiative-row > td.name::after { content:" ⚔"; }
+div#tracking, div#tracking-slots { margin-top:1em; }
+div#tracking-combat { margin-right:2em; }
+div#tracking-combat > span { margin:0.5em 1em 0.5em 0; }
+div#tracking-actions { margin-right:1em; }
+div#tracking-actions > span > label > span { margin:0.5em 0; display:inline-block; min-width:5em; text-align:center; }
+input.tracking-number-input { font-size:200%; text-align:right; min-width:3em; }
 output.tracking-number-output { display:inline-block; min-width:2em; }
+span.tracking-number-wrapper { display:inline-block; }
+span.tracking-action-wrapper > label { width:100%; }
+span.tracking-caption { display:block; font-size:50%; text-align:center; }
+span.tracking-number-handler.advances::before, span.tracking-number-handler.advances::after { top:0.5em; }
 input.tracking-mark { display:none; }
-input.tracking-mark + label.tracking-mark::before { content:"◯"; }
+input.tracking-mark + label.tracking-mark { position:relative; display:inline-block; top:0.2em; border-radius:50%; width:1em; height:1em; border:1px solid black; }
+span.tracking-action-wrapper { display:inline-block; }
+
 @media screen {
-	input.tracking-mark + label.tracking-mark::before { content:"⚫️"; }
-	input.tracking-mark:checked + label.tracking-mark::before { content:"⚪️"; }
+	input.tracking-mark:checked + label.tracking-mark { background:#F4F4F4; background:linear-gradient(345deg, #FFF 0%, #FFF8F0 40%, #DDD 100%); border-color:#CCC; }
+	input.tracking-mark:not(:checked) + label.tracking-mark { background:#333; background:linear-gradient(345deg, #000 0%, #132 60%, #CCC 100%); }
 }
 
 table.abilities { padding:0; margin:0; border-spacing:0; border-collapse:collapse; }
