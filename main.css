@@ -92,7 +92,7 @@ div#tracking-combat { margin-right:2em; }
 div#tracking-combat > span { margin:0.5em 1em 0.5em 0; }
 div#tracking-actions { margin-right:1em; }
 div#tracking-actions > span > label > span { margin:0.5em 0; display:inline-block; min-width:5em; text-align:center; }
-input.tracking-number-input { font-size:200%; text-align:right; min-width:3em; }
+input.tracking-number-input { font-size:175%; text-align:right; min-width:2.5em; }
 output.tracking-number-output { display:inline-block; min-width:2em; }
 span.tracking-number-wrapper { display:inline-block; }
 span.tracking-action-wrapper > label { width:100%; }
@@ -141,16 +141,16 @@ input#toggle-all-attacks:not(:checked) + label + p#attacks tr.attacks:not(.equip
 input#toggle-all-attacks:not(:checked) + label + p#attacks .toggled { display:none; }
 input#toggle-all-attacks + label { position:relative; left:1em; top:0.2em; }
 
-p.toggle::after, label.toggle::after { color:#CCC; }
-p.toggle.incomplete::after { color:#F99; }
+.toggle::after, label.toggle::after { color:#CCC; }
+.toggle.incomplete::after { color:#F99; }
 
 input.toggle { display:none; }
 input.toggle:not(:checked) + label + .toggled { display:none; }
 @media screen {
 	input.toggle:checked + label.toggle:after { content:" ▲"; }
 	input.toggle:not(:checked) + label.toggle:after { content:" ▼"; }
-	input.toggle:checked + label > p.toggle:after { content:" ▲"; }
-	input.toggle:not(:checked) + label > p.toggle:after { content:" ▼"; }
+	input.toggle:checked + label > span.toggle:after { content:" ▲"; }
+	input.toggle:not(:checked) + label > span.toggle:after { content:" ▼"; }
 }
 
 table.features { padding:0; margin:0; border-spacing:0; }
@@ -174,11 +174,11 @@ br.tall + * { margin-top:1.5em; }
 .roll { cursor:move; }
 .roll.reorder { font-weight:bolder; }
 .roll.reorder::before { content:"↑↓" }
-.bullet { color:#66C }
+.bullet { color:#669 }
 .characteristic { display:inline-block; cursor:pointer; margin-top:0.5em; }
 .characteristic:first-child { margin-top:0; }
 .caption { color:#888; font-size:60%; }
-.caption + p, .caption + input + label + p, .caption + input + label > p { margin-top:0.25em; }
+.caption + p, .caption + input + label + span, .caption + input + label > span { margin-top:0.25em; }
 .caption { position:relative; left:-0.5em; }
 
 td.summary > span.summary { margin-left:1.25em; }

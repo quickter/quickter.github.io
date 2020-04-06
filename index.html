@@ -1,18 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Characters</title>
-		<meta name="author" content="Eric Cole">
-		<meta name="version" content="0.8">
-		<meta name="keywords" content="dnd,5e,dungeons,dragons,character">
-		<meta name="description" content="Character Generator">
+		<title>Character</title>
+		<meta name="author" content="Cole">
+		<meta name="keywords" content="dnd,5e,dungeons,dragons,live,character,sheet">
+		<meta name="description" content="Cole Character Sheet">
 		<link rel="stylesheet" href="main.css">
 		<script src="dnd.js"></script>
 		
-		<script lang="javascript">
+		<script type="text/javascript">
 			var lookup = {};
 			var checkboxRules = {};
 			
@@ -2702,7 +2701,7 @@
 				
 				var list = items.map((item) => replaceKeys(templateList, item))
 				var beginTag = "<div class='"+prefix+"-list checkbox' id='"+prefix+"-list'>"
-				var closeTag = "</div><hr/>"
+				var closeTag = "</div><hr />"
 				
 				if ( templateContent ) {
 					var styles = items.map((item) => replaceKeys(templateStyles, item))
@@ -2724,7 +2723,7 @@
 				var closeTag = "</div>"
 				
 				if ( !inside ) {
-					closeTag = closeTag + "<hr/>"
+					closeTag = closeTag + "<hr />"
 				}
 				
 				if ( templateContent ) {
@@ -3051,50 +3050,50 @@
 	<body>
 		<div id='header'>
 			<h4 id='pagename'>
-				Character Template
+				Character Sheet
 			</h4>
 			<div id='toolbar'>
-				<a id='storage-next' class='toolbar-button' title='Next Character' />↻︎</a>
-				<input id='storage-save' type='button' class='action' onclick='storageSave()' />
+				<a id='storage-next' class='toolbar-button' title='Next Character'>↻︎</a>
+				<input id='storage-save' type='button' value='' class='action' onclick='storageSave()' />
 				<label for='storage-save' title='Save Character' class='toolbar-button'>⬆</label>
-				<input id='storage-load' type='button' class='action' onclick='storageLoad()' />
+				<input id='storage-load' type='button' value='' class='action' onclick='storageLoad()' />
 				<label for='storage-load' title='Load Character' class='toolbar-button'>⬇</label>
-				<input id='storage-remove' type='button' class='action' onclick='storageRemove()' />
+				<input id='storage-remove' type='button' value='' class='action' onclick='storageRemove()' />
 				<label for='storage-remove' title='Delete Character' class='toolbar-button'>⨂</label>
 			</div>
 		</div>
 		
 		<div id='character-view'><form id='character-form'>
 			<p id='randomize'>
-				<hr/>
-				<input id='random-character' type='button' class='action' onclick='randomCharacter()' />
+				<hr />
+				<input id='random-character' type='button' value='' class='action' onclick='randomCharacter()' />
 				<label for='random-character' title='Generate a Random Character' class='action'>Randomize</label>
-				<input id='clear-character' type='button' class='action' onclick='clearCharacter()' />
+				<input id='clear-character' type='button' value='' class='action' onclick='clearCharacter()' />
 				<label for='clear-character' title='Clear the Character' class='action'>Reset</label>
 				<span class='label-separator'>|</span>
-				<input id='abilities-standard' type='button' class='action' onclick='standard()' />
+				<input id='abilities-standard' type='button' value='' class='action' onclick='standard()' />
 				<label for='abilities-standard' title='Use Standard Ability Rolls' class='action'>Standard</label>
-				<input id='abilities-roll-4d6' type='button' class='action' onclick='randomRolls()' />
+				<input id='abilities-roll-4d6' type='button' value='' class='action' onclick='randomRolls()' />
 				<label for='abilities-roll-4d6' title='Use Random Ability Rolls' class='action'>Roll 4D6</label>
-				<input id='abilities-arena' type='button' class='action' onclick='arenaRolls()' />
+				<input id='abilities-arena' type='button' value='' class='action' onclick='arenaRolls()' />
 				<label for='abilities-arena' title='Use High Ability Rolls' class='action'>Arena</label>
 			</p>
 			<p id="rolled"></p>
-			<hr/>
+			<hr />
 			
-			<p class='name'><span class='cycle-option advance nose' onclick='randomName()'></span><input type='text' id='character-name' size='40' placeholder='Name' onchange='nameChanged()'></p>
+			<p class='name'><span class='cycle-option advance nose' onclick='randomName()'></span><input type='text' id='character-name' size='18' placeholder='Name' onchange='nameChanged()'></p>
 			
 			<span id='level' class='advances tall' title='Level' onclick='advanceLevel(event)'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='race' class='advances tall' title='Race' onclick='advanceRace(event)'> </span>
-			<span class='bullet''>&bull;</span>
+			<span class='bullet'>&bull;</span>
 			<span id='crass' class='advances tall' title='Class' onclick='advanceClass(event)'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='archetype' class='advances tall' title='Archetype' onclick='advanceArchetype(event)'> </span>
 			<p id='races' class='choices hidden menu-container'></p>
 			<p id='classes' class='choices hidden'></p>
 			
-			<br/>
+			<br />
 			<span id='alignment' class='advances tall' title='Alignment' onclick='advanceAlignment(event)'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='sex' class='advances tall' title='Sex' onclick='advanceSex(event)'> </span>
@@ -3102,7 +3101,7 @@
 			<span id='background' class='advances tall' title='Background' onclick='advanceBackground(event)'> </span>
 			<p id='backgrounds' class='choices hidden menu-container'></p>
 			
-			<br class='tall'/>
+			<br class='tall' />
 			<span id='armor-class' title='Armor Class' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='hit-points' title='Hit Points' class='listable'> </span>
@@ -3111,7 +3110,7 @@
 			<span class='bullet'>&bull;</span>
 			<span id='passive-perception' title='Passive Perception' class='listable'> </span>
 			
-			<br/>
+			<br />
 			<span id='attacks-per-action' title='Attacks' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='criticals' title='Critical Hit' class='listable'> </span>
@@ -3120,7 +3119,7 @@
 			<span class='bullet'>&bull;</span>
 			<span id='darkvision' title='Darkvision' class='listable'> </span>
 			
-			<br/>
+			<br />
 			<span id='speed' title='Walking Speed' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='size' title='Size Class' class='listable'> </span>
@@ -3129,53 +3128,53 @@
 			<span class='bullet'>&bull;</span>
 			<span id='weight' title='Weight' class='advances narrow' onclick='advanceHeight(event, true)'> </span>
 			
-			<br/>
+			<br />
 			<span id='spells-prepared' title='Spells Prepared or Known' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='difficulty-class' title='Difficulty Class' class='listable'> </span>
 			<span class='bullet'>&bull;</span>
 			<span id='spell-slots' title='Spell Slots' class='listable wide'> </span>
 			
-			<br class='tall'/>
+			<br class='tall' />
 			<p></p><span class='caption'>Transitory</span>
 			<input id='toggle-tracking' class='toggle' type='checkbox' />
 			<label for='toggle-tracking' class='toggle'> </label>
 			<div id='tracking-container' class='toggled horizontal-content'>
 				<div id='tracking-combat'>
 					<span class='tracking-number-wrapper'>
-						<span class='tracking-number-handler advances nose' onclick='return handleTrackingNumber(event, "armorclass-tracking")'><input id='armorclass-tracking' type='number' value='10' min='5' max='50' class='tracking-number-input' /></span>
+						<span class='tracking-number-handler advances nose' onclick='return handleTrackingNumber(event, "armorclass-tracking")'><input id='armorclass-tracking' type='number' value='10' min='5' max='50' size='3' class='tracking-number-input' /></span>
 						<span class='tracking-caption'>Armor Class</span>
 					</span>
 					<span class='tracking-number-wrapper'>
-						<span class='tracking-number-handler advances nose' onclick='return handleTrackingNumber(event, "initiative-tracking")'><input id='initiative-tracking' type='number' value='0' min='0' max='30' class='tracking-number-input clear-rest' /></span>
+						<span class='tracking-number-handler advances nose' onclick='return handleTrackingNumber(event, "initiative-tracking")'><input id='initiative-tracking' type='number' value='0' min='0' max='30' size='3' class='tracking-number-input clear-rest' /></span>
 						<span class='tracking-caption'>Initiative</span>
 					</span>
-					<br/>
+					<br />
 					<span class='tracking-number-wrapper'>
-						<span class='tracking-number-handler advances nose' onclick='return handleTrackingNumber(event, "hitpoint-tracking")'><input id='hitpoint-tracking' type='number' value='1' min='0' max='1' class='tracking-number-input restore-long-rest' /></span>
+						<span class='tracking-number-handler advances nose' onclick='return handleTrackingNumber(event, "hitpoint-tracking")'><input id='hitpoint-tracking' type='number' value='1' min='0' max='1' size='3' class='tracking-number-input restore-long-rest' /></span>
 						<span class='tracking-caption'>Hit Points</span>
 					</span>
 					<span class='tracking-number-wrapper'>
-						<span class='tracking-number-handler advances nose' onclick='return handleTrackingNumber(event, "temporary-hitpoint-tracking")'><input id='temporary-hitpoint-tracking' type='number' value='0' min='0' max='200' class='tracking-number-input clear-rest' /></span>
+						<span class='tracking-number-handler advances nose' onclick='return handleTrackingNumber(event, "temporary-hitpoint-tracking")'><input id='temporary-hitpoint-tracking' type='number' value='0' min='0' max='200' size='3' class='tracking-number-input clear-rest' /></span>
 						<span class='tracking-caption'>Temporary Hit Points</span>
 					</span>
 				</div>
 				<div id='tracking-actions'>
 					<span class='tracking-action-wrapper'>
-						<input id='initiative-roll' type='button' class='action' onclick='handleInitiative()' />
+						<input id='initiative-roll' type='button' value='' class='action' onclick='handleInitiative()' />
 						<label for='initiative-roll' title='Roll Initiative' class='action'><span>Initiative</span></label>
 					</span>
 					<span class='tracking-action-wrapper'>
-						<input id='perform-turn' type='button' class='action' onclick='handleTurn()' />
+						<input id='perform-turn' type='button' value='' class='action' onclick='handleTurn()' />
 						<label for='perform-turn' title='Start Next Turn' class='action'><span>Turn</span></label>
 					</span>
-					<br/>
+					<br />
 					<span class='tracking-action-wrapper'>
-						<input id='perform-short-rest' type='button' class='action' onclick='handleShortRest()' />
+						<input id='perform-short-rest' type='button' value='' class='action' onclick='handleShortRest()' />
 						<label for='perform-short-rest' title='Recover after Short Rest' class='action'><span>Short Rest</span></label>
 					</span>
 					<span class='tracking-action-wrapper'>
-						<input id='perform-long-rest' type='button' class='action' onclick='handleLongRest()' />
+						<input id='perform-long-rest' type='button' value='' class='action' onclick='handleLongRest()' />
 						<label for='perform-long-rest' title='Recover after Long Rest' class='action'><span>Long Rest</span></label>
 					</span>
 				</div>
@@ -3183,13 +3182,13 @@
 				<div id='tracking-slots'></div>
 			</div>
 			
-			<br class='tall'/>
+			<br class='tall' />
 			<p><span class='caption'>Abilities</span>
 			<span id='clear-abilities' title='Revert rolls to class order with only racial increases' class='action tiny toggle' onclick='clearAbilities()'>(Reset)</span></p>
 			<p id='abilities' title='Tap rolls to change order.  Tap scores to increase.'></p>
 			
 			<p><span class='caption'>Notes</span>
-			<p id='notes'><textarea id='character-notes' rows='3' cols='40' wrap='on' spellcheck='false' placeholder='Notes' oninput='notesChanged()'></textarea></p>
+			<p id='notes'><textarea id='character-notes' rows='3' cols='24' wrap='soft' spellcheck='false' placeholder='Notes' oninput='notesChanged()'></textarea></p>
 			
 			<span class='caption'>Attacks</span>
 			<input id='toggle-all-attacks' class='toggle' type='checkbox' />
@@ -3198,17 +3197,19 @@
 			
 			<span class='caption'>Skills</span>
 			<input id='toggle-skills' class='toggle' type='checkbox' />
-			<label for='toggle-skills'><p id='skill' title='Tap to show skill choices' class='toggle'> </p></label>
+			<label for='toggle-skills'><br /><span id='skill' title='Tap to show skill choices' class='toggle'> </span></label>
 			<p id='skills' class='choices toggled'></p>
 			
+			<p></p>
 			<span class='caption'>Proficiencies</span>
 			<p id='proficiency' class='small'> </p>
 			
 			<span class='caption'>Languages</span>
 			<input id='toggle-language' class='toggle' type='checkbox' />
-			<label for='toggle-language'><p id='language' title='Tap to show language choices' class='toggle'> </p></label>
+			<label for='toggle-language'><br /><span id='language' title='Tap to show language choices' class='toggle'> </span></label>
 			<p id='languages' class='choices toggled'></p>
 			
+			<p></p>
 			<span class='caption'>Equipment</span>
 			<p id='equipment' class='small'> </p>
 			
@@ -3223,19 +3224,19 @@
 			
 			<span class='caption'>Characteristics</span>
 			<p id='characteristics' class='small'>
-				<span id='trait-0' title='Trait' class='characteristic' onclick='advanceTrait(0)'> </span><br/>
-				<span id='trait-1' title='Trait' class='characteristic' onclick='advanceTrait(1)'> </span><br/>
-				<span id='ideal' title='Ideal' class='characteristic' onclick='advanceIdeal()'> </span><br/>
-				<span id='bond' title='Bond' class='characteristic' onclick='advanceBond()'> </span><br/>
+				<span id='trait-0' title='Trait' class='characteristic' onclick='advanceTrait(0)'> </span><br />
+				<span id='trait-1' title='Trait' class='characteristic' onclick='advanceTrait(1)'> </span><br />
+				<span id='ideal' title='Ideal' class='characteristic' onclick='advanceIdeal()'> </span><br />
+				<span id='bond' title='Bond' class='characteristic' onclick='advanceBond()'> </span><br />
 				<span id='flaw' title='Flaw' class='characteristic' onclick='advanceFlaw()'> </span>
 			</p>
 			
 			<span id='version' class='caption'> </span>
-			<hr onclick='toggleHidden("raw-character")'/>
+			<hr onclick='toggleHidden("raw-character")' />
 			<p id='raw-character' class='hidden'></p>
 		</form></div>
 		
-		<script lang="javascript">
+		<script type="text/javascript">
 			prepare()
 		</script>
 	</body>

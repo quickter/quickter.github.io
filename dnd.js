@@ -1,5 +1,5 @@
 var dnd = {
-	"version":"0.95",
+	"version":"0.96",
 	"size":[
 		{"key":"lilliputian", "name":"Lilliputian", "relative":0},
 		{"key":"tiny", "name":"Tiny", "relative":1},
