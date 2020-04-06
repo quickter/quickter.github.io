@@ -2124,6 +2124,30 @@
 				restoreTracking('restore-every-turn')
 			}
 			
+			function handleDieRoll(sides) {
+				var diceRolls = _element('tracking-dice-rolls')
+				var diceCount = _element('tracking-dice-count')
+				var diceSum = _element('tracking-dice-sum')
+				
+				if ( sides > 0 ) {
+					var dieCount = diceCount.value || 1
+					var rolls = diceRoll(sides, dieCount)
+					var sum = rolls.reduce((a, b) => a + b, 0)
+					var summary = (dieCount > 1 ? dieCount : "") + "d" + sides + " (" + rolls.join(", ") + ")"
+					
+					if ( summary === diceRolls.innerHTML ) { summary = "• " + summary + " •" }
+					
+					diceRolls.innerHTML = summary
+					diceSum.innerHTML = sum
+				} else {
+					diceCount.value = '1'
+					diceRolls.innerHTML = ' '
+					diceSum.innerHTML = ' '
+				}
+				
+				diceCount.form.diceCount.value = diceCount.value
+			}
+			
 			function advanceLevel(event) {
 				var x = event ? normalizeX(event) : 1
 				var level = (character.level | 0) || 1
@@ -3166,7 +3190,7 @@
 						<span class='tracking-caption'>Temporary Hit Points</span>
 					</span>
 				</div>
-				<div id='tracking-actions'>
+				<div id='tracking-actions' class='unprintable'>
 					<span class='tracking-action-wrapper'>
 						<input id='initiative-roll' type='button' value='' class='action' onclick='handleInitiative()' />
 						<label for='initiative-roll' title='Roll Initiative' class='action'><span>Initiative</span></label>
@@ -3187,6 +3211,22 @@
 				</div>
 				<div id='tracking'></div>
 				<div id='tracking-slots'></div>
+				<div id='tracking-dice' class='unprintable'>
+					<span><input type='range' id='tracking-dice-count' value='1' min='1' max='20' oninput='form.diceCount.value = value' /><output for='tracking-dice-count' name='diceCount' class='tracking-number-output'>1</output></span>
+					<span id='tracking-dice-times'>&times</span>
+					<span><input type='button' id='tracking-dice-d4' value='4' class='action' onclick='handleDieRoll(4)' /><label for='tracking-dice-d4' class='action'><span class='die-roll'>D4</span></label></span>
+					<span><input type='button' id='tracking-dice-d6' value='6' class='action' onclick='handleDieRoll(6)' /><label for='tracking-dice-d6' class='action'><span class='die-roll'>D6</span></label></span>
+					<span><input type='button' id='tracking-dice-d8' value='8' class='action' onclick='handleDieRoll(8)' /><label for='tracking-dice-d8' class='action'><span class='die-roll'>D8</span></label></span>
+					<span><input type='button' id='tracking-dice-d10' value='10' class='action' onclick='handleDieRoll(10)' /><label for='tracking-dice-d10' class='action'><span class='die-roll'>D10</span></label></span>
+					<span><input type='button' id='tracking-dice-d12' value='12' class='action' onclick='handleDieRoll(12)' /><label for='tracking-dice-d12' class='action'><span class='die-roll'>D12</span></label></span>
+					<span><input type='button' id='tracking-dice-d20' value='20' class='action' onclick='handleDieRoll(20)' /><label for='tracking-dice-d20' class='action'><span class='die-roll'>D20</span></label></span>
+					<span><input type='button' id='tracking-dice-d100' value='100' class='action' onclick='handleDieRoll(100)' /><label for='tracking-dice-d100' class='action'><span class='die-roll'>D100</span></label></span>
+					<span><input type='button' id='tracking-dice-clear' value='0' class='action' onclick='handleDieRoll(0)' /><label for='tracking-dice-clear' class='action'><span class='die-roll'>Clear</span></label></span>
+					<div>
+						<span id='tracking-dice-sum'></span>
+						<br/><span id='tracking-dice-rolls'></span>
+					</div>
+				</div>
 			</div>
 			
 			<br class='tall' />

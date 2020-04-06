@@ -93,7 +93,7 @@ div#tracking-combat > span { margin:0.5em 1em 0.5em 0; }
 div#tracking-actions { margin-right:1em; }
 div#tracking-actions > span > label > span { margin:0.5em 0; display:inline-block; min-width:5em; text-align:center; }
 input.tracking-number-input { font-size:150%; text-align:right; min-width:2.5em; }
-output.tracking-number-output { display:inline-block; min-width:2em; }
+output.tracking-number-output { display:inline-block; min-width:2em; text-align:right; }
 span.tracking-number-wrapper { display:inline-block; }
 span.tracking-action-wrapper > label { width:100%; }
 span.tracking-caption { display:block; font-size:50%; text-align:center; }
@@ -101,6 +101,12 @@ span.tracking-number-handler.advances::before, span.tracking-number-handler.adva
 input.tracking-mark { display:none; }
 input.tracking-mark + label.tracking-mark { position:relative; display:inline-block; top:0.2em; border-radius:50%; width:1em; height:1em; border:1px solid black; }
 span.tracking-action-wrapper { display:inline-block; }
+#tracking-dice { margin-top:2em; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; }
+#tracking-dice > div { min-width:50%; height:5em; text-align:center; margin-top:1em; }
+#tracking-dice-times { margin:0 0.75em 0 0.5em; }
+#tracking-dice-rolls { display:inline-block; color:#999; }
+#tracking-dice-sum { display:inline-block; width:3em; height:1.75em; text-align:center; padding-top:0.25em; margin:0 1em; font-size:200%; font-weight:bold; color:#666; border-radius:50%; border:1px solid #CCC; }
+span.die-roll { display:inline-block; min-width:2.25em; text-align:center; }
 
 @media screen {
 	input.tracking-mark:checked + label.tracking-mark { background:#F4F4F4; background:linear-gradient(345deg, #FFF 0%, #FFF8F0 40%, #DDD 100%); border-color:#CCC; }
@@ -220,4 +226,8 @@ span.advances { position:relative; padding:0 1em; }
 	td.name, td.notrange { white-space:normal; }
 	.attacks.type, .attacks.summary { display:none; }
 	div#tracking-slots { font-size:80%; }
+}
+
+@media print {
+	div.unprintable { display:none; }
 }

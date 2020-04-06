@@ -3560,7 +3560,7 @@ var spells = [
 		"damage": "+1d6",
 		"damage_type": "necrotic",
 		"classes": ["Warlock"],
-		"desc": "<p>You place a curse on a creature that you can see within range. Until the spell ends, you deals an extra 1d6 necrotic damage to the target whenever you hit it with an attack. Also choose one ability when you cast the spell. The target has disadvantage on ability checks made with the chosen ability.</p><p>If the target drops to 0 hit points before this spell ends, you can use a bonus action on a subsequent turn of yours to curse a new creature.</p><p>A remove curse cast on the target ends this spell early.</p>",
+		"desc": "<p>You place a curse on a creature that you can see within range. Until the spell ends, you deal an extra 1d6 necrotic damage to the target whenever you hit it with an attack. Also choose one ability when you cast the spell. The target has disadvantage on ability checks made with the chosen ability.</p><p>If the target drops to 0 hit points before this spell ends, you can use a bonus action on a subsequent turn of yours to curse a new creature.</p><p>A remove curse cast on the target ends this spell early.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 3rd or 4th level, you can maintain your concentration on the spell for up to 8 hours. When you use a spell slot of 5th level or higher, you can maintain your concentration on the spell for up to 24 hours.</p>",
 		"book": "phb",
 		"page": 251
@@ -6066,7 +6066,7 @@ var spells = [
 		"casting_time": "12 Hours",
 		"range": "Touch",
 		"components": ["V", "S", "M"],
-		"material": "Snow or ice in quantities sufficient to made a life-size copy of the duplicated creature; some hair, fingernail clippings, or other piece of that creature’s body placed inside the snow or ice; and powdered ruby worth 1,500 gp, sprinkled over the duplicate and consumed by the spell.",
+		"material": "Snow or ice in quantities sufficient to make a life-size copy of the duplicated creature; some hair, fingernail clippings, or other piece of that creature’s body placed inside the snow or ice; and powdered ruby worth 1,500 gp, sprinkled over the duplicate and consumed by the spell.",
 		"duration": "Until dispelled",
 		"permanent": "dispel",
 		"classes": ["Wizard"],
