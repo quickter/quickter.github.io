@@ -92,7 +92,7 @@ div#tracking-combat { margin-right:2em; }
 div#tracking-combat > span { margin:0.5em 1em 0.5em 0; }
 div#tracking-actions { margin-right:1em; }
 div#tracking-actions > span > label > span { margin:0.5em 0; display:inline-block; min-width:5em; text-align:center; }
-input.tracking-number-input { font-size:175%; text-align:right; min-width:2.5em; }
+input.tracking-number-input { font-size:150%; text-align:right; min-width:2.5em; }
 output.tracking-number-output { display:inline-block; min-width:2em; }
 span.tracking-number-wrapper { display:inline-block; }
 span.tracking-action-wrapper > label { width:100%; }

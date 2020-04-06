@@ -1744,14 +1744,20 @@
 				character.name = _element('character-name').value
 			}
 			
-			function notesChanged() {
+			function notesChanged(isEdited) {
 				var element = _element('character-notes')
+				
+				if ( element.scrollWidth > element.clientWidth ) {
+					element.style.width = element.scrollScroll + 'px'
+				}
 				
 				if ( element.scrollHeight > element.clientHeight ) {
 					element.style.height = element.scrollHeight + 'px'
 				}
 				
-				storageDisplay()
+				if ( isEdited ) {
+					storageDisplay()
+				}
 			}
 			
 			function randomElements(array, count) {
@@ -2897,6 +2903,7 @@
 							window.character = character
 							renderCharacter(character, false, true)
 							_element('character-notes').value = window.localStorage.getItem(storageNotesKey(key))
+							notesChanged(false)
 							
 							if ( !preserveHash ) {
 								characterIntoHash(character)
@@ -3188,7 +3195,7 @@
 			<p id='abilities' title='Tap rolls to change order.  Tap scores to increase.'></p>
 			
 			<p><span class='caption'>Notes</span>
-			<p id='notes'><textarea id='character-notes' rows='3' cols='24' wrap='soft' spellcheck='false' placeholder='Notes' oninput='notesChanged()'></textarea></p>
+			<p id='notes'><textarea id='character-notes' rows='3' cols='24' wrap='soft' spellcheck='false' placeholder='Notes' oninput='notesChanged(true)'></textarea></p>
 			
 			<span class='caption'>Attacks</span>
 			<input id='toggle-all-attacks' class='toggle' type='checkbox' />
