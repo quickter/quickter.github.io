@@ -128,13 +128,13 @@ var spells = [
 		"material": "A morsel of food.",
 		"duration": "24 hours",
 		"save": "wisdom",
-		"classes": ["Bard", "Cleric", "Druid", "Ranger"],
+		"classes": ["Bard", "Druid", "Ranger"],
 		"desc": "<p>This spell lets you convince a beast that you mean it no harm. Choose a beast that you can see within range. It must see and hear you. If the beast’s Intelligence is 4 or higher, the spell fails. Otherwise, the beast must succeed on a wisdom saving throw or be charmed by you for the spell’s duration. If you or one of your companions harms the target, the spells ends.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 2nd level or higher, you can affect one additional beast for each slot level above 1st.</p>",
 		"book": "phb",
 		"page": 212,
 		"domains": "Nature",
-		"archetype": "Cleric: Nature"
+		"archetype": ["Cleric: Nature"]
 	},{
 		"key": "animalmessenger",
 		"name": "Animal Messenger",
@@ -253,12 +253,12 @@ var spells = [
 		"material": "A bit of bat fur.",
 		"duration": "Up to 1 hour",
 		"concentration": true,
-		"classes": ["Cleric", "Wizard"],
+		"classes": ["Wizard"],
 		"desc": "<p>You create an invisible, magical eye within range that hovers in the air for the duration.</p><p>You mentally receive visual information from the eye, which has normal vision and darkvision out to 30 feet. The eye can look in every direction.</p><p>As an action, you can move the eye up to 30 feet in any direction. There is no limit to how far away from you the eye can move, but it can’t enter another plane of existence. A solid barrier blocks the eye’s movement, but the eye can pass through an opening as small as 1 inch in diameter.</p>",
 		"book": "phb",
 		"page": 214,
 		"domains": "Knowledge",
-		"archetype": "Cleric: Knowledge"
+		"archetype": ["Cleric: Knowledge"]
 	},{
 		"key": "arcanegate",
 		"name": "Arcane Gate",
@@ -424,13 +424,13 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "charisma",
-		"classes": ["Bard", "Cleric", "Paladin"],
+		"classes": ["Bard", "Cleric"],
 		"desc": "<p>Up to three creatures of your choice that you can see within range must make charisma saving throws. Whenever a target that fails this saving throw makes an attack roll or a saving throw before the spell ends, the target must roll a d4 and subtract the number rolled from the attack roll or saving throw.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 2nd level or higher, you can target one additional creature for each slot level above 1st.</p>",
 		"book": "phb",
 		"page": 216,
 		"oaths": "Vengeance",
-		"archetype": "Paladin: Vengeance"
+		"archetype": ["Paladin: Vengeance"]
 	},{
 		"key": "banishingsmite",
 		"name": "Banishing Smite",
@@ -479,13 +479,13 @@ var spells = [
 		"duration": "Up to 1 hour",
 		"concentration": true,
 		"defense": true,
-		"classes": ["Cleric", "Druid", "Ranger"],
+		"classes": ["Druid", "Ranger"],
 		"desc": "<p>You touch a willing creature. Until the spell ends, the target’s skin has a rough, bark-like appearance, and the target’s AC can’t be less than 16, regardless of what kind of armor it is wearing.</p>",
 		"book": "phb",
 		"page": 217,
 		"circles": "Forest",
 		"domains": "Nature",
-		"archetype": "Cleric: Nature"
+		"archetype": ["Cleric: Nature"]
 	},{
 		"key": "beaconofhope",
 		"name": "Beacon of Hope",
@@ -497,13 +497,13 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"defense": true,
-		"classes": ["Cleric", "Paladin"],
+		"classes": ["Cleric"],
 		"desc": "<p>This spell bestows hope and vitality. Choose any number of creatures within range. For the duration, each target has advantage on wisdom saving throws and death saving throws, and regains the maximum number of hit points possible from any healing.</p>",
 		"book": "phb",
 		"page": 217,
 		"oaths": "Devotion",
 		"domains": "Life",
-		"archetype": "Paladin: Devotion"
+		"archetype": ["Paladin: Devotion"]
 	},{
 		"key": "beastbond",
 		"name": "Beast Bond",
@@ -665,13 +665,13 @@ var spells = [
 		"components": ["V"],
 		"duration": "1 minute",
 		"save": "constitution",
-		"classes": ["Bard", "Cleric", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Cleric", "Sorcerer", "Wizard"],
 		"desc": "<p>You can blind or deafen a foe. Choose one creature that you can see within range to make a constitution saving throw. If it fails, the target is either blinded or deafened (your choice) for the duration. At the end of each of its turns, the target can make a constitution saving throw. On a success, the spell ends.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 3rd level or higher, you can target one additional creature for each slot level above 2nd.</p>",
 		"book": "phb",
 		"page": 219,
 		"patrons": "Fiend",
-		"archetype": "Warlock: Fiend"
+		"archetype": ["Warlock: Fiend"]
 	},{
 		"key": "blink",
 		"name": "Blink",
@@ -682,13 +682,13 @@ var spells = [
 		"components": ["V", "S"],
 		"duration": "1 minute",
 		"defense": true,
-		"classes": ["Cleric", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>Roll a d20 at the end of each of your turns for the duration of the spell. On a roll of 11 or higher, you vanish from your current plane of existence and appear in the Ethereal Plane (the spell fails and the casting is wasted if you were already on that plane). At the start of your next turn, and when the spell ends if you are on the Ethereal Plane, you return to an unoccupied space of your choice that you can see within 10 feet of the space you vanished from. If no unoccupied space is available within that range, you appear in the nearest unoccupied space (chosen at random if more than one space is equally near). You can dismiss this spell as an action.</p><p>While on the Ethereal Plane, you can see and hear the plane you originated from, which is cast in shades of gray, and you can’t see anything there more than 60 feet away. You can only affect and be affected by other creatures on the Ethereal Plane. Creatures that aren’t there can’t perceive you or interact with you, unless they have the ability to do so.</p>",
 		"book": "phb",
 		"page": 219,
 		"domains": "Trickery",
 		"patrons": "Archfey",
-		"archetype": "Cleric: Trickery<br/> Warlock: Archfey"
+		"archetype": ["Cleric: Trickery", "Warlock: Archfey"]
 	},{
 		"key": "blur",
 		"name": "Blur",
@@ -700,12 +700,12 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"defense": true,
-		"classes": ["Druid", "Sorcerer", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>Your body becomes blurred, shifting and wavering to all who can see you. For the duration, any creature has disadvantage on attack rolls against you. An attacker is immune to this effect if it doesn’t rely on sight, as with blindsight, or can see through illusions, as with truesight.</p>",
 		"book": "phb",
 		"page": 219,
 		"circles": "Desert",
-		"archetype": "Druid: Desert"
+		"archetype": ["Druid: Desert"]
 	},{
 		"key": "bonesoftheearth",
 		"name": "Bones of the Earth",
@@ -770,14 +770,14 @@ var spells = [
 		"save": "dexterity",
 		"damage": "3d6",
 		"damage_type": "fire",
-		"classes": ["Cleric", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>As you hold your hands with thumbs touching and fingers spread, a thin sheet of flames shoots forth from your outstretched fingertips. Each creature in a 15-foot cone must make a dexterity saving throw. A creature takes 3d6 fire damage on a failed save, or half as much damage on a successful one.</p><p>The fire ignites any flammable objects in the area that aren’t being worn or carried.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d6 for each slot level above 1st.</p>",
 		"book": "phb",
 		"page": 220,
 		"domains": "Light",
 		"patrons": "Fiend",
-		"archetype": "Cleric: Light<br/> Warlock: Fiend"
+		"archetype": ["Cleric: Light", "Warlock: Fiend"]
 	},{
 		"key": "calllightning",
 		"name": "Call Lightning",
@@ -791,14 +791,14 @@ var spells = [
 		"save": "dexterity",
 		"damage": "3d10",
 		"damage_type": "lightning",
-		"classes": ["Cleric", "Druid"],
+		"classes": ["Druid"],
 		"desc": "<p>A storm cloud appears in the shape of a cylinder that is 10 feet tall with a 60-foot radius, centered on a point you can see 100 feet directly above you. The spell fails if you can’t see a point in the air where the storm cloud could appear (for example, if you are in a room that can’t accommodate the cloud).</p><p>When you cast the spell, choose a point you can see within range. A bolt of lightning flashes down from the cloud to that point. Each creature within 5 feet of that point must make a dexterity saving throw. A creature takes 3d10 lightning damage on a failed save, or half as much damage on a successful one. On each of your turns until the spell ends, you can use your action to call down lightning in this way again, targeting the same point or a different one.</p><p>If you are outdoors in stormy conditions when you cast this spell, the spell gives you control over the existing storm instead of creating a new one. Under such conditions, the spell’s damage increases by 1d10.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 4th or higher level, the damage increases by 1d10 for each slot level above 3rd.</p>",
 		"book": "phb",
 		"page": 220,
 		"circles": "Forest",
 		"domains": "Tempest",
-		"archetype": "Cleric: Tempest"
+		"archetype": ["Cleric: Tempest"]
 	},{
 		"key": "calmemotions",
 		"name": "Calm Emotions",
@@ -810,12 +810,12 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "charisma",
-		"classes": ["Bard", "Cleric", "Warlock"],
+		"classes": ["Bard", "Cleric"],
 		"desc": "<p>You attempt to suppress strong emotions in a group of people. Each humanoid in a 20-foot-radius sphere centered on a point you choose within range must make a charisma saving throw; a creature can choose to fail this saving throw if it wishes. If a creature fails its saving throw, choose one of the following two effects. You can suppress any effect causing a target to be charmed or frightened. When this spell ends, any suppressed effect resumes, provided that its duration has not expired in the meantime.</p><p>Alternatively, you can make a target indifferent about creatures of your choice that it is hostile toward. This indifference ends if the target is attacked or harmed by a spell or if it witnesses any of its friends being harmed. When the spell ends, the creature becomes hostile again, unless the DM rules otherwise.</p>",
 		"book": "phb",
 		"page": 221,
 		"patrons": "Archfey",
-		"archetype": "Warlock: Archfey"
+		"archetype": ["Warlock: Archfey"]
 	},{
 		"key": "catapult",
 		"name": "Catapult",
@@ -939,13 +939,13 @@ var spells = [
 		"components": ["V", "S"],
 		"duration": "1 hour",
 		"save": "wisdom",
-		"classes": ["Bard", "Cleric", "Druid", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Druid", "Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>You attempt to charm a humanoid you can see within range. It must make a wisdom saving throw, and does so with advantage if you or your companions are fighting it. If it fails the saving throw, it is charmed by you until the spell ends or until you or your companions do anything harmful to it. The charmed creature regards you as a friendly acquaintance. When the spell ends, the creature knows it was charmed by you.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 2nd level or higher, you can target one additional creature for each slot level above 1st. The creatures must be within 30 feet of each other when you target them.</p>",
 		"book": "phb",
 		"page": 221,
 		"domains": "Trickery",
-		"archetype": "Cleric: Trickery"
+		"archetype": ["Cleric: Trickery"]
 	},{
 		"key": "chilltouch",
 		"name": "Chill Touch",
@@ -1024,12 +1024,12 @@ var spells = [
 		"material": "A focus worth at least 100gp, either a jeweled horn for hearing or a glass eye for seeing.",
 		"duration": "Up to 10 minutes",
 		"concentration": true,
-		"classes": ["Bard", "Cleric", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Cleric", "Sorcerer", "Wizard"],
 		"desc": "<p>You create an invisible sensor within range in a location familiar to you (a place you have visited or seen before) or in an obvious location that is unfamiliar to you (such as behind a door, around a corner, or in a grove of trees). The sensor remains in place for the duration, and it can’t be attacked or otherwise interacted with.</p><p>When you cast the spell, you choose seeing or hearing. You can use the chosen sense through the sensor as if you were in its space. As your action, you can switch between seeing and hearing.</p><p>A creature that can see the sensor (such as a creature benefiting from see invisibility or truesight) sees a luminous, intangible orb about the size of your fist.</p>",
 		"book": "phb",
 		"page": 222,
 		"patrons": "Great Old One",
-		"archetype": "Warlock: Great Old One"
+		"archetype": ["Warlock: Great Old One"]
 	},{
 		"key": "clone",
 		"name": "Clone",
@@ -1076,13 +1076,13 @@ var spells = [
 		"save": "constitution",
 		"damage": "5d8",
 		"damage_type": "poison",
-		"classes": ["Druid", "Sorcerer", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>You create a 20-foot-radius sphere of poisonous, yellow-green fog centered on a point you choose within range. The fog spreads around corners. It lasts for the duration or until strong wind disperses the fog, ending the spell. Its area is heavily obscured.</p><p>When a creature enters the spell’s area for the first time on a turn or starts its turn there, that creature must make a constitution saving throw. The creature takes 5d8 poison damage on a failed save, or half as much damage on a successful one. Creatures are affected even if they hold their breath or don’t need to breathe.</p><p>The fog moves 10 feet away from you at the start of each of your turns, rolling along the surface of the ground. The vapors, being heavier than air, sink to the lowest level of the land, even pouring down openings.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 6th level or higher, the damage increases by 1d8 for each slot level above 5th.</p>",
 		"book": "phb",
 		"page": 222,
 		"circles": "Underdark",
-		"archetype": "Druid: Underdark"
+		"archetype": ["Druid: Underdark"]
 	},{
 		"key": "colorspray",
 		"name": "Color Spray",
@@ -1108,14 +1108,14 @@ var spells = [
 		"components": ["V"],
 		"duration": "1 round",
 		"save": "wisdom",
-		"classes": ["Cleric", "Paladin", "Warlock"],
+		"classes": ["Cleric", "Paladin"],
 		"desc": "<p>You speak a one-word command to a creature you can see within range. The target must succeed on a wisdom saving throw or follow the command on its next turn. The spell has no effect if the target is undead, if it doesn’t understand your language, or if your command is directly harmful to it.</p><p>Some typical commands and their effects follow. You might issue a command other than one described here. If you do so, the DM determines how the target behaves. If the target can’t follow your command, the spell ends.</p><p><b>Approach.</b> The target moves toward you by the shortest and most direct route, ending its turn if it moves within 5 feet of you.</p><p><b>Drop</b> The target drops whatever it is holding and then ends its turn.</p><p><b>Flee.</b> The target spends its turn moving away from you by the fastest available means.</p><p><b>Grovel.</b> The target falls prone and then ends its turn.</p><p><b>Halt.</b> The target doesn’t move and takes no actions. A flying creature stays aloft, provided that it is able to do so. If it must move to stay aloft, it flies the minimum distance needed to remain in the air.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 2nd level or higher, you can affect one additional creature for each slot level above 1st. The creatures must be within 30 feet of each other when you target them.</p>",
 		"book": "phb",
 		"page": 223,
 		"domains": "Knowledge",
 		"patrons": "Fiend",
-		"archetype": "Warlock: Fiend"
+		"archetype": ["Warlock: Fiend"]
 	},{
 		"key": "commune",
 		"name": "Commune",
@@ -1127,12 +1127,12 @@ var spells = [
 		"material": "Incense and a vial of holy or unholy water.",
 		"duration": "1 minute",
 		"ritual": true,
-		"classes": ["Cleric", "Paladin", "Ritualist"],
+		"classes": ["Cleric", "Ritualist"],
 		"desc": "<p>You contact your deity or a divine proxy and ask up to three questions that can be answered with a yes or no. You must ask your questions before the spell ends. You receive a correct answer for each question.</p><p>Divine beings aren’t necessarily omniscient, so you might receive “unclear” as an answer if a question pertains to information that lies beyond the deity’s knowledge. In a case where a one-word answer could be misleading or contrary to the deity’s interests, the DM might offer a short phrase as an answer instead.</p><p>If you cast the spell two or more times before finishing your next long rest, there is a cumulative 25 percent chance for each casting after the first that you get no answer. The DM makes this roll in secret.</p>",
 		"book": "phb",
 		"page": 223,
 		"oaths": "Devotion",
-		"archetype": "Paladin: Devotion"
+		"archetype": ["Paladin: Devotion"]
 	},{
 		"key": "communewithnature",
 		"name": "Commune with Nature",
@@ -1143,13 +1143,13 @@ var spells = [
 		"components": ["V", "S"],
 		"duration": "Instantaneous",
 		"ritual": true,
-		"classes": ["Druid", "Paladin", "Ranger", "Ritualist"],
+		"classes": ["Druid", "Ranger", "Ritualist"],
 		"desc": "<p>You briefly become one with nature and gain knowledge of the surrounding territory. In the outdoors, the spell gives you knowledge of the land within 3 miles of you. In caves and other natural underground settings, the radius is limited to 300 feet. The spell doesn’t function where nature has been replaced by construction, such as in dungeons and towns.</p><p> You instantly gain knowledge of up to three facts of your choice about any of the following subjects as they relate to the area:</p><p>• terrain and bodies of water</p><p>• prevalent plants, minerals, animals, or peoples</p><p>• powerful celestials, fey, fiends, elementals, or undead</p><p>• influence from other planes of existence</p><p>• buildings</p><p>For example, you could determine the location of powerful undead in the area, the location of major sources of safe drinking water, and the location of any nearby towns.</p>",
 		"book": "phb",
 		"page": 224,
 		"circles": "Arctic, Forest",
 		"oaths": "Ancients",
-		"archetype": "Paladin: Ancients"
+		"archetype": ["Paladin: Ancients"]
 	},{
 		"key": "compelledduel",
 		"name": "Compelled Duel",
@@ -1208,13 +1208,13 @@ var spells = [
 		"save": "constitution",
 		"damage": "8d8",
 		"damage_type": "cold",
-		"classes": ["Druid", "Sorcerer", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>A blast of cold air erupts from your hands. Each creature in a 60-foot cone must make a constitution saving throw. A creature takes 8d8 cold damage on a failed save, or half as much damage on a successful one.</p><p>A creature killed by this spell becomes a frozen statue until it thaws.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 6th level or higher, the damage increases by 1d8 for each slot level above 5th.</p>",
 		"book": "phb",
 		"page": 224,
 		"circles": "Arctic",
-		"archetype": "Druid: Arctic"
+		"archetype": ["Druid: Arctic"]
 	},{
 		"key": "confusion",
 		"name": "Confusion",
@@ -1227,13 +1227,13 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "wisdom",
-		"classes": ["Bard", "Cleric", "Druid", "Sorcerer", "Wizard"],
+		"classes": ["Bard", "Druid", "Sorcerer", "Wizard"],
 		"desc": "<p>This spell assaults and twists creatures’ minds, spawning delusions and provoking uncontrolled actions. Each creature in a 10-foot-radius sphere centered on a point you choose within range must succeed on a Wisdom saving throw when you cast this spell or be affected by it.</p><p>An affected target can’t take reactions and must roll a d10 at the start of each of its turns to determine its behavior for that turn.</p><p><b>d10 Behavior</b></p><p>1. The creature uses all its movement to move in a random direction. To determine the direction, roll a d8 and assign a direction to each die face. The creature doesn’t take an action this turn.</p><p>2-6. The creature doesn’t move or take actions this turn.</p><p>7-8. The creature uses its action to make a melee attack against a randomly determined creature within its reach. If there is no creature within its reach, the creature does nothing this turn.</p><p>9-10. The creature can act and move normally.</p><p>At the end of its turns, an affected target can make a Wisdom saving throw. It it succeeds, this effect ends for that target.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 5th level or higher, the radius of the sphere increases by 5 feet for each slot level above 4th.</p>",
 		"book": "phb",
 		"page": 224,
 		"domains": "Knowledge",
-		"archetype": "Cleric: Knowledge"
+		"archetype": ["Cleric: Knowledge"]
 	},{
 		"key": "conjureanimals",
 		"name": "Conjure Animals",
@@ -1540,12 +1540,12 @@ var spells = [
 		"range": 30,
 		"components": ["V", "S"],
 		"duration": "Instantaneous",
-		"classes": ["Cleric", "Druid", "Paladin"],
+		"classes": ["Cleric", "Paladin"],
 		"desc": "<p>You create 45 pounds of food and 30 gallons of water on the ground or in containers within range, enough to sustain up to fifteen humanoids or five steeds for 24 hours. The food is bland but nourishing, and spoils if uneaten after 24 hours. The water is clean and doesn’t go bad.</p>",
 		"book": "phb",
 		"page": 229,
 		"circles": "Desert",
-		"archetype": "Druid: Desert"
+		"archetype": ["Druid: Desert"]
 	},{
 		"key": "createhomunculus",
 		"name": "Create Homunculus",
@@ -1653,12 +1653,12 @@ var spells = [
 		"attack": true,
 		"damage": "+1d4",
 		"damage_type": "radiant",
-		"classes": ["Cleric", "Paladin"],
+		"classes": ["Paladin"],
 		"desc": "<p>Holy power radiates from you in an aura with a 30-foot radius, awakening boldness in friendly creatures. Until the spell ends, the aura moves with you, centered on you. While in the aura, each nonhostile creature in the aura (including you) deals an extra 1d4 radiant damage when it hits with a weapon attack.</p>",
 		"book": "phb",
 		"page": 230,
 		"domains": "War",
-		"archetype": "Cleric: War"
+		"archetype": ["Cleric: War"]
 	},{
 		"key": "curewounds",
 		"name": "Cure Wounds",
@@ -1715,12 +1715,12 @@ var spells = [
 		"material": "Bat fur and a drop of pitch or piece of coal.",
 		"duration": "Up to 10 minutes",
 		"concentration": true,
-		"classes": ["Druid", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>Magical darkness spreads from a point you choose within range to fill a 15-foot-radius sphere for the duration. The darkness spreads around corners. A creature with darkvision can’t see through this darkness, and nonmagical light can’t illuminate it.</p><p>If the point you choose is on an object you are holding or one that isn’t being worn or carried, the darkness emanates from the object and moves with it. Completely covering the source of the darkness with an opaque object, such as a bowl or a helm, blocks the darkness.</p><p>If any of this spell’s area overlaps with an area of light created by a spell of 2nd level or lower, the spell that created the light is dispelled.</p>",
 		"book": "phb",
 		"page": 230,
 		"circles": "Swamp",
-		"archetype": "Druid: Swamp"
+		"archetype": ["Druid: Swamp"]
 	},{
 		"key": "darkvision",
 		"name": "Darkvision",
@@ -1828,12 +1828,12 @@ var spells = [
 		"save": "constitution",
 		"damage": "10d6",
 		"damage_type": "*",
-		"classes": ["Cleric", "Paladin"],
+		"classes": ["Paladin"],
 		"desc": "<p>You strike the ground, creating a burst of divine energy that ripples outward from you. Each creature you choose within 30 feet of you must succeed on a constitution saving throw or take 5d6 thunder damage, as well as 5d6 radiant or necrotic damage (your choice), and be knocked prone. A creature that succeeds on its saving throw takes half as much damage and isn’t knocked prone.</p>",
 		"book": "phb",
 		"page": 231,
 		"domains": "Tempest",
-		"archetype": "Cleric: Tempest"
+		"archetype": ["Cleric: Tempest"]
 	},{
 		"key": "detectevilandgood",
 		"name": "Detect Evil and Good",
@@ -1890,12 +1890,12 @@ var spells = [
 		"material": "A copper coin.",
 		"duration": "Up to 1 minute",
 		"concentration": true,
-		"classes": ["Bard", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Wizard"],
 		"desc": "<p>For the duration of the spell, you can read the thoughts of some creatures. While casting the spell and at your action in each round until the spell, you may focus your mind on a creature you can see 30 feet of you. If the chosen creature has an Intelligence of 3 or less, or if she does not speak any language, the creature is not affected.</p><p>You first read the surface thoughts of the creature, which occupies her mind at that moment. In an action, you can direct your attention to the thoughts of another creature or attempt to deepen your reading thoughts of the same creature. If you deepen your reading, the target must make a backup of Wisdom, otherwise you get access to his argument (if any), in his emotional state and thought that concerns his mind on a broader spectrum Such a concern, love or hate. If successful, the spell ends. In all cases, the target is aware that his mind is under your eyes. Unless you are directing your attention to the thoughts of another creature, the target can use his action turn to roll Intelligence opposite your roll Intelligence. If she has the upper hand, the spell ends.</p><p>The questions verbally directed to the target guide the train of thought. This spell is especially effective during an interrogation.</p><p>You can also use this spell to detect the presence of thinking creatures that are invisible to you. When you cast this spell, or in an action for the duration of the spell, you can find thoughts to 30 feet of you. The spell can override most obstacles but it is blocked by 2 feet stone 2 inches of precious metal, or a thin sheet of lead. You can not detect a creature with an Intelligence of 3 or less or speaking any language.</p><p>After detecting the presence of a creature in this way, you can read his thoughts for the rest of the spell’s duration as described above, even if you can not see it, but only if it remains in the range of the spell.</p>",
 		"book": "phb",
 		"page": 231,
 		"patrons": "Great Old One",
-		"archetype": "Warlock: Great Old One"
+		"archetype": ["Warlock: Great Old One"]
 	},{
 		"key": "dimensiondoor",
 		"name": "Dimension Door",
@@ -1905,13 +1905,13 @@ var spells = [
 		"range": 500,
 		"components": ["V"],
 		"duration": "Instantaneous",
-		"classes": ["Bard", "Cleric", "Paladin", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>You teleport yourself from your current location to any other spot within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as “200 feet straight downward” or “upward to the northwest at a 45-degree angle, 300 feet.”</p><p>You can bring along objects as long as their weight doesn’t exceed what you can carry. You can also bring one willing creature of your size or smaller who is carrying gear up to its carrying capacity. The creature must be within 5 feet of you when you cast this spell.</p><p>If you would arrive in a place already occupied by an object or a creature, you and any creature traveling with you each take 4d6 force damage, and the spell fails to teleport you.</p>",
 		"book": "phb",
 		"page": 233,
 		"oaths": "Vengeance",
 		"domains": "Trickery",
-		"archetype": "Cleric: Trickery<br/> Paladin: Vengeance"
+		"archetype": ["Cleric: Trickery", "Paladin: Vengeance"]
 	},{
 		"key": "disguiseself",
 		"name": "Disguise Self",
@@ -1921,12 +1921,12 @@ var spells = [
 		"range": "Self",
 		"components": ["V", "S"],
 		"duration": "1 hour",
-		"classes": ["Bard", "Cleric", "Sorcerer", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Wizard"],
 		"desc": "<p>You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends or until you use your action to dismiss it. You can seem 1 foot shorter or taller and can appear thin, fat, or in between. You can’t change your body type, so you must adopt a form that has the same basic arrangement of limbs. Otherwise, the extent of the illusion is up to you.</p><p>The changes wrought by this spell fail to hold up to physical inspection. For example, if you use this spell to add a hat to your outfit, objects pass through the hat, and anyone who touches it would feel nothing or would feel your head and hair. If you use this spell to appear thinner than you are, the hand of someone who reaches out to touch you would bump into you while it was seemingly still in midair.</p><p>To discern that you are disguised, a creature can use its action to inspect your apperance and must succeed on an Intelligence (Investigation) check against your spell save DC.</p>",
 		"book": "phb",
 		"page": 233,
 		"domains": "Trickery",
-		"archetype": "Cleric: Trickery"
+		"archetype": ["Cleric: Trickery"]
 	},{
 		"key": "disintegrate",
 		"name": "Disintegrate",
@@ -1972,14 +1972,14 @@ var spells = [
 		"range": 120,
 		"components": ["V", "S"],
 		"duration": "Instantaneous",
-		"classes": ["Bard", "Cleric", "Druid", "Paladin", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Druid", "Paladin", "Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>Choose one creature, object, or magical effect within range. Any spell of 3rd level or lower on the target ends. For each spell of 4th level or higher on the target, make an ability check using your spellcasting ability. The DC equals 10 + the spell’s level. On a successful check, the spell ends.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 4th level or higher, you automatically end the effects of a spell on the target if the spell’s level is equal to or less than the level of the spell slot you used.</p>",
 		"book": "phb",
 		"page": 234,
 		"oaths": "Devotion",
 		"domains": "Trickery",
-		"archetype": "Cleric: Trickery"
+		"archetype": ["Cleric: Trickery"]
 	},{
 		"key": "dissonantwhispers",
 		"name": "Dissonant Whispers",
@@ -1992,13 +1992,13 @@ var spells = [
 		"save": "wisdom",
 		"damage": "3d6",
 		"damage_type": "psychic",
-		"classes": ["Bard", "Warlock"],
+		"classes": ["Bard"],
 		"desc": "<p>You whisper a discordant melody that only one creature of your choice within range can hear, wracking it with terrible pain. The target must make a wisdom saving throw. On a failed save, it takes 3d6 psychic damage and must immediately use its reaction, if available, to move as far as its speed allows away from you. The creature doesn’t move into obviously dangerous ground, such as a fire or a pit. On a successful save, the target takes half as much damage and doesn’t have to move away. A deafened creature automatically succeeds on the save.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d6 for each slot level above 1st.</p>",
 		"book": "phb",
 		"page": 234,
 		"patrons": "Great Old One",
-		"archetype": "Warlock: Great Old One"
+		"archetype": ["Warlock: Great Old One"]
 	},{
 		"key": "divination",
 		"name": "Divination",
@@ -2010,12 +2010,12 @@ var spells = [
 		"material": "Incense and a sacrificial offering appropriate to your religion, together worth at least 25gp, which the spell consumes.",
 		"duration": "Instantaneous",
 		"ritual": true,
-		"classes": ["Cleric", "Druid", "Ritualist"],
+		"classes": ["Cleric", "Ritualist"],
 		"desc": "<p>Your magic and an offering put you in contact with a god or a god’s servants. You ask a single question concerning a specific goal, event, or activity to occur within 7 days. The DM offers a truthful reply. The reply might be a short phrase, a cryptic rhyme, or an omen.</p><p>The spell doesn’t take into account any possible circumstances that might change the outcome, such as the casting of additional spells or the loss or gain of a companion.</p><p>If you cast the spell two or more times before finishing your next long rest, there is a cumulative 25 percent chance for each casting after the first that you get a random reading. The DM makes this roll in secret.</p>",
 		"book": "phb",
 		"page": 234,
 		"circles": "Forest, Grassland",
-		"archetype": "Druid: Forest, Grassland"
+		"archetype": ["Druid: Forest", "Druid: Grassland"]
 	},{
 		"key": "divinefavor",
 		"name": "Divine Favor",
@@ -2029,12 +2029,12 @@ var spells = [
 		"attack": true,
 		"damage": "+1d4",
 		"damage_type": "radiant",
-		"classes": ["Cleric", "Paladin"],
+		"classes": ["Paladin"],
 		"desc": "<p>Your prayer empowers you with divine radiance. Until the spell ends, your weapon attacks deal an extra 1d4 radiant damage on a hit.</p>",
 		"book": "phb",
 		"page": 234,
 		"domains": "War",
-		"archetype": "Cleric: War"
+		"archetype": ["Cleric: War"]
 	},{
 		"key": "divineword",
 		"name": "Divine Word",
@@ -2059,14 +2059,14 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "wisdom",
-		"classes": ["Cleric", "Druid", "Sorcerer", "Warlock"],
+		"classes": ["Druid", "Sorcerer"],
 		"desc": "<p>You attempt to beguile a creature that you can see within range. It must succeed on a wisdom saving throw or be charmed by you for the duration. If you or creatures that are friendly to you are fighting it, it has advantage on the saving throw.</p><p>While the creature is charmed, you have a telepathic link with it as long as the two of you are on the same plane of existence. You can use this telepathic link to issue commands to the creature while you are conscious (no action required), which it does its best to obey. You can specify a simple and general course of action, such as “Attack that creature,“ “Run over there,” or “Fetch that object.” If the creature completes the order and doesn’t receive further direction from you, it defends and preserves itself to the best of its ability.</p><p>You can use your action to take total and precise control of the target. Until the end of your next turn, the creature takes only the actions you choose, and doesn’t do anything that you don’t allow it to do. During this time, you can also cause the creature to use a reaction, but this requires you to use your own reaction as well. Each time the target takes damage, it makes a new wisdom saving throw against the spell. If the saving throw succeeds, the spell ends.</p>",
 		"higher_level": "<p>When you cast this spell with a 9th level spell slot, the duration is concentration, up to 8 hours.</p>",
 		"book": "phb",
 		"page": 234,
 		"domains": "Nature",
 		"patrons": "Archfey, Great Old One",
-		"archetype": "Cleric: Nature<br/> Warlock: Archfey, Great Old One"
+		"archetype": ["Cleric: Nature", "Warlock: Archfey", "Warlock: Great Old One"]
 	},{
 		"key": "dominatemonster",
 		"name": "Dominate Monster",
@@ -2094,14 +2094,14 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "wisdom",
-		"classes": ["Bard", "Cleric", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Wizard"],
 		"desc": "<p>You attempt to beguile a humanoid that you can see within range. It must succeed on a wisdom saving throw or be charmed by you for the duration. If you or creatures that are friendly to you are fighting it, it has advantage on the saving throw.</p><p>While the target is charmed, you have a telepathic link with it as long as the two of you are on the same plane of existence. You can use this telepathic link to issue commands to the creature while you are conscious (no action required), which it does its best to obey. You can specify a simple and general course of action, such as “Attack that creature,” “Run over there,” or “Fetch that object.” If the creature completes the order and doesn’t receive further direction from you, it defends and preserves itself to the best of its ability.</p><p>You can use your action to take total and precise control of the target. Until the end of your next turn, the creature takes only the actions you choose, and doesn’t do anything that you don’t allow it to do. During this time you can also cause the creature to use a reaction, but this requires you to use your own reaction as well.</p><p>Each time the target takes damage, it makes a new wisdom saving throw against the spell. If the saving throw succeeds, the spell ends.</p>",
 		"higher_level": "<p>When you cast this spell using a 6th-level spell slot, the duration is concentration, up to 10 minutes. When you use a 7th-level spell slot, the duration is concentration, up to 1 hour. When you use a spell slot of 8th level or higher, the duration is concentration, up to 8 hours.</p>",
 		"book": "phb",
 		"page": 235,
 		"domains": "Trickery",
 		"patrons": "Archfey, Great Old One",
-		"archetype": "Cleric: Trickery<br/> Warlock: Archfey, Great Old One"
+		"archetype": ["Cleric: Trickery", "Warlock: Archfey", "Warlock: Great Old One"]
 	},{
 		"key": "breath",
 		"name": "Dragon’s Breath",
@@ -2150,12 +2150,12 @@ var spells = [
 		"save": "wisdom",
 		"damage": "3d6",
 		"damage_type": "psychic",
-		"classes": ["Bard", "Druid", "Warlock", "Wizard"],
+		"classes": ["Bard", "Warlock", "Wizard"],
 		"desc": "<p>This spell shapes a creature’s dreams. Choose a creature known to you as the target of this spell. The target must be on the same plane of existence as you. Creatures that don’t sleep, such as elves, can’t be contacted by this spell. You, or a willing creature you touch, enters a trance state, acting as a messenger.</p><p>While in the trance, the messenger is aware of his or her surroundings, but can’t take actions or move.</p><p>If the target is asleep, the messenger appears in the target’s dreams and can converse with the target as long as it remains asleep, through the duration of the spell. The messenger can also shape the environment of the dream, creating landscapes, objects, and other images. The messenger can emerge from the trance at any time, ending the effect of the spell early. The target recalls the dream perfectly upon waking. If the target is awake when you cast the spell, the messenger knows it, and can either end the trance (and the spell) or wait for the target to fall asleep, at which point the messenger appears in the target’s dreams.</p><p>You can make the messenger appear monstrous and terrifying to the target. If you do, the messenger can deliver a message of no more than ten words and then the target must make a wisdom saving throw. On a failed save, echoes of the phantasmal monstrosity spawn a nightmare that lasts the duration of the target’s sleep and prevents the target from gaining any benefit from that rest. In addition, when the target wakes up, it takes 3d6 psychic damage.</p><p>If you have a body part, lock of hair, clipping from a nail, or similar portion of the target’s body, the target makes its saving throw with disadvantage.</p>",
 		"book": "phb",
 		"page": 236,
 		"circles": "Grassland",
-		"archetype": "Druid: Grassland"
+		"archetype": ["Druid: Grassland"]
 	},{
 		"key": "druidgrove",
 		"name": "Druid Grove",
@@ -2387,13 +2387,13 @@ var spells = [
 		"attack": true,
 		"damage": "1d6",
 		"damage_type": "piercing",
-		"classes": ["Paladin", "Ranger"],
+		"classes": ["Ranger"],
 		"desc": "<p>The next time you hit a creature with a weapon attack before this spell ends, a writhing mass of thorny vines appears at the point of impact, and the target must succeed on a strength saving throw or be restrained by the magical vines until the spell ends. A Large or larger creature has advantage on this saving throw. If the target succeeds on the save, the vines shrivel away.</p><p>While restrained by this spell, the target takes 1d6 piercing damage at the start of each of its turns. A creature restrained by the vines or one that can touch a creature can use its action to make a Strength check against your spell save DC. On a success, the target is freed.</p>",
 		"higher_level": "<p>If you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d6 for each slot level above 1st.</p>",
 		"book": "phb",
 		"page": 237,
 		"oaths": "Ancients",
-		"archetype": "Paladin: Ancients"
+		"archetype": ["Paladin: Ancients"]
 	},{
 		"key": "entangle",
 		"name": "Entangle",
@@ -2469,12 +2469,12 @@ var spells = [
 		"save": "dexterity",
 		"damage": "3d6",
 		"damage_type": "bludgeoning",
-		"classes": ["Warlock", "Wizard"],
+		"classes": ["Wizard"],
 		"desc": "<p>Squirming, ebony tentacles fill a 20-foot square on ground that you can see within range. For the duration, these tentacles turn the ground in the area into difficult terrain.</p><p>When a creature enters the affected area for the first time on a turn or starts its turn there, the creature must succeed on a Dexterity saving throw or take 3d6 bludgeoning damage and be restrained by the tentacles until the spell ends. A creature that starts its turn in the area and is already restrained by the tentacles takes 3d6 bludgeoning damage.</p><p>A creature restrained by the tentacles can use its action to make a Strength or Dexterity check (its choice) against your spell save DC. On a success, it frees itself.</p>",
 		"book": "phb",
 		"page": 238,
 		"patrons": "Great Old One",
-		"archetype": "Warlock: Great Old One"
+		"archetype": ["Warlock: Great Old One"]
 	},{
 		"key": "expeditiousretreat",
 		"name": "Expeditious Retreat",
@@ -2529,13 +2529,13 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "dexterity",
-		"classes": ["Bard", "Cleric", "Druid", "Warlock"],
+		"classes": ["Bard", "Druid"],
 		"desc": "<p>Each object in a 20-foot cube within range is outlined in blue, green, or violet light (your choice). Any creature in the area when the spell is cast is also outlined in light if it fails a dexterity saving throw. For the duration, objects and affected creatures shed dim light in a 10-foot radius.</p><p>Any attack roll against an affected creature or object has advantage if the attacker can see it, and the affected creature or object can’t benefit from being invisible.</p>",
 		"book": "phb",
 		"page": 239,
 		"domains": "Light",
 		"patrons": "Archfey",
-		"archetype": "Cleric: Light<br/> Warlock: Archfey"
+		"archetype": ["Cleric: Light", "Warlock: Archfey"]
 	},{
 		"key": "falselife",
 		"name": "False Life",
@@ -2747,12 +2747,12 @@ var spells = [
 		"defense": true,
 		"damage": "2d8",
 		"damage_type": "*",
-		"classes": ["Warlock", "Wizard"],
+		"classes": ["Wizard"],
 		"desc": "<p>Thin and wispy flames wreathe your body for the duration, shedding bright light in a 10-foot radius and dim light for an additional 10 feet, You can end the spell early by using an action to dismiss it.</p><p>The flames provide you with a warm shield or a chill shield, as you choose. The warm shield grants you resistance to cold damage, and the chill shield grants you resistance to fire damage.</p><p>In addition, whenever a creature within 5 feet of you hits you with a melee attack, the shield erupts with flame. The attacker takes 2d8 fire damage from a warm shield, or 2d8 cold damage from a cold shield.</p>",
 		"book": "phb",
 		"page": 242,
 		"patrons": "Fiend",
-		"archetype": "Warlock: Fiend"
+		"archetype": ["Warlock: Fiend"]
 	},{
 		"key": "firestorm",
 		"name": "Fire Storm",
@@ -2782,14 +2782,14 @@ var spells = [
 		"save": "dexterity",
 		"damage": "8d6",
 		"damage_type": "fire",
-		"classes": ["Cleric", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame. Each creature in a 20-foot-radius sphere centered on that point must make a dexterity saving throw. A target takes 8d6 fire damage on a failed save, or half as much damage on a successful one.</p><p>The fire spreads around corners. It ignites flammable objects in the area that aren’t being worn or carried.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd.</p>",
 		"book": "phb",
 		"page": 241,
 		"domains": "Light",
 		"patrons": "Fiend",
-		"archetype": "Cleric: Light<br/> Warlock: Fiend"
+		"archetype": ["Cleric: Light", "Warlock: Fiend"]
 	},{
 		"key": "flamearrows",
 		"name": "Flame Arrows",
@@ -2840,7 +2840,7 @@ var spells = [
 		"save": "dexterity",
 		"damage": "8d6",
 		"damage_type": "*",
-		"classes": ["Cleric", "Paladin", "Warlock"],
+		"classes": ["Cleric"],
 		"desc": "<p>A vertical column of divine fire roars down from the heavens in a location you specify. Each creature in a 10-foot-radius, 40-foot-high cylinder centered on a point within range must make a dexterity saving throw. A creature takes 4d6 fire damage and 4d6 radiant damage on a failed save, or half as much damage on a successful one.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 6th level or higher, the fire damage or the radiant damage (your choice) increases by 1d6 for each slot level above 5th.</p>",
 		"book": "phb",
@@ -2848,7 +2848,7 @@ var spells = [
 		"oaths": "Devotion",
 		"domains": "Light, War",
 		"patrons": "Fiend",
-		"archetype": "Paladin: Devotion<br/> Warlock: Fiend"
+		"archetype": ["Paladin: Devotion", "Warlock: Fiend"]
 	},{
 		"key": "flamingsphere",
 		"name": "Flaming Sphere",
@@ -2863,13 +2863,13 @@ var spells = [
 		"save": "dexterity",
 		"damage": "2d6",
 		"damage_type": "fire",
-		"classes": ["Cleric", "Druid", "Wizard"],
+		"classes": ["Druid", "Wizard"],
 		"desc": "<p>A 5-foot-diameter sphere of fire appears in an unoccupied space of your choice within range and lasts for the duration. Any creature that ends its turn within 5 feet of the sphere must make a dexterity saving throw. The creature takes 2d6 fire damage on a failed save, or half as much damage on a successful one.</p><p>As a bonus action, you can move the sphere up to 30 feet. If you ram the sphere into a creature, that creature must make the saving throw against the sphere’s damage, and the sphere stops moving this turn.</p><p>When you move the sphere, you can direct it over barriers up to 5 feet tall and jump it across pits up to 10 feet wide. The sphere ignites flammable objects not being worn or carried, and it sheds bright light in a 20-foot radius and dim light for an additional 20 feet.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 3rd level or higher, the damage increases by 1d6 for each slot level above 2nd.</p>",
 		"book": "phb",
 		"page": 242,
 		"domains": "Light",
-		"archetype": "Cleric: Light"
+		"archetype": ["Cleric: Light"]
 	},{
 		"key": "fleshtostone",
 		"name": "Flesh to Stone",
@@ -2913,13 +2913,13 @@ var spells = [
 		"components": ["V", "S"],
 		"duration": "Up to 1 hour",
 		"concentration": true,
-		"classes": ["Cleric", "Druid", "Ranger", "Sorcerer", "Wizard"],
+		"classes": ["Druid", "Ranger", "Sorcerer", "Wizard"],
 		"desc": "<p>You create a 20-foot-radius sphere of fog centered on a point within range. The sphere spreads around corners, and its area is heavily obscured. It lasts for the duration or until a wind of moderate or greater speed (at least 10 miles per hour) disperses it.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 2nd level or higher, the radius of the fog increases by 20 feet for each slot level above 1st.</p>",
 		"book": "phb",
 		"page": 243,
 		"domains": "Tempest",
-		"archetype": "Cleric: Tempest"
+		"archetype": ["Cleric: Tempest"]
 	},{
 		"key": "forbiddance",
 		"name": "Forbiddance",
@@ -2978,14 +2978,14 @@ var spells = [
 		"material": "A leather strap, bound around the arm or a similar appendage.",
 		"duration": "1 hour",
 		"defense": true,
-		"classes": ["Bard", "Cleric", "Druid", "Paladin", "Ranger"],
+		"classes": ["Bard", "Cleric", "Druid", "Ranger"],
 		"desc": "<p>You touch a willing creature. For the duration, the target’s movement is unaffected by difficult terrain, and spells and other magical effects can neither reduce the target’s speed nor cause the target to be paralyzed or restrained.</p><p>The target can also spend 5 feet of movement to automatically escape from nonmagical restraints, such as manacles or a creature that has it grappled. Finally, being underwater imposes no penalties on the target’s movement or attacks.</p>",
 		"book": "phb",
 		"page": 244,
 		"circles": "Arctic, Coast, Forest, Grassland, Swamp",
 		"oaths": "Devotion",
 		"domains": "War",
-		"archetype": "Paladin: Devotion"
+		"archetype": ["Paladin: Devotion"]
 	},{
 		"key": "friends",
 		"name": "Friends",
@@ -3028,12 +3028,12 @@ var spells = [
 		"material": "A bit of gauze and a wisp of smoke.",
 		"duration": "Up to 1 hour",
 		"concentration": true,
-		"classes": ["Druid", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>You transform a willing creature you touch, along with everything it’s wearing and carrying, into a misty cloud for the duration. The spell ends if the creature drops to 0 hit points. An incorporeal creature isn’t affected.</p><p>While in this form, the target’s only method of movement is a flying speed of 10 feet. The target can enter and occupy the space of another creature. The target has resistance to nonmagical damage, and it has advantage on Strength, Dexterity, and constitution saving throws. The target can pass through small holes, narrow openings, and even mere cracks, though it treats liquids as though they were solid surfaces. The target can’t fall and remains hovering in the air even when stunned or otherwise incapacitated.</p><p>While in the form of a misty cloud, the target can’t talk or manipulate objects, and any objects it was carrying or holding can’t be dropped, used, or otherwise interacted with. The target can’t attack or cast spells.</p>",
 		"book": "phb",
 		"page": 244,
 		"circles": "Underdark",
-		"archetype": "Druid: Underdark"
+		"archetype": ["Druid: Underdark"]
 	},{
 		"key": "gate",
 		"name": "Gate",
@@ -3166,12 +3166,12 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "dexterity",
-		"classes": ["Cleric", "Druid", "Ranger"],
+		"classes": ["Druid", "Ranger"],
 		"desc": "<p>You conjure a vine that sprouts from the ground in an unoccupied space of your choice that you can see within range. When you cast this spell, you can direct the vine to lash out at a creature within 30 feet of it that you can see. That creature must succeed on a dexterity saving throw or be pulled 20 feet directly toward the vine.</p><p>Until the spell ends, you can direct the vine to lash out at the same creature or another one as a bonus action on each of your turns.</p>",
 		"book": "phb",
 		"page": 246,
 		"domains": "Nature",
-		"archetype": "Cleric: Nature"
+		"archetype": ["Cleric: Nature"]
 	},{
 		"key": "grease",
 		"name": "Grease",
@@ -3197,13 +3197,13 @@ var spells = [
 		"components": ["V", "S"],
 		"duration": "Up to 1 minute",
 		"concentration": true,
-		"classes": ["Bard", "Druid", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Wizard"],
 		"desc": "<p>You or a creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target’s person.</p>",
 		"book": "phb",
 		"page": 246,
 		"circles": "Underdark",
 		"patrons": "Archfey",
-		"archetype": "Druid: Underdark<br/> Warlock: Archfey"
+		"archetype": ["Druid: Underdark", "Warlock: Archfey"]
 	},{
 		"key": "greaterrestoration",
 		"name": "Greater Restoration",
@@ -3247,13 +3247,13 @@ var spells = [
 		"save": "dexterity",
 		"damage": "20",
 		"damage_type": "radiant",
-		"classes": ["Cleric", "Paladin"],
+		"classes": ["Cleric"],
 		"desc": "<p>A Large spectral guardian appears and hovers for the duration in an unoccupied space of your choice that you can see within range. The guardian occupies that space and is indistinct except for a gleaming sword and shield emblazoned with the symbol of your deity.</p><p>Any creature hostile to you that moves to a space within 10 feet of the guardian for the first time on a turn must succeed on a dexterity saving throw. The creature takes 20 radiant damage on a failed save, or half as much damage on a successful one. The guardian vanishes when it has dealt a total of 60 damage.</p>",
 		"book": "phb",
 		"page": 246,
 		"oaths": "Devotion",
 		"domains": "Life, Light",
-		"archetype": "Paladin: Devotion"
+		"archetype": ["Paladin: Devotion"]
 	},{
 		"key": "guardianofnature",
 		"name": "Guardian of Nature",
@@ -3343,12 +3343,12 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "strength",
-		"classes": ["Cleric", "Druid", "Sorcerer", "Wizard"],
+		"classes": ["Druid", "Sorcerer", "Wizard"],
 		"desc": "<p>A line of strong wind 60 feet long and 10 feet wide blasts from you in a direction you choose for the spell’s duration. Each creature that starts its turn in the line must succeed on a strength saving throw or be pushed 15 feet away from you in a direction following the line.</p><p>Any creature in the line must spend 2 feet of movement for every 1 foot it moves when moving closer to you.</p><p>The gust disperses gas or vapor, and it extinguishes candles, torches, and similar unprotected flames in the area. It causes protected flames, such as those of lanterns, to dance wildly and has a 50 percent chance to extinguish them.</p><p>As a bonus action on each of your turns before the spell ends, you can change the direction in which the line blasts from you.</p>",
 		"book": "phb",
 		"page": 248,
 		"domains": "Tempest",
-		"archetype": "Cleric: Tempest"
+		"archetype": ["Cleric: Tempest"]
 	},{
 		"key": "hailofthorns",
 		"name": "Hail of Thorns",
@@ -3380,12 +3380,12 @@ var spells = [
 		"duration": "Until dispelled",
 		"save": "charisma",
 		"permanent": "dispel",
-		"classes": ["Cleric", "Warlock"],
+		"classes": ["Cleric"],
 		"desc": "<p>You touch a point and infuse an area around it with holy (or unholy) power. The area can have a radius up to 60 feet, and the spell fails if the radius includes an area already under the effect a hallow spell. The affected area is subject to the following effects.</p><p>First, celestials, elementals, fey, fiends, and undead can’t enter the area, nor can such creatures charm, frighten, or possess creatures within it. Any creature charmed, frightened, or possessed by such a creature is no longer charmed, frightened, or possessed upon entering the area. You can exclude one or more of those types of creatures from this effect.</p><p>Second, you can bind an extra effect to the area. Choose the effect from the following list, or choose an effect offered by the DM. Some of these effects apply to creatures in the area; you can designate whether the effect applies to all creatures, creatures that follow a specific deity or leader, or creatures of a specific sort, such as ores or trolls. When a creature that would be affected enters the spell’s area for the first time on a turn or starts its turn there, it can make a charisma saving throw. On a success, the creature ignores the extra effect until it leaves the area.</p><p><b>Courage.</b> Affected creatures can’t be frightened while in the area.</p><p><b>Darkness.</b> Darkness fills the area. Normal light, as well as magical light created by spells of a lower level than the slot you used to cast this spell, can’t illuminate the area.</p><p><b>Daylight.</b> Bright light fills the area. Magical darkness created by spells of a lower level than the slot you used to cast this spell can’t extinguish the light.</p><p><b>Energy Protection.</b> Affected creatures in the area have resistance to one damage type of your choice, except for bludgeoning, piercing, or slashing.</p><p><b>Energy Vulnerability.</b> Affected creatures in the area have vulnerability to one damage type of your choice, except for bludgeoning, piercing, or slashing.</p><p><b>Everlasting Rest.</b> Dead bodies interred in the area can’t be turned into undead.</p><p><b>Extradimensional Interference.</b> Affected creatures can’t move or travel using teleportation or by extradimensional or interplanar means.</p><p><b>Fear.</b> Affected creatures are frightened while in the area.</p><p><b>Silence.</b> No sound can emanate from within the area, and no sound can reach into it.</p><p><b>Tongues.</b> Affected creatures can communicate with any other creature in the area, even if they don’t share a common language.</p>",
 		"book": "phb",
 		"page": 249,
 		"patrons": "Fiend",
-		"archetype": "Warlock: Fiend"
+		"archetype": ["Warlock: Fiend"]
 	},{
 		"key": "hallucinatoryterrain",
 		"name": "Hallucinatory Terrain",
@@ -3429,13 +3429,13 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"defense": true,
-		"classes": ["Druid", "Paladin", "Sorcerer", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>Choose a willing creature that you can see within range. Until the spell ends, the target’s speed is doubled, it gains a +2 bonus to AC, it has advantage on dexterity saving throws, and it gains an additional action on each of its turns. That action can be used only to take the Attack (one weapon attack only), Dash, Disengage, Hide, or Use an Object action.</p><p>When the spell ends, the target can’t move or take actions until after its next turn, as a wave of lethargy sweeps over it.</p>",
 		"book": "phb",
 		"page": 250,
 		"circles": "Grassland",
 		"oaths": "Vengeance",
-		"archetype": "Druid: Grassland<br/> Paladin: Vengeance"
+		"archetype": ["Druid: Grassland", "Paladin: Vengeance"]
 	},{
 		"key": "heal",
 		"name": "Heal",
@@ -3576,14 +3576,14 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "wisdom",
-		"classes": ["Bard", "Cleric", "Paladin", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>Choose a creature you can see and reach. The target must make a saving throw of Wisdom or be paralyzed for the duration of the spell. This spell has no effect against the undead. At the end of each round, the target can make a new saving throw of Wisdom. If successful, the spell ends for the creature.</p>",
 		"higher_level": "<p>When you cast this spell using a level 6 or higher location, you can target an additional creature for each level of location beyond the fifth. The creatures must be within 30 feet o f each other when you target them.</p>",
 		"book": "phb",
 		"page": 251,
 		"oaths": "Vengeance",
 		"domains": "War",
-		"archetype": "Cleric: War<br/> Paladin: Vengeance"
+		"archetype": ["Cleric: War", "Paladin: Vengeance"]
 	},{
 		"key": "holdperson",
 		"name": "Hold Person",
@@ -3596,14 +3596,14 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "wisdom",
-		"classes": ["Bard", "Cleric", "Druid", "Paladin", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Cleric", "Druid", "Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>Choose a humanoid that you can see within range. The target must succeed on a wisdom saving throw or be paralyzed for the duration. At the end of each of its turns, the target can make another wisdom saving throw. On a success, the spell ends on the target.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 3rd level or higher, you can target one additional humanoid for each slot level above 2nd. The humanoids must be within 30 feet of each other when you target them.</p>",
 		"book": "phb",
 		"page": 251,
 		"circles": "Arctic",
 		"oaths": "Vengeance",
-		"archetype": "Paladin: Vengeance"
+		"archetype": ["Paladin: Vengeance"]
 	},{
 		"key": "holyaura",
 		"name": "Holy Aura",
@@ -3669,13 +3669,13 @@ var spells = [
 		"attack": true,
 		"damage": "+1d6",
 		"damage_type": "*",
-		"classes": ["Paladin", "Ranger"],
+		"classes": ["Ranger"],
 		"desc": "<p>You choose a creature you can see within range and mystically mark it as your quarry. Until the spell ends, you deal an extra 1d6 damage to the target whenever you hit it with a weapon attack, and you have advantage on any Wisdom (Perception) or Wisdom (Survival) check you make to find it. If the target drops to 0 hit points before this spell ends, you can use a bonus action on a subsequent turn of yours to mark a new creature.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 3rd or 4th level, you can maintain your concentration on the spell for up to 8 hours. When you use a spell slot of 5th level or higher, you can maintain your concentration on the spell for up to 24 hours.</p>",
 		"book": "phb",
 		"page": 251,
 		"oaths": "Vengeance",
-		"archetype": "Paladin: Vengeance"
+		"archetype": ["Paladin: Vengeance"]
 	},{
 		"key": "hypnoticpattern",
 		"name": "Hypnotic Pattern",
@@ -3724,7 +3724,7 @@ var spells = [
 		"save": "dexterity",
 		"damage": "2d8+4d6",
 		"damage_type": "*",
-		"classes": ["Cleric", "Druid", "Paladin", "Sorcerer", "Wizard"],
+		"classes": ["Druid", "Sorcerer", "Wizard"],
 		"desc": "<p>A hail of rock-hard ice pounds to the ground in a 20-foot-radius, 40-foot-high cylinder centered on a point within range. Each creature in the cylinder must make a dexterity saving throw. A creature takes 2d8 bludgeoning damage and 4d6 cold damage on a failed save, or half as much damage on a successful one.</p><p>Hailstones turn the storm’s area of effect into difficult terrain until the end of your next turn.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 5th level or higher, the bludgeoning damage increases by 1d8 for each slot level above 4th.</p>",
 		"book": "phb",
@@ -3732,7 +3732,7 @@ var spells = [
 		"circles": "Arctic",
 		"oaths": "Ancients",
 		"domains": "Tempest",
-		"archetype": "Cleric: Tempest<br/> Paladin: Ancients"
+		"archetype": ["Cleric: Tempest", "Paladin: Ancients"]
 	},{
 		"key": "identify",
 		"name": "Identify",
@@ -3744,12 +3744,12 @@ var spells = [
 		"material": "A pearl worth at least 100gp and an owl feather.",
 		"duration": "Instantaneous",
 		"ritual": true,
-		"classes": ["Bard", "Cleric", "Ritualist", "Wizard"],
+		"classes": ["Bard", "Ritualist", "Wizard"],
 		"desc": "<p>You choose one object that you must touch throughout the casting of the spell. If it is a magic item or some other magic-imbued object, you learn its properties and how to use them, whether it requires attunement to use, and how many charges it has, if any. You learn whether any spells are affecting the item and what they are. If the item was created by a spell, you learn which spell created it.</p><p>If you instead touch a creature throughout the casting, you learn what spells, if any, are currently affecting it.</p>",
 		"book": "phb",
 		"page": 252,
 		"domains": "Knowledge",
-		"archetype": "Cleric: Knowledge"
+		"archetype": ["Cleric: Knowledge"]
 	},{
 		"key": "illusorydragon",
 		"name": "Illusory Dragon",
@@ -3984,13 +3984,13 @@ var spells = [
 		"material": "An eyelash encased in gum arabic.",
 		"duration": "Up to 1 hour",
 		"concentration": true,
-		"classes": ["Bard", "Druid", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>A creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target’s person. The spell ends for a target that attacks or casts a spell.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 3rd level or higher, you can target one additional creature for each slot level above 2nd.</p>",
 		"book": "phb",
 		"page": 254,
 		"circles": "Grassland",
-		"archetype": "Druid: Grassland"
+		"archetype": ["Druid: Grassland"]
 	},{
 		"key": "invulnerability",
 		"name": "Invulnerability",
@@ -4171,13 +4171,13 @@ var spells = [
 		"save": "dexterity",
 		"damage": "8d6",
 		"damage_type": "lightning",
-		"classes": ["Druid", "Sorcerer", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>A stroke of lightning forming a line 100 feet long and 5 feet wide blasts out from you in a direction you choose. Each creature in the line must make a dexterity saving throw. A creature takes 8d6 lightning damage on a failed save, or half as much damage on a successful one.</p><p>The lightning ignites flammable objects in the area that aren’t being worn or carried.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd.</p>",
 		"book": "phb",
 		"page": 255,
 		"circles": "Mountain",
-		"archetype": "Druid: Mountain"
+		"archetype": ["Druid: Mountain"]
 	},{
 		"key": "lightninglure",
 		"name": "Lightning Lure",
@@ -4413,13 +4413,13 @@ var spells = [
 		"attack": true,
 		"damage": "+1",
 		"damage_type": "*",
-		"classes": ["Cleric", "Paladin", "Wizard"],
+		"classes": ["Paladin", "Wizard"],
 		"desc": "<p>You touch a nonmagical weapon. Until the spell ends, that weapon becomes a magic weapon with a +1 bonus to attack rolls and damage rolls.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 4th level or higher, the bonus increases to +2. When you use a spell slot of 6th level or higher, the bonus increases to +3.</p>",
 		"book": "phb",
 		"page": 257,
 		"domains": "War",
-		"archetype": "Cleric: War"
+		"archetype": ["Cleric: War"]
 	},{
 		"key": "majorimage",
 		"name": "Major Image",
@@ -4554,12 +4554,12 @@ var spells = [
 		"duration": "8 hours",
 		"ritual": true,
 		"defense": true,
-		"classes": ["Cleric", "Druid", "Ritualist"],
+		"classes": ["Cleric", "Ritualist"],
 		"desc": "<p>You step into a stone object or surface large enough to fully contain your body, melding yourself and all the equipment you carry with the stone for the duration. Using your movement, you step into the stone at a point you can touch. Nothing of your presence remains visible or otherwise detectable by nonmagical senses.</p><p>While merged with the stone, you can’t see what occurs outside it, and any Wisdom (Perception) checks you make to hear sounds outside it are made with disadvantage. You remain aware of the passage of time and can cast spells on yourself while merged in the stone. You can use your movement to leave the stone where you entered it, which ends the spell. You otherwise can’t move.</p><p>Minor physical damage to the stone doesn’t harm you, but its partial destruction or a change in its shape (to the extent that you no longer fit within it) expels you and deals 6d6 bludgeoning damage to you. The stone’s complete destruction (or transmutation into a different substance) expels you and deals 50 bludgeoning damage to you. If expelled, you fall prone in an unoccupied space closest to where you first entered.</p>",
 		"book": "phb",
 		"page": 259,
 		"circles": "Mountain",
-		"archetype": "Druid: Mountain"
+		"archetype": ["Druid: Mountain"]
 	},{
 		"key": "acidarrow",
 		"name": "Melf’s Acid Arrow",
@@ -4573,13 +4573,13 @@ var spells = [
 		"attack": true,
 		"damage": "6d4",
 		"damage_type": "acid",
-		"classes": ["Druid", "Wizard"],
+		"classes": ["Wizard"],
 		"desc": "<p>A shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell attack against the target. On a hit, the target takes 4d4 acid damage immediately and 2d4 acid damage at the end of its next turn. On a miss, the arrow splashes the target with acid for half as much of the initial damage and no damage at the end of its next turn.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 3rd level or higher, the damage (both initial and later) increases by 1d4 for each slot level above 2nd.</p>",
 		"book": "phb",
 		"page": 259,
 		"circles": "Swamp",
-		"archetype": "Druid: Swamp"
+		"archetype": ["Druid: Swamp"]
 	},{
 		"key": "minutemeteors",
 		"name": "Melf’s Minute Meteors",
@@ -4745,13 +4745,13 @@ var spells = [
 		"components": ["V", "S"],
 		"duration": "1 minute",
 		"defense": true,
-		"classes": ["Cleric", "Druid", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it’s impossible to track which image is real. You can use your action to dismiss the illusory duplicates.</p><p>Each time a creature targets you with an attack during the spell’s duration, roll a d20 to determine whether the attack instead targets one of your duplicates.</p><p>If you have three duplicates, you must roll a 6 or higher to change the attack’s target to a duplicate. With two duplicates, you must roll an 8 or higher. With one duplicate, you must roll an 11 or higher.</p><p>A duplicate’s AC equals 10 + your Dexterity modifier. If an attack hits a duplicate, the duplicate is destroyed. A duplicate can be destroyed only by an attack that hits it. It ignores all other damage and effects. The spell ends when all three duplicates are destroyed.</p><p>A creature is unaffected by this spell if it can’t see, if it relies on senses other than sight, such as blindsight, or if it can perceive illusions as false, as with truesight.</p>",
 		"book": "phb",
 		"page": 260,
 		"circles": "Coast",
 		"domains": "Trickery",
-		"archetype": "Cleric: Trickery<br/> Druid: Coast"
+		"archetype": ["Cleric: Trickery", "Druid: Coast"]
 	},{
 		"key": "mislead",
 		"name": "Mislead",
@@ -4776,13 +4776,13 @@ var spells = [
 		"range": "Self",
 		"components": ["V"],
 		"duration": "Instantaneous",
-		"classes": ["Druid", "Paladin", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see.</p>",
 		"book": "phb",
 		"page": 260,
 		"circles": "Coast",
 		"oaths": "Ancients, Vengeance",
-		"archetype": "Druid: Coast<br/> Paladin: Ancients, Vengeance"
+		"archetype": ["Druid: Coast", "Paladin: Ancients", "Paladin: Vengeance"]
 	},{
 		"key": "modifymemory",
 		"name": "Modify Memory",
@@ -4795,13 +4795,13 @@ var spells = [
 		"concentration": true,
 		"save": "wisdom",
 		"permanent": "dispel",
-		"classes": ["Bard", "Cleric", "Wizard"],
+		"classes": ["Bard", "Wizard"],
 		"desc": "<p>You attempt to reshape another creature’s memories. One creature that you can see must make a wisdom saving throw. If you are fighting the creature, it has advantage on the saving throw. On a failed save, the target becomes charmed by you for the duration. The charmed target is incapacitated and unaware of its surroundings, though it can still hear you. If it takes any damage or is targeted by another spell, this spell ends, and none of the target’s memories are modified.</p><p>While this charm lasts, you can affect the target’s memory of an event that it experienced within the last 24 hours and that lasted no more than 10 minutes. You can permanently eliminate all memory of the event, allow the target to recall the event with perfect clarity and exacting detail, change its memory of the details of the event, or create a memory of some other event.</p><p>You must speak to the target to describe how its memories are affected, and it must be able to understand your language for the modified memories to take root. Its mind fills in any gaps in the details of your description. If the spell ends before you have finished describing the modified memories, the creature’s memory isn’t altered. Otherwise, the modified memories take hold when the spell ends.</p><p>A modified memory doesn’t necessarily affect how a creature behaves, particularly if the memory contradicts the creature’s natural inclinations, alignment, or beliefs. An illogical modified memory, such as implanting a memory of how much the creature enjoyed dousing itself in acid, is dismissed, perhaps as a bad dream. The DM might deem a modified memory too nonsensical to affect a creature in a significant manner.</p><p>A remove curse or greater restoration spell cast on the target restores the creature’s true memory.</p>",
 		"higher_level": "<p>If you cast this spell using a spell slot of 6th level or higher, you can alter the target’s memories of an event that took place up to 7 days ago (6th level), 30 days ago (7th level), 1 year ago (8th level), or any time in the creature’s past (9th level).</p>",
 		"book": "phb",
 		"page": 261,
 		"domains": "Trickery",
-		"archetype": "Cleric: Trickery"
+		"archetype": ["Cleric: Trickery"]
 	},{
 		"key": "moldearth",
 		"name": "Mold Earth",
@@ -4830,13 +4830,13 @@ var spells = [
 		"save": "constitution",
 		"damage": "2d10",
 		"damage_type": "radiant",
-		"classes": ["Druid", "Paladin"],
+		"classes": ["Druid"],
 		"desc": "<p>A silvery beam of pale light shines down in a 5-foot radius, 40-foot-high cylinder centered on a point within range. Until the spell ends, dim light fills the cylinder.</p><p>When a creature enters the spell’s area for the first time on a turn or starts its turn there, it is engulfed in ghostly flames that cause searing pain, and it must make a constitution saving throw. It takes 2d10 radiant damage on a failed save, or half as much damage on a successful one.</p><p>A shapechanger makes its saving throw with disadvantage. If it fails, it also instantly reverts to its original form and can’t assume a different form until it leaves the spell’s light.</p><p>On each of your turns after you cast this spell, you can use an action to move the beam 60 feet in any direction.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 3rd level or higher, the damage increases by 1d10 for each slot level above 2nd.</p>",
 		"book": "phb",
 		"page": 261,
 		"oaths": "Ancients",
-		"archetype": "Paladin: Ancients"
+		"archetype": ["Paladin: Ancients"]
 	},{
 		"key": "faithfulhound",
 		"name": "Mordenkainen’s Faithful Hound",
@@ -4945,12 +4945,12 @@ var spells = [
 		"material": "A pinch of diamond dust worth 25 gp sprinkled over the target, which the spell consumes.",
 		"duration": "8 hours",
 		"defense": true,
-		"classes": ["Bard", "Cleric", "Ranger", "Wizard"],
+		"classes": ["Bard", "Ranger", "Wizard"],
 		"desc": "<p>For the duration, you hide a target that you touch from divination magic. The target can be a willing creature or a place or an object no larger than 10 feet in any dimension. The target can’t be targeted by any divination magic or perceived through magical scrying sensors.</p>",
 		"book": "phb",
 		"page": 263,
 		"domains": "Knowledge",
-		"archetype": "Cleric: Knowledge"
+		"archetype": ["Cleric: Knowledge"]
 	},{
 		"key": "magicaura",
 		"name": "Nystul’s Magic Aura",
@@ -5026,13 +5026,13 @@ var spells = [
 		"material": "Ashes from a burned leaf of mistletoe and a sprig of spruce.",
 		"duration": "Up to 1 hour",
 		"concentration": true,
-		"classes": ["Cleric", "Druid", "Ranger"],
+		"classes": ["Druid", "Ranger"],
 		"desc": "<p>A veil of shadows and silence radiates from you, masking you and your companions from detection. For the duration, each creature you choose within 30 feet of you (including you) has a +10 bonus to Dexterity (Stealth) checks and can’t be tracked except by magical means. A creature that receives this bonus leaves behind no tracks or other traces of its passage.</p>",
 		"book": "phb",
 		"page": 264,
 		"circles": "Grassland",
 		"domains": "Trickery",
-		"archetype": "Cleric: Trickery"
+		"archetype": ["Cleric: Trickery"]
 	},{
 		"key": "passwall",
 		"name": "Passwall",
@@ -5043,12 +5043,12 @@ var spells = [
 		"components": ["V", "S", "M"],
 		"material": "A pinch of sesame seeds.",
 		"duration": "1 hour",
-		"classes": ["Druid", "Wizard"],
+		"classes": ["Wizard"],
 		"desc": "<p>A passage appears at a point of your choice that you can see on a wooden, plaster, or stone surface (such as a wall, a ceiling, or a floor) within range, and lasts for the duration. You choose the opening’s dimensions: up to 5 feet wide, 8 feet tall, and 20 feet deep. The passage creates no instability in a structure surrounding it.</p><p>When the opening disappears, any creatures or objects still in the passage created by the spell are safely ejected to an unoccupied space nearest to the surface on which you cast the spell.</p>",
 		"book": "phb",
 		"page": 264,
 		"circles": "Mountain",
-		"archetype": "Druid: Mountain"
+		"archetype": ["Druid: Mountain"]
 	},{
 		"key": "permanentimage",
 		"name": "Permanent Image",
@@ -5078,12 +5078,12 @@ var spells = [
 		"save": "intelligence",
 		"damage": "1d6",
 		"damage_type": "psychic",
-		"classes": ["Bard", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Wizard"],
 		"desc": "<p>You craft an illusion that takes root in the mind of a creature that you can see within range. The target must make an intelligence saving throw. On a failed save, you create a phantasmal object, creature, or other visible phenomenon of your choice that is no larger than a 10-foot cube and that is perceivable only to the target for the duration. This spell has no effect on undead or constructs.</p><p>The phantasm includes sound, temperature, and other stimuli, also evident only to the creature.</p><p>The target can use its action to examine the phantasm with an Intelligence (Investigation) check against your spell save DC. If the check succeeds, the target realizes that the phantasm is an illusion, and the spell ends.</p><p>While a target is affected by the spell, the target treats the phantasm as if it were real. The target rationalizes any illogical outcomes from interacting with the phantasm. For example, a target attempting to walk across a phantasmal bridge that spans a chasm falls once it steps onto the bridge. If the target survives the fall, it still believes that the bridge exists and comes up with some other explanation for its fall—it was pushed, it slipped, or a strong wind might have knocked it off.</p><p>An affected target is so convinced of the phantasm’s reality that it can even take damage from the illusion. A phantasm created to appear as a creature can attack the target. Similarly, a phantasm created to appear as fire, a pool of acid, or lava can burn the target. Each round on your turn, the phantasm can deal 1d6 psychic damage to the target if it is in the phantasm’s area or within 5 feet of the phantasm, provided that the illusion is of a creature or hazard that could logically deal damage, such as by attacking. The target perceives the damage as a type appropriate to the illusion.</p>",
 		"book": "phb",
 		"page": 264,
 		"patrons": "Archfey, Great Old One",
-		"archetype": "Warlock: Archfey, Great Old One"
+		"archetype": ["Warlock: Archfey", "Warlock: Great Old One"]
 	},{
 		"key": "phantasmalkiller",
 		"name": "Phantasmal Killer",
@@ -5171,7 +5171,7 @@ var spells = [
 		"components": ["V", "S"],
 		"duration": "Instantaneous",
 		"permanent": true,
-		"classes": ["Bard", "Cleric", "Druid", "Paladin", "Ranger", "Warlock"],
+		"classes": ["Bard", "Druid", "Ranger"],
 		"desc": "<p>This spell channels vitality into plants within a specific area. There are two possible uses for the spell, granting either immediate or long-term benefits.</p><p>If you cast this spell using 1 action, choose a point within range. All normal plants in a 100-foot radius centered on that point become thick and overgrown. A creature moving through the area must spend 4 feet of movement for every 1 foot it moves.</p><p>You can exclude one or more areas of any size within the spell’s area from being affected.</p><p>If you cast this spell over 8 hours, you enrich the land. All plants in a half-mile radius centered on a point within range become enriched for 1 year. The plants yield twice the normal amount of food when harvested.</p>",
 		"book": "phb",
 		"page": 266,
@@ -5179,7 +5179,7 @@ var spells = [
 		"oaths": "Ancients",
 		"domains": "Nature",
 		"patrons": "Archfey",
-		"archetype": "Cleric: Nature<br/> Paladin: Ancients<br/> Warlock: Archfey"
+		"archetype": ["Cleric: Nature", "Paladin: Ancients", "Warlock: Archfey"]
 	},{
 		"key": "poisonspray",
 		"name": "Poison Spray",
@@ -5208,12 +5208,12 @@ var spells = [
 		"duration": "Up to 1 hour",
 		"concentration": true,
 		"save": "wisdom",
-		"classes": ["Bard", "Cleric", "Druid", "Sorcerer", "Wizard"],
+		"classes": ["Bard", "Druid", "Sorcerer", "Wizard"],
 		"desc": "<p>This spell transforms a creature that you can see within range into a new form. An unwilling creature must make a wisdom saving throw to avoid the effect. A shapechanger automatically succeeds on this saving throw.</p><p>The transformation lasts for the duration, or until the target drops to 0 hit points or dies. The new form can be any beast whose challenge rating is equal to or less than the target’s (or the target’s level, if it doesn’t have a challenge rating). The target’s game statistics, including mental ability scores, are replaced by the statistics of the chosen beast. It retains its alignment and personality.</p><p>The target assumes the hit points of its new form. When it reverts to its normal form, the creature returns to the number of hit points it had before it transformed. If it reverts as a result of dropping to 0 hit points, any excess damage carries over to its normal form. As long as the excess damage doesn’t reduce the creature’s normal form to 0 hit points, it isn’t knocked unconscious.</p><p>The creature is limited in the actions it can perform by the nature of its new form, and it can’t speak, cast spells, or take any other action that requires hands or speech.</p><p>The target’s gear melds into the new form. The creature can’t activate, use, wield, or otherwise benefit from any of its equipment.</p>",
 		"book": "phb",
 		"page": 266,
 		"domains": "Trickery",
-		"archetype": "Cleric: Trickery"
+		"archetype": ["Cleric: Trickery"]
 	},{
 		"key": "powerwordheal",
 		"name": "Power Word Heal",
@@ -5414,13 +5414,13 @@ var spells = [
 		"duration": "Up to 1 hour",
 		"concentration": true,
 		"defense": true,
-		"classes": ["Cleric", "Druid", "Paladin", "Ranger", "Sorcerer", "Wizard"],
+		"classes": ["Cleric", "Druid", "Ranger", "Sorcerer", "Wizard"],
 		"desc": "<p>For the duration, the willing creature you touch has resistance to one damage type of your choice: acid, cold, fire, lightning, or thunder.</p>",
 		"book": "phb",
 		"page": 270,
 		"circles": "Desert",
 		"oaths": "Ancients, Vengeance",
-		"archetype": "Paladin: Ancients, Vengeance"
+		"archetype": ["Paladin: Ancients", "Paladin: Vengeance"]
 	},{
 		"key": "protectionfromevilandgood",
 		"name": "Protection from Evil and Good",
@@ -5721,12 +5721,12 @@ var spells = [
 		"duration": "1 minute",
 		"defense": true,
 		"save": "wisdom",
-		"classes": ["Cleric", "Paladin"],
+		"classes": ["Cleric"],
 		"desc": "<p>You ward a creature within range against attack. Until the spell ends, any creature who targets the warded creature with an attack or a harmful spell must first make a wisdom saving throw. On a failed save, the creature must choose a new target or lose the attack or spell. This spell doesn’t protect the warded creature from area effects, such as the explosion of a fireball.</p><p>If the warded creature makes an attack or casts a spell that affects an enemy creature, this spell ends.</p>",
 		"book": "phb",
 		"page": 272,
 		"oaths": "Devotion",
-		"archetype": "Paladin: Devotion"
+		"archetype": ["Paladin: Devotion"]
 	},{
 		"key": "scatter",
 		"name": "Scatter",
@@ -5753,14 +5753,14 @@ var spells = [
 		"attack": true,
 		"damage": "2d6",
 		"damage_type": "fire",
-		"classes": ["Cleric", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>You create three rays of fire and hurl them at targets within range. You can hurl them at one target or several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 fire damage.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 3rd level or higher, you create one additional ray for each slot level above 2nd.</p>",
 		"book": "phb",
 		"page": 273,
 		"domains": "Light",
 		"patrons": "Fiend",
-		"archetype": "Cleric: Light<br/> Warlock: Fiend"
+		"archetype": ["Cleric: Light", "Warlock: Fiend"]
 	},{
 		"key": "scrying",
 		"name": "Scrying",
@@ -5773,14 +5773,14 @@ var spells = [
 		"duration": "Up to 10 minutes",
 		"concentration": true,
 		"save": "wisdom",
-		"classes": ["Bard", "Cleric", "Druid", "Paladin", "Warlock", "Wizard"],
+		"classes": ["Bard", "Cleric", "Druid", "Warlock", "Wizard"],
 		"desc": "<p>You can see and hear a particular creature you choose that is on the same plane of existence as you. The target must make a wisdom saving throw, which is modified by how well you know the target and the sort of physical connection you have to it. If a target knows you’re casting this spell, it can fail the saving throw voluntarily if it wants to be observed.</p><p><b>Knowledge &amp; Save Modifier</b></p><p>Secondhand (you have heard of the target) +5</p><p>Firsthand (you have met the target) +0</p><p>Familiar (you know the target well) -5</p><p><b>Connection &amp; Save Modifier</b></p><p>Likeness or picture -2</p><p>Possession or garment -4</p><p>Body part, lock of hair, bit of nail, or the like -10</p><p>On a successful save, the target isn’t affected, and you can’t use this spell against it again for 24 hours.</p><p>On a failed save, the spell creates an invisible sensor within 10 feet of the target. You can see and hear through the sensor as if you were there. The sensor moves with the target, remaining within 10 feet of it for the duration. A creature that can see invisible objects sees the sensor as a luminous orb about the size of your fist.</p><p>Instead of targeting a creature, you can choose a location you have seen before as the target of this spell. When you do, the sensor appears at that location and doesn’t move.</p>",
 		"book": "phb",
 		"page": 273,
 		"circles": "Coast, Swamp",
 		"oaths": "Vengeance",
 		"domains": "Knowledge, Light",
-		"archetype": "Paladin: Vengeance"
+		"archetype": ["Paladin: Vengeance"]
 	},{
 		"key": "searingsmite",
 		"name": "Searing Smite",
@@ -5824,12 +5824,12 @@ var spells = [
 		"components": ["V", "S"],
 		"duration": "8 hours",
 		"save": "charisma",
-		"classes": ["Bard", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Wizard"],
 		"desc": "<p>This spell allows you to change the appearance of any number of creatures that you can see within range. You give each target you choose a new, illusory appearance. An unwilling target can make a charisma saving throw, and if it succeeds, it is unaffected by this spell.</p><p>The spell disguises physical appearance as well as clothing, armor, weapons, and equipment. You can make each creature seem 1 foot shorter or taller and appear thin, fat, or in between. You can’t change a target’s body type, so you must choose a form that has the same basic arrangement of limbs. Otherwise, the extent of the illusion is up to you. The spell lasts for the duration, unless you use your action to dismiss it sooner.</p><p>The changes wrought by this spell fail to hold up to physical inspection. For example, if you use this spell to add a hat to a creature’s outfit, objects pass through the hat, and anyone who touches it would feel nothing or would feel the creature’s head and hair. If you use this spell to appear thinner than you are, the hand of someone who reaches out to touch you would bump into you while it was seemingly still in midair.</p><p>A creature can use its action to inspect a target and make an Intelligence (Investigation) check against your spell save DC. If it succeeds, it becomes aware that the target is disguised.</p>",
 		"book": "phb",
 		"page": 274,
 		"patrons": "Archfey",
-		"archetype": "Warlock: Archfey"
+		"archetype": ["Warlock: Archfey"]
 	},{
 		"key": "sending",
 		"name": "Sending",
@@ -5840,12 +5840,12 @@ var spells = [
 		"components": ["V", "S", "M"],
 		"material": "A short piece of fine copper wire.",
 		"duration": "1 round",
-		"classes": ["Bard", "Cleric", "Warlock", "Wizard"],
+		"classes": ["Bard", "Cleric", "Wizard"],
 		"desc": "<p>You send a short message of twenty-five words or less to a creature with which you are familiar. The creature hears the message in its mind, recognizes you as the sender if it knows you, and can answer in a like manner immediately. The spell enables creatures with Intelligence scores of at least 1 to understand the meaning of your message.</p><p>You can send the message across any distance and even to other planes of existence, but if the target is on a different plane than you, there is a 5 percent chance that the message doesn’t arrive.</p>",
 		"book": "phb",
 		"page": 274,
 		"patrons": "Great Old One",
-		"archetype": "Warlock: Great Old One"
+		"archetype": ["Warlock: Great Old One"]
 	},{
 		"key": "sequester",
 		"name": "Sequester",
@@ -5938,13 +5938,13 @@ var spells = [
 		"save": "constitution",
 		"damage": "3d8",
 		"damage_type": "thunder",
-		"classes": ["Bard", "Cleric", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>A sudden loud ringing noise, painfully intense, erupts from a point of your choice within range. Each creature in a 10-foot-radius sphere centered on that point must make a Constitution saving throw. A creature takes 3d8 thunder damage on a failed save, or half as much damage on a successful one. A creature made of inorganic material such as stone, crystal, or metal has disadvantage on this saving throw.</p><p>A nonmagical object that isn’t being worn or carried also takes the damage if it’s in the spell’s area.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 3rd level or higher, the damage increases by 1d8 for each slot level above 2nd.</p>",
 		"book": "phb",
 		"page": 275,
 		"domains": "Tempest",
-		"archetype": "Cleric: Tempest"
+		"archetype": ["Cleric: Tempest"]
 	},{
 		"key": "shield",
 		"name": "Shield",
@@ -6037,12 +6037,12 @@ var spells = [
 		"duration": "Up to 10 minutes",
 		"ritual": true,
 		"concentration": true,
-		"classes": ["Bard", "Cleric", "Druid", "Ranger", "Ritualist"],
+		"classes": ["Bard", "Cleric", "Ranger", "Ritualist"],
 		"desc": "<p>For the duration, no sound can be created within or pass through a 20-foot-radius sphere centered on a point you choose within range. Any creature or object entirely inside the sphere is immune to thunder damage, and creatures are deafened while entirely inside it.</p><p>Casting a spell that includes a verbal component is impossible there.</p>",
 		"book": "phb",
 		"page": 275,
 		"circles": "Desert",
-		"archetype": "Druid: Desert"
+		"archetype": ["Druid: Desert"]
 	},{
 		"key": "silentimage",
 		"name": "Silent Image",
@@ -6112,13 +6112,13 @@ var spells = [
 		"components": ["V", "S", "M"],
 		"material": "A pinch of fine sand, rose petals, or a cricket.",
 		"duration": "1 minute",
-		"classes": ["Bard", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Wizard"],
 		"desc": "<p>This spell sends creatures into a magical slumber. Roll 5d8; the total is how many hit points of creatures this spell can affect. Creatures within 20 feet of a point you choose within range are affected in ascending order of their current hit points (ignoring unconscious creatures).</p><p>Starting with the creature that has the lowest current hit points, each creature affected by this spell falls unconscious until the spell ends, the sleeper takes damage, or someone uses an action to shake or slap the sleeper awake. Subtract each creature’s hit points from the total before moving on to the creature with the next lowest hit points. A creature’s hit points must be equal to or less than the remaining total for that creature to be affected.</p><p>Undead and creatures immune to being charmed aren’t affected by this spell.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 2nd level or higher, roll an additional 2d8 for each slot level above 1st.</p>",
 		"book": "phb",
 		"page": 276,
 		"patrons": "Archfey",
-		"archetype": "Warlock: Archfey"
+		"archetype": ["Warlock: Archfey"]
 	},{
 		"key": "sleetstorm",
 		"name": "Sleet Storm",
@@ -6131,13 +6131,13 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "dexterity",
-		"classes": ["Cleric", "Druid", "Sorcerer", "Wizard"],
+		"classes": ["Druid", "Sorcerer", "Wizard"],
 		"desc": "<p>Until the spell ends, freezing rain and sleet fall in a 20-foot-tall cylinder with a 40-foot radius centered on a point you choose within range. The area is heavily obscured, and exposed flames in the area are doused.</p><p>The ground in the area is covered with slick ice, making it difficult terrain. When a creature enters the spell’s area for the first time on a turn or starts its turn there, it must make a dexterity saving throw. On a failed save, it falls prone.</p><p>If a creature is concentrating in the spell’s area, the creature must make a successful constitution saving throw against your spell save DC or lose concentration.</p>",
 		"book": "phb",
 		"page": 276,
 		"circles": "Arctic",
 		"domains": "Tempest",
-		"archetype": "Cleric: Tempest"
+		"archetype": ["Cleric: Tempest"]
 	},{
 		"key": "slow",
 		"name": "Slow",
@@ -6150,12 +6150,12 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "wisdom",
-		"classes": ["Druid", "Sorcerer", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>You alter time around up to six creatures of your choice in a 40-foot cube within range. Each target must succeed on a wisdom saving throw or be affected by this spell for the duration.</p><p>An affected target’s speed is halved, it takes a -2 penalty to AC and dexterity saving throws, and it can’t use reactions. On its turn, it can use either an action or a bonus action, not both. Regardless of the creature’s abilities or magic items, it can’t make more than one melee or ranged attack during its turn.</p><p>If the creature attempts to cast a spell with a casting time of 1 action, roll a d20. On an 11 or higher, the spell doesn’t take effect until the creature’s next turn, and the creature must use its action on that turn to complete the spell. If it can’t, the spell is wasted.</p><p>A creature affected by this spell makes another wisdom saving throw at the end of its turn. On a successful save, the effect ends for it.</p>",
 		"book": "phb",
 		"page": 277,
 		"circles": "Arctic",
-		"archetype": "Druid: Arctic"
+		"archetype": ["Druid: Arctic"]
 	},{
 		"key": "snare",
 		"name": "Snare",
@@ -6227,13 +6227,13 @@ var spells = [
 		"components": ["V", "S"],
 		"duration": "10 minutes",
 		"ritual": true,
-		"classes": ["Bard", "Cleric", "Druid", "Paladin", "Ranger", "Ritualist"],
+		"classes": ["Bard", "Druid", "Ranger", "Ritualist"],
 		"desc": "<p>You gain the ability to comprehend and verbally communicate with beasts for the duration. The knowledge and awareness of many beasts is limited by their intelligence, but at a minimum, beasts can give you information about nearby locations and monsters, including whatever they can perceive or have perceived within the past day. You might be able to persuade a beast to perform a small favor for you, at the DM’s discretion.</p>",
 		"book": "phb",
 		"page": 277,
 		"oaths": "Ancients",
 		"domains": "Nature",
-		"archetype": "Cleric: Nature<br/> Paladin: Ancients"
+		"archetype": ["Cleric: Nature", "Paladin: Ancients"]
 	},{
 		"key": "speakwithdead",
 		"name": "Speak with Dead",
@@ -6273,12 +6273,12 @@ var spells = [
 		"material": "A drop of bitumen and a spider.",
 		"duration": "Up to 1 hour",
 		"concentration": true,
-		"classes": ["Druid", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>Until the spell ends, one willing creature you touch gains the ability to move up, down, and across vertical surfaces and upside down along ceilings, while leaving its hands free. The target also gains a climbing speed equal to its walking speed.</p>",
 		"book": "phb",
 		"page": 277,
 		"circles": "Forest, Mountain, Underdark",
-		"archetype": "Druid: Forest, Mountain, Underdark"
+		"archetype": ["Druid: Forest", "Druid: Mountain", "Druid: Underdark"]
 	},{
 		"key": "spikegrowth",
 		"name": "Spike Growth",
@@ -6292,13 +6292,13 @@ var spells = [
 		"concentration": true,
 		"damage": "2d4",
 		"damage_type": "piercing",
-		"classes": ["Cleric", "Druid", "Ranger"],
+		"classes": ["Druid", "Ranger"],
 		"desc": "<p>The ground in a 20-foot radius centered on a point within range twists and sprouts hard spikes and thorns. The area becomes difficult terrain for the duration. When a creature moves into or within the area, it takes 2d4 piercing damage for every 5 feet it travels.</p><p>The transformation of the ground is camouflaged to look natural. Any creature that can’t see the area at the time the spell is case must make a Wisdom (Perception) check against your spell save DC to recognize the terrain as hazardous before entering it.</p>",
 		"book": "phb",
 		"page": 277,
 		"circles": "Arctic, Mountain",
 		"domains": "Nature",
-		"archetype": "Cleric: Nature"
+		"archetype": ["Cleric: Nature"]
 	},{
 		"key": "spiritguardians",
 		"name": "Spirit Guardians",
@@ -6384,13 +6384,13 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "constitution",
-		"classes": ["Bard", "Druid", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Wizard"],
 		"desc": "<p>You create a 20-foot-radius sphere of yellow, nauseating gas centered on a point within range. The cloud spreads around corners, and its area is heavily obscured. The cloud lingers in the air for the duration.</p><p>Each creature that is completely within the cloud at the start of its turn must make a constitution saving throw against poison. On a failed save, the creature spends its action that turn retching and reeling. Creatures that don’t need to breathe or are immune to poison automatically succeed on this saving throw.</p><p>A moderate wind (at least 10 miles per hour) disperses the cloud after 4 rounds. A strong wind (at least 20 miles per hour) disperses it after 1 round.</p>",
 		"book": "phb",
 		"page": 278,
 		"circles": "Swamp, Underdark",
 		"patrons": "Fiend",
-		"archetype": "Druid: Swamp, Underdark<br/> Warlock: Fiend"
+		"archetype": ["Druid: Swamp", "Druid: Underdark", "Warlock: Fiend"]
 	},{
 		"key": "stoneshape",
 		"name": "Stone Shape",
@@ -6419,14 +6419,14 @@ var spells = [
 		"duration": "Up to 1 hour",
 		"concentration": true,
 		"defense": true,
-		"classes": ["Cleric", "Druid", "Paladin", "Ranger", "Sorcerer", "Wizard"],
+		"classes": ["Druid", "Ranger", "Sorcerer", "Wizard"],
 		"desc": "<p>This spell turns the flesh of a willing creature you touch as hard as stone. Until the spell ends, the target has resistance to nonmagical bludgeoning, piercing, and slashing damage.</p>",
 		"book": "phb",
 		"page": 278,
 		"circles": "Mountain",
 		"oaths": "Ancients",
 		"domains": "War",
-		"archetype": "Cleric: War<br/> Paladin: Ancients"
+		"archetype": ["Cleric: War", "Paladin: Ancients"]
 	},{
 		"key": "stormofvengeance",
 		"name": "Storm of Vengeance",
@@ -6475,12 +6475,12 @@ var spells = [
 		"duration": "Up to 8 hours",
 		"concentration": true,
 		"save": "wisdom",
-		"classes": ["Bard", "Cleric", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Bard", "Sorcerer", "Warlock", "Wizard"],
 		"desc": "<p>You suggest a course of activity (limited to a sentence or two) and magically influence a creature you can see within range that can hear and understand you. Creatures that can’t be charmed are immune to this effect. The suggestion must be worded in such a manner as to make the course of action sound reasonable. Asking the creature to stab itself, throw itself onto a spear, immolate itself, or do some other obviously harmful act ends the spell.</p><p>The target must make a wisdom saving throw. On a failed save, it pursues the course of action you described to the best of its ability. The suggested course of action can continue for the entire duration. If the suggested activity can be completed in a shorter time, the spell ends when the subject finishes what it was asked to do.</p><p>You can also specify conditions that will trigger a special activity during the duration. For example, you might suggest that a knight give her warhorse to the first beggar she meets. If the condition isn’t met before the spell expires, the activity isn’t performed.</p><p>If you or any of your companions damage the target, the spell ends.</p>",
 		"book": "phb",
 		"page": 279,
 		"domains": "Knowledge",
-		"archetype": "Cleric: Knowledge"
+		"archetype": ["Cleric: Knowledge"]
 	},{
 		"key": "summongreaterdemon",
 		"name": "Summon Greater Demon",
@@ -6626,12 +6626,12 @@ var spells = [
 		"duration": "Up to 1 minute",
 		"concentration": true,
 		"save": "wisdom",
-		"classes": ["Bard", "Warlock", "Wizard"],
+		"classes": ["Bard", "Wizard"],
 		"desc": "<p>A creature of your choice that you can see within range perceives everything as hilariously funny and falls into fits of laughter if this spell affects it. The target must succeed on a wisdom saving throw or fall prone, becoming incapacitated and unable to stand up for the duration. A creature with an Intelligence score of 4 or less isn’t affected.</p><p>At the end of each of its turns, and each time it takes damage, the target can make another wisdom saving throw. The target has advantage on the saving throw if it’s triggered by damage. On a success, the spell ends.</p>",
 		"book": "phb",
 		"page": 280,
 		"patrons": "Great Old One",
-		"archetype": "Warlock: Great Old One"
+		"archetype": ["Warlock: Great Old One"]
 	},{
 		"key": "telekinesis",
 		"name": "Telekinesis",
@@ -6642,12 +6642,12 @@ var spells = [
 		"components": ["V", "S"],
 		"duration": "Up to 10 minutes",
 		"concentration": true,
-		"classes": ["Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>You gain the ability to move or manipulate creatures or objects by thought. When you cast the spell, and as your action each round for the duration, you can exert your will on one creature or object that you can see within range, causing the appropriate effect below. You can affect the same target round after round, or choose a new one at any time. If you switch targets, the prior target is no longer affected by the spell.</p><p><b>Creature.</b> You can try to move a Huge or smaller creature. Make an ability check with your spellcasting ability contested by the creature’s Strength check. If you win the contest, you move the creature up to 30 feet in any direction, including upward but not beyond the range of this spell. Until the end of your next turn, the creature is restrained in your telekinetic grip. A creature lifted upward is suspended in mid-air.</p><p>On subsequent rounds, you can use your action to attempt to maintain your telekinetic grip on the creature by repeating the contest.</p><p><b>Object.</b> You can try to move an object that weighs up to 1,000 pounds. If the object isn’t being worn or carried, you automatically move it up to 30 feet in any direction, but not beyond the range of this spell.</p><p>If the object is worn or carried by a creature, you must make an ability check with your spellcasting ability contested by that creature’s Strength check. If you succeed, you pull the object away from that creature and can move it up to 30 feet in any direction but not beyond the range of this spell.</p><p>You can exert fine control on objects with your telekinetic grip, such as manipulating a simple tool, opening a door or a container, stowing or retrieving an item from an open container, or pouring the contents from a vial.</p>",
 		"book": "phb",
 		"page": 280,
 		"patrons": "Great Old One",
-		"archetype": "Warlock: Great Old One"
+		"archetype": ["Warlock: Great Old One"]
 	},{
 		"key": "telepathy",
 		"name": "Telepathy",
@@ -6832,13 +6832,13 @@ var spells = [
 		"save": "constitution",
 		"damage": "2d8",
 		"damage_type": "thunder",
-		"classes": ["Bard", "Cleric", "Druid", "Sorcerer", "Wizard"],
+		"classes": ["Bard", "Druid", "Sorcerer", "Wizard"],
 		"desc": "<p>A wave of thunderous force sweeps out from you. Each creature in a 15-foot cube originating from you must make a constitution saving throw. On a failed save, a creature takes 2d8 thunder damage and is pushed 10 feet away from you. On a successful save, the creature takes half as much damage and isn’t pushed.</p><p>In addition, unsecured objects that are completely within the area of effect are automatically pushed 10 feet away from you by the spell’s effect, and the spell emits a thunderous boom audible out to 300 feet.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 2nd level or higher, the damage increases by 1d8 for each slot level above 1st.</p>",
 		"book": "phb",
 		"page": 282,
 		"domains": "Tempest",
-		"archetype": "Cleric: Tempest"
+		"archetype": ["Cleric: Tempest"]
 	},{
 		"key": "tidalwave",
 		"name": "Tidal Wave",
@@ -6967,14 +6967,14 @@ var spells = [
 		"components": ["V", "S"],
 		"duration": "Up to 1 minute",
 		"concentration": true,
-		"classes": ["Cleric", "Druid", "Paladin", "Ranger"],
+		"classes": ["Druid", "Ranger"],
 		"desc": "<p>You gain the ability to enter a tree and move from inside it to inside another tree of the same kind within 500 feet. Both trees must be living and at least the same size as you. You must use 5 feet of movement to enter a tree. You instantly know the location of all other trees of the same kind within 500 feet and, as part of the move used to enter the tree, can either pass into one of those trees or step out of the tree you’re in. You appear in a spot of your choice within 5 feet of the destination tree, using another 5 feet of movement. If you have no movement left, you appear within 5 feet of the tree you entered.</p><p>You can use this transportation ability once per round for the duration. You must end each turn outside a tree.</p>",
 		"book": "phb",
 		"page": 283,
 		"circles": "Forest",
 		"oaths": "Ancients",
 		"domains": "Nature",
-		"archetype": "Cleric: Nature<br/> Paladin: Ancients"
+		"archetype": ["Cleric: Nature", "Paladin: Ancients"]
 	},{
 		"key": "truepolymorph",
 		"name": "True Polymorph",
@@ -7133,14 +7133,14 @@ var spells = [
 		"save": "dexterity",
 		"damage": "5d8",
 		"damage_type": "fire",
-		"classes": ["Cleric", "Druid", "Sorcerer", "Warlock", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick. The wall is opaque and lasts for the duration.</p><p>When the wall appears, each creature within its area must make a Dexterity saving throw. On a failed save, a creature takes 5d8 fire damage, or half as much damage on a successful save.</p><p>One side of the wall, selected by you when you cast this spell, deals 5d8 fire damage to each creature that ends its turn within 10 feet of that side or inside the wall. A creature takes the same damage when it enters the wall for the first time on a turn or ends its turn there. The other side of the wall deals no damage.</p>",
 		"higher_level": "<p>When you cast this spell using a spell slot of 5th level or higher, the damage increases by 1d8 for each slot level above 4th.</p>",
 		"book": "phb",
 		"page": 285,
 		"domains": "Light",
 		"patrons": "Fiend",
-		"archetype": "Cleric: Light<br/> Warlock: Fiend"
+		"archetype": ["Cleric: Light", "Warlock: Fiend"]
 	},{
 		"key": "wallofforce",
 		"name": "Wall of Force",
@@ -7351,12 +7351,12 @@ var spells = [
 		"duration": "Up to 1 hour",
 		"concentration": true,
 		"save": "dexterity",
-		"classes": ["Druid", "Sorcerer", "Wizard"],
+		"classes": ["Sorcerer", "Wizard"],
 		"desc": "<p>You conjure a mass of thick, sticky webbing at a point of your choice within range. The webs fill a 20-foot cube from that point for the duration. The webs are difficult terrain and lightly obscure their area.</p><p>If the webs aren’t anchored between two solid masses (such as walls or trees) or layered across a floor, wall, or ceiling, the conjured web collapses on itself, and the spell ends at the start of your next turn. Webs layered over a flat surface have a depth of 5 feet.</p><p>Each creature that starts its turn in the webs or that enters them during its turn must make a dexterity saving throw. On a failed save, the creature is restrained as long as it remains in the webs or until it breaks free.</p><p>A creature restrained by the webs can use its action to make a Strength check against your spell save DC. If it succeeds, it is no longer restrained.</p><p>The webs are flammable. Any 5-foot cube of webs exposed to fire burns away in 1 round, dealing 2d4 fire damage to any creature that starts its turn in the fire.</p>",
 		"book": "phb",
 		"page": 287,
 		"circles": "Underdark",
-		"archetype": "Druid: Underdark"
+		"archetype": ["Druid: Underdark"]
 	},{
 		"key": "weird",
 		"name": "Weird",
@@ -7420,12 +7420,12 @@ var spells = [
 		"save": "strength",
 		"damage": "3d8",
 		"damage_type": "bludgeoning",
-		"classes": ["Cleric", "Druid", "Ranger"],
+		"classes": ["Druid", "Ranger"],
 		"desc": "<p>A wall of strong wind rises from the ground at a point you choose within range. You can make the wall up to 50 feet long, 15 feet high, and 1 foot thick. You can shape the wall in any way you choose so long as it makes one continuous path along the ground. The wall lasts for the duration.</p><p>When the wall appears, each creature within its area must make a strength saving throw. A creature takes 3d8 bludgeoning damage on a failed save, or half as much damage on a successful one.</p><p>The strong wind keeps fog, smoke, and other gases at bay. Small or smaller flying creatures or objects can’t pass through the wall. Loose, lightweight materials brought into the wall fly upward. Arrows, bolts, and other ordinary projectiles launched at targets behind the wall are deflected upward and automatically miss. (Boulders hurled by giants or siege engines, and similar projectiles, are unaffected.) Creatures in gaseous form can’t pass through it.</p>",
 		"book": "phb",
 		"page": 288,
 		"domains": "Nature",
-		"archetype": "Cleric: Nature"
+		"archetype": ["Cleric: Nature"]
 	},{
 		"key": "wish",
 		"name": "Wish",

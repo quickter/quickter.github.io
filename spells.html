@@ -444,10 +444,21 @@
 						if ( s[key] !== undefined && s[key] !== false ) { spell[key] = s[key] }
 					}
 					
+					value = spell['archetype']
+					if ( value && value.length > 0 ) {
+						value = value.concat(spell['classes'])
+						value.sort()
+						styles.push('archetype')
+					} else {
+						value = spell['classes']
+					}
+					spell['classnames'] = value.join(", ")
+					spell['classstyles'] = value.map(c => c.replace(/[: ]+/g, '-'))
+					
 					styles.push('level-' + spell['level'])
 					styles.push('book-' + spell['book'])
 					styles.push('' + spell['school'].toLowerCase())
-					styles.push.apply(styles, spell['classes'])
+					styles.push.apply(styles, spell['classstyles'])
 					styles.push(spell['higher_level'] ? 'has-higher-level' : 'not-higher-level')
 					styles.push(spell['save'] ? 'has-save' : 'not-save')
 					styles.push(spell['damage'] ? 'is-damage' : 'not-damage')
@@ -456,6 +467,9 @@
 					styles.push(spell['permanent'] ? 'is-permanent' : 'not-permanent')
 					styles.push(spell['ritual'] ? 'is-ritual' : 'not-ritual')
 					styles.push(spell['concentration'] ? 'is-concentration' : 'not-concentration')
+					
+					value = spell['damage_type']
+					if ( value && value != '*' ) { styles.push(value) }
 					
 					value = spell['casting_time'].toLowerCase()
 					if ( value.indexOf('reaction') > 0 ) { casting = 1/32 }
@@ -516,7 +530,6 @@
 					spell['styles'] = styles.join(" ")
 					spell['ss'] = (spell['school'] === 'Illusion') ? 'Ill' : spell['school'].substring(0, 2)
 					spell['vsm'] = spell['components'].join("")
-					spell['classnames'] = spell['classes'].join(", ")
 					spell['namekey'] = spell.name.replace(/['‘’]/g, '')
 					spell['title_ritual'] = spell.ritual ? ", Ritual " + Math.floor(spell.castingkey + 10) + " Minutes" : ""
 					spell['title_concentration'] = spell.concentration ? "Concentration, " : ""

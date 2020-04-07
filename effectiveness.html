@@ -1140,6 +1140,7 @@
 				var parts = string.split(';')
 				var index, count = parts.length
 				
+				// use defense from last part as default defense for all parts
 				if ( count > 1 ) {
 					var defense = parts[count - 1].indexOf('@')
 					
@@ -1309,14 +1310,14 @@
 			<tr><td>Feat: Sharpshooter</td><td>-5/+10</td><td>Hit -5, damage +10</td></tr>
 			<tr><td>Spell: Bane</td><td>-d4</td><td>Hit -d4</td></tr>
 			<tr><td>Spell: Bless</td><td>+d4</td><td>Hit +d4</td></tr>
-			<tr><td>Spell: Foresight</td><td>a @ d</td><td>Advantage on hit, impose disadvantage on attackers</td></tr>
+			<tr><td>Spell: Foresight</td><td>a @ d</td><td>Advantage on hit, attackers have disadvantage</td></tr>
 			<tr><td>Spell: Haste</td><td>#2 @ +2</td><td>Attack one more time, Armor class +2</td></tr>
 			<tr><td>Spell: Hex</td><td>/ +d6n</td><td>Damage +d6 necrotic</td></tr>
 			<tr><td>Spell: Invisibility</td><td>ao</td><td>Advantage on hit one time</td></tr>
 			<tr><td>Spell: Stoneskin</td><td>@ rbps</td><td>Resist bludgeoning, piercing and slashing damage</td></tr>
 			<tr><td>Item: Bracers of Archery</td><td>/ +2</td><td>Damage +2</td></tr>
 			<tr><td>Item: Bracers of Defense</td><td>@ +2</td><td>Armor Class +2</td></tr>
-			<tr><td>Item: Cloak of Displacement</td><td>@ dh</td><td>Disadvantage on hit until hit</td></tr>
+			<tr><td>Item: Cloak of Displacement</td><td>@ dh</td><td>Attackers have disadvantage until hit</td></tr>
 			<tr><td>Item: Dwarven Thrower</td><td>+3m/d8b+d8b+3</td><td>Hit +3, damage 2d8+3</td></tr>
 			<tr><td>Item: Magic Weapon</td><td>+3m/+3</td><td>Hit and damage +3, attack is magical</td></tr>
 			<tr><td>Item: Sword of Sharpness</td><td>+1m/+1+c14</td><td>Hit and damage +1, critical damage +14</td></tr>
