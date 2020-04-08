@@ -526,6 +526,9 @@
 					value = value ? value.replace("<p>", "<p class='higher-level'>") : ""
 					spell['higher_level'] = value
 					
+					value = spell['save']
+					spell['sv'] = value ? value.substring ? value.substring(0, 3) : "*" : ""
+					
 					spell['page'] = +spell.page || spell.page
 					spell['styles'] = styles.join(" ")
 					spell['ss'] = (spell['school'] === 'Illusion') ? 'Ill' : spell['school'].substring(0, 2)
@@ -536,6 +539,7 @@
 					
 					if ( spell['material'] === undefined ) { spell['material'] = '' }
 					if ( spell['damage'] === undefined ) { spell['damage'] = '' }
+					if ( spell['damage_type'] === undefined ) { spell['damage_type'] = '' }
 					
 					result.push(spell)
 				}
@@ -556,6 +560,8 @@
 					"<td class='components' data-sort-key='{vsm}' title='Components {vsm}'>{vsm}</td>" +
 					"<td class='duration' data-sort-key='{durationkey}' title='Duration {title_concentration}{duration}'>{period}</td>" +
 					"<td class='damage'>{damage}</td>" +
+					//"<td class='damage_type'>{damage_type}</td>" +
+					//"<td class='save'>{sv}</td>" +
 				"</tr>"
 				
 				var header = "<tr id='header' class='header'>" +
@@ -568,6 +574,8 @@
 					"<th class='components sortable'>VSM</th>" +
 					"<th class='duration sortable' data-sort-format='number'>Duration</th>" +
 					"<th class='damage sortable' data-sort-format='natural'>Damage</th>" +
+					//"<th class='damage_type sortable' data-sort-format='natural'>Type</th>" +
+					//"<th class='save sortable' data-sort-format='natural'>Save</th>" +
 				"</tr>"
 				
 				var list = spellsReadyToDisplay(spells)
@@ -799,6 +807,23 @@
 			input#filter-permanent-exclude:checked ~ table#spells tr.is-permanent { display:none; }
 			
 			.filter, .trivia { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+			
+			@media screen {
+				tr.acid > td.damage_type { color:#360; }
+				tr.bludgeoning > td.damage_type { color:#333; }
+				tr.cold > td.damage_type { color:#009; }
+				tr.disease > td.damage_type { }
+				tr.fire > td.damage_type { color:#900; }
+				tr.force > td.damage_type { color:#339; }
+				tr.lightning > td.damage_type { color:#983; }
+				tr.necrotic > td.damage_type { color:#306; }
+				tr.piercing > td.damage_type { color:#333; }
+				tr.poison > td.damage_type { color:#060; }
+				tr.psychic > td.damage_type { color:#069; }
+				tr.radiant > td.damage_type { color:#960; }
+				tr.slashing > td.damage_type { color:#333; }
+				tr.thunder > td.damage_type { }
+			}
 			
 			.nose, .filter, .toggle, .trivia {
 				-webkit-touch-callout:none;

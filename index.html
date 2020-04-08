@@ -1271,6 +1271,614 @@
 				return dnd.abilities.map((a) => abilityRoll(diceToRoll))
 			}
 			
+			// MARK: Effectiveness
+			
+			function parseEffectivenessDamageType(string, result, key, damageTypeMap) {
+				if ( !result[key] ) { result[key] = new Object() }
+				
+				var once = string.slice(-1) === 'o'
+				var type = string.slice(1, once ? -1 : undefined)
+				var value = once ? 'once' : true
+				var index, letter, name = damageTypeMap[type]
+				
+				if ( name ) {
+					result[key][name] = value
+				} else if ( Object.values(damageTypeMap).indexOf(type) < 0 ) {
+					for ( index = 0 ; index < type.length ; ++index ) {
+						letter = type.charAt(index)
+						result[key][damageTypeMap[letter] || letter] = value
+					}
+				} else {
+					result[key][type] = value
+				}
+			}
+			
+			function parseSingleEffectiveness(string) {
+				var result = new Object()
+				
+				result.armorClass = 10
+				result.hit = []
+				result.damage = []
+				result.defense = []
+				result.reduction = []
+				result.magical = false
+				string = string.toLowerCase().replace(/,•/g, " ")
+				
+				var damageTypeMap = lookup.damageAbbreviation
+				
+				var match, index, found, value, roll, once, type, matched, length, item
+				var beginHit = 0
+				var beginDamage = string.indexOf('/', beginHit)
+				var beginAttacks = string.indexOf('#', beginDamage)
+				var beginDefense = string.indexOf('@', beginAttacks < 0 ? beginDamage : beginAttacks)
+				var closeAttacks = beginDefense < 0 ? undefined : beginDefense
+				var closeDamage = beginAttacks < 0 ? closeAttacks : beginAttacks
+				var closeHit = beginDamage < 0 ? closeDamage : beginDamage
+				
+				var stringDefense = beginDefense < 0 ? '10' : string.slice(beginDefense + 1)
+				var stringAttacks = beginAttacks < 0 ? '' : string.slice(beginAttacks + 1, closeAttacks)
+				var stringDamage = beginDamage < 0 ? '' : string.slice(beginDamage + 1, closeDamage)
+				var stringHit = string.slice(beginHit, closeHit)
+				
+				result.input = [stringHit, stringDamage, stringAttacks, stringDefense]
+				result.isAttack = beginDamage > 0
+				result.isDefenseKnown = beginDefense > 0
+				
+				var patternHit = /([-+]\d*d?\d+o?|a[om]?|d[oh]?|r\d+|c\d+|m)/g
+				var matchHit = stringHit.split(patternHit)
+				
+				for ( index = 0 ; index < matchHit.length ; ++index ) {
+					match = matchHit[index]
+					
+					if ( !( index & 1 ) ) {
+						if ( match.trim() ) { break } else { continue }
+					}
+					
+					if ( match === 'm' ) {
+						result.magical = true
+					} else if ( match === 'a' ) {
+						result.advantageHit = true
+					} else if ( match === 'ao' ) {
+						if ( !result.advantageHit ) { result.advantageHit = 'once' }
+					} else if ( match === 'am' ) {
+						result.advantageMiss = true
+					} else if ( match === 'd' ) {
+						if ( result.hit.length > 0 ) { break } // unqualified die
+						result.disadvantageHit = true
+					} else if ( match === 'do' ) {
+						if ( !result.disadvantageHit ) { result.disadvantageHit = 'once' }
+					} else if ( match === 'dh' ) {
+						if ( !result.disadvantageHit || result.disadvantageHit === 'once' ) { result.disadvantageHit = 'hit' }
+					} else if ( match.charAt(0) === 'c' ) {
+						result.criticalRoll = match.slice(1) | 0
+					} else if ( match.charAt(0) === 'r' ) {
+						value = match.slice(1) | 0
+						result.lowAttackReroll = value
+					} else {
+						found = match.indexOf('o')
+						
+						if ( !( found < 0 ) ) {
+							once = true
+							match = match.slice(0, found)
+						}
+						
+						found = match.indexOf('d')
+						
+						if ( found < 0 ) {
+							roll = false
+							value = match | 0
+						} else {
+							roll = match.slice(0, found) | 0
+							value = match.slice(found + 1) | 0
+							if ( !roll ) { roll = match.charAt(0) === '-' ? -1 : 1 }
+						}
+						
+						item = roll ? {'die':value, 'roll':roll} : {'modifier':value}
+						if ( once ) { item.once = true }
+						if ( value ) { result.hit.push(item) }
+					}
+				}
+				
+				var patternDiceModifierText = /([-+]?\d*)(d?)(\d+)([a-z]*)/
+				var patternDamage = /([-+]?\d*d?\d+[a-z]*|[+]c?\d+d?|\b[mr]\d+|\bao?)/g
+				var matchDamage = stringDamage.split(patternDamage)
+				
+				for ( index = 0 ; index < matchDamage.length ; ++index ) {
+					match = matchDamage[index]
+					
+					if ( !( index & 1 ) ) {
+						if ( match.trim() ) { break } else { continue }
+					}
+					
+					if ( match === 'a' ) {
+						result.advantageDamage = true
+					} else if ( match === 'ao' ) {
+						if ( !result.advantageDamage ) { result.advantageDamage = 'once' }
+					} else if ( match.charAt(0) === 'm' ) {
+						value = match.slice(1) | 0
+						if ( value > 0 ) {
+							if ( result.damage.length > 0 ) {
+								result.damage[result.damage.length - 1].minimum = value
+							} else {
+								result.minimumDamageRoll = value
+							}
+						}
+					} else if ( match.charAt(0) === 'r' ) {
+						value = match.slice(1) | 0
+						if ( value > 0 ) {
+							if ( result.damage.length > 0 ) {
+								result.damage[result.damage.length - 1].reroll = value
+							} else {
+								result.lowDamageReroll = value
+							}
+						}
+					} else if ( match.slice(0, 2) === '+c' ) {
+						found = match.indexOf('d')
+						if ( found < 0 ) {
+							value = match.slice(2) | 0
+							result.criticalDamage = (value | 0) + (result.criticalDamage | 0)
+						} else {
+							value = match.slice(2, found) | 0
+							result.criticalDice = (value | 0) + (result.criticalDice | 0)
+						}
+					} else {
+						matched = match.match(patternDiceModifierText)
+						type = matched[4]
+						once = type.slice(-1) === 'o'
+						
+						if ( matched[2] === 'd' ) {
+							roll = matched[1] | 0
+							value = matched[3] | 0
+							if ( !roll ) { roll = matched[1].charAt(0) === '-' ? -1 : 1 }
+						} else {
+							roll = false
+							value = (matched[1] + matched[3]) | 0
+						}
+						
+						item = roll ? {'die':value, 'roll':roll} : {'modifier':value}
+						
+						if ( once ) {
+							item.once = true
+							type = type.slice(0, -1)
+						}
+						
+						if ( type ) {
+							item.type = damageTypeMap[type] || type
+							length = result.damage.length
+							
+							if ( length > 0 && !roll && result.damage[length - 1].roll && !result.damage[length - 1].type ) {
+								result.damage[length - 1].type = item.type
+							}
+						}
+						
+						result.damage.push(item)
+					}
+				}
+				
+				var patternAttacks = /(\d+|cb|b|r)/g
+				var matchAttacks = stringAttacks.split(patternAttacks)
+				
+				for ( index = 0 ; index < matchAttacks.length ; ++index ) {
+					match = matchAttacks[index]
+					
+					if ( !( index & 1 ) ) {
+						if ( match.trim() ) { break } else { continue }
+					}
+					
+					if ( match === 'cb' ) {
+						result.criticalBonusAttack = true
+					} else if ( match === 'b' ) {
+						result.bonusAction = true
+					} else if ( match === 'r' ) {
+						result.reaction = true
+					} else {
+						value = match | 0
+						if ( value > 0 ) { result.attacks = value }
+					}
+				}
+				
+				var patternDefense = /(\d+|[-+]\d*d?\d+[mo]?|[vr][a-z]*|i[a-z]+|d[oh]?|ao?)/g
+				var matchDefense = stringDefense.split(patternDefense)
+				
+				for ( index = 0 ; index < matchDefense.length ; ++index ) {
+					match = matchDefense[index]
+					
+					if ( !( index & 1 ) ) {
+						if ( match.trim() ) { break } else { continue }
+					}
+					
+					if ( match === 'a' ) {
+						result.advantageHit = true
+					} else if ( match === 'ao' ) {
+						if ( !result.advantageHit ) { result.advantageHit = 'once' }
+					} else if ( match === 'd' ) {
+						if ( result.hit.length > 0 ) { break }
+						result.disadvantageHit = true
+					} else if ( match === 'do' ) {
+						if ( !result.disadvantageHit ) { result.disadvantageHit = 'once' }
+					} else if ( match === 'dh' ) {
+						if ( !result.disadvantageHit || result.disadvantageHit === 'once' ) { result.disadvantageHit = 'hit' }
+					} else if ( match.charAt(0) === '+' ) {
+						matched = match.match(patternDiceModifierText)
+						
+						if ( matched[2] === 'd' ) {
+							roll = matched[1] | 0
+							value = matched[3] | 0
+							if ( !roll ) { roll = 1 }
+						} else {
+							roll = false
+							value = (matched[1] + matched[3]) | 0
+						}
+						
+						item = roll ? {'die':value, 'roll':roll} : {'modifier':value}
+						
+						if ( matched[4] === 'o' ) { item.once = true }
+						if ( matched[4] === 'm' ) { item.afterFirst = true }
+						
+						result.defense.push(item)
+					} else if ( match.charAt(0) === '-' ) {
+						matched = match.match(patternDiceModifierText)
+						
+						if ( matched[2] === 'd' ) {
+							roll = -matched[1] | 0
+							value = matched[3] | 0
+							if ( !roll ) { roll = 1 }
+						} else {
+							roll = 0
+							value = -(matched[1] + matched[3]) | 0
+						}
+						
+						item = roll ? {'die':value, 'roll':roll} : {'modifier':value}
+						
+						if ( matched[4] === 'o' ) { item.once = true }
+						
+						result.reduction.push(item)
+					} else if ( match.charAt(0) === 'v' ) {
+						parseEffectivenessDamageType(match, result, 'vulnerable', damageTypeMap)
+					} else if ( match.charAt(0) === 'r' ) {
+						parseEffectivenessDamageType(match, result, 'resistant', damageTypeMap)
+					} else if ( match.charAt(0) === 'i' ) {
+						parseEffectivenessDamageType(match, result, 'immune', damageTypeMap)
+					} else {
+						value = match | 0
+						if ( value >= 0 ) { result.armorClass = value }
+					}
+				}
+				
+				if ( !result.attacks ) {
+					result.attacks = result.bonusAction || result.reaction ? 0 : 1
+				}
+				
+				return result
+			}
+			
+			function parseEffectiveness(string) {
+				var parts = string.split(';')
+				var index, count = parts.length
+				
+				// use defense from last part as default defense for all parts
+				if ( count > 1 ) {
+					var defense = parts[count - 1].indexOf('@')
+					
+					if ( defense >= 0 ) {
+						var suffix = parts[count - 1].slice(defense)
+						
+						for ( index = 0 ; index < count - 1 ; ++index ) {
+							if ( parts.length > 0 && parts[index].indexOf('@') < 0 ) {
+								parts[index] += suffix
+							}
+						}
+					}
+				}
+				
+				return parts.map(parseSingleEffectiveness)
+			}
+			
+			function evaluateDieRoll(die, rolls, record, prefix, reroll, minimum) {
+				var sum = 0
+				var value, other, each = []
+				var negative = rolls < 0
+				
+				if ( reroll < 1 || reroll > die ) { reroll = 0 }
+				if ( minimum < 2 || minimum > die ) { minimum = 0 }
+				
+				rolls = negative ? -rolls : +rolls || 1
+				value = (negative ? "-" : "") + rolls + "d" + die
+				prefix = prefix ? prefix + " " + value : value
+				
+				while ( rolls --> 0 ) {
+					value = 1 + randomInteger(die)
+					
+					if ( reroll >= value && !negative ) {
+						other = 1 + randomInteger(die)
+						each.push(value + " ~ " + other)
+						value = other
+					} else if ( minimum > value && !negative ) {
+						each.push(value + " < " + minimum)
+						value = minimum
+					} else {
+						each.push(value)
+					}
+					
+					sum += value
+				}
+				
+				record.push(prefix + " (" + each.join(", ") + ")")
+				return sum
+			}
+			
+			function evaluateSingleEffectiveness(e, hasHit, hasBonus) {
+				var concise = []
+				var summary = []
+				var result = "", sum = false
+				
+				var isAttack = e.isAttack
+				var isDefenseKnown = e.isDefenseKnown
+				var isHit
+				var advantageHit = e.advantageHit
+				var disadvantageHit = e.disadvantageHit
+				var advantageDamage = e.advantageDamage
+				var attack, attacks = Math.max(+e.attacks, 1)
+				var index, item, once
+				var modifierHit, armorClass, hit, sum
+				var hasAdvantage, hasDisadvantage, toHit
+				var damageRolled, damageAdvantageRolled, damageModifier
+				var damageDice, damageDiceLength, damageScalars
+				var isCritical, dieForCritical, damageScalarForCritical
+				var damageScalar, immune, resistant, vulnerable
+				var type, previousType = ""
+				
+				var useOnceToHit, useOnceDamage
+				var onceToHit = e.hit.filter(i => i.once)
+				var onceToDefend = e.defense.filter(i => i.once)
+				
+				var mundane = ['bludgeoning', 'piercing', 'slashing']
+				var immuneAll = (e.immune && e.immune['all']) || false
+				var resistantAll = (e.resistant && e.resistant['all']) || false
+				var vulnerableAll = (e.vulnerable && e.vulnerable['all']) || false
+				
+				immuneAll = immuneAll ? immuneAll !== 'once' ? 2 : 1 : 0
+				resistantAll = resistantAll ? resistantAll !== 'once' ? 2 : 1 : 0
+				vulnerableAll = vulnerableAll ? vulnerableAll !== 'once' ? 2 : 1 : 0
+				
+				hasHit = hasHit || false
+				hasBonus = hasBonus || false
+				
+				if ( e.bonusAction && attacks > 0 ) {
+					if ( hasBonus ) {
+						attacks = 0
+					} else {
+						hasBonus = true
+					}
+				}
+				
+				for ( attack = 0 ; attack < attacks ; ++attack ) {
+					result = ""
+					isHit = false
+					hasAdvantage = false
+					hasDisadvantage = false
+					useOnceToHit = 0
+					modifierHit = 0
+					armorClass = e.armorClass || 10
+					
+					if ( isAttack ) {
+						toHit = evaluateDieRoll(20, 1, summary, "roll hit", e.lowAttackReroll)
+						
+						if ( disadvantageHit ) {
+							if ( disadvantageHit === 'once' ) { disadvantageHit = 0 }
+							if ( !advantageHit ) { hasDisadvantage = true; toHit = Math.min(evaluateDieRoll(20, 1, summary, "roll disadvantage", e.lowAttackReroll), toHit) }
+						}
+						
+						if ( advantageHit ) {
+							if ( advantageHit === 'once' ) { advantageHit = 0 }
+							if ( !hasDisadvantage ) { hasAdvantage = true; toHit = Math.max(evaluateDieRoll(20, 1, summary, "roll advantage", e.lowAttackReroll), toHit) }
+						}
+					}
+					
+					if ( isAttack && toHit > 1 ) {
+						for ( index = 0 ; index < e.hit.length ; ++index ) {
+							item = e.hit[index]
+							
+							if ( !item.once ) {
+								if ( item.modifier ) { modifierHit += item.modifier }
+								if ( item.die ) { modifierHit += evaluateDieRoll(item.die, item.roll, summary, "roll modifier") }
+							}
+						}
+					}
+					
+					if ( isAttack && isDefenseKnown && toHit > 1 ) {
+						for ( index = 0 ; index < e.defense.length ; ++index ) {
+							item = e.defense[index]
+							
+							if ( !item.once ) {
+								if ( item.modifier ) { armorClass += item.modifier }
+								if ( item.die ) { armorClass += evaluateDieRoll(item.die, item.roll, summary, "roll defense") }
+							}
+						}
+					}
+					
+					if ( isAttack && isDefenseKnown && toHit > 1 && toHit < 20 ) {
+						hit = toHit + modifierHit - armorClass
+						
+						while ( onceToHit.length > 0 || onceToDefend.length > 0 ) {
+							if ( toHit + modifierHit < armorClass ) {
+								once = onceToHit.reduce((s, i) => s + (i.modifier | 0) + 0.5 * (i.die | 0) * (i.roll || 1), 0)
+								
+								if ( toHit + modifierHit + once >= armorClass ) {
+									item = onceToHit.shift()
+									useOnceToHit += 1
+									
+									if ( item.modifier ) { modifierHit += item.modifier; summary.push("once modifier " + item.modifier) }
+									if ( item.die ) { modifierHit += evaluateDieRoll(item.die, item.roll, summary, "once modifier") }
+								} else {
+									break
+								}
+							} else {
+								once = onceToDefend.reduce((s, i) => s + (i.modifier | 0) + 0.5 * (i.die | 0) * (i.roll || 1), 0)
+								
+								if ( toHit + modifierHit < armorClass + once ) {
+									item = onceToDefend.shift()
+									
+									if ( item.modifier ) { armorClass += item.modifier; summary.push("once defense " + item.modifier) }
+									if ( item.die ) { armorClass += evaluateDieRoll(item.die, item.roll, summary, "once defense") }
+								} else {
+									break
+								}
+							}
+							
+							hit = toHit + modifierHit - armorClass
+						}
+					}
+					
+					if ( isAttack ) {
+						if ( toHit <= 1 ) {
+							isHit = false
+							result = "-"
+							summary.push("miss (natural 1)")
+						} else if ( toHit >= 20 ) {
+							isHit = true
+							result = "+"
+							summary.push("hit (natural 20)")
+						} else if ( !isDefenseKnown ) {
+							isHit = null
+							result = "AC " + (toHit + modifierHit)
+							summary.push("can hit AC " + (toHit + modifierHit))
+						} else if ( toHit + modifierHit < armorClass ) {
+							isHit = false
+							result = "-" + (armorClass - modifierHit - toHit)
+							summary.push("miss AC " + armorClass + " by " + (armorClass - modifierHit - toHit))
+						} else {
+							isHit = true
+							result = "+" + (toHit + modifierHit - armorClass)
+							summary.push("hit AC " + armorClass + " by " + (toHit + modifierHit - armorClass))
+						}
+						
+						for ( index = 0 ; index < useOnceToHit ; ++index ) { result += "•" }
+						result += "/"
+					}
+					
+					if ( isAttack && isDefenseKnown && isHit && disadvantageHit === 'hit' ) {
+						disadvantageHit = 0
+					}
+					
+					damageRolled = 0
+					damageAdvantageRolled = 0
+					damageModifier = 0
+					dieForCritical = 0
+					damageScalarForCritical = 1
+					damageDice = []
+					damageScalars = []
+					useOnceDamage = 0
+					previousType = "any"
+					
+					for ( index = 0 ; index < e.damage.length ; ++index ) {
+						item = e.damage[index]
+						type = item.type || previousType
+						previousType = type
+						damageScalar = 1
+						
+						immune = type && e.immune && !(e.magical && mundane.includes(type)) && e.immune[type]
+						resistant = type && e.resistant && !(e.magical && mundane.includes(type)) && e.resistant[type]
+						vulnerable = type && e.vulnerable && e.vulnerable[type]
+						
+						immune = (immune ? immune !== 'once' ? 2 : 1 : 0) | immuneAll
+						resistant = (resistant ? resistant !== 'once' ? 2 : 1 : 0) | resistantAll
+						vulnerable = (vulnerable ? vulnerable !== 'once' ? 2 : 1 : 0) | vulnerableAll
+						
+						if ( immune && !(hasHit && immune === 1) ) { summary.push("immune " + type); continue }
+						if ( resistant && !(hasHit && resistant === 1) ) { damageScalar = 0.5 }
+						if ( vulnerable && !(hasHit && vulnerable === 1) ) { damageScalar *= 2.0 }
+						
+						if ( !item.once || (isHit && !hasHit) ) {
+							if ( item.once ) { useOnceDamage += 1 }
+							if ( item.die > 0 ) { item.type = type; damageDice.push(item); damageScalars.push(damageScalar) }
+							if ( item.die * damageScalar > dieForCritical * damageScalarForCritical ) { dieForCritical = item.die; damageScalarForCritical = damageScalar }
+							if ( item.modifier ) { damageModifier += item.modifier * damageScalar; summary.push(type + " damage " + item.modifier) }
+						}
+					}
+					
+					isCritical = isAttack && !(toHit < (e.criticalRoll || 20))
+					damageDiceLength = damageDice.length
+					
+					if ( isCritical ) {
+						summary.push("critical")
+						damageDice = damageDice.concat(damageDice)
+						damageScalars = damageScalars.concat(damageScalars)
+						if ( e.criticalDamage ) { damageModifier += e.criticalDamage; summary.push("damage " + e.criticalDamage) }
+						if ( e.criticalDice > 0 && dieForCritical ) { damageDice.push({'die':dieForCritical, 'roll':e.criticalDice}); damageScalars.push(damageScalarForCritical); summary.push("dice " + (e.criticalDice || 1) + "d" + dieForCritical) }
+						if ( e.criticalBonusAttack && !hasBonus ) { hasBonus = true; attacks += 1; summary.push("bonus attack") }
+					}
+					
+					for ( index = 0 ; index < damageDice.length ; ++index ) {
+						item = damageDice[index]
+						if ( item.roll < 0 && !(index < damageDiceLength) ) { continue }
+						damageRolled += evaluateDieRoll(item.die, item.roll, summary, item.type + " damage", item.reroll, item.minimum) * damageScalars[index]
+					}
+					
+					if ( advantageDamage ) {
+						for ( index = 0 ; index < damageDice.length ; ++index ) {
+							item = damageDice[index]
+							if ( item.roll < 0 && !(index < damageDiceLength) ) { continue }
+							damageAdvantageRolled += evaluateDieRoll(item.die, item.roll, summary, item.type + " advantage", item.reroll, item.minimum) * damageScalars[index]
+						}
+						
+						damageRolled = Math.max(damageRolled, damageAdvantageRolled)
+						if ( advantageDamage === 'once' ) { advantageDamage = 0 }
+					}
+					
+					for ( index = 0 ; index < e.reduction.length ; ++index ) {
+						item = e.reduction[index]
+						
+						if ( !item.once || (isHit && !hasHit) ) {
+							if ( item.die ) { damageModifier -= evaluateDieRoll(item.die, item.roll, summary, "reduce") }
+							if ( item.modifier ) { damageModifier -= item.modifier; summary.push("reduce " + item.modifier) }
+						}
+					}
+					
+					summary.push("sum " + (damageRolled + damageModifier))
+					
+					damageRolled = Math.max(0, Math.round(damageRolled + damageModifier))
+					result += damageRolled
+					
+					if ( isHit ) {
+						hasHit = true
+						sum += damageRolled
+					}
+					
+					concise.push(result)
+				}
+				
+				console.log(summary.join(" "))
+				
+				return {'damage':sum, 'concise':concise, 'summary':summary, 'hasBonus':hasBonus, 'hasHit':hasHit}
+			}
+			
+			function evaluateEffectiveness(e) {
+				var damage = false
+				var concise = []
+				var summary = []
+				var evaluation
+				var hasBonus = false
+				var hasHit = false
+				
+				for ( var s of e ) {
+					evaluation = evaluateSingleEffectiveness(s, hasHit, hasBonus)
+					
+					if ( s.isDefenseKnown && evaluation.damage ) {
+						damage += evaluation.damage
+					}
+					
+					hasHit = evaluation.hasHit
+					hasBonus = evaluation.hasBonus
+					concise.push.apply(concise, evaluation.concise)
+					summary.push.apply(summary, evaluation.summary)
+				}
+				
+				return {'damage':damage, 'concise':concise, 'summary':summary, 'hasBonus':hasBonus, 'hasHit':hasHit}
+			}
+			
+			// MARK: Challenge
+			
 			function challengeRating(hp, ac, damage, bonusToHit, dc) {
 				var table = dnd.challenge_rating_table
 				var indexHP = _binarySearch(table, hp, (v, e) => v-e.hp)
@@ -1965,6 +2573,7 @@
 				
 				_element('character-form').reset()
 				renderCharacter(character, 'reset', true)
+				handleLessCombat()
 			}
 			
 			function clearAbilities() {
@@ -2146,6 +2755,56 @@
 				}
 				
 				diceCount.form.diceCount.value = diceCount.value
+			}
+			
+			function handleMoreCombat(name, roll) {
+				var parent = _element('tracking-combat-rolls')
+				var children = parent.getElementsByClassName('tracking-combat-rolls-row hidden')
+				
+				if ( children.length > 0 ) {
+					var element = children[0]
+					
+					_assignClass(element, 'hidden', -1)
+					_element(element.id + '-name').value = name || ""
+					_element(element.id + '-script').value = roll || ""
+					_element(element.id + '-output').value = ""
+					_element(element.id + '-detail').value = ""
+				}
+			}
+			
+			function handleLessCombat(key) {
+				if ( !key ) {
+					var parent = _element('tracking-combat-rolls')
+					var child, children = parent.getElementsByClassName('tracking-combat-rolls-row')
+					
+					for ( child of children ) {
+						_assignClass(child, 'hidden', 1)
+					}
+					
+					return
+				}
+				
+				var element = _element(key)
+				
+				if ( element ) {
+					_assignClass(element, 'hidden', 1)
+					_element(element.id + '-name').value = ""
+					_element(element.id + '-script').value = ""
+					_element(element.id + '-output').value = ""
+					_element(element.id + '-detail').value = ""
+				}
+			}
+			
+			function handleAttackRoll(prefix) {
+				var script = _element(prefix + '-script')
+				var output = _element(prefix + '-output')
+				var detail = _element(prefix + '-detail')
+				
+				var parsed = parseEffectiveness(script.value)
+				var result = evaluateEffectiveness(parsed)
+				
+				output.value = result.damage === false ? "" : result.damage
+				detail.value = result.concise.join(", ")
 			}
 			
 			function advanceLevel(event) {
@@ -2712,8 +3371,29 @@
 			
 			// MARK: Populate
 			
+			function populateCombatRolls() {
+				var element = _element('tracking-combat-rolls')
+				var index, maximumRolls = 10
+				var rows = []
+				var showRow = "<div><input type='button' id='tracking-combat-rolls-add' value='+' class='not-action' onclick='handleMoreCombat()' /><!-- label for='tracking-combat-add' class='action'><span>+</span></label --></div>"
+				var templateRow = "<div id='tracking-combat-rolls-{index}' class='tracking-combat-rolls-row {style}'>" +
+					"<input type='button' id='tracking-combat-rolls-{index}-remove' value='-' onclick='handleLessCombat(\"tracking-combat-rolls-{index}\")' />" +
+					"<input type='text' id='tracking-combat-rolls-{index}-name' value='' placeholder='Name' class='tracking-combat-rolls-name' />" +
+					"<input type='text' id='tracking-combat-rolls-{index}-script' value='' placeholder='+4/d8+2' class='tracking-combat-rolls-script' />" +
+					"<input type='button' id='tracking-combat-rolls-{index}-action' value='>' onclick='handleAttackRoll(\"tracking-combat-rolls-{index}\")' />" +
+					"<output id='tracking-combat-rolls-{index}-output' for='tracking-combat-rolls-{index}-script' class='tracking-combat-rolls-output'></output>" +
+					"<output id='tracking-combat-rolls-{index}-detail' for='tracking-combat-rolls-{index}-script' class='tracking-combat-rolls-detail'></output>" +
+					"</div>"
+				
+				for ( index = 0 ; index < maximumRolls ; ++index ) {
+					rows.push(replaceKeys(templateRow, {'index':index + 1, 'style':(index > 0 ? 'hidden' : '')}))
+				}
+				
+				element.innerHTML = showRow + rows.join(" ")
+			}
+			
 			function populateStyles(styles) {
-				var element = _element("form-styles")
+				var element = _element('form-styles')
 				
 				if ( element ) {
 					element.innerHTML += "\n" + styles.join("\n")
@@ -2891,6 +3571,7 @@
 				populateBackgrounds()
 				populateLanguages()
 				populateSkills()
+				populateCombatRolls()
 			}
 			
 			// MARK: Storage
@@ -3051,6 +3732,14 @@
 					for ( var value of dnd[key] ) { lookup[key][value.key] = value }
 				}
 				
+				lookup.damageAbbreviation = new Object()
+				
+				for ( var resistance of dnd.resistances ) {
+					for ( var abbreviation of resistance.abbreviations || [] ) {
+						lookup.damageAbbreviation[abbreviation] = resistance.key
+					}
+				}
+				
 				lookup.optionHash = []
 				
 				var haveFeaturesWithOptions = dnd.classes.concat(dnd.archetypes, dnd.races)
@@ -3168,7 +3857,7 @@
 			
 			<br class='tall' />
 			<p></p><span class='caption'>Transitory</span>
-			<input id='toggle-tracking' class='toggle' type='checkbox' />
+			<input id='toggle-tracking' checked class='toggle' type='checkbox' />
 			<label for='toggle-tracking' class='toggle'> </label>
 			<div id='tracking-container' class='toggled horizontal-content'>
 				<div id='tracking-combat'>
@@ -3211,6 +3900,7 @@
 				</div>
 				<div id='tracking'></div>
 				<div id='tracking-slots'></div>
+				<div id='tracking-combat-rolls'></div>
 				<div id='tracking-dice' class='unprintable'>
 					<span><input type='range' id='tracking-dice-count' value='1' min='1' max='20' oninput='form.diceCount.value = value' /><output for='tracking-dice-count' name='diceCount' class='tracking-number-output'>1</output></span>
 					<span id='tracking-dice-times'>&times</span>

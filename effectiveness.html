@@ -18,7 +18,6 @@
 		<script src="dnd.js"></script>
 		
 		<script lang="javascript">
-			var damageTypes = ['all', 'acid', 'bludgeoning', 'cold', 'force', 'fire', 'magic', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder']
 			var damageTypeMap = {
 				'':'all',
 				'a':'acid',
@@ -29,6 +28,7 @@
 				'fe':'force',
 				'f':'fire',
 				'fi':'fire',
+				'l':'lightning',
 				'm':'magic', // magic weapon damage distinct from non magical bludgeoning, piercing, and slashing weapon damage
 				'n':'necrotic',
 				'p':'piercing',
@@ -236,7 +236,7 @@
 				
 				if ( name ) {
 					result[key][name] = value
-				} else if ( damageTypes.indexOf(type) < 0 ) {
+				} else if ( Object.values(damageTypeMap).indexOf(type) < 0 ) {
 					for ( index = 0 ; index < type.length ; ++index ) {
 						letter = type.charAt(index)
 						result[key][damageTypeMap[letter] || letter] = value
@@ -271,7 +271,9 @@
 				var stringDamage = beginDamage < 0 ? '' : string.slice(beginDamage + 1, closeDamage)
 				var stringHit = string.slice(beginHit, closeHit)
 				
-				var patternHit = /([-+]\d*d?\d+o?|ao?|d[oh]?|c\d+|m)/g
+				result.input = [stringHit, stringDamage, stringAttacks, stringDefense]
+				
+				var patternHit = /([-+]\d*d?\d+o?|a[om]?|d[oh]?|c\d+|m)/g
 				var matchHit = stringHit.split(patternHit)
 				
 				for ( index = 0 ; index < matchHit.length ; ++index ) {
@@ -287,8 +289,10 @@
 						result.advantageHit = true
 					} else if ( match === 'ao' ) {
 						if ( !result.advantageHit ) { result.advantageHit = 'once' }
+					} else if ( match === 'am' ) {
+						result.advantageMiss = true
 					} else if ( match === 'd' ) {
-						if ( result.hit.length > 0 ) { break }
+						if ( result.hit.length > 0 ) { break } // unqualified die
 						result.disadvantageHit = true
 					} else if ( match === 'do' ) {
 						if ( !result.disadvantageHit ) { result.disadvantageHit = 'once' }
@@ -322,7 +326,7 @@
 				}
 				
 				var patternDiceModifierText = /([-+]?\d*)(d?)(\d+)([a-z]*)/
-				var patternDamage = /([-+]?\d*d?\d+[a-z]*|[+]c?\d+d?|\br\d+|\bao?)/g
+				var patternDamage = /([-+]?\d*d?\d+[a-z]*|[+]c?\d+d?|\b[mr]\d+|\bao?)/g
 				var matchDamage = stringDamage.split(patternDamage)
 				
 				for ( index = 0 ; index < matchDamage.length ; ++index ) {
@@ -336,6 +340,9 @@
 						result.advantageDamage = true
 					} else if ( match === 'ao' ) {
 						if ( !result.advantageDamage ) { result.advantageDamage = 'once' }
+					} else if ( match.charAt(0) === 'm' ) {
+						value = match.slice(1) | 0
+						if ( value > 0 ) { result.minimumDamageRoll = value }
 					} else if ( match.charAt(0) === 'r' ) {
 						value = match.slice(1) | 0
 						if ( value > 0 ) { result.lowDamageReroll = value }
@@ -406,7 +413,7 @@
 					}
 				}
 				
-				var patternDefense = /(\d+|[-+]\d*d?\d+[mo]?|v[a-z]*|r[a-z]*|i[a-z]+|d[oh]?|ao?)/g
+				var patternDefense = /(\d+|[-+]\d*d?\d+[mo]?|[vr][a-z]*|i[a-z]+|d[oh]?|ao?)/g
 				var matchDefense = stringDefense.split(patternDefense)
 				
 				for ( index = 0 ; index < matchDefense.length ; ++index ) {
