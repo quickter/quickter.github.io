@@ -171,7 +171,9 @@ var dnd = {
 		
 		{"key":"handcrossbow", "name":"Hand Crossbow", "damage":{"die":6}, "type":"piercing", "kind":"crossbow", "martial":true, "range":30, "longrange":120, "ammunition":"bolt", "loading":true, "light":true, "weight":2},
 		{"key":"heavycrossbow", "name":"Heavy Crossbow", "damage":{"die":10}, "type":"piercing", "kind":"crossbow", "martial":true, "range":100, "longrange":400, "ammunition":"bolt", "loading":true, "twohanded":true, "heavy":true, "weight":18, "small":"lightcrossbow"},
-		{"key":"longbow", "name":"Longbow", "damage":{"die":8}, "type":"piercing", "kind":"bow", "common":2, "martial":true, "range":150, "longrange":600, "ammunition":"arrow", "heavy":true, "twohanded":true, "weight":2, "small":"shortbow"}
+		{"key":"longbow", "name":"Longbow", "damage":{"die":8}, "type":"piercing", "kind":"bow", "common":2, "martial":true, "range":150, "longrange":600, "ammunition":"arrow", "heavy":true, "twohanded":true, "weight":2, "small":"shortbow"},
+		
+		{"key":"aarakocratalons", "name":"Talons", "damage":{"die":4}, "type":"slashing", "kind":"natural", "common":0, "martial":false, "weight":0}
 	],
 	"armors":[
 		{"key":"paddedarmor", "name":"Padded Armor", "summary":"AC 11", "armor":1, "type":"light", "disadvantage":"stealth", "weight":8},
@@ -2051,14 +2053,11 @@ var dnd = {
 		"height":{"base":44, "plus":{"roll":2, "die":4}},
 		"weight":{"base":115, "times":{"roll":2, "die":6}},
 		"alignment_default":"lg",
-		"toughness":1,
-		"advantage_on_saves":["poison"],
-		"resistance":["poison"],
 		"features":[
-			{"level":0, "key":"resilience", "name":"Dwarven Resilience", "summary":"Advantage on poison saves", "description":"You have advantage on saving throws against poison, and you have resistance against poison damage."},
+			{"level":0, "key":"resilience", "name":"Dwarven Resilience", "advantage_on_saves":["poison"], "resistance":["poison"], "summary":"Advantage on poison saves", "description":"You have advantage on saving throws against poison, and you have resistance against poison damage."},
 			{"level":0, "key":"tool", "name":"Tool Profiency", "summary":"Gain artisan tool proficiency", "description":"You gain proficiency with the artisan’s tools of your choice: smith’s tools, brewer’s supplies, or mason’s tools."},
 			{"level":0, "key":"stonecunning", "name":"Stonecunning", "summary":"Double proficiency on stone History", "description":"Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check, instead of your normal proficiency bonus."},
-			{"level":0, "key":"toughness", "name":"Dwarven Toughness", "summary":"Increase hit points by level", "description":"Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."}
+			{"level":0, "key":"toughness", "name":"Dwarven Toughness", "toughness":1, "summary":"Increase hit points by level", "description":"Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."}
 		]
 	},{
 		"key":"dwarfmountain",
@@ -2080,10 +2079,8 @@ var dnd = {
 		"height":{"base":48, "plus":{"roll":2, "die":4}},
 		"weight":{"base":130, "times":{"roll":2, "die":6}},
 		"alignment_default":"lg",
-		"advantage_on_saves":["poison"],
-		"resistance":["poison"],
 		"features":[
-			{"level":0, "key":"resilience", "name":"Dwarven Resilience", "summary":"Advantage on poison saves", "description":"You have advantage on saving throws against poison, and you have resistance against poison damage."},
+			{"level":0, "key":"resilience", "name":"Dwarven Resilience", "advantage_on_saves":["poison"], "resistance":["poison"], "summary":"Advantage on poison saves", "description":"You have advantage on saving throws against poison, and you have resistance against poison damage."},
 			{"level":0, "key":"tool", "name":"Tool Profiency", "summary":"Gain artisan tool proficiency", "description":"You gain proficiency with the artisan’s tools of your choice: smith’s tools, brewer’s supplies, or mason’s tools."},
 			{"level":0, "key":"stonecunning", "name":"Stonecunning", "summary":"Double proficiency on stone History", "description":"Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check, instead of your normal proficiency bonus."},
 			{"level":0, "key":"armor", "name":"Dwarven Armor Training", "summary":"Gain light and medium armor proficiency", "description":"You have proficiency with light and medium armor."}
@@ -2108,10 +2105,8 @@ var dnd = {
 		"weight":{"base":90, "times":{"roll":1, "die":4}},
 		"alignment_default":"cg",
 		"extra_language":1,
-		"advantage_on_saves":["charm"],
-		"immunities":["sleep"],
 		"features":[
-			{"level":0, "key":"fey", "name":"Fey Ancestry", "summary":"Advantage on charm saves", "description":"You have advantage on saving throws against being charmed, and magic can’t put you to sleep."},
+			{"level":0, "key":"fey", "name":"Fey Ancestry", "advantage_on_saves":["charm"], "immunities":["sleep"], "summary":"Advantage on charm saves", "description":"You have advantage on saving throws against being charmed, and magic can’t put you to sleep."},
 			{"level":0, "key":"trance", "name":"Trance", "summary":"Long rest is 4 hour meditation", "description":"Elves don’t need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day. (The Common word for such meditation is “trance.”) While meditating, you can dream after a fashion; such dreams are actually mental exercises that have become reflexive through years of practice. After resting in this way, you gain the same benefit that a human does from 8 hours of sleep."},
 			{"level":1, "key":"cantrip", "name":"Cantrip", "summary":"Choose one wizard cantrip", "cantrip":{"crass":"wizard", "ability":"intelligence"}, "type":"cantrip", "description":"You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it."}
 		]
@@ -2134,10 +2129,8 @@ var dnd = {
 		"height":{"base":54, "plus":{"roll":2, "die":10}},
 		"weight":{"base":100, "times":{"roll":1, "die":4}},
 		"alignment_default":"cg",
-		"advantage_on_saves":["charm"],
-		"immunities":["sleep"],
 		"features":[
-			{"level":0, "key":"fey", "name":"Fey Ancestry", "summary":"Advantage on charm saves", "description":"You have advantage on saving throws against being charmed, and magic can’t put you to sleep."},
+			{"level":0, "key":"fey", "name":"Fey Ancestry", "advantage_on_saves":["charm"], "immunities":["sleep"], "summary":"Advantage on charm saves", "description":"You have advantage on saving throws against being charmed, and magic can’t put you to sleep."},
 			{"level":0, "key":"trance", "name":"Trance", "summary":"Long rest is 4 hour meditation", "description":"Elves don’t need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day. (The Common word for such meditation is “trance.”) While meditating, you can dream after a fashion; such dreams are actually mental exercises that have become reflexive through years of practice. After resting in this way, you gain the same benefit that a human does from 8 hours of sleep."},
 			{"level":0, "key":"wild", "name":"Mask of the Wild", "summary":"Hide when lightly obscured by natural phenomena", "description":"You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena."}
 		]
@@ -2160,10 +2153,8 @@ var dnd = {
 		"height":{"base":53, "plus":{"roll":2, "die":6}},
 		"weight":{"base":75, "times":{"roll":1, "die":6}},
 		"alignment_default":"ce",
-		"advantage_on_saves":["charm"],
-		"immunities":["sleep"],
 		"features":[
-			{"level":0, "key":"fey", "name":"Fey Ancestry", "summary":"Advantage on charm saves", "description":"You have advantage on saving throws against being charmed, and magic can’t put you to sleep."},
+			{"level":0, "key":"fey", "name":"Fey Ancestry", "advantage_on_saves":["charm"], "immunities":["sleep"], "summary":"Advantage on charm saves", "description":"You have advantage on saving throws against being charmed, and magic can’t put you to sleep."},
 			{"level":0, "key":"trance", "name":"Trance", "summary":"Long rest is 4 hour meditation", "description":"Elves don’t need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day. (The Common word for such meditation is “trance.”) While meditating, you can dream after a fashion; such dreams are actually mental exercises that have become reflexive through years of practice. After resting in this way, you gain the same benefit that a human does from 8 hours of sleep."},
 			{"level":0, "key":"sensitive", "name":"Sunlight Sensitivity", "summary":"Disadvantage in direct sunlight", "description":"You have disadvantage on attack rolls and on Wisdom (Perception) checks that rely on sight when you, the target of your attack, or whatever you are trying to perceive is in direct sunlight."},
 			{"level":1, "key":"magic1", "name":"Drow Magic", "summary":"Gain Dancing Lights cantrip", "cantrip":{"key":"dancinglights", "ability":"charisma"}, "type":"cantrip", "description":"You know the dancing lights cantrip. Charisma is your spellcasting ability for these spells."},
@@ -2239,10 +2230,8 @@ var dnd = {
 		"alignment_default":"cn",
 		"extra_language":1,
 		"skill_options":{"limit":2},
-		"advantage_on_saves":["charm"],
-		"immunities":["sleep"],
 		"features":[
-			{"level":0, "key":"fey", "name":"Fey Ancestry", "summary":"Advantage on charm saves", "description":"You have advantage on saving throws against being charmed, and magic can’t put you to sleep."}
+			{"level":0, "key":"fey", "name":"Fey Ancestry", "advantage_on_saves":["charm"], "immunities":["sleep"], "summary":"Advantage on charm saves", "description":"You have advantage on saving throws against being charmed, and magic can’t put you to sleep."}
 		]
 	},{
 		"key":"halflinglightfoot",
@@ -2263,10 +2252,9 @@ var dnd = {
 		"height":{"base":31, "plus":{"roll":2, "die":4}},
 		"weight":{"base":35, "times":{"roll":1, "die":1}},
 		"alignment_default":"lg",
-		"advantage_on_saves":["fear"],
 		"features":[
 			{"level":0, "key":"lucky", "name":"Lucky", "summary":"Reroll a 1 on attack, save, or check", "description":"When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."},
-			{"level":0, "key":"brave", "name":"Brave", "summary":"Advantage on fear saves", "description":"You have advantage on saving throws against being frightened."},
+			{"level":0, "key":"brave", "name":"Brave", "advantage_on_saves":["fear"], "summary":"Advantage on fear saves", "description":"You have advantage on saving throws against being frightened."},
 			{"level":0, "key":"nimble", "name":"Halfling Nimbleness", "summary":"Move through space of larger creatures", "description":"You can move through the space of any creature that is of a size larger than yours."},
 			{"level":0, "key":"stealthy", "name":"Naturally Stealthy", "summary":"Hide when obscured by larger creatures", "description":"You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you."}
 		]
@@ -2289,13 +2277,11 @@ var dnd = {
 		"height":{"base":31, "plus":{"roll":2, "die":4}},
 		"weight":{"base":35, "times":{"roll":1, "die":1}},
 		"alignment_default":"lg",
-		"advantage_on_saves":["fear", "poison"],
-		"resistance":["poison"],
 		"features":[
 			{"level":0, "key":"lucky", "name":"Lucky", "summary":"Reroll a 1 on attack, save, or check", "description":"When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."},
-			{"level":0, "key":"brave", "name":"Brave", "summary":"Advantage on fear saves", "description":"You have advantage on saving throws against being frightened."},
+			{"level":0, "key":"brave", "name":"Brave", "advantage_on_saves":["fear"], "summary":"Advantage on fear saves", "description":"You have advantage on saving throws against being frightened."},
 			{"level":0, "key":"nimble", "name":"Halfling Nimbleness", "summary":"Move through space of larger creatures", "description":"You can move through the space of any creature that is of a size larger than yours."},
-			{"level":0, "key":"resilience", "name":"Stout Resilience", "summary":"Advantage on poison saves", "description":"You have advantage on saving throws against poison, and you have resistance against poison damage."}
+			{"level":0, "key":"resilience", "name":"Stout Resilience", "advantage_on_saves":["poison"], "resistance":["poison"], "summary":"Advantage on poison saves", "description":"You have advantage on saving throws against poison, and you have resistance against poison damage."}
 		]
 	},{
 		"key":"halforc",
@@ -2366,9 +2352,8 @@ var dnd = {
 		"height":{"base":57, "plus":{"roll":2, "die":8}},
 		"weight":{"base":110, "times":{"roll":2, "die":4}},
 		"alignment_default":"cn",
-		"resistance":["fire"],
 		"features":[
-			{"level":0, "key":"resistance", "name":"Hellish Resistance", "summary":"Resist fire damage", "description":"You have resistance to fire damage."},
+			{"level":0, "key":"resistance", "name":"Hellish Resistance", "resistance":["fire"], "summary":"Resist fire damage", "description":"You have resistance to fire damage."},
 			{"level":1, "key":"legacy1", "name":"Infernal Legacy", "summary":"Gain Thaumaturgy cantrip", "cantrip":{"key":"thaumaturgy", "ability":"charisma"}, "type":"cantrip", "description":"You know the thaumaturgy cantrip. When you reach 3rd level, you can cast the hellish rebuke spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the darkness spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells."},
 			{"level":3, "key":"legacy3", "name":"Infernal Legacy", "track":{"uses":1, "name":"Hellish Rebuke", "restore":"long"}, "summary":"1/day cast Hellish Rebuke", "type":"spell", "description":"You know the thaumaturgy cantrip. When you reach 3rd level, you can cast the hellish rebuke spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the darkness spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells."},
 			{"level":5, "key":"legacy5", "name":"Infernal Legacy", "track":{"uses":1, "name":"Darkness", "restore":"long"}, "summary":"1/day cast Darkness", "type":"spell", "description":"You know the thaumaturgy cantrip. When you reach 3rd level, you can cast the hellish rebuke spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the darkness spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells."}
@@ -2387,12 +2372,11 @@ var dnd = {
 		"skills":[],
 		"languages":["common", "aarakocra", "auran"],
 		"abilities":{"wisdom":1, "dexterity":2},
-		"weapons":[],
+		"weapons":["aarakocratalons"],
 		"benefits":["Flight", "Talons"],
 		"height":{"base":54, "plus":{"roll":2, "die":6}},
 		"weight":{"base":75, "times":{"roll":1, "die":3}},
 		"alignment_default":"ng",
-		"resistance":[],
 		"features":[
 			{"level":0, "key":"flight", "name":"Flight", "summary":"Flying speed 50 when lightly armored", "flying":50, "hover":false, "description":"You have a flying speed of 50 feet. To use this speed, you can’t be wearing medium or heavy armor."},
 			{"level":0, "key":"talons", "name":"Talons", "summary":"Proficient with talons, d4 damage", "description":"Your talons are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal slashing damage equal to 1d4 + your Strength modifier, instead of the bludgeoning damage normal for an unarmed strike."},
@@ -2416,7 +2400,6 @@ var dnd = {
 		"height":{"base":74, "plus":{"roll":2, "die":12}},
 		"weight":{"base":175, "times":{"roll":2, "die":6}},
 		"alignment_default":"ng",
-		"resistance":[],
 		"features":[
 			{"level":0, "key":"magic", "name":"Firbolg Magic", "track":{"uses":1, "restore":"rest"}, "summary":"1/rest cast Detect Magic and Disguise Self", "description":"You can cast Detect Magic and Disguise Self with this trait, using Wisdom as your spellcasting ability for them. Once you cast either spell, you can't cast it again with this trait until you finish a short or long rest. When you use this version of disguise self, you can seem up to 3 feet shorter than normal, allowing you to more easily blend in with humans and elves."},
 			{"level":0, "key":"step", "name":"Hidden Step", "track":{"uses":1, "restore":"rest"}, "summary":"1/rest turn invisible for a turn", "type":"bonusaction", "description":"As a bonus action, you can magically turn invisible until the start of your next turn or until you attack, make a damage roll, or force someone to make a saving throw. Once you use this trait, you can't use it again until you finish a short or long rest."},
@@ -2442,7 +2425,6 @@ var dnd = {
 		"height":{"base":74, "plus":{"roll":2, "die":10}},
 		"weight":{"base":200, "times":{"roll":2, "die":6}},
 		"alignment_default":"ln",
-		"resistance":[],
 		"features":[
 			{"level":0, "key":"stone", "name":"Stone's Endurance", "track":{"uses":1, "restore":"rest"}, "summary":"1/rest reduce damage by d12 + Constitution modifier as reaction", "type":"reaction", "description":"You can focus yourself to occasionally shrug off injury. When you take damage, you can use your reaction to roll a d12. Add your Constitution modifier to the number rolled, and reduce the damage by that total. After you use this trait, you can’t use it again until you finish a short or long rest."},
 			{"level":0, "key":"powerful", "name":"Powerful Build", "summary":"Push, drag, lift, and carry twice the weight", "description":"You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift."},
@@ -2490,11 +2472,8 @@ var dnd = {
 		"height":{"base":70, "plus":{"roll":2, "die":6}},
 		"weight":{"base":270, "times":{"roll":2, "die":3}},
 		"alignment_default":"nn",
-		"advantage_on_saves":["poison"],
-		"resistance":["poison"],
-		"immunities":["disease", "sleep"],
 		"features":[
-			{"level":0, "key":"resilience", "name":"Constructed Resilience", "summary":"Don't need to eat, drink, breathe or sleep", "description":"You were created to have remarkable fortitude, represented by the following benefits.<ul><li>You have advantage on saving throws against being poisoned, and you have resistance to poison damage.</li><li>You are immune to disease.</li><li>You don’t need to eat, drink, or breathe.</li><li>You don't need to sleep, and magic can’t put you to sleep.</li></ul>"},
+			{"level":0, "key":"resilience", "name":"Constructed Resilience", "advantage_on_saves":["poison"], "resistance":["poison"], "immunities":["disease", "sleep"], "summary":"Don't need to eat, drink, breathe or sleep", "description":"You were created to have remarkable fortitude, represented by the following benefits.<ul><li>You have advantage on saving throws against being poisoned, and you have resistance to poison damage.</li><li>You are immune to disease.</li><li>You don’t need to eat, drink, or breathe.</li><li>You don't need to sleep, and magic can’t put you to sleep.</li></ul>"},
 			{"level":0, "key":"rest", "name":"Sentry's Rest", "summary":"Long rest is 6 hours dormant but not unconscious", "description":"When you take a long rest, you must spend at least six hours in an inactive, motionless state, rather than sleeping. In this state, you appear inert, but it doesn’t render you unconscious, and you can see and hear as normal."},
 			{"level":0, "key":"protection", "name":"Integrated Protection", "summary":"Add proficiency bonus to armor class, natural armor", "description":"Your body has built-in defensive layers, which can be enchanced with armor.<ul><li>You gain a +1 bonus to Armor Class.</li><li>You can don only armor with which you have proficiency. To don armor, you must incorporate it into your body over the course of 1 hour, during which you must remain in contact with the armor. To doff armor, you must spend 1 hour removing it. You can rest while donning or doffing armor in this way.</li><li>While you live, your armor can't be removed from your body against your will.</li></ul>"},
 		]
