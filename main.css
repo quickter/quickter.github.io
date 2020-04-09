@@ -107,6 +107,8 @@ span.tracking-action-wrapper { display:inline-block; }
 #tracking-dice-rolls { display:inline-block; color:#999; }
 #tracking-dice-sum { display:inline-block; width:3em; height:1.75em; text-align:center; padding-top:0.25em; margin:0 1em; font-size:200%; font-weight:bold; color:#666; border-radius:50%; border:1px solid #CCC; }
 span.die-roll { display:inline-block; min-width:2.25em; text-align:center; }
+span.any-digit::after { content:"#"; color:#AAA; }
+span.example { font-weight:bold; }
 
 @media screen {
 	input.tracking-mark:checked + label.tracking-mark { background:#F4F4F4; background:linear-gradient(345deg, #FFF 0%, #FFF8F0 40%, #DDD 100%); border-color:#CCC; }
@@ -129,7 +131,7 @@ td.score.increase, td.score.pending { cursor:pointer; }
 
 table.attacks { padding:0; margin:0; border-spacing:0; border-collapse:collapse; }
 table.attacks tr.attacks:not(.equipment) { opacity:0.5; }
-td.name, td.range { white-space:nowrap; }
+td.name, td.range, td.script { white-space:nowrap; }
 tr.attacks > th { font-size:60%; text-align:left; }
 tr.attacks > td { padding-right:1em; }
 tr.attacks.melee > td.range { visibility:hidden; }
@@ -223,7 +225,7 @@ span.advances { position:relative; padding:0 1em; }
 	p#attacks { font-size:60%; }
 	p#feature, label.action { font-size:80%; }
 	p.choices { font-size:70%; }
-	td.name, td.notrange { white-space:normal; }
+	td.name, td.notrange, td.script { white-space:normal; }
 	.attacks.type, .attacks.summary { display:none; }
 	div#tracking-slots { font-size:80%; }
 }

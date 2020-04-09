@@ -623,7 +623,7 @@ var dnd = {
 			{"level":3, "key":"expertise", "name":"Expertise", "summary":"Double proficiency with 2 skills", "description":"At 3rd level, choose two of your skill proficiencies. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies."},
 			{"level":4, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft4"}},
 			{"level":4, "key":"spellcasting", "name":"Spellcasting", "summary":"Learn a cantrip", "cantrips":1, "description":"You know two cantrips of your choice from the bard spell list. You learn additional bard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Bard table."},
-			{"level":5, "key":"font", "name":"Font of Inspiration", "summary":"Regain inspiration dice after short rest", "description":"Beginning when you reach 5th level, you regain all of your expended uses of Bardic Inspiration when you finish a short or long rest."},
+			{"level":5, "key":"font", "name":"Font of Inspiration", "track":{"key":"inspiration", "restore":"rest"}, "summary":"Regain inspiration dice after short rest", "description":"Beginning when you reach 5th level, you regain all of your expended uses of Bardic Inspiration when you finish a short or long rest."},
 			{"level":5, "key":"inspiration", "name":"Bardic Inspiration (d8)", "summary":"Improve inspiration dice", "die":8, "description":"Your Bardic Inspiration die changes when you reach certain levels in this class. The die becomes a d8 at 5th level, a d10 at 10th level, and a d12 at 15th level."},
 			{"level":6, "key":"counter", "name":"Countercharm", "summary":"Advantage on fear and charm saves", "type":"action", "advantage_on_saves":["fear", "charm"], "description":"At 6th level, you gain the ability to use musical notes or words of power to disrupt mind-influencing effects. As an action, you can start a performance that lasts until the end of your next turn. During that time, you and any friendly creatures within 30 feet of you have advantage on saving throws against being frightened or charmed. A creature must be able to hear you to gain this benefit. The performance ends early if you are incapacitated or silenced or if you voluntarily end it (no action required)."},
 			{"level":8, "key":"ability", "name":"Ability Score Improvement", "summary":"+2", "options":{"dnd":"feats", "hash":"ft8"}},
@@ -750,7 +750,7 @@ var dnd = {
 		"order":["strength", "constitution", "dexterity", "wisdom", "charisma", "intelligence"],
 		"skill_options":{"limit":2, "list":["acrobatics", "animals", "athletics", "history", "insight", "intimidation", "perception", "survival"]},
 		"archetype_name":"Martial Archetype",
-		"archetypes":["champion", "battle", "knight", "cavalier", "samurai"],
+		"archetypes":["champion", "battle", "knight", "archer", "cavalier", "samurai"],
 		"archetype_default":"battle",
 		"background_default":"soldier",
 		"_equipment_default":[{"armor":"chainmail"}, {"weapon":"longsword"}, {"armor":"shield"}, {"weapon":"lightcrossbow"}, {"item":"bolt", "quantity":20}, {"pack":"dungeoneers"}],
@@ -2253,7 +2253,7 @@ var dnd = {
 		"weight":{"base":35, "times":{"roll":1, "die":1}},
 		"alignment_default":"lg",
 		"features":[
-			{"level":0, "key":"lucky", "name":"Lucky", "summary":"Reroll a 1 on attack, save, or check", "description":"When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."},
+			{"level":0, "key":"lucky", "name":"Lucky", "hit":"r1", "summary":"Reroll a 1 on attack, save, or check", "description":"When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."},
 			{"level":0, "key":"brave", "name":"Brave", "advantage_on_saves":["fear"], "summary":"Advantage on fear saves", "description":"You have advantage on saving throws against being frightened."},
 			{"level":0, "key":"nimble", "name":"Halfling Nimbleness", "summary":"Move through space of larger creatures", "description":"You can move through the space of any creature that is of a size larger than yours."},
 			{"level":0, "key":"stealthy", "name":"Naturally Stealthy", "summary":"Hide when obscured by larger creatures", "description":"You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you."}
@@ -2278,7 +2278,7 @@ var dnd = {
 		"weight":{"base":35, "times":{"roll":1, "die":1}},
 		"alignment_default":"lg",
 		"features":[
-			{"level":0, "key":"lucky", "name":"Lucky", "summary":"Reroll a 1 on attack, save, or check", "description":"When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."},
+			{"level":0, "key":"lucky", "name":"Lucky", "hit":"r1", "summary":"Reroll a 1 on attack, save, or check", "description":"When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."},
 			{"level":0, "key":"brave", "name":"Brave", "advantage_on_saves":["fear"], "summary":"Advantage on fear saves", "description":"You have advantage on saving throws against being frightened."},
 			{"level":0, "key":"nimble", "name":"Halfling Nimbleness", "summary":"Move through space of larger creatures", "description":"You can move through the space of any creature that is of a size larger than yours."},
 			{"level":0, "key":"resilience", "name":"Stout Resilience", "advantage_on_saves":["poison"], "resistance":["poison"], "summary":"Advantage on poison saves", "description":"You have advantage on saving throws against poison, and you have resistance against poison damage."}

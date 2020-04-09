@@ -273,7 +273,7 @@
 				
 				result.input = [stringHit, stringDamage, stringAttacks, stringDefense]
 				
-				var patternHit = /([-+]\d*d?\d+o?|a[om]?|d[oh]?|c\d+|m)/g
+				var patternHit = /([-+]\d*d?\d+o?|a[o]?|d[oh]?|c\d+|rm|m)/g
 				var matchHit = stringHit.split(patternHit)
 				
 				for ( index = 0 ; index < matchHit.length ; ++index ) {
@@ -289,7 +289,7 @@
 						result.advantageHit = true
 					} else if ( match === 'ao' ) {
 						if ( !result.advantageHit ) { result.advantageHit = 'once' }
-					} else if ( match === 'am' ) {
+					} else if ( match === 'rm' ) {
 						result.advantageMiss = true
 					} else if ( match === 'd' ) {
 						if ( result.hit.length > 0 ) { break } // unqualified die

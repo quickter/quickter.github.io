@@ -337,7 +337,7 @@
 				var track, tracking = []
 				var level = this.level | 0
 				var modifiers = this.modifiers
-				var uses, key, name, restore, format
+				var uses, key, name, restore, format, other
 				
 				for ( feature of activeFeatures ) {
 					track = feature.track
@@ -348,6 +348,22 @@
 					case 'rest':   restore = 'restore-long-rest restore-short-rest'; break
 					case 'combat': restore = 'restore-initiative'; break
 					default:       restore = 'restore-long-rest'; break
+					}
+					
+					if ( track.key ) {
+						other = tracking.find(t => t.key == track.key)
+						
+						if ( other ) {
+							if ( track.restore ) {
+								other.restore = restore
+							}
+							
+							if ( track.add && other.uses != 'unlimited' ) {
+								other.uses += track.add | 0
+							}
+						}
+						
+						continue
 					}
 					
 					format = 'pips'
@@ -1324,7 +1340,7 @@
 				result.isAttack = beginDamage > 0
 				result.isDefenseKnown = beginDefense > 0
 				
-				var patternHit = /([-+]\d*d?\d+o?|a[om]?|d[oh]?|r\d+|c\d+|m)/g
+				var patternHit = /([-+]\d*d?\d+o?|a[o]?|d[oh]?|r\d+|c\d+|rm|m)/g
 				var matchHit = stringHit.split(patternHit)
 				
 				for ( index = 0 ; index < matchHit.length ; ++index ) {
@@ -1340,7 +1356,7 @@
 						result.advantageHit = true
 					} else if ( match === 'ao' ) {
 						if ( !result.advantageHit ) { result.advantageHit = 'once' }
-					} else if ( match === 'am' ) {
+					} else if ( match === 'rm' ) {
 						result.advantageMiss = true
 					} else if ( match === 'd' ) {
 						if ( result.hit.length > 0 ) { break } // unqualified die
@@ -1607,7 +1623,7 @@
 				return sum
 			}
 			
-			function evaluateSingleEffectiveness(e, hasHit, hasBonus) {
+			function evaluateSingleEffectiveness(e, hasHit, hasBonus, verbose) {
 				var concise = []
 				var summary = []
 				var result = "", sum = false
@@ -1618,6 +1634,7 @@
 				var advantageHit = e.advantageHit
 				var disadvantageHit = e.disadvantageHit
 				var advantageDamage = e.advantageDamage
+				var advantageMiss = e.advantageMiss
 				var attack, attacks = Math.max(+e.attacks, 1)
 				var index, item, once
 				var modifierHit, armorClass, hit, sum
@@ -1653,6 +1670,8 @@
 				}
 				
 				for ( attack = 0 ; attack < attacks ; ++attack ) {
+					summary.push("#" + (attack + 1))
+					
 					result = ""
 					isHit = false
 					hasAdvantage = false
@@ -1702,7 +1721,7 @@
 						
 						while ( onceToHit.length > 0 || onceToDefend.length > 0 ) {
 							if ( toHit + modifierHit < armorClass ) {
-								once = onceToHit.reduce((s, i) => s + (i.modifier | 0) + 0.5 * (i.die | 0) * (i.roll || 1), 0)
+								once = onceToHit.reduce((s, i) => s + (i.modifier | 0) + (i.die | 0) * (i.roll || 1), 0) * 0.5
 								
 								if ( toHit + modifierHit + once >= armorClass ) {
 									item = onceToHit.shift()
@@ -1714,7 +1733,7 @@
 									break
 								}
 							} else {
-								once = onceToDefend.reduce((s, i) => s + (i.modifier | 0) + 0.5 * (i.die | 0) * (i.roll || 1), 0)
+								once = onceToDefend.reduce((s, i) => s + (i.modifier | 0) + (i.die | 0) * (i.roll || 1), 0) * 0.5
 								
 								if ( toHit + modifierHit < armorClass + once ) {
 									item = onceToDefend.shift()
@@ -1759,6 +1778,14 @@
 					
 					if ( isAttack && isDefenseKnown && isHit && disadvantageHit === 'hit' ) {
 						disadvantageHit = 0
+					}
+					
+					if ( isAttack && isDefenseKnown && !isHit && advantageMiss ) {
+						attacks += 1
+						advantageMiss = 0
+						summary.push("retry miss")
+						concise.push(result + "#")
+						continue
 					}
 					
 					damageRolled = 0
@@ -1842,18 +1869,23 @@
 					
 					if ( isHit ) {
 						hasHit = true
+					}
+					
+					if ( isHit || !isAttack ) {
 						sum += damageRolled
 					}
 					
 					concise.push(result)
 				}
 				
-				console.log(summary.join(" "))
+				if ( verbose ) {
+					console.log(summary.join(" "))
+				}
 				
 				return {'damage':sum, 'concise':concise, 'summary':summary, 'hasBonus':hasBonus, 'hasHit':hasHit}
 			}
 			
-			function evaluateEffectiveness(e) {
+			function evaluateEffectiveness(e, verbose) {
 				var damage = false
 				var concise = []
 				var summary = []
@@ -1862,7 +1894,7 @@
 				var hasHit = false
 				
 				for ( var s of e ) {
-					evaluation = evaluateSingleEffectiveness(s, hasHit, hasBonus)
+					evaluation = evaluateSingleEffectiveness(s, hasHit, hasBonus, verbose)
 					
 					if ( s.isDefenseKnown && evaluation.damage ) {
 						damage += evaluation.damage
@@ -2799,12 +2831,45 @@
 				var script = _element(prefix + '-script')
 				var output = _element(prefix + '-output')
 				var detail = _element(prefix + '-detail')
+				var target = _element('tracking-combat-rolls-target')
 				
-				var parsed = parseEffectiveness(script.value)
-				var result = evaluateEffectiveness(parsed)
+				var value = script.value
+				var where = value.indexOf('@')
 				
-				output.value = result.damage === false ? "" : result.damage
-				detail.value = result.concise.join(", ")
+				if ( target && where < 0 ) {
+					var suffix = target.value
+					
+					if ( suffix.length > 0 && suffix.indexOf('@') < 0 ) { suffix = '@' + suffix }
+					
+					value = value + suffix
+					where = value.indexOf('@')
+				}
+				
+				var index = value.indexOf('%')
+				var allowMontecarlo = where < 0 ? value.startsWith('/') && index > 0 : index > where
+				var montecarlo = allowMontecarlo ? Math.min(+value.slice(index + 1) || 1000, 10000) : 0
+				
+				var parsed = parseEffectiveness(value)
+				
+				if ( montecarlo > 0 ) {
+					var sum = 0
+					var sample, samples = []
+					
+					for ( index = 0 ; index < montecarlo ; ++index ) {
+						sample = evaluateEffectiveness(parsed, false)
+						sum += sample.damage || 0
+						
+						if ( index < 10 ) { samples.push(sample.damage || 0) }
+					}
+					
+					output.value = (sum / montecarlo) + "/r "
+					detail.value = "(" + samples.join(", ") + (montecarlo > samples.length ? ", ... × " + montecarlo : "") + ")"
+				} else {
+					var result = evaluateEffectiveness(parsed, true)
+					
+					output.value = result.damage === false ? "" : result.damage + " : "
+					detail.value = result.concise.join(", ")
+				}
 			}
 			
 			function advanceLevel(event) {
@@ -3145,7 +3210,7 @@
 				//	spells
 				
 				_element('level').innerHTML = "Level " + details.level
-				_element('level').title = details.level < defaults.maximumLevel ? "Next Level at " + dnd.experience[details.level] + "xp" : "Maximum Level"
+				_element('level').title = details.level < defaults.maximumLevel ? "Next Level at " + dnd.experience[details.level] + " xp" : "Maximum Level"
 				_element('race').innerHTML = details.race.name || placeholder("Race")
 				_element('crass').innerHTML = details.crass.name || placeholder("Class")
 				_element('archetype').innerHTML = details.archetype.name || placeholder("Archetype")
@@ -3375,7 +3440,13 @@
 				var element = _element('tracking-combat-rolls')
 				var index, maximumRolls = 10
 				var rows = []
-				var showRow = "<div><input type='button' id='tracking-combat-rolls-add' value='+' class='not-action' onclick='handleMoreCombat()' /><!-- label for='tracking-combat-add' class='action'><span>+</span></label --></div>"
+				var prefixRow = "<div>" +
+					"<input type='button' id='tracking-combat-rolls-add' value='+' class='not-action' onclick='handleMoreCombat()' /><!-- label for='tracking-combat-add' class='action'><span>+</span></label -->" +
+					"<input id='toggle-combat-instructions' class='toggle' type='checkbox' /><label for='toggle-combat-instructions' class='toggle'> </label><div id='tracking-combat-instructions' class='toggled'></div>" +
+					"</div>"
+				var suffixRow = "<div>" +
+					"<span>@</span><input type='text' id='tracking-combat-rolls-target' value='' placeholder='16' class='tracking-combat-rolls-script' />" +
+					"</div>"
 				var templateRow = "<div id='tracking-combat-rolls-{index}' class='tracking-combat-rolls-row {style}'>" +
 					"<input type='button' id='tracking-combat-rolls-{index}-remove' value='-' onclick='handleLessCombat(\"tracking-combat-rolls-{index}\")' />" +
 					"<input type='text' id='tracking-combat-rolls-{index}-name' value='' placeholder='Name' class='tracking-combat-rolls-name' />" +
@@ -3389,7 +3460,8 @@
 					rows.push(replaceKeys(templateRow, {'index':index + 1, 'style':(index > 0 ? 'hidden' : '')}))
 				}
 				
-				element.innerHTML = showRow + rows.join(" ")
+				element.innerHTML = prefixRow + rows.join(" ") + suffixRow
+				_element('tracking-combat-instructions').innerHTML = _element('tracking-combat-instructions-source').innerHTML
 			}
 			
 			function populateStyles(styles) {
@@ -3717,6 +3789,8 @@
 						"equipment":[[[{"weapon":"dagger"}]]],
 						"features":[{"level":0, "key":"archetype", "name":"Archetype", "summary":"Choose archetype"}]
 					})
+					
+					//_element('toggle-tracking').checked = true
 				}
 				
 				var keys = [
@@ -3783,7 +3857,7 @@
 			</div>
 		</div>
 		
-		<div id='character-view'><form id='character-form'>
+		<div id='character-view'><form id='character-form' method='get'>
 			<p id='randomize'>
 				<hr />
 				<input id='random-character' type='button' value='' class='action' onclick='randomCharacter()' />
@@ -3857,7 +3931,7 @@
 			
 			<br class='tall' />
 			<p></p><span class='caption'>Transitory</span>
-			<input id='toggle-tracking' checked class='toggle' type='checkbox' />
+			<input id='toggle-tracking' class='toggle' type='checkbox' />
 			<label for='toggle-tracking' class='toggle'> </label>
 			<div id='tracking-container' class='toggled horizontal-content'>
 				<div id='tracking-combat'>
@@ -3947,17 +4021,17 @@
 			<p id='languages' class='choices toggled'></p>
 			
 			<p></p>
-			<span class='caption'>Equipment</span>
-			<p id='equipment' class='small'> </p>
-			
-			<span class='caption'>Treasure</span>
-			<p id='treasure' class='small'> </p>
-			
 			<span class='caption'>Resistances</span>
 			<p id='resistances' class='normal'> </p>
 			
 			<span class='caption'>Features</span>
 			<p id='feature'></p>
+			
+			<span class='caption'>Equipment</span>
+			<p id='equipment' class='small'> </p>
+			
+			<span class='caption'>Treasure</span>
+			<p id='treasure' class='small'> </p>
 			
 			<span class='caption'>Characteristics</span>
 			<p id='characteristics' class='small'>
@@ -3972,6 +4046,91 @@
 			<hr onclick='toggleHidden("raw-character")' />
 			<p id='raw-character' class='hidden'></p>
 		</form></div>
+		
+		<div id='tracking-combat-instructions-source' class='hidden'>
+			<table class='combat-instructions instructions small'>
+				<tr><td></td><td colspan='3'>Begin Hit</td></tr>
+				<tr><td>&plusmn;<span class='any-digit'></span></td><td>Hit modifier</td><td>all attacks</td><td><span class='small'>e.g.</span> Proficiency Bonus <span class='example'>+2</span></td></tr>
+				<tr><td>&plusmn;<span class='any-digit'></span>o</td><td>Hit modifier</td><td>first near miss</td><td><span class='small'>e.g.</span> Foe Slayer <span class='example'>+3o</span></td></tr>
+				<tr><td>&plusmn;<span class='any-digit'></span>d<span class='any-digit'></span></td><td>Hit modifier dice</td><td>all attacks</td><td><span class='small'>e.g.</span> Bane <span class='example'>-d4</span></td></tr>
+				<tr><td>&plusmn;<span class='any-digit'></span>d<span class='any-digit'></span>o</td><td>Hit modifier dice</td><td>first near miss</td><td><span class='small'>e.g.</span> Precision <span class='example'>+d6o</span></td></tr>
+				<tr><td>a</td><td>Advantage</td><td>all attacks</td><td><span class='small'>e.g.</span> Reckless Attack <span class='example'></span></td></tr>
+				<tr><td>ao</td><td>Advantage</td><td>first attack</td><td><span class='small'>e.g.</span> Shadow Step <span class='example'></span></td></tr>
+				<tr><td>d</td><td>Disadvantage</td><td>all attacks</td><td><span class='small'>e.g.</span> Sunlight Sensitivity <span class='example'></span></td></tr>
+				<tr><td>do</td><td>Disadvantage</td><td>first attack</td><td><span class='small'>e.g.</span> Vicious Mockery <span class='example'></span></td></tr>
+				<tr><td>dh</td><td>Disadvantage</td><td>until a hit</td><td><span class='small'>e.g.</span> Displacement <span class='example'></span></td></tr>
+				<tr><td>rm</td><td>Reroll miss</td><td>first miss</td><td><span class='small'>e.g.</span> Unerring Accuracy <span class='example'></span></td></tr>
+				<tr><td>r<span class='any-digit'></span></td><td>Reroll low hit</td><td>value or lower</td><td><span class='small'>e.g.</span> Halfling Lucky <span class='example'>r1</span></td></tr>
+				<tr><td>c<span class='any-digit'></span></td><td>Critical roll</td><td>value or higher</td><td><span class='small'>e.g.</span> Improved Critical <span class='example'>c19</span></td></tr>
+				<tr><td>m</td><td>Magic</td><td>for resistance</td><td><span class='small'>e.g.</span> Primal Strike <span class='example'></span></td></tr>
+				
+				<tr><td colspan='4'> </td></tr>
+				<tr><th>/</th><td colspan='3'>Begin Damage</td></tr>
+				<tr><td><span class='any-digit'></span>d<span class='any-digit'></span></td><td>Damage dice</td><td>base damage</td><td><span class='small'>e.g.</span> Greatsword <span class='example'>/2d6s</span></td></tr>
+				<tr><td>&plusmn;<span class='any-digit'></span></td><td>Damage modifier</td><td>all hits</td><td><span class='small'>e.g.</span> Dueling <span class='example'>/ +2</span></td></tr>
+				<tr><td>&plusmn;<span class='any-digit'></span>o</td><td>Damage modifier</td><td>first hit</td><td><span class='small'>e.g.</span> Divine Fury <span class='example'>/ +d6ro+1ro</span></td></tr>
+				<tr><td>&plusmn;<span class='any-digit'></span>d<span class='any-digit'></span></td><td>Damage modifier dice</td><td>all hits</td><td><span class='small'>e.g.</span> Hex <span class='example'>/ +d6</span></td></tr>
+				<tr><td>&plusmn;<span class='any-digit'></span>d<span class='any-digit'></span>o</td><td>Damage modifier dice</td><td>first hit</td><td><span class='small'>e.g.</span> Colossus Slayer <span class='example'>/ +d8o</span></td></tr>
+				<tr><td>abceflnpqyrst</td><td colspan='2'>Damage Type <span class='small'>(a acid, c cold, f fire, l lightning, t thunder)</span></td><td><span class='small'>e.g.</span> Flame Strike <span class='example'>/4d6f+4d6r</span></td></tr>
+				<tr><td>+c<span class='any-digit'></span></td><td>Critical damage</td><td>critical hits</td><td><span class='small'>e.g.</span> Sword of Sharpness <span class='example'>/ +c14</span></td></tr>
+				<tr><td>+c<span class='any-digit'></span>d</td><td>Critical dice</td><td>critical hits</td><td><span class='small'>e.g.</span> Savage Attacks <span class='example'>/ +c1d</span></td></tr>
+				<tr><td>r<span class='any-digit'></span></td><td>Reroll low dice</td><td>value or lower</td><td><span class='small'>e.g.</span> Great Weapon Fighting <span class='example'>/ r2</span></td></tr>
+				<tr><td>m<span class='any-digit'></span></td><td>Minimum roll</td><td>below value</td><td><span class='small'>e.g.</span> Elemental Adept <span class='example'>/ m2</span></td></tr>
+				<tr><td>a</td><td>Advantage</td><td>all hits</td><td></td></tr>
+				<tr><td>ao</td><td>Advantage</td><td>first hit</td><td><span class='small'>e.g.</span> Savage Attacker <span class='example'>/ ao</span></td></tr>
+				
+				<tr><td colspan='4'> </td></tr>
+				<tr><th>#</th><td colspan='3'>Begin Attacks</td></tr>
+				<tr><td><span class='any-digit'></span></td><td>Number of Attacks</td><td>default 1</td><td><span class='small'>e.g.</span> Extra Attack <span class='example'>#2</span></td></tr>
+				<tr><td>b</td><td>Bonus Attack</td><td>bonus action</td><td><span class='small'>e.g.</span> Sudden Strike <span class='example'>#b</span></td></tr>
+				<tr><td>cb</td><td>Critical Bonus Attack</td><td>first critical hit</td><td><span class='small'>e.g.</span> Great Weapon Master <span class='example'>#cb</span></td></tr>
+				<tr><td>r</td><td>Reaction</td><td></td><td><span class='small'>e.g.</span> Retaliation <span class='example'>#r</span></td></tr>
+				
+				<tr><td colspan='4'> </td></tr>
+				<tr><th>@</th><td colspan='3'>Begin Defense</td></tr>
+				<tr><td><span class='any-digit'></span></td><td>Armor Class</td><td>default 10</td><td><span class='small'>e.g.</span> Mage Armor <span class='example'>@13</span></td></tr>
+				<tr><td>+<span class='any-digit'></span></td><td>Defense modifier</td><td>all hits</td><td><span class='small'>e.g.</span> Defense <span class='example'>@ +1</span></td></tr>
+				<tr><td>+<span class='any-digit'></span>o</td><td>Defense modifier</td><td>first near hit</td><td><span class='small'>e.g.</span> Defensive Duelist <span class='example'>@ +2o</span></td></tr>
+				<tr><td>+<span class='any-digit'></span>m</td><td>Defense modifier</td><td>after first hit</td><td><span class='small'>e.g.</span> Multiattack Defense <span class='example'>@ +4m</span></td></tr>
+				<tr><td>+<span class='any-digit'></span>d<span class='any-digit'></span></td><td>Defense modifier dice</td><td>all hits</td><td><span class='small'>e.g.</span> Defensive Flourish <span class='example'>@ +d6</span></td></tr>
+				<tr><td>+<span class='any-digit'></span>d<span class='any-digit'></span>o</td><td>Defense modifier dice</td><td>first near hit</td><td><span class='small'>e.g.</span> Combat Inspiration <span class='example'>@ +d6o</span></td></tr>
+				<tr><td>-<span class='any-digit'></span></td><td>Damage reduction</td><td>all hits</td><td><span class='small'>e.g.</span> Heavy Armor Master <span class='example'>@ -3bps</span></td></tr>
+				<tr><td>-<span class='any-digit'></span>o</td><td>Damage reduction</td><td>first hit</td><td><span class='small'>e.g.</span> Song of Defense <span class='example'>@ -5o</span></td></tr>
+				<tr><td>-<span class='any-digit'></span>d<span class='any-digit'></span></td><td>Damage reduction dice</td><td>all hits</td><td></td></tr>
+				<tr><td>-<span class='any-digit'></span>d<span class='any-digit'></span>o</td><td>Damage reduction dice</td><td>first hit</td><td><span class='small'>e.g.</span> Deflect Missle <span class='example'>@ -d10o-6o</span></td></tr>
+				
+				<tr><td>v</td><td>Vulnerability</td><td>double damage</td><td><span class='small'>e.g.</span> Path to the Grave <span class='example'>@ vo</span></td></tr>
+				<tr><td>r</td><td>Resistance</td><td>half damage</td><td><span class='small'>e.g.</span> Stoneskin <span class='example'>@ rbps</span></td></tr>
+				<tr><td>i</td><td>Immunity</td><td>no damage</td><td><span class='small'>e.g.</span> Purity of Body <span class='example'>@ iq</span></td></tr>
+				<tr><td>abceflnpqyrst</td><td colspan='2'>Damage Type <span class='small'>(e force, n necrotic, q poison, y psychic, r radiant)</span></td><td><span class='small'>e.g.</span> Bear Totem <span class='example'>@ rabcefnpqrst</span></td></tr>
+				
+				<tr><td>a</td><td>Advantage</td><td>given to attacker</td><td><span class='small'>e.g.</span> Reckless Attack <span class='example'>@ a</span></td></tr>
+				<tr><td>ao</td><td>Advantage</td><td>given to attacker once</td><td></td></tr>
+				<tr><td>d</td><td>Disadvantage</td><td>imposed on attacker</td><td><span class='small'>e.g.</span> Blur <span class='example'>@ d</span></td></tr>
+				<tr><td>do</td><td>Disadvantage</td><td>imposed on attacker once</td><td><span class='small'>e.g.</span> Shadowy Dodge <span class='example'>@ do</span></td></tr>
+				<tr><td>dh</td><td>Disadvantage</td><td>imposed on attacker until hit</td><td><span class='small'>e.g.</span> Displacement <span class='example'>@ dh</span></td></tr>
+				
+				<tr><td colspan='4'> </td></tr>
+				<tr><td>;</td><td colspan='2'>Separate attacks</td><td><span class='small'>e.g.</span> two weapons <span class='example'>+5/d6+3;+5/d6</span></td></tr>
+				<tr><td>%</td><td colspan='3'>Compute average damage per round with Monte Carlo method</td></tr>
+				
+				<tr><td></td><td colspan='3' class='small'>With nothing before the / only damage is rolled.</td></tr>
+				<tr><td></td><td colspan='3' class='small'>With defense, rolling reports +X for hit by X, or -X for missed by X, one time attack bonuses are used with a • indicating each use, one time damage bonuses apply to the first hit, and resistances are applied to damage.</td></tr>
+				<tr><td></td><td colspan='3' class='small'>Without defense, rolling reports the armor class that could be hit, one time attack and damage bonuses are ignored, and damage type is irrelevant.</td></tr>
+			</table>
+			<table class='combat-instructions instructions small'>
+				<tr><td class='script'>+2+3/d8s+3#1</td><td>Fighter 1, Strength 16, Longsword</td></tr>
+				<tr><td class='script'>+6+5+3m+2-5+d12o/d8p+3+5+2+10#4</td><td>Battle Master 20, Dexterity 20, Longbow +3, Archery, Bracers, Sharpshooter, Precision</td></tr>
+				<tr><td class='script'>c18+6+5+3m-5/2d6s+3+5+10 r2#4cb</td><td>Champion 20, Strength 20, Greatsword +3, Great Weapon Master</td></tr>
+				<tr><td class='script'>c19+6+5+3m-5/2d6s+3+5+10+d8r r2#3cb</td><td>Conquest Paladin 20, Strength 20, Greatsword +3, Great Weapon Master, Conquerer</td></tr>
+				<tr><td class='script'>+6+5+3m+2-5+5o rm/d8p+3+5+2+10#4</td><td>Gloom Stalker 20, Dexterity 20, Longbow +3, Archery, Bracers, Sharpshooter, Swift Quiver</td></tr>
+				<tr><td class='script'>a+6+5+3m/d8s+3+5+2+2d12#2</td><td>Sword Bard 20, Dexterity 20, Rapier +3, Dueling, Duelist, Tenser</td></tr>
+				<tr><td class='script'>+6+7+3m-5/d10s+3+7+10+4+d6ro+10ro+c4d#2cb;+6+7+3m/d4b+3+7+4+c4d#b</td><td>Zealot 20, Strength 24, Halberd +3, Great Weapon Master, Polearm Master, Rage</td></tr>
+				<tr><td class='script'>a+6+5+3/d10s+5+3+10d10o#2;a+6+5/d10b+5#b</td><td>Hand Monk 20, Dexterity 20, Short Sword +3, Empty Body</td></tr>
+				<tr><td class='script'>a+6+5+3 r1/d6p+5+3+10d6 a#1</td><td>Arcane Trickster 20, Dexterity 20, Short Sword +3, Savage Attacker, Greater Invisibility</td></tr>
+				<tr><td class='script'>+6+5+3+2/d10e+5#4</td><td>Warlock 20, Charisma 20, Wand +3, Archmagi, Agonizing Blast</td></tr>
+			</table>
+		</div>
 		
 		<script type="text/javascript">
 			prepare()
