@@ -1318,13 +1318,17 @@
 			function parseSingleEffectiveness(string) {
 				var result = new Object()
 				
+				string = string.toLowerCase()
+				string = string.replace(/[,•]+/g, " ")
+				string = string.replace(/\s+/g, " ")
+				string = string.replace(/[‒–—‐‑‧⁃]+/g, "-")
+				
 				result.armorClass = 10
 				result.hit = []
 				result.damage = []
 				result.defense = []
 				result.reduction = []
 				result.magical = false
-				string = string.toLowerCase().replace(/,•/g, " ")
 				
 				var damageTypeMap = lookup.damageAbbreviation
 				
@@ -1333,7 +1337,7 @@
 				var beginDamage = string.indexOf('/', beginHit)
 				var beginAttacks = string.indexOf('#', beginDamage)
 				var beginDefense = string.indexOf('@', beginAttacks < 0 ? beginDamage : beginAttacks)
-				var closeAttacks = beginDefense < 0 ? undefined : beginDefense
+				var closeAttacks = beginDefense < 0 ? string.length : beginDefense
 				var closeDamage = beginAttacks < 0 ? closeAttacks : beginAttacks
 				var closeHit = beginDamage < 0 ? closeDamage : beginDamage
 				
@@ -1343,7 +1347,7 @@
 				var stringHit = string.slice(beginHit, closeHit)
 				
 				result.input = [stringHit, stringDamage, stringAttacks, stringDefense]
-				result.isAttack = beginDamage > 0
+				result.isAttack = closeHit > 0
 				result.isDefenseKnown = beginDefense > 0
 				
 				var patternHit = /([-+]\d*d?\d+o?|a[o]?|d[oh]?|r\d+|c\d+|rm|m)/g
@@ -1902,7 +1906,7 @@
 				for ( var s of e ) {
 					evaluation = evaluateSingleEffectiveness(s, hasHit, hasBonus, verbose)
 					
-					if ( s.isDefenseKnown && evaluation.damage ) {
+					if ( s.isDefenseKnown ) {
 						damage += evaluation.damage
 					}
 					
