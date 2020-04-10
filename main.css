@@ -80,7 +80,7 @@ td.menu:last-of-type { padding-right:1.5em; }
 td.menu:not(:first-of-type) { font-size:80%; padding-left:1em; }
 td.menu > label { display:block; cursor:pointer; }
 
-.horizontal-content { position:relative; display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:flex-start; }
+.horizontal-content { position:relative; display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:center; }
 td.tracking { position:relative; text-align:right; padding-right:1em; white-space:nowrap; }
 td.slot-tracking { min-width:2em; text-align:center; vertical-align:top; }
 table.slot-tracking { margin-left:1em; padding-left:1em; border-left:1px solid black; }
@@ -98,8 +98,11 @@ span.tracking-number-wrapper { display:inline-block; }
 span.tracking-action-wrapper > label { width:100%; }
 span.tracking-caption { display:block; font-size:50%; text-align:center; }
 span.tracking-number-handler.advances::before, span.tracking-number-handler.advances::after { top:0.5em; }
+div#tracking-combat-rolls { min-width:90%; }
 input.tracking-mark { display:none; }
 input.tracking-mark + label.tracking-mark { position:relative; display:inline-block; top:0.2em; border-radius:50%; width:1em; height:1em; border:1px solid black; }
+input.tracking-combat-rolls-name { max-width:25%; }
+input.tracking-combat-rolls-script { max-width:50%; }
 span.tracking-action-wrapper { display:inline-block; }
 #tracking-dice { margin-top:2em; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; }
 #tracking-dice > div { min-width:50%; height:5em; text-align:center; margin-top:1em; }
@@ -108,7 +111,10 @@ span.tracking-action-wrapper { display:inline-block; }
 #tracking-dice-sum { display:inline-block; width:3em; height:1.75em; text-align:center; padding-top:0.25em; margin:0 1em; font-size:200%; font-weight:bold; color:#666; border-radius:50%; border:1px solid #CCC; }
 span.die-roll { display:inline-block; min-width:2.25em; text-align:center; }
 span.any-digit::after { content:"#"; color:#AAA; }
-span.example { font-weight:bold; }
+span.example-script { font-weight:bold; }
+span.example-source:not(:empty)::before { content:"e.g.  "; font-size:75%; }
+table.combat-instructions td { vertical-align:top; }
+table.combat-examples td { vertical-align:top; }
 
 @media screen {
 	input.tracking-mark:checked + label.tracking-mark { background:#F4F4F4; background:linear-gradient(345deg, #FFF 0%, #FFF8F0 40%, #DDD 100%); border-color:#CCC; }
@@ -131,7 +137,7 @@ td.score.increase, td.score.pending { cursor:pointer; }
 
 table.attacks { padding:0; margin:0; border-spacing:0; border-collapse:collapse; }
 table.attacks tr.attacks:not(.equipment) { opacity:0.5; }
-td.name, td.range, td.script { white-space:nowrap; }
+td.name, td.range { white-space:nowrap; }
 tr.attacks > th { font-size:60%; text-align:left; }
 tr.attacks > td { padding-right:1em; }
 tr.attacks.melee > td.range { visibility:hidden; }
@@ -223,13 +229,15 @@ span.advances { position:relative; padding:0 1em; }
 
 @media (max-width:480px) {
 	p#attacks { font-size:60%; }
+	div#tracking-slots, p.choices { font-size:70%; }
 	p#feature, label.action { font-size:80%; }
-	p.choices { font-size:70%; }
-	td.name, td.notrange, td.script { white-space:normal; }
-	.attacks.type, .attacks.summary { display:none; }
-	div#tracking-slots { font-size:80%; }
+	div#tracking-actions, span.tracking-number-wrapper { font-size:90%; }
+	td.tracking { padding-right:0.5em; }
+	td.name, td.notrange, td.tracking { white-space:normal; }
+	.attacks.type, .attacks.summary, td.example { display:none; }
 }
 
-@media print {
-	div.unprintable { display:none; }
+div.unprintable { display:none; }
+@media screen {
+	div.unprintable { display:block; }
 }
