@@ -16,6 +16,7 @@
 			table#attack-examples td:nth-child(3) { font-size:60%; }
 		</style>
 		<script src="data/dnd.js"></script>
+		<script src="src/parseattack.js"></script>
 		
 		<script lang="javascript">
 			var damageTypeMap = {
@@ -54,7 +55,7 @@
 			function repeat(count, value) {
 				var r = []
 				
-				for ( var i = 0 ; i < count ; ++i ) { r[i] = value }
+				while ( count --> 0 ) { r.push(value) }
 				
 				return r
 			}
@@ -218,12 +219,6 @@
 				}
 				
 				return disadvantage ? (roll || 1) * (die + 1) - average : average
-			}
-			
-			function damageTypeApplies(type, magical) {
-				var special = ['bludgeoning', 'piercing', 'slashing']
-				
-				return !magical || special.indexOf(type) < 0
 			}
 			
 			function parseEffectivenessDamageType(string, result, key) {
@@ -510,6 +505,7 @@
 				var immuneAll = (e.immune && e.immune['all']) || false
 				var resistantAll = (e.resistant && e.resistant['all']) || false
 				var vulnerableAll = (e.vulnerable && e.vulnerable['all']) || false
+				var mundane = ['bludgeoning', 'piercing', 'slashing']
 				
 				immuneAll = immuneAll ? immuneAll !== 'once' ? 2 : 1 : 0
 				resistantAll = resistantAll ? resistantAll !== 'once' ? 2 : 1 : 0
@@ -608,8 +604,8 @@
 						previousType = type
 						damageScalar = 1
 						
-						immune = type && e.immune && damageTypeApplies(type, e.magical) && e.immune[type]
-						resistant = type && e.resistant && damageTypeApplies(type, e.magical) && e.resistant[type]
+						immune = type && e.immune && !(e.magical && mundane.includes(type)) && e.immune[type]
+						resistant = type && e.resistant && !(e.magical && mundane.includes(type)) && e.resistant[type]
 						vulnerable = type && e.vulnerable && e.vulnerable[type]
 						
 						immune = (immune ? immune !== 'once' ? 2 : 1 : 0) | immuneAll
@@ -829,6 +825,7 @@
 				var type, previousType = false
 				var criticalDice = e.criticalDice || 0
 				var criticalDamage = e.criticalDamage || 0
+				var mundane = ['bludgeoning', 'piercing', 'slashing']
 				
 				immuneAll = immuneAll ? immuneAll !== 'once' ? 2 : 1 : 0
 				resistantAll = resistantAll ? resistantAll !== 'once' ? 2 : 1 : 0
@@ -856,8 +853,8 @@
 						continue
 					}
 					
-					immune = type && damageTypeApplies(type, e.magical) && e.immune && e.immune[type]
-					resistant = type && damageTypeApplies(type, e.magical) && e.resistant && e.resistant[type]
+					immune = type && !(e.magical && mundane.includes(type)) && e.immune && e.immune[type]
+					resistant = type && !(e.magical && mundane.includes(type)) && e.resistant && e.resistant[type]
 					vulnerable = type && e.vulnerable && e.vulnerable[type]
 					
 					immune = (immune ? immune !== 'once' ? 2 : 1 : 0) | immuneAll
