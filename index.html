@@ -473,12 +473,12 @@
 				var sources = this.sources
 				
 				var proficiencies = {
-					'languages': _flatten.apply(null, sources.map(s => s.languages)),
-					'skills': _flatten.apply(null, sources.map(s => s.skills)),
-					'saves': _flatten.apply(null, sources.map(s => s.saves)),
-					'tools': _flatten.apply(null, sources.map(s => s.tools)),
-					'armor': _flatten.apply(null, sources.map(s => s.armor)),
-					'weapons': _flatten.apply(null, sources.map(s => s.weapons)),
+					'languages': _unique.apply(null, sources.map(s => s.languages)),
+					'skills': _unique.apply(null, sources.map(s => s.skills)),
+					'saves': _unique.apply(null, sources.map(s => s.saves)),
+					'tools': _unique.apply(null, sources.map(s => s.tools)),
+					'armor': _unique.apply(null, sources.map(s => s.armor)),
+					'weapons': _unique.apply(null, sources.map(s => s.weapons)),
 				}
 				
 				this.proficiencyNames = {
