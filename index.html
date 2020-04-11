@@ -1331,8 +1331,15 @@
 				result.magical = false
 				
 				var damageTypeMap = lookup.damageAbbreviation
-				
 				var match, index, found, value, roll, once, type, matched, length, item
+				
+				index = string.indexOf(':')
+				
+				if ( index >= 0 ) {
+					result.name = string.slice(0, index)
+					string = string.slice(index + 1)
+				}
+				
 				var beginHit = 0
 				var beginDamage = string.indexOf('/', beginHit)
 				var beginAttacks = string.indexOf('#', beginDamage)
@@ -1347,10 +1354,10 @@
 				var stringHit = string.slice(beginHit, closeHit)
 				
 				result.input = [stringHit, stringDamage, stringAttacks, stringDefense]
-				result.isAttack = closeHit > 0
+				result.isAttack = closeHit > beginHit
 				result.isDefenseKnown = beginDefense > 0
 				
-				var patternHit = /([-+]\d*d?\d+o?|a[o]?|d[oh]?|r\d+|c\d+|rm|m)/g
+				var patternHit = /([-+]\d*d?\d+[o]?|a[o]?|d[oh]?|r\d+|i[-+=]\d+|i[ad]|c\d+|rm|m)/g
 				var matchHit = stringHit.split(patternHit)
 				
 				for ( index = 0 ; index < matchHit.length ; ++index ) {
@@ -1375,6 +1382,16 @@
 						if ( !result.disadvantageHit ) { result.disadvantageHit = 'once' }
 					} else if ( match === 'dh' ) {
 						if ( !result.disadvantageHit || result.disadvantageHit === 'once' ) { result.disadvantageHit = 'hit' }
+					} else if ( match === 'ia' ) {
+						result.advantageInitiative = true
+					} else if ( match === 'id' ) {
+						result.disadvantageInitiative = true
+					} else if ( match.charAt(0) === 'i' ) {
+						if ( match.charAt(1) === '=' ) {
+							result.initiative = match.slice(1) | 0
+						} else {
+							result.initiativeModifier = (result.initiativeModifier | 0) + (match.slice(1) | 0)
+						}
 					} else if ( match.charAt(0) === 'c' ) {
 						result.criticalRoll = match.slice(1) | 0
 					} else if ( match.charAt(0) === 'r' ) {
@@ -1633,6 +1650,26 @@
 				
 				record.push(prefix + " (" + each.join(", ") + ")")
 				return sum
+			}
+			
+			function evaluateSingleInitiative(e) {
+				if ( e.initiative > 0 ) {
+					return e.initiative
+				}
+				
+				var initiative = randomDieRoll(20, 1)
+				var advantage = e.advantageInitiative || false
+				var disadvantage = e.disadvantageInitiative || false
+				
+				if ( advantage && !disadvantage ) {
+					initiative = Math.max(randomDieRoll(20, 1), initiative)
+				}
+				
+				if ( !advantage && disadvantage ) {
+					initiative = Math.min(randomDieRoll(20, 1), initiative)
+				}
+				
+				return initiative + (e.initiativeModifier | 0)
 			}
 			
 			function evaluateSingleEffectiveness(e, context, verbose) {
@@ -1900,8 +1937,8 @@
 					
 					context.attacks += 1
 					
-					if ( isHit && isDefenseKnown ) {
-						context.damage += damageRolled
+					if ( isDefenseKnown ) {
+						context.damage += isHit ? damageRolled : 0
 					}
 					
 					if ( isHit || !isAttack ) {
@@ -1926,6 +1963,63 @@
 				}
 				
 				return result
+			}
+			
+			function evaluateRudimentaryDuel(versus, verbose) {
+				var separator = ' versus '
+				var index = versus.indexOf(separator)
+				if ( index < 0 ) { return false }
+				
+				var a = versus.slice(0, index)
+				var b = versus.slice(index + separator.length)
+				
+				var ap = a.split('@')
+				var bp = b.split('@')
+				if ( ap.length != 2 || bp.length != 2 ) { return false }
+				
+				var ae = parseEffectiveness(ap[0] + '@' + bp[1])
+				var be = parseEffectiveness(bp[0] + '@' + ap[1])
+				if ( !ae.length || !be.length ) { return false }
+				
+				var ahp = be[0].hitpoints | 0
+				var bhp = ae[0].hitpoints | 0
+				if ( !ahp || !bhp ) { return false }
+				
+				var ai = evaluateSingleInitiative(ae[0])
+				var bi = evaluateSingleInitiative(be[0])
+				var an = ae[0].name || 'p1'
+				var bn = be[0].name || 'p2'
+				var ar, ac, ad
+				var br, bc, bd
+				
+				var concise = []
+				
+				ac = " HP " + ahp + " Initiative " + ai
+				bc = " HP " + bhp + " Initiative " + bi
+				concise.push(an + ac + ", " + bn + bc)
+				
+				while ( ahp > 0 && bhp > 0 ) {
+					ar = evaluateEffectiveness(ae, verbose)
+					br = evaluateEffectiveness(be, verbose)
+					ad = ar.damage | 0
+					bd = br.damage | 0
+					
+					if ( ai > bi && ad >= bhp ) { bd = 0 }
+					if ( bi > ai && bd >= ahp ) { ad = 0 }
+					
+					ac = " HP " + ahp + "-" + bd + " (" + ar.concise.join(" ") + ")"
+					bc = " HP " + bhp + "-" + ad + " (" + br.concise.join(" ") + ")"
+					concise.push(an + ac + ", " + bn + bc)
+					
+					ahp -= bd
+					bhp -= ad
+				}
+				
+				ac = " HP " + ahp + " " + (ahp > 0 ? "won" : ahp > -be[0].hitpoints ? "lost" : "died")
+				bc = " HP " + bhp + " " + (bhp > 0 ? "won" : bhp > -ae[0].hitpoints ? "lost" : "died")
+				concise.push(an + ac + ", " + bn + bc)
+				
+				return concise
 			}
 			
 			// MARK: Challenge
@@ -2853,6 +2947,16 @@
 				var target = _element('tracking-combat-rolls-target')
 				
 				var value = script.value
+				
+				var versus = evaluateRudimentaryDuel(value, false)
+				
+				if ( versus ) {
+					output.value = ''
+					detail.value = ''
+					detail.innerHTML = "<ol start='0'><li>" + versus.join("</li><li>") + "</li></ol>"
+					return
+				}
+				
 				var where = value.indexOf('@')
 				
 				if ( target && where < 0 ) {
@@ -3357,7 +3461,6 @@
 			function trackingTableHTML(details) {
 				// TODO: Inspiration, Hero Points, Death saves
 				var items = details.tracking
-				//var numberTemplate = "<input type='number' value='{uses}' min='0' max='{uses}' class='tracking-number {key} {restore}' />"
 				var numberTemplate = "<input type='range' id='{key}-tracking' value={uses} min=0 max={uses} step=1 class='tracking-number {key} {restore}' oninput='form[\"{key}-output\"].value = value' /><output for='{key}-tracking' name='{key}-output' class='tracking-number-output'>{uses}</output>"
 				var pipTemplate = "<input type='checkbox' id='{key}-{order}-tracking' class='tracking-mark {key} {restore}' /><label for='{key}-{order}-tracking' class='tracking-mark'></label> "
 				var index
@@ -3471,6 +3574,7 @@
 					["rX", "Reroll low hit", "value or lower", "Halfling Lucky", "r1"],
 					["cX", "Critical roll", "value or higher", "Improved Critical", "c19"],
 					["m", "Magic", "for resistance", "Primal Strike", "m"],
+					["i&plusmn;X", "Initiative modifier", "for duel", "Alert", "i+5"],
 					
 					["", " ", "", "", ""],
 					["/", "Begin Damage"],
@@ -3544,10 +3648,17 @@
 					["a+6+5+3 r1 /d6p+5+3+10d6 a #1", "Arcane Trickster 20, Dexterity 20, Short Sword +3, Savage Attacker, Greater Invisibility"],
 					["+6+5+3+2 /d10e+5 #4", "Warlock 20, Charisma 20, Wand +3, Archmagi, Agonizing Blast"],
 					
-					["+4/d6+2", "Goblin"],
-					["+9/2d8+4#7; +9/2d10+4", "Marilith"],
-					["+17/2d10p+10+4d6f; +17/2d6s+10#2", "Ancient Red Dragon"],
-					["+19/4d12p+10; +19/4d8s+10#2; +19/4d10p+10; +19/4d6b+10", "Tarrasque"],
+					["+4/d6p+2 @13 vb iq hp13", "Skeleton"],
+					["+4/d6s+2 @15 hp7", "Goblin"],
+					["+3/d8s+1 @18 hp11", "Hobgoblin"],
+					["+6/d8b+4 @11 hp59", "Ogre"],
+					["+6/d6b+4+d6p#2 @13 dh hp85", "Displacer Beast"],
+					["+8/2d8b+5#2 @17 vt iq rbps hp126", "Earth Elemental"],
+					["+9m/2d8s+4#6; +9m/2d10b+4 @18+5o iq rcflbps hp189", "Marilith"],
+					["+14m/4d6p+8; +14m/2d8s+8; +14m/2d6b+8+6d6f; +14m/3d8b+8 @19 ifq rcbps hp300", "Pit Fiend"],
+					["+15m/4d6s+8+6d8r#2; @21 inq rbpsr hp243", "Solar"],
+					["+17m/2d10p+10+4d6f; +17m/2d6s+10#2; +17m/2d8b+10#r @22 if hp546", "Ancient Red Dragon"],
+					["+19m/4d12p+10; +19m/4d8s+10#2; +19m/4d10p+10; +19m/4d6b+10; +19m/4d12p+10/#r @25 ifqbps hp676", "Tarrasque"],
 				]
 				
 				var notes = [
