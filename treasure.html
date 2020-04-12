@@ -10,14 +10,13 @@
 		<meta name="keywords" content="dnd,5e,dungeons,dragons,treasure">
 		<meta name="description" content="Treasure">
 		<script src="data/treasure.js"></script>
+		<script src="src/treasure.js"></script>
 		<script src="src/sort.js"></script>
 		
 		<script lang="javascript">
 			var defaults = {
 				raw: false,
 				times: " × ",
-				forceMagicItemTable: false,
-				includeMagicItemTable: false,
 				minimumPoundsToDisplayWeight: 20
 			}
 			
@@ -61,518 +60,61 @@
 				return result;
 			}
 			
-			function coalesceArrayElements(array) {
-				var result = []
-				var count, counts = new Object()
-				var element
-				
-				for ( element of array ) {
-					counts[element] = (counts[element] || 0) + 1
+			function generateTreasuresForRequest(treasure, challenge, request, quantity) {
+				switch ( request ) {
+				case 'raw-hoard':   return treasureRawHoard(treasure, challenge, quantity); break;
+				case 'cole-hoard':  return treasureColeHoard(treasure, challenge, quantity); break;
+				case 'raw-party':   return treasureRawParty(treasure, challenge, quantity); break;
+				case 'cole-party':  return treasureColeParty(treasure, challenge, quantity); break;
+				case 'raw-player':  return treasureRawParty(treasure, challenge, quantity / 4); break;
+				case 'cole-player': return treasureColeParty(treasure, challenge, quantity / 4); break;
+				default:            return treasureIndividual(treasure, challenge, quantity); break;
 				}
-				
-				for ( element of array ) {
-					if ( counts[element] > 1 ) { result.push(element + defaults.times + counts[element]) }
-					else if ( counts[element] > 0 ) { result.push(element) }
-					else { continue }
-					
-					delete counts[element]
-				}
-				
-				return result
-			}
-			
-			function randomInteger(count) {
-				if ( crypto && crypto.getRandomValues ) {
-					var randomValues = new Uint32Array(1)
-					
-					crypto.getRandomValues(randomValues)
-					
-					return randomValues[0] % count
-				} else {
-					return Math.floor(Math.random() * Math.floor(count)) | 0
-				}
-			}
-			
-			function randomFrequencyElement(array) {
-				var sum = array.reduce((s, e) => s + (e.frequency | 0), 0)
-				
-				if ( sum > 0 ) {
-					var value = randomInteger(sum)
-					var save = value
-					
-					for ( var element of array ) {
-						if ( value < element.frequency ) {
-							return element
-						}
-						
-						value -= (element.frequency | 0)
-					}
-				}
-				
-				return array[randomInteger(array.length)]
-			}
-			
-			function frequencyPrefix(string) {
-				var index = string.indexOf(':')
-				var frequency = 1
-				
-				if ( index > 0 ) {
-					frequency = parseInt(string.slice(0, index))
-					string = string.slice(index + 1)
-					
-					if ( isNaN(frequency) ) {
-						frequency = 1
-					}
-				}
-				
-				return {'frequency':frequency, 'value':string}
-			}
-			
-			function randomFrequencyPrefix(array) {
-				return randomFrequencyElement(array.map(frequencyPrefix)).value
-			}
-			
-			function randomDieRoll(sides, rolls) {
-				var sum = 0
-				
-				while ( rolls --> 0 ) {
-					sum += 1 + randomInteger(sides)
-				}
-				
-				return sum
-			}
-			
-			function randomDiceRoll(dice, quantity) {
-				var roll = parseInt(dice.roll) || 1
-				var sides = parseInt(dice.die) || 1
-				var times = parseInt(dice.times) || 1
-				var add = parseInt(dice.add) || 0
-				
-				if ( quantity > 1 ) {
-					roll *= quantity
-					add *= quantity
-				}
-				
-				return randomDieRoll(sides, roll) * times + add
-			}
-			
-			function randomQuantity(quantity) {
-				return randomDiceRoll(quantity)
-			}
-			
-			function lookupArmor(armor) {
-				if ( Array.isArray(armor) ) {
-					armor = randomFrequencyPrefix(armor)
-				}
-				
-				var item = lookup.armors && lookup.armors[armor]
-				
-				return item && item.name || armor
-			}
-			
-			function lookupWeapon(weapon) {
-				if ( Array.isArray(weapon) ) {
-					if ( weapon.length > 0 ) {
-						weapon = randomFrequencyPrefix(weapon)
-					} else {
-						weapon = randomFrequencyElement(treasure.magic.weapons).weapon
-					}
-				}
-				
-				var item = lookup.weapons && lookup.weapons[weapon]
-				
-				return item && item.name || weapon
-			}
-			
-			function lookupVariant(variant) {
-				if ( Array.isArray(variant) ) {
-					variant = randomFrequencyPrefix(variant)
-				}
-				
-				return variant
-			}
-			
-			function lookupMagicItem(entry) {
-				if ( entry.item === 'armor' && entry.armor && entry.bonus > 0 && !entry.variant ) {
-					return lookupArmor(entry.armor) + " +" + entry.bonus
-				}
-				
-				var item = lookup.items[entry.item]
-				var description = item && item.name || entry.item
-				var quantity = item.quantity ? randomQuantity(item.quantity) : 0
-				var variant = entry.variant || item.variant
-				
-				if ( entry.bonus ) { description += " +" + entry.bonus }
-				
-				if ( quantity > 0 ) {
-					if ( variant && Array.isArray(variant) ) {
-						var variants = []
-						
-						while ( quantity --> 0 ) {
-							variants.push(lookupVariant(variant))
-						}
-						
-						variants = coalesceArrayElements(variants)
-						description += " (" + variants.join(", ") + ")"
-					} else if ( item.unit ) {
-						description += " (" + quantity + " " + item.unit + ")"
-					} else {
-						description += defaults.times + quantity
-					}
-				} else {
-					if ( variant ) { description += " (" + lookupVariant(variant) + ")" }
-				}
-				
-				
-				if ( entry.armor ) { description += ", " + lookupArmor(entry.armor) }
-				if ( entry.weapon ) { description += ", " + lookupWeapon(entry.weapon) }
-				
-				return description
-			}
-			
-			function generateCoins(treasure, tables, quantity) {
-				var descriptions = []
-				var coins = treasure.coins
-				var total = 0
-				var sum = 0
-				var table, value
-				
-				for ( var coin of coins ) {
-					value = 0
-					
-					for ( table of tables ) {
-						if ( coin.key && table[coin.key] ) {
-							value += randomDiceRoll(table[coin.key], quantity)
-						
-						}
-					}
-					
-					if ( value > 0 ) {
-						sum += value * coin.cp
-						total += value
-						descriptions.push(value + coin.key)
-					}
-				}
-				
-				return {"sum":sum, "descriptions":descriptions, "total":total, "pounds":total / 50}
-			}
-			
-			function generateValuables(treasure, entry, key) {
-				var value = entry.value
-				var names = treasure[key][value]
-				var count = randomDiceRoll(entry)
-				var name = names[randomInteger(names.length)]
-				
-				return {"sum":count * value * 100, "descriptions":[count + defaults.times + value + "gp " + name]}
-			}
-			
-			function generateMagicItem(treasure, key) {
-				if ( defaults.forceMagicItemTable ) {
-					key = defaults.forceMagicItemTable
-				}
-				
-				var prefix = defaults.includeMagicItemTable ? key.toUpperCase() + ": " : ""
-				var table, item = null
-				
-				while ( key && treasure.magic[key] ) {
-					item = randomFrequencyElement(treasure.magic[key])
-					key = item.items
-				}
-				
-				return item && (prefix + lookupMagicItem(item))
-			}
-			
-			function generateMagicItems(treasure, entry, key) {
-				var index, count = randomDiceRoll(entry)
-				var items = []
-				
-				while ( count --> 0 ) {
-					items.push(generateMagicItem(treasure, key))
-				}
-				
-				return items
-			}
-			
-			function valueSummary(sum, pounds) {
-				if ( pounds > defaults.minimumPoundsToDisplayWeight ) {
-					return "(Total " + (sum / 100) + "gp, Weighs " + (pounds > 4000 ? Math.floor(pounds / 20) / 100 + " tons" : Math.floor(pounds) + "lb") + ")"
-				} else {
-					return "(Total " + (sum / 100) + "gp)"
-				}
-			}
-			
-			function generateIndividual(treasure, individual, quantity) {
-				var index, entry, entries = []
-				
-				for ( index = 0 ; index < quantity ; ++index ) {
-					entries.push(randomFrequencyElement(individual.table))
-				}
-				
-				var coins = generateCoins(treasure, entries, 1)
-				
-				if ( coins.pounds > defaults.minimumPoundsToDisplayWeight || coins.descriptions.length > 2 ) {
-					coins.descriptions.push(valueSummary(coins.sum, coins.pounds))
-				}
-				
-				return coins.descriptions
-			}
-			
-			function generateRawHoard(treasure, hoard, quantity) {
-				var valuableTables = ['gem', 'art']
-				var magicTables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
-				var coins = generateCoins(treasure, [hoard.coins], quantity)
-				var descriptions = []
-				var index, entry, entries = []
-				var valuables, items, key
-				var sum = coins.sum
-				
-				for ( index = 0 ; index < quantity ; ++index ) {
-					entries.push(randomFrequencyElement(hoard.table))
-				}
-				
-				for ( entry of entries ) {
-					for ( key of magicTables ) {
-						if ( entry['magic_' + key] ) {
-							items = generateMagicItems(treasure, entry['magic_' + key], key)
-							
-							descriptions.push.apply(descriptions, items)
-						}
-					}
-				}
-				
-				descriptions = coalesceArrayElements(descriptions)
-				descriptions.sort()
-				
-				for ( entry of entries ) {
-					for ( key of valuableTables ) {
-						if ( entry[key] ) {
-							valuables = generateValuables(treasure, entry[key], key)
-							sum += valuables.sum | 0
-						
-							descriptions.push.apply(descriptions, valuables.descriptions)
-						}
-					}
-				}
-				
-				descriptions.push.apply(descriptions, coins.descriptions)
-				descriptions.push(valueSummary(sum, coins.pounds))
-				
-				return descriptions
-			}
-			
-			function generateColeHoard(treasure, hoard, quantity, singlePointsTotal) {
-				var valuableTables = ['gem', 'art']
-				var magicTables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
-				var coins = generateCoins(treasure, [hoard.coins], quantity)
-				var descriptions = []
-				var pointsLimit = 24, pointsDie = 6
-				var index, entry, sum = coins.sum
-				var valuables, points, die, key, prefix
-				
-				quantity = quantity > 0 ? quantity : 1
-				
-				for ( index = 0 ; index < quantity ; ++index ) {
-					points = quantity - index
-					
-					if ( points < 1 || singlePointsTotal ) {
-						points = randomDieRoll(pointsDie, Math.ceil(points * pointsLimit / pointsDie))
-						index = quantity
-					} else {
-						points = randomDieRoll(pointsDie, Math.ceil(pointsLimit / pointsDie))
-					}
-					
-					while ( points > 0 ) {
-						entry = randomFrequencyElement(hoard.table)
-						die = 0
-						
-						for ( key of magicTables ) {
-							if ( entry['magic_' + key] ) {
-								die = Math.max(die, entry['magic_' + key].die)
-								descriptions.push(generateMagicItem(treasure, key))
-							}
-						}
-						
-						points -= pointsLimit / (die > 0 ? die : 4)
-					}
-				}
-				
-				descriptions = coalesceArrayElements(descriptions)
-				descriptions.sort()
-				
-				for ( index = 0 ; index < quantity ; ++index ) {
-					entry = randomFrequencyElement(hoard.table)
-					
-					for ( key of valuableTables ) {
-						if ( entry[key] ) {
-							valuables = generateValuables(treasure, entry[key], key)
-							sum += valuables.sum | 0
-						
-							descriptions.push.apply(descriptions, valuables.descriptions)
-						}
-					}
-				}
-				
-				descriptions.push.apply(descriptions, coins.descriptions)
-				descriptions.push(valueSummary(sum, coins.pounds))
-				
-				return descriptions
-			}
-			
-			function generateHoard(treasure, hoard, quantity) {
-				if ( defaults.raw ) {
-					return generateRawHoard(treasure, hoard, quantity)
-				} else {
-					return generateColeHoard(treasure, hoard, quantity, false)
-				}
-			}
-			
-			function generateRawParty(treasure, level, quantity) {
-				var valuableTables = ['gem', 'art']
-				var list = treasure['hoard']
-				var count = list.length
-				var table, items, hoard, tally, rolls
-				var index, entry, descriptions, aggregate = []
-				var coins, valuables, sum, key
-				
-				for ( index = 0 ; index < count && list[index].cr <= level ; ++index ) {
-					descriptions = []
-					hoard = list[index]
-					table = hoard.party_items
-					
-					for ( items of table ) {
-						rolls = quantity * items.quantity
-						rolls = Math.floor(rolls) + (Math.random() < (rolls - Math.floor(rolls)) ? 1 : 0)
-						
-						for ( tally = 0 ; tally < rolls ; ++tally ) {
-							descriptions.push(generateMagicItem(treasure, items.magic))
-						}
-					}
-					
-					descriptions = coalesceArrayElements(descriptions)
-					descriptions.sort()
-					
-					rolls = hoard.party_hoards.reduce((s, v) => s + v, 0)
-					rolls = Math.round(rolls * quantity)
-					coins = generateCoins(treasure, [hoard.coins], rolls)
-					sum = coins.sum
-					
-					for ( tally = 0 ; tally < rolls ; ++tally ) {
-						entry = randomFrequencyElement(hoard.table)
-						
-						for ( key of valuableTables ) {
-							if ( entry[key] ) {
-								valuables = generateValuables(treasure, entry[key], key)
-								sum += valuables.sum | 0
-								
-								descriptions.push.apply(descriptions, valuables.descriptions)
-							}
-						}
-					}
-					
-					descriptions.push.apply(descriptions, coins.descriptions)
-					descriptions.push(valueSummary(sum, coins.pounds))
-					
-					aggregate.push(descriptions)
-				}
-				
-				aggregate.reverse()
-				
-				return aggregate.concat.apply([], aggregate)
-			}
-			
-			function generateColeParty(treasure, level, quantity) {
-				var list = treasure['hoard']
-				var count = list.length
-				var index, entry, aggregate = []
-				var hoards = []
-				var limit, range, rolls
-				
-				for ( index = 0 ; index < count ; ++index ) {
-					entry = list[index]
-					rolls = 0
-					range = level - entry.cr + 1
-					limit = entry.party_hoards.length
-					
-					if ( range > 0 ) {
-						rolls = entry.party_hoards.slice(0, range).reduce((s, v) => s + v, 0)
-					}
-					
-					if ( range > limit && index + 1 >= count ) {
-						rolls += (range - limit) * entry.party_hoards[limit - 1]
-					}
-					
-					hoards.push(rolls)
-				}
-				
-				for ( index = 0 ; index < count && hoards[index] > 0 ; ++index ) {
-					entry = list[index]
-					rolls = hoards[index]
-					aggregate.push(generateColeHoard(treasure, entry, quantity * rolls))
-				}
-				
-				aggregate.reverse()
-				
-				return aggregate.concat.apply([], aggregate)
-			}
-			
-			function generateParty(treasure, level, quantity) {
-				if ( defaults.raw ) {
-					return generateRawParty(treasure, level, quantity)
-				} else {
-					return generateColeParty(treasure, level, quantity)
-				}
-			}
-			
-			function generatePlayer(treasure, level, quantity) {
-				return generateParty(treasure, level, quantity / 4)
 			}
 			
 			function generateTreasure() {
 				var treasure = window.treasure
+				var lookup = window.lookup
 				var form = _element('treasure-form')
 				var kind = form.kind.value
 				var challenge = form.challenge.value
 				var quantity = form.quantity.value || 1
-				var list = treasure[kind === 'individual' ? kind : 'hoard']
-				var entry = list.filter(i => i.cr <= challenge).pop()
+				var request = (form.raw.checked ? 'raw' : 'cole') + '-' + kind
+				var treasures
 				var descriptions
 				
-				defaults.raw = form.raw.checked
-				
-				if ( kind === 'hoard' ) {
-					if ( quantity > 1 && defaults.partition ) {
-						descriptions = []
+				if ( defaults.partition && quantity > 1 ) {
+					treasures = []
+					
+					while ( quantity --> 0 ) {
+						treasures = treasures.concat(generateTreasuresForRequest(treasure, challenge, request, 1))
 						
-						while ( quantity --> 0 ) {
-							descriptions.push.apply(descriptions, generateHoard(treasure, entry, 1))
-							descriptions.push("")
+						if ( quantity > 0 ) {
+							treasures.push({'descriptions':["-"], 'summarize':true})
 						}
-						
-						descriptions.pop()
-					} else {
-						descriptions = generateHoard(treasure, entry, quantity)
 					}
-				} else if ( kind === 'party' ) {
-					descriptions = generateParty(treasure, challenge, quantity)
-				} else if ( kind === 'player' ) {
-					descriptions = generatePlayer(treasure, challenge, quantity)
 				} else {
-					descriptions = generateIndividual(treasure, entry, quantity)
+					treasures = generateTreasuresForRequest(treasure, challenge, request, quantity)
 				}
 				
+				treasureLookupItems(treasure, lookup, treasures, {'times':defaults.times})
+				descriptions = treasureDescriptions(treasures, defaults.minimumPoundsToDisplayWeight)
 				displayTreasure(treasure, descriptions)
 			}
 			
 			function handleReroll(key, identifier) {
-				var item = generateMagicItem(treasure, key.toLowerCase())
+				var item = treasureLookupMagicItemKey(treasure, lookup, key.toLowerCase(), defaults.times)
 				
-				_element(identifier).innerHTML = item.slice(1)
+				_element(identifier).innerHTML = " " + item.description
 			}
 			
 			function displayTreasure(treasure, list) {
 				var items
+				var beginHTML = "<ul class='treasure'>"
+				var closeHTML = "</ul>"
+				var rulerHTML = "<hr />"
 				
-				if ( defaults.includeMagicItemTable ) {
+				if ( !treasureLookupItems.excludeMagicItemTable ) {
 					var key, identifier, item, index, count = list.length
 					
 					items = []
@@ -581,18 +123,23 @@
 						item = list[index]
 						key = item.slice(0, 1)
 						
+						if ( item === '-' ) {
+							items.push(closeHTML + rulerHTML + beginHTML)
+							continue
+						}
+						
 						if ( item.slice(1, 2) === ':' && treasure.magic[key.toLowerCase()] ) {
 							identifier = "item-" + (index + 1)
-							item = "<span class='reroll' onclick='handleReroll(\"" + key + "\", \""+identifier+"\")'>" + key + "</span><span id='" + identifier + "'>" + item.slice(1) + "</span>"
+							item = "<span class='reroll' onclick='handleReroll(\"" + key + "\", \""+identifier+"\")'>" + key + ":</span><span id='" + identifier + "'>" + item.slice(2) + "</span>"
 						}
 						
 						items.push("<li>" + item + "</li>")
 					}
 				} else {
-					items = list.map(i => "<li>" + i + "</li>")
+					items = list.map(i => "<li>" + (i === '-' ? rulerHTML : i) + "</li>")
 				}
 				
-				var html = "<ul class='treasure'>" + items.join("") + "</ul>"
+				var html = beginHTML + items.join("") + closeHTML
 				
 				_element('treasure-list').innerHTML = html
 			}
@@ -638,10 +185,10 @@
 				if ( value > 1 ) { defaults.minimumPoundsToDisplayWeight = value }
 				
 				value = object['m']
-				if ( value && treasure.magic[value] ) { defaults.forceMagicItemTable = value }
+				if ( value && treasure.magic[value] ) { treasureLookupItems.forceMagicItemTable = value }
 				
-				value = object['d']
-				if ( value ) { defaults.includeMagicItemTable = true }
+				value = object['x']
+				if ( value ) { treasureLookupItems.excludeMagicItemTable = true }
 				
 				value = object['p']
 				if ( value ) { defaults.partition = true }
