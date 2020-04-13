@@ -33,8 +33,8 @@ function tableSort(tableColumn) {
 			locale[-flags][:locale] - Intl.Collator else localeCompare
 		
 		data-sort-multiple
-			table supports multiple column sort
-			
+			table marks multiple columns as sorted
+		
 		data-sort-invert class='sort-invert'
 			column sorts in reverse order
 		
@@ -42,7 +42,7 @@ function tableSort(tableColumn) {
 			row follows preceding row, value is ignored
 		
 		data-sort-key
-			cell sorted by key instead of cell content
+			cell sorted by key instead of cell content (firstElementChild.value or textContent)
 	*/
 	
 	var element, column, table, index, count

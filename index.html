@@ -1241,15 +1241,15 @@
 			}
 			
 			function replaceKeys(template, object) {
-				var pattern = RegExp("({[^ }]+})", "g")
+				var pattern = RegExp("\{([^ }]+)\}", "g")
 				
-				return template.replace(pattern, (match) => replaceKeysLookup(object, match.slice(1, -1)))
+				return template.replace(pattern, (match, key) => replaceKeysLookup(object, key))
 			}
 			
 			function replaceIndices(template, array) {
-				var pattern = RegExp("({[^ }]+})", "g")
+				var pattern = RegExp("\{([^ }]+)\}", "g")
 				
-				return template.replace(pattern, (match) => array[+match.slice(1, -1)])
+				return template.replace(pattern, (match, index) => array[+index])
 			}
 			
 			// MARK: Dice

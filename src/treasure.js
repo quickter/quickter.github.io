@@ -1,5 +1,14 @@
 'not strict';
 
+var treasureDefaults = {
+	mergeItemPoints:false,
+	forceMagicItemTable:null,
+	excludeMagicItemTable:false,
+	coinsPerPound:50,
+	minimumPoundsToDisplayWeight:20,
+	times:" x ",
+}
+
 function treasureRandomInteger(count) {
 	if ( crypto && crypto.getRandomValues ) {
 		var randomValues = new Uint32Array(1)
@@ -12,19 +21,25 @@ function treasureRandomInteger(count) {
 	}
 }
 
+function treasureRoundingToRandomInteger(number) {
+	var integer = Math.floor(number)
+	var rounded = Math.random() < (number - integer) ? 1 : 0
+	
+	return integer + rounded
+}
+
 function treasureFrequencyElement(array) {
 	var sum = array.reduce((s, e) => s + (e.frequency | 0), 0)
 	
 	if ( sum > 0 ) {
 		var value = treasureRandomInteger(sum)
-		var save = value
 		
 		for ( var element of array ) {
-			if ( value < element.frequency ) {
+			value -= element.frequency | 0
+			
+			if ( value < 0 ) {
 				return element
 			}
-			
-			value -= (element.frequency | 0)
 		}
 	}
 	
@@ -147,12 +162,12 @@ function treasurePartyHoardsForLevel(array, level) {
 	return result
 }
 
-function treasureCoins(treasure, entries, quantityPerEntry) {
+function treasureCoins(treasure, tableRows, quantityPerEntry) {
 	var result = []
 	var accumulate = new Object()
 	var element, coin, count, key
 	
-	for ( element of entries ) {
+	for ( element of tableRows ) {
 		for ( coin of treasure.coins ) {
 			key = coin.key
 			
@@ -180,14 +195,14 @@ function treasureCoins(treasure, entries, quantityPerEntry) {
 	return result
 }
 
-function treasureValuables(entries, quantityPerEntry) {
+function treasureValuables(tableRows, quantityPerEntry) {
 	var result = []
 	var tables = ["gem", "art"]
 	var keys = []
 	var accumulate = new Object()
 	var element, table, key, count, tableKey
 	
-	for ( element of entries ) {
+	for ( element of tableRows ) {
 		for ( table of tables ) {
 			if ( element[table] ) {
 				key = element[table].value
@@ -223,14 +238,14 @@ function treasureValuables(entries, quantityPerEntry) {
 	return result
 }
 
-function treasureItems(entries, quantityPerEntry) {
+function treasureItems(tableRows, quantityPerEntry) {
 	var result = []
-	var keys = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+	var keys = ["i", "h", "g", "f", "e", "d", "c", "b", "a"]
 	var prefix = "magic_"
 	var accumulate = new Object()
 	var element, key, count, tableKey
 	
-	for ( element of entries ) {
+	for ( element of tableRows ) {
 		for ( key of keys ) {
 			if ( element[prefix + key] ) {
 				count = quantityPerEntry > 0 ? treasureDiceRoll(element[prefix + key], quantityPerEntry) : 1
@@ -255,7 +270,7 @@ function treasureItems(entries, quantityPerEntry) {
 
 function treasureItemsUsingPoints(hoard, pointsArray, pointsLimit) {
 	var result = []
-	var keys = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+	var keys = ["i", "h", "g", "f", "e", "d", "c", "b", "a"]
 	var prefix = "magic_"
 	var accumulate = new Object()
 	var points, entry, die, key
@@ -290,19 +305,19 @@ function treasureItemsUsingPoints(hoard, pointsArray, pointsLimit) {
 	return result
 }
 
-function treasureColeItems(entry, quantity, singlePointsTotal) {
+function treasureColeItems(hoard, quantity, mergeItemPoints) {
 	var pointsArray = []
 	var pointsLimit = 24
 	var pointsDie = 6
 	var index, points
 	
-	singlePointsTotal = singlePointsTotal || singlePointsTotal === undefined ? true : false
+	mergeItemPoints = mergeItemPoints || treasureDefaults.mergeItemPoints
 	quantity = quantity > 0 ? quantity : 1
 	
 	for ( index = 0 ; index < quantity ; ++index ) {
 		points = quantity - index
 		
-		if ( points < 1 || singlePointsTotal ) {
+		if ( points < 1 || mergeItemPoints > 0 ) {
 			points = treasureDieRoll(pointsDie, Math.ceil(points * pointsLimit / pointsDie))
 			index = quantity
 		} else {
@@ -312,7 +327,7 @@ function treasureColeItems(entry, quantity, singlePointsTotal) {
 		pointsArray.push(points)
 	}
 	
-	return treasureItemsUsingPoints(entry, pointsArray, pointsLimit)
+	return treasureItemsUsingPoints(hoard, pointsArray, pointsLimit)
 }
 
 function treasureIndividual(treasure, level, quantity) {
@@ -365,14 +380,14 @@ function treasureRawParty(treasure, level, quantity) {
 		items = []
 		
 		for ( item of entry.party_items ) {
-			rolls = item.quantity * quantity
-			rolls = Math.floor(rolls) + (Math.random() < (rolls - Math.floor(rolls)) ? 1 : 0)
+			rolls = treasureRoundingToRandomInteger(item.quantity * quantity)
 			
 			if ( rolls > 0 ) {
 				items.push({'table':'magic', 'key':item.magic, 'count':[rolls]})
 			}
 		}
 		
+		items.sort((a, b) => a.key < b.key)
 		items.unshift({'table':'hoard', 'key':entry.cr, 'count':hoards * quantity, 'name':entry.name})
 		aggregate.push(items.concat(valuables, coins))
 	}
@@ -382,34 +397,34 @@ function treasureRawParty(treasure, level, quantity) {
 	return aggregate.concat.apply([], aggregate)
 }
 
-function treasureColeEntry(treasure, entry, quantity, singlePointsTotal) {
-	var entries = treasureFrequencyEntries(entry.table, quantity)
-	var coins = treasureCoins(treasure, [entry.coins], quantity)
+function treasureColeEntry(treasure, hoard, quantity, mergeItemPoints) {
+	var entries = treasureFrequencyEntries(hoard.table, quantity)
+	var coins = treasureCoins(treasure, [hoard.coins], quantity)
 	var valuables = treasureValuables(entries, 1)
-	var items = treasureColeItems(entry, quantity, singlePointsTotal)
+	var items = treasureColeItems(hoard, quantity, mergeItemPoints)
 	
 	return items.concat(valuables, coins)
 }
 
-function treasureColeHoard(treasure, level, quantity, singlePointsTotal) {
-	var entry = treasureEntryForLevel(treasure.hoard, level)
+function treasureColeHoard(treasure, level, quantity, mergeItemPoints) {
+	var hoard = treasureEntryForLevel(treasure.hoard, level)
 	
-	return treasureColeEntry(treasure, entry, quantity || 1, singlePointsTotal)
+	return treasureColeEntry(treasure, hoard, quantity || 1, mergeItemPoints)
 }
 
-function treasureColeParty(treasure, level, quantity, singlePointsTotal) {
+function treasureColeParty(treasure, level, quantity, mergeItemPoints) {
 	var aggregate = []
-	var hoards = treasurePartyHoardsForLevel(treasure.hoard, level)
-	var index, count = hoards.length
-	var entry, value, treasures
+	var quantities = treasurePartyHoardsForLevel(treasure.hoard, level)
+	var index, count = quantities.length
+	var hoard, value, treasures
 	
 	for ( index = 0 ; index < count ; ++index ) {
-		entry = treasure.hoard[index]
-		value = hoards[index] * (quantity || 1)
+		hoard = treasure.hoard[index]
+		value = quantities[index] * (quantity || 1)
 		
 		if ( value > 0 ) {
-			treasures = treasureColeEntry(treasure, entry, value, singlePointsTotal)
-			treasures.unshift({'table':'hoard', 'key':entry.cr, 'count':value, 'name':entry.name})
+			treasures = treasureColeEntry(treasure, hoard, value, mergeItemPoints)
+			treasures.unshift({'table':'hoard', 'key':hoard.cr, 'count':value, 'name':hoard.name})
 			aggregate.push(treasures)
 		}
 	}
@@ -457,6 +472,8 @@ function treasureLookupMagicItemEntry(treasure, lookup, entry, times) {
 	var variant = entry.variant || item.variant || false, variantName
 	var quantity = item.quantity ? treasureDiceRoll(item.quantity) : 0
 	var description = itemName
+	
+	times = times || treasureDefaults.times
 	
 	if ( entry.bonus ) {
 		description += (entry.bonus < 0 ? " " : " +") + entry.bonus
@@ -507,9 +524,10 @@ function treasureLookupItems(treasure, lookup, tableKeyCounts, options) {
 	var count
 	var entry, key, item, name, prefix
 	
-	var times = options.times || arguments.callee.times || " x "
-	var forceMagicItemTable = options.forceMagicItemTable || arguments.callee.forceMagicItemTable || false
-	var excludeMagicItemTable = options.excludeMagicItemTable || arguments.callee.excludeMagicItemTable || false
+	var times = options && options.times || treasureDefaults.times
+	var forceMagicItemTable = options && options.forceMagicItemTable || treasureDefaults.forceMagicItemTable || null
+	var excludeMagicItemTable = options && options.excludeMagicItemTable || treasureDefaults.excludeMagicItemTable || false
+	var coinsPerPound = options && options.coinsPerPound || treasureDefaults.coinsPerPound || 50
 	
 	for ( entry of tableKeyCounts ) {
 		if ( entry.table === 'hoard' ) {
@@ -519,7 +537,7 @@ function treasureLookupItems(treasure, lookup, tableKeyCounts, options) {
 		if ( entry.table === 'coins' ) {
 			count = entry.count.reduce((s, v) => s + v, 0)
 			entry.descriptions = [count + entry.key]
-			entry.pounds = count / 50
+			entry.pounds = count / coinsPerPound
 		}
 		
 		if ( entry.table === 'gem' || entry.table === 'art' ) {
@@ -542,7 +560,7 @@ function treasureLookupItems(treasure, lookup, tableKeyCounts, options) {
 			for ( count of entry.count ) {
 				while ( count --> 0 ) {
 					key = forceMagicItemTable || entry.key
-					prefix = excludeMagicItemTable ? "" : key.toUpperCase() + ": "
+					prefix = excludeMagicItemTable > 0 ? "" : key.toUpperCase() + ": "
 					item = treasureLookupMagicItemKey(treasure, lookup, key, times)
 					
 					if ( item ) {
@@ -559,6 +577,8 @@ function treasureLookupItems(treasure, lookup, tableKeyCounts, options) {
 }
 
 function treasureValueSummary(gp, pounds, minimumPoundsToDisplayWeight) {
+	minimumPoundsToDisplayWeight = minimumPoundsToDisplayWeight || treasureDefaults.minimumPoundsToDisplayWeight
+	
 	if ( pounds > minimumPoundsToDisplayWeight ) {
 		var weighs = pounds > 4000 ? (pounds / 20).toFixed(2) + " tons" : Math.floor(pounds) + "lb"
 		

@@ -10,16 +10,9 @@
 		<meta name="description" content="Treasure">
 		<script src="data/treasure.js"></script>
 		<script src="src/treasure.js"></script>
-		<script src="src/sort.js"></script>
 		
 		<script type="text/javascript">
 			'use strict';
-			
-			var defaults = {
-				raw: false,
-				times: " × ",
-				minimumPoundsToDisplayWeight: 20
-			}
 			
 			function _element(id) {
 				if ( id && Node.ELEMENT_NODE === id.nodeType ) return id;
@@ -117,13 +110,13 @@
 					treasures = generateTreasuresForRequest(treasure, challenge, quantity, kind, raw)
 				}
 				
-				treasureLookupItems(treasure, lookup, treasures, {'times':defaults.times})
-				descriptions = treasureDescriptions(treasures, defaults.minimumPoundsToDisplayWeight)
+				treasureLookupItems(treasure, lookup, treasures)
+				descriptions = treasureDescriptions(treasures)
 				displayTreasure(treasure, descriptions)
 			}
 			
 			function handleReroll(key, identifier) {
-				var item = treasureLookupMagicItemKey(treasure, lookup, key.toLowerCase(), defaults.times)
+				var item = treasureLookupMagicItemKey(treasure, lookup, key.toLowerCase())
 				
 				_element(identifier).innerHTML = " " + item.description
 			}
@@ -183,20 +176,20 @@
 					else { form.kind.value = 'hoard' }
 				}
 				
-				value = (object['c'] || object['challenge'] || object['level']) | 0
+				value = parseFloat(object['c'] || object['challenge'] || object['level']) || 0
 				if ( value > 0 ) { form.challenge.value = value }
 				
-				value = (object['n'] || object['quantity']) | 0
-				if ( value > 1 ) { form.quantity.value = value }
+				value = parseFloat(object['n'] || object['quantity']) || 0
+				if ( value > 0 ) { form.quantity.value = value }
 				
-				value = (object['w'] || object['weight']) | 0
-				if ( value > 1 ) { defaults.minimumPoundsToDisplayWeight = value }
+				value = parseFloat(object['w'] || object['weight']) || 0
+				if ( value ) { treasureDefaults.minimumPoundsToDisplayWeight = value }
 				
 				value = (object['m'] || object['force'])
-				if ( value && treasure.magic[value] ) { treasureLookupItems.forceMagicItemTable = value }
+				if ( value && treasure.magic[value] ) { treasureDefaults.forceMagicItemTable = value }
 				
 				value = object['x']
-				if ( value ) { treasureLookupItems.excludeMagicItemTable = true }
+				if ( value ) { treasureDefaults.excludeMagicItemTable = true }
 				
 				value = (object['p'] || object['partition'])
 				if ( value ) { form.partition.checked = true }
@@ -264,10 +257,6 @@
 				for ( var key of keys ) {
 					console.log("Unreferenced item " + key)
 				}
-			}
-			
-			function treasuresReadyToDisplay(items) {
-				return items
 			}
 			
 			function populateLookup() {
