@@ -182,7 +182,7 @@
 					else { form.kind.value = 'hoard' }
 				}
 				
-				value = (object['c'] || object['challenge']) | 0
+				value = (object['c'] || object['challenge'] || object['level']) | 0
 				if ( value > 0 ) { form.challenge.value = value }
 				
 				value = (object['n'] || object['quantity']) | 0
