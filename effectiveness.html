@@ -19,6 +19,8 @@
 		<script src="src/parseattack.js"></script>
 		
 		<script lang="javascript">
+			'use strict';
+			
 			var damageTypeMap = {
 				'':'all',
 				'a':'acid',
@@ -733,19 +735,20 @@
 				
 				var averageDamage = evaluateAverageDamage(e)
 				
-				manyDamage = averageDamage.damage
-				onceDamage = averageDamage.onceDamage
-				manyCritical = averageDamage.critical
-				onceCritical = averageDamage.onceCritical
+				var manyDamage = averageDamage.damage
+				var onceDamage = averageDamage.onceDamage
+				var manyCritical = averageDamage.critical
+				var onceCritical = averageDamage.onceCritical
 				
 				var trace = true
 				var attacks = Math.max(+e.attacks, 1)
 				var armorClass = e.armorClass || 10
 				var onceArmorClass = 0, manyArmorClass = 0
 				var onceModifierHit = 0, oncePenaltyHit = 0, manyModifierHit = 0
-				var onceChanceToHit, manyChanceToHit, chanceToHit
+				var onceChanceToHit, manyChanceToHit, chanceToHit, chanceToCritical
 				var toHit, toCritical, toNearlyMiss, toMiss, toLimit
 				var h, c, hi, ci, p
+				var index, item, roll, damage
 				
 				if ( e.armorClass === 0 ) { return onceDamage + (attacks - 1) * manyDamage }
 				if ( e.armorClass === 99 ) { return onceCritical + (attacks - 1) * manyCritical }
@@ -927,6 +930,7 @@
 				var die, roll
 				var average = 0
 				var maximum = 0
+				var match
 				
 				for ( match of matched ) {
 					var s = match.split("d")

@@ -14,6 +14,8 @@
 		<script src="src/sort.js"></script>
 		
 		<script lang="javascript">
+			'use strict';
+			
 			var defaults = {
 				raw: false,
 				times: " × ",
@@ -207,7 +209,7 @@
 			function validateTreasure() {
 				var magicTables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'i-armor']
 				var index, keys = treasure.items.map(i => i.key)
-				var table, sum
+				var table, sum, weapon
 				
 				for ( table of treasure.hoard ) {
 					sum = table.table.reduce((s, e) => s + e.frequency, 0)

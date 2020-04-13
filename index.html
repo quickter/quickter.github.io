@@ -126,7 +126,7 @@
 			function _unique() {
 				var result = []
 				var index, count = arguments.length
-				var array
+				var array, element
 				
 				for ( index = 0 ; index < count ; ++index ) {
 					array = arguments[index]
@@ -533,7 +533,7 @@
 				var saves = this.proficiencies.saves
 				
 				var any = 0, increased = 0, increase = defaults.increase || 0
-				var feature, styles
+				var feature, styles, ability
 				var abilitiesWithLimits = []
 				var abilitiesWithIncreases = new Object()
 				var abilitiesAlreadyIncreased = new Object()
@@ -642,9 +642,10 @@
 				
 				var armored = 0
 				var unarmored = dexterityModifier
+				var armorIndex, armor, featureIndex, feature
 				
-				for ( var armorIndex = 0 ; armorIndex < armors.length ; ++armorIndex ) {
-					var armor = armors[armorIndex]
+				for ( armorIndex = 0 ; armorIndex < armors.length ; ++armorIndex ) {
+					armor = armors[armorIndex]
 					
 					if ( armor.type === 'shield' ) {
 						armored += armor.armor | 0
@@ -661,7 +662,7 @@
 				}
 				
 				for ( featureIndex = 0 ; featureIndex < features.length ; ++featureIndex ) {
-					var feature = features[featureIndex]
+					feature = features[featureIndex]
 					
 					if ( feature.armorclass ) {
 						if ( feature.requirement === 'unarmored' ) {
@@ -944,7 +945,8 @@
 				var level = this.level | 0
 				var power = Math.floor((level + 7) / 6)
 				var index, feature, cantrip, ability, modifier, attributes, damageModifier
-				var hit, die, roll, damage, average, attacks, chanceToHit
+				var hit, die, roll, damage, average, attacks
+				var chanceToHit, chanceToCritical, effectiveness
 				var features = this.sources
 				var modifiers = this.modifiers
 				var pb = this.proficiencyBonus
@@ -1193,7 +1195,7 @@
 			
 			Character.prototype.checkboxRulesForSkills = function Character_checkboxRulesForSkills() {
 				var values = _flatten.apply(null, this.sources.slice(1).map(s => s.skills))
-				var options, limit = 0
+				var source, options, limit = 0
 				
 				for ( source of this.sources ) {
 					if ( !( source.skill_options && source.skill_options.limit > 0 ) ) { continue }
@@ -2795,6 +2797,7 @@
 					weight = character.weight
 				} else {
 					var x = event ? normalizeX(event) : 1
+					var plusHeight, timesWeight
 					
 					if ( Math.abs(x) > 0.75 && isValid ) {
 						plusHeight = character.height - race.height.base
@@ -3133,7 +3136,7 @@
 				var items = details.tracking
 				var numberTemplate = "<input type='range' id='{key}-tracking' value={uses} min=0 max={uses} step=1 class='tracking-number {key} {restore}' oninput='form[\"{key}-output\"].value = value' /><output for='{key}-tracking' name='{key}-output' class='tracking-number-output'>{uses}</output>"
 				var pipTemplate = "<input type='checkbox' id='{key}-{order}-tracking' class='tracking-mark {key} {restore}' /><label for='{key}-{order}-tracking' class='tracking-mark'></label> "
-				var index
+				var index, item
 				
 				for ( item of items ) {
 					item.style = [item.format, item.rest]
@@ -3167,7 +3170,7 @@
 				var pipTemplate = "<input type='checkbox' id='{key}-{order}-tracking' class='tracking-mark {key} {restore}' /><label for='{key}-{order}-tracking' class='tracking-mark'></label>"
 				var column, columns = []
 				var header, headers = []
-				var index, level
+				var index, level, slot
 				
 				for ( level = 1 ; level < slots.length ; ++level ) {
 					slot = slots[level] || 0

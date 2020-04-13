@@ -284,11 +284,11 @@ function parseAttackParametersElement(string, damageTypeMap) {
 			
 			result.reduction.push(item)
 		} else if ( match.charAt(0) === 'v' ) {
-			parseEffectivenessDamageType(match, result, 'vulnerable', damageTypeMap)
+			parseAttackParametersDamageType(match, result, 'vulnerable', damageTypeMap)
 		} else if ( match.charAt(0) === 'r' ) {
-			parseEffectivenessDamageType(match, result, 'resistant', damageTypeMap)
+			parseAttackParametersDamageType(match, result, 'resistant', damageTypeMap)
 		} else if ( match.charAt(0) === 'i' ) {
-			parseEffectivenessDamageType(match, result, 'immune', damageTypeMap)
+			parseAttackParametersDamageType(match, result, 'immune', damageTypeMap)
 		} else {
 			value = match | 0
 			if ( value >= 0 ) { result.armorClass = value }

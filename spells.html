@@ -13,6 +13,8 @@
 		<script src="data/spells.js"></script>
 		
 		<script lang="javascript">
+			'use strict';
+			
 			function _element(id) {
 				if ( id && Node.ELEMENT_NODE === id.nodeType ) return id;
 				else if ( 'body' === id || 'head' === id ) return document[id];
