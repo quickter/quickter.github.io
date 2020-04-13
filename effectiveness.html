@@ -5,8 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Attack Effectiveness</title>
-		<meta name="author" content="Eric Cole">
-		<meta name="version" content="0.2">
+		<meta name="author" content="Cole">
 		<meta name="keywords" content="dnd,5e,dungeons,dragons,attack,effectiveness">
 		<meta name="description" content="Compute Effectiveness of Attacks">
 		<link rel="stylesheet" href="main.css">
@@ -18,7 +17,7 @@
 		<script src="data/dnd.js"></script>
 		<script src="src/parseattack.js"></script>
 		
-		<script lang="javascript">
+		<script type="text/javascript">
 			'use strict';
 			
 			var damageTypeMap = {
@@ -985,11 +984,11 @@
 	<body>
 		<h4>Attack Effectiveness</h4>
 		
-		<span id='effectiveness-description' class='tiny'>hit / damage # attacks @ target</span><br/>
+		<span id='effectiveness-description' class='tiny'>hit / damage # attacks @ target</span><br />
 		<input type='text' id='effectiveness-input' name='effectiveness' size='60' placeholder='+5 /d8+3s #2 @ 16' oninput='handleEffectiveness(event)'>
 		<p><span id='effectiveness-text'></span></p>
 		
-		<input id='toggle-attack-examples' type='checkbox' class='toggle'/>
+		<input id='toggle-attack-examples' type='checkbox' class='toggle' />
 		<label for='toggle-attack-examples' class='toggle'>Examples</label>
 		<table id='attack-examples' class='toggled'>
 			<tr><td>Default Armor Class</td><td>@10</td><td>Target has AC 10</td></tr>
@@ -1055,23 +1054,23 @@
 			<tr><td>Battle Master 20: Longbow +3, Bracers</td><td class='character'>+6+5+3m+2-5+d12o/d8p+3+5+2+10#4</td><td>Hit +11, +d12 one time, damage d8 + 20, 4 attacks</td></tr>
 			<tr><td>Barbarian 20: Greataxe +3</td><td class='character'>+6+7+3m-5/d12s+3+7+10+4+c4d#2cb</td><td>Hit +11, damage d12+24, critical +4 dice, 2 attacks, bonus attack on critical</td></tr>
 			<tr><td>Assassin 20: Shortbow +3, surprise</td><td class='character'>c1a+6+5+3m/d6p+3+5+10d6o#1</td><td>Hit +14, critical on 1, advantage, damage d6+8, +10d6 once</td></tr>
-			<tr><td colspan=3/></td></tr>
+			<tr><td colspan=3></td></tr>
 		</table>
 		
 		<p>
-			<hr/>
-			Chance to hit AC: <input type='number' id='chance-to-hit-input' name='advantage' size='40' placeholder='16' oninput='handleChanceToHit(event)'><br/>
+			<hr />
+			Chance to hit AC: <input type='number' id='chance-to-hit-input' name='advantage' size='40' placeholder='16' oninput='handleChanceToHit(event)'><br />
 			<span id='chance-to-hit-text'> </span>
 		</p>
 		
 		<p>
-			<hr/>
-			Average of die roll: <input type='text' id='advantage-input' name='advantage' size='40' placeholder='4d6' oninput='handleAdvantage(event)'><br/>
+			<hr />
+			Average of die roll: <input type='text' id='advantage-input' name='advantage' size='40' placeholder='4d6' oninput='handleAdvantage(event)'><br />
 			<span id='advantage-text'> </span>
 		</p>
 		
 		<p>
-			<hr/>
+			<hr />
 			
 			<span class='tiny'>Some calculations are approximated.  With advantage on damage, resistance and vulnerability are approximate.  Disadvantage on attack until a hit succeeds is approximated.  One time defense options are applied to the first attack instead of strategically.</span>
 		</p>

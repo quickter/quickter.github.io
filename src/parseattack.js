@@ -1,3 +1,5 @@
+'use strict';
+
 function parseAttackParametersDamageType(string, result, key, damageTypeMap) {
 	if ( !result[key] ) { result[key] = new Object() }
 	

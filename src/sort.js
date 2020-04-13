@@ -1,3 +1,5 @@
+'not strict';
+
 function tableSort(tableColumn) {
 	/*
 		tableSort(event)

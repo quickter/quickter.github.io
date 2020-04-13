@@ -1,3 +1,5 @@
+'not strict';
+
 function treasureRandomInteger(count) {
 	if ( crypto && crypto.getRandomValues ) {
 		var randomValues = new Uint32Array(1)
@@ -256,7 +258,7 @@ function treasureItemsUsingPoints(hoard, pointsArray, pointsLimit) {
 	var keys = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 	var prefix = "magic_"
 	var accumulate = new Object()
-	var points, entry, die
+	var points, entry, die, key
 	
 	for ( points of pointsArray ) {
 		while ( points > 0 ) {
@@ -348,7 +350,7 @@ function treasureRawHoard(treasure, level, quantity) {
 function treasureRawParty(treasure, level, quantity) {
 	var aggregate = []
 	var list = treasure.hoard
-	var count = list.length
+	var index, count = list.length
 	var entry, hoards, entries, coins, valuables, item, items, rolls
 	
 	quantity = quantity || 1

@@ -13,6 +13,8 @@
 		<script src="src/parseattack.js"></script>
 		
 		<script type="text/javascript">
+			'not strict';
+			
 			var lookup = {};
 			var checkboxRules = {};
 			
@@ -3899,7 +3901,7 @@
 				<div id='tracking-combat-rolls'></div>
 				<div id='tracking-dice' class='unprintable'>
 					<span><input type='range' id='tracking-dice-count' value='1' min='1' max='20' oninput='form.diceCount.value = value' /><output for='tracking-dice-count' name='diceCount' class='tracking-number-output'>1</output></span>
-					<span id='tracking-dice-times'>&times</span>
+					<span id='tracking-dice-times'>&times;</span>
 					<span><input type='button' id='tracking-dice-d4' value='4' class='action' onclick='handleDieRoll(4)' /><label for='tracking-dice-d4' class='action'><span class='die-roll'>D4</span></label></span>
 					<span><input type='button' id='tracking-dice-d6' value='6' class='action' onclick='handleDieRoll(6)' /><label for='tracking-dice-d6' class='action'><span class='die-roll'>D6</span></label></span>
 					<span><input type='button' id='tracking-dice-d8' value='8' class='action' onclick='handleDieRoll(8)' /><label for='tracking-dice-d8' class='action'><span class='die-roll'>D8</span></label></span>
@@ -3910,7 +3912,7 @@
 					<span><input type='button' id='tracking-dice-clear' value='0' class='action' onclick='handleDieRoll(0)' /><label for='tracking-dice-clear' class='action'><span class='die-roll'>Clear</span></label></span>
 					<div>
 						<span id='tracking-dice-sum'></span>
-						<br/><span id='tracking-dice-rolls'></span>
+						<br /><span id='tracking-dice-rolls'></span>
 					</div>
 				</div>
 			</div>

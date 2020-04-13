@@ -5,14 +5,13 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Spells</title>
-		<meta name="author" content="Eric Cole">
-		<meta name="version" content="0.8">
+		<meta name="author" content="Cole">
 		<meta name="keywords" content="dnd,5e,dungeons,dragons,spells">
 		<meta name="description" content="Spell List">
 		<script src="src/sort.js"></script>
 		<script src="data/spells.js"></script>
 		
-		<script lang="javascript">
+		<script type="text/javascript">
 			'use strict';
 			
 			function _element(id) {
@@ -291,7 +290,7 @@
 			function populatePage() {
 				var rowTemplate = "<tr id='row-{key}' class='spell {styles}'>" +
 					"<td class='prepared'><input id='{key}' name='{key}' type='checkbox' class='spell-selection' /></td>" +
-					"<td class='name' data-sort-key='{namekey}'><label class='toggle'><input type='checkbox' class='toggle' /><span>{name}</span><br/><div class='toggled details'><div class='inner details'><p class='material'>{material}</p>{desc}{higher_level}<p class='classnames'>{classnames}</p><p class='page-{book}'>{page}</p></div></div></label></td>" +
+					"<td class='name' data-sort-key='{namekey}'><label class='toggle'><input type='checkbox' class='toggle' /><span>{name}</span><br /><div class='toggled details'><div class='inner details'><p class='material'>{material}</p>{desc}{higher_level}<p class='classnames'>{classnames}</p><p class='page-{book}'>{page}</p></div></div></label></td>" +
 					"<td class='level' data-sort-key='{level}' title='Level {level}'>{level}</td>" +
 					"<td class='school' data-sort-key='{ss}' title='{school}'>{ss}</td>" +
 					"<td class='casting' data-sort-key='{castingkey}' title='Casting Time {casting_time}{title_ritual}'>{casting}</td>" +
@@ -583,117 +582,117 @@
 			<button type='reset' title='Show all spells'>↻</button>
 		</div>
 		
-		<br/><span class='caption taper'>Search:</span>
+		<br /><span class='caption taper'>Search:</span>
 		<input type='search' id='spell-text-filter' name='spell-text-filter' size='36' placeholder='' oninput='handleSearch(event)'>
 		<span id='spell-text-filter-count'></span>
 		
-		<br/><span class='caption taper'>Level:</span>
-		<input id='filter-level-0' type='checkbox' checked class='filter'/><label for='filter-level-0' class='filter'>0</label>
-		<span>&bull;</span> <input id='filter-level-1' type='checkbox' checked class='filter'/><label for='filter-level-1' class='filter'>1</label>
-		<span>&bull;</span> <input id='filter-level-2' type='checkbox' checked class='filter'/><label for='filter-level-2' class='filter'>2</label>
-		<span>&bull;</span> <input id='filter-level-3' type='checkbox' checked class='filter'/><label for='filter-level-3' class='filter'>3</label>
-		<span>&bull;</span> <input id='filter-level-4' type='checkbox' checked class='filter'/><label for='filter-level-4' class='filter'>4</label>
-		<span>&bull;</span> <input id='filter-level-5' type='checkbox' checked class='filter'/><label for='filter-level-5' class='filter'>5</label>
-		<span>&bull;</span> <input id='filter-level-6' type='checkbox' checked class='filter'/><label for='filter-level-6' class='filter'>6</label>
-		<span>&bull;</span> <input id='filter-level-7' type='checkbox' checked class='filter'/><label for='filter-level-7' class='filter'>7</label>
-		<span>&bull;</span> <input id='filter-level-8' type='checkbox' checked class='filter'/><label for='filter-level-8' class='filter'>8</label>
-		<span>&bull;</span> <input id='filter-level-9' type='checkbox' checked class='filter'/><label for='filter-level-9' class='filter'>9</label>
+		<br /><span class='caption taper'>Level:</span>
+		<input id='filter-level-0' type='checkbox' checked class='filter' /><label for='filter-level-0' class='filter'>0</label>
+		<span>&bull;</span> <input id='filter-level-1' type='checkbox' checked class='filter' /><label for='filter-level-1' class='filter'>1</label>
+		<span>&bull;</span> <input id='filter-level-2' type='checkbox' checked class='filter' /><label for='filter-level-2' class='filter'>2</label>
+		<span>&bull;</span> <input id='filter-level-3' type='checkbox' checked class='filter' /><label for='filter-level-3' class='filter'>3</label>
+		<span>&bull;</span> <input id='filter-level-4' type='checkbox' checked class='filter' /><label for='filter-level-4' class='filter'>4</label>
+		<span>&bull;</span> <input id='filter-level-5' type='checkbox' checked class='filter' /><label for='filter-level-5' class='filter'>5</label>
+		<span>&bull;</span> <input id='filter-level-6' type='checkbox' checked class='filter' /><label for='filter-level-6' class='filter'>6</label>
+		<span>&bull;</span> <input id='filter-level-7' type='checkbox' checked class='filter' /><label for='filter-level-7' class='filter'>7</label>
+		<span>&bull;</span> <input id='filter-level-8' type='checkbox' checked class='filter' /><label for='filter-level-8' class='filter'>8</label>
+		<span>&bull;</span> <input id='filter-level-9' type='checkbox' checked class='filter' /><label for='filter-level-9' class='filter'>9</label>
 		
-		<br/><span class='caption taper'>Class:</span>
-		<input id='filter-class-any' name='crass' value='any' type='radio' checked class='filter'/><label for='filter-class-any' class='filter' title='Any'><span class='taper'>Any</span></label>
-		<span>&bull;</span> <input id='filter-class-bard' name='crass' value='bard' type='radio' class='filter'/><label for='filter-class-bard' class='filter' title='Bard'><span class='taper'>Bard</span></label>
-		<span>&bull;</span> <input id='filter-class-cleric' name='crass' value='cleric' type='radio' class='filter'/><label for='filter-class-cleric' class='filter' title='Cleric'><span class='taper'>Cleric</span></label>
-		<span>&bull;</span> <input id='filter-class-druid' name='crass' value='druid' type='radio' class='filter'/><label for='filter-class-druid' class='filter' title='Druid'><span class='taper'>Druid</span></label>
-		<span>&bull;</span> <input id='filter-class-paladin' name='crass' value='paladin' type='radio' class='filter'/><label for='filter-class-paladin' class='filter' title='Paladin'><span class='taper'>Paladin</span></label>
-		<span>&bull;</span> <input id='filter-class-ranger' name='crass' value='ranger' type='radio' class='filter'/><label for='filter-class-ranger' class='filter' title='Ranger'><span class='taper'>Ranger</span></label>
-		<span>&bull;</span> <input id='filter-class-sorcerer' name='crass' value='sorcerer' type='radio' class='filter'/><label for='filter-class-sorcerer' class='filter' title='Sorcerer'><span class='taper'>Sorcerer</span></label>
-		<span>&bull;</span> <input id='filter-class-warlock' name='crass' value='warlock' type='radio' class='filter'/><label for='filter-class-warlock' class='filter' title='Warlock'><span class='taper'>Warlock</span></label>
-		<span>&bull;</span> <input id='filter-class-wizard' name='crass' value='wizard' type='radio' class='filter'/><label for='filter-class-wizard' class='filter' title='Wizard'><span class='taper'>Wizard</span></label>
+		<br /><span class='caption taper'>Class:</span>
+		<input id='filter-class-any' name='crass' value='any' type='radio' checked class='filter' /><label for='filter-class-any' class='filter' title='Any'><span class='taper'>Any</span></label>
+		<span>&bull;</span> <input id='filter-class-bard' name='crass' value='bard' type='radio' class='filter' /><label for='filter-class-bard' class='filter' title='Bard'><span class='taper'>Bard</span></label>
+		<span>&bull;</span> <input id='filter-class-cleric' name='crass' value='cleric' type='radio' class='filter' /><label for='filter-class-cleric' class='filter' title='Cleric'><span class='taper'>Cleric</span></label>
+		<span>&bull;</span> <input id='filter-class-druid' name='crass' value='druid' type='radio' class='filter' /><label for='filter-class-druid' class='filter' title='Druid'><span class='taper'>Druid</span></label>
+		<span>&bull;</span> <input id='filter-class-paladin' name='crass' value='paladin' type='radio' class='filter' /><label for='filter-class-paladin' class='filter' title='Paladin'><span class='taper'>Paladin</span></label>
+		<span>&bull;</span> <input id='filter-class-ranger' name='crass' value='ranger' type='radio' class='filter' /><label for='filter-class-ranger' class='filter' title='Ranger'><span class='taper'>Ranger</span></label>
+		<span>&bull;</span> <input id='filter-class-sorcerer' name='crass' value='sorcerer' type='radio' class='filter' /><label for='filter-class-sorcerer' class='filter' title='Sorcerer'><span class='taper'>Sorcerer</span></label>
+		<span>&bull;</span> <input id='filter-class-warlock' name='crass' value='warlock' type='radio' class='filter' /><label for='filter-class-warlock' class='filter' title='Warlock'><span class='taper'>Warlock</span></label>
+		<span>&bull;</span> <input id='filter-class-wizard' name='crass' value='wizard' type='radio' class='filter' /><label for='filter-class-wizard' class='filter' title='Wizard'><span class='taper'>Wizard</span></label>
 		
-		<br/><span class='caption taper'>School:</span>
-		<input id='filter-school-a' type='checkbox' checked class='filter'/><label for='filter-school-a' class='filter' title='Abjuration'><span class='taper'>Abjuration</span></label>
-		<span>&bull;</span> <input id='filter-school-c' type='checkbox' checked class='filter'/><label for='filter-school-c' class='filter' title='Conjuration'><span class='taper'>Conjuration</span></label>
-		<span>&bull;</span> <input id='filter-school-d' type='checkbox' checked class='filter'/><label for='filter-school-d' class='filter' title='Divination'><span class='taper'>Divination</span></label>
-		<span>&bull;</span> <input id='filter-school-e' type='checkbox' checked class='filter'/><label for='filter-school-e' class='filter' title='Enchantment'><span class='taper'>Enchantment</span></label>
-		<span>&bull;</span> <input id='filter-school-v' type='checkbox' checked class='filter'/><label for='filter-school-v' class='filter' title='Evocation'><span class='taper'>Evocation</span></label>
-		<span>&bull;</span> <input id='filter-school-i' type='checkbox' checked class='filter'/><label for='filter-school-i' class='filter' title='Illusion'><span class='taper'>Illusion</span></label>
-		<span>&bull;</span> <input id='filter-school-n' type='checkbox' checked class='filter'/><label for='filter-school-n' class='filter' title='Necromancy'><span class='taper'>Necromancy</span></label>
-		<span>&bull;</span> <input id='filter-school-t' type='checkbox' checked class='filter'/><label for='filter-school-t' class='filter' title='Transmutation'><span class='taper'>Transmutation</span></label>
+		<br /><span class='caption taper'>School:</span>
+		<input id='filter-school-a' type='checkbox' checked class='filter' /><label for='filter-school-a' class='filter' title='Abjuration'><span class='taper'>Abjuration</span></label>
+		<span>&bull;</span> <input id='filter-school-c' type='checkbox' checked class='filter' /><label for='filter-school-c' class='filter' title='Conjuration'><span class='taper'>Conjuration</span></label>
+		<span>&bull;</span> <input id='filter-school-d' type='checkbox' checked class='filter' /><label for='filter-school-d' class='filter' title='Divination'><span class='taper'>Divination</span></label>
+		<span>&bull;</span> <input id='filter-school-e' type='checkbox' checked class='filter' /><label for='filter-school-e' class='filter' title='Enchantment'><span class='taper'>Enchantment</span></label>
+		<span>&bull;</span> <input id='filter-school-v' type='checkbox' checked class='filter' /><label for='filter-school-v' class='filter' title='Evocation'><span class='taper'>Evocation</span></label>
+		<span>&bull;</span> <input id='filter-school-i' type='checkbox' checked class='filter' /><label for='filter-school-i' class='filter' title='Illusion'><span class='taper'>Illusion</span></label>
+		<span>&bull;</span> <input id='filter-school-n' type='checkbox' checked class='filter' /><label for='filter-school-n' class='filter' title='Necromancy'><span class='taper'>Necromancy</span></label>
+		<span>&bull;</span> <input id='filter-school-t' type='checkbox' checked class='filter' /><label for='filter-school-t' class='filter' title='Transmutation'><span class='taper'>Transmutation</span></label>
 		
-		<br/><span class='caption taper'>Casting Time:</span>
-		<input id='filter-casting-r' type='checkbox' checked class='filter'/><label for='filter-casting-r' class='filter' title='Reaction'><span class='taper'>Reaction</span></label>
-		<span>&bull;</span> <input id='filter-casting-b' type='checkbox' checked class='filter'/><label for='filter-casting-b' class='filter' title='Bonus Action'><span class='taper'>Bonus Action</span></label>
-		<span>&bull;</span> <input id='filter-casting-a' type='checkbox' checked class='filter'/><label for='filter-casting-a' class='filter' title='Action'><span class='taper'>Action</span></label>
-		<span>&bull;</span> <input id='filter-casting-m' type='checkbox' checked class='filter'/><label for='filter-casting-m' class='filter' title='Minutes'><span class='taper'>Minutes</span></label>
-		<span>&bull;</span> <input id='filter-casting-h' type='checkbox' checked class='filter'/><label for='filter-casting-h' class='filter' title='Hours'><span class='taper'>Hours</span></label>
+		<br /><span class='caption taper'>Casting Time:</span>
+		<input id='filter-casting-r' type='checkbox' checked class='filter' /><label for='filter-casting-r' class='filter' title='Reaction'><span class='taper'>Reaction</span></label>
+		<span>&bull;</span> <input id='filter-casting-b' type='checkbox' checked class='filter' /><label for='filter-casting-b' class='filter' title='Bonus Action'><span class='taper'>Bonus Action</span></label>
+		<span>&bull;</span> <input id='filter-casting-a' type='checkbox' checked class='filter' /><label for='filter-casting-a' class='filter' title='Action'><span class='taper'>Action</span></label>
+		<span>&bull;</span> <input id='filter-casting-m' type='checkbox' checked class='filter' /><label for='filter-casting-m' class='filter' title='Minutes'><span class='taper'>Minutes</span></label>
+		<span>&bull;</span> <input id='filter-casting-h' type='checkbox' checked class='filter' /><label for='filter-casting-h' class='filter' title='Hours'><span class='taper'>Hours</span></label>
 		
-		<br/><span class='caption taper'>Source:</span>
-		<input id='filter-book-ph' type='checkbox' checked class='filter'/><label for='filter-book-ph' class='filter' title='Players Handbook'><span class='taper'>Players Handbook</span></label>
-		<span>&bull;</span> <input id='filter-book-xg' type='checkbox' checked class='filter'/><label for='filter-book-xg' class='filter' title='Xanathar’s Guide To Everything'><span class='taper'>Xanathars</span></label>
-		<span>&bull;</span> <input id='filter-book-ee' type='checkbox' checked class='filter'/><label for='filter-book-ee' class='filter' title='Elemental Evil Player’s Companion'><span class='taper'>Elemental Evil</span></label>
-		<span>&bull;</span> <input id='filter-book-sc' type='checkbox' checked class='filter'/><label for='filter-book-sc' class='filter' title='Sword Coast Adventure Guide'><span class='taper'>Sword Coast</span></label>
-		<span>&bull;</span> <input id='filter-book-rt' type='checkbox' checked class='filter'/><label for='filter-book-rt' class='filter' title='The Rise of Tiamat'><span class='taper'>Tiamat</span></label>
+		<br /><span class='caption taper'>Source:</span>
+		<input id='filter-book-ph' type='checkbox' checked class='filter' /><label for='filter-book-ph' class='filter' title='Players Handbook'><span class='taper'>Players Handbook</span></label>
+		<span>&bull;</span> <input id='filter-book-xg' type='checkbox' checked class='filter' /><label for='filter-book-xg' class='filter' title='Xanathar’s Guide To Everything'><span class='taper'>Xanathars</span></label>
+		<span>&bull;</span> <input id='filter-book-ee' type='checkbox' checked class='filter' /><label for='filter-book-ee' class='filter' title='Elemental Evil Player’s Companion'><span class='taper'>Elemental Evil</span></label>
+		<span>&bull;</span> <input id='filter-book-sc' type='checkbox' checked class='filter' /><label for='filter-book-sc' class='filter' title='Sword Coast Adventure Guide'><span class='taper'>Sword Coast</span></label>
+		<span>&bull;</span> <input id='filter-book-rt' type='checkbox' checked class='filter' /><label for='filter-book-rt' class='filter' title='The Rise of Tiamat'><span class='taper'>Tiamat</span></label>
 		
-		<br/><span class='caption taper'>And:</span>
-		<input id='filter-ritual-disable' name='filter-ritual' value='-' type='radio' checked class='trivia'/>
-		<input id='filter-ritual-require' name='filter-ritual' value='R' type='radio' class='trivia'/>
-		<input id='filter-ritual-exclude' name='filter-ritual' value='r' type='radio' class='trivia'/>
+		<br /><span class='caption taper'>And:</span>
+		<input id='filter-ritual-disable' name='filter-ritual' value='-' type='radio' checked class='trivia' />
+		<input id='filter-ritual-require' name='filter-ritual' value='R' type='radio' class='trivia' />
+		<input id='filter-ritual-exclude' name='filter-ritual' value='r' type='radio' class='trivia' />
 		<label for='filter-ritual-disable' class='trivia exclude'><span class='taper'>Ritual</span></label>
 		<label for='filter-ritual-require' class='trivia disable'><span class='taper'>Ritual</span></label>
 		<label for='filter-ritual-exclude' class='trivia require'><span class='taper'>Ritual</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-concentration-disable' name='filter-concentration' value='-' type='radio' checked class='trivia'/>
-		<input id='filter-concentration-require' name='filter-concentration' value='C' type='radio' class='trivia'/>
-		<input id='filter-concentration-exclude' name='filter-concentration' value='c' type='radio' class='trivia'/>
+		<input id='filter-concentration-disable' name='filter-concentration' value='-' type='radio' checked class='trivia' />
+		<input id='filter-concentration-require' name='filter-concentration' value='C' type='radio' class='trivia' />
+		<input id='filter-concentration-exclude' name='filter-concentration' value='c' type='radio' class='trivia' />
 		<label for='filter-concentration-disable' class='trivia exclude'><span class='taper'>Concentration</span></label>
 		<label for='filter-concentration-require' class='trivia disable'><span class='taper'>Concentration</span></label>
 		<label for='filter-concentration-exclude' class='trivia require'><span class='taper'>Concentration</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-defense-disable' name='filter-defense' value='-' type='radio' checked class='trivia'/>
-		<input id='filter-defense-require' name='filter-defense' value='F' type='radio' class='trivia'/>
-		<input id='filter-defense-exclude' name='filter-defense' value='f' type='radio' class='trivia'/>
+		<input id='filter-defense-disable' name='filter-defense' value='-' type='radio' checked class='trivia' />
+		<input id='filter-defense-require' name='filter-defense' value='F' type='radio' class='trivia' />
+		<input id='filter-defense-exclude' name='filter-defense' value='f' type='radio' class='trivia' />
 		<label for='filter-defense-disable' class='trivia exclude'><span class='taper'>Defense</span></label>
 		<label for='filter-defense-require' class='trivia disable'><span class='taper'>Defense</span></label>
 		<label for='filter-defense-exclude' class='trivia require'><span class='taper'>Defense</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-attack-disable' name='filter-attack' value='-' type='radio' checked class='trivia'/>
-		<input id='filter-attack-require' name='filter-attack' value='A' type='radio' class='trivia'/>
-		<input id='filter-attack-exclude' name='filter-attack' value='a' type='radio' class='trivia'/>
+		<input id='filter-attack-disable' name='filter-attack' value='-' type='radio' checked class='trivia' />
+		<input id='filter-attack-require' name='filter-attack' value='A' type='radio' class='trivia' />
+		<input id='filter-attack-exclude' name='filter-attack' value='a' type='radio' class='trivia' />
 		<label for='filter-attack-disable' class='trivia exclude'><span class='taper'>Attack</span></label>
 		<label for='filter-attack-require' class='trivia disable'><span class='taper'>Attack</span></label>
 		<label for='filter-attack-exclude' class='trivia require'><span class='taper'>Attack</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-save-disable' name='filter-save' value='-' type='radio' checked class='trivia'/>
-		<input id='filter-save-require' name='filter-save' value='S' type='radio' class='trivia'/>
-		<input id='filter-save-exclude' name='filter-save' value='s' type='radio' class='trivia'/>
+		<input id='filter-save-disable' name='filter-save' value='-' type='radio' checked class='trivia' />
+		<input id='filter-save-require' name='filter-save' value='S' type='radio' class='trivia' />
+		<input id='filter-save-exclude' name='filter-save' value='s' type='radio' class='trivia' />
 		<label for='filter-save-disable' class='trivia exclude'><span class='taper'>Save</span></label>
 		<label for='filter-save-require' class='trivia disable'><span class='taper'>Save</span></label>
 		<label for='filter-save-exclude' class='trivia require'><span class='taper'>Save</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-damage-disable' name='filter-damage' value='-' type='radio' checked class='trivia'/>
-		<input id='filter-damage-require' name='filter-damage' value='D' type='radio' class='trivia'/>
-		<input id='filter-damage-exclude' name='filter-damage' value='d' type='radio' class='trivia'/>
+		<input id='filter-damage-disable' name='filter-damage' value='-' type='radio' checked class='trivia' />
+		<input id='filter-damage-require' name='filter-damage' value='D' type='radio' class='trivia' />
+		<input id='filter-damage-exclude' name='filter-damage' value='d' type='radio' class='trivia' />
 		<label for='filter-damage-disable' class='trivia exclude'><span class='taper'>Damage</span></label>
 		<label for='filter-damage-require' class='trivia disable'><span class='taper'>Damage</span></label>
 		<label for='filter-damage-exclude' class='trivia require'><span class='taper'>Damage</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-higher-disable' name='filter-higher' value='-' type='radio' checked class='trivia'/>
-		<input id='filter-higher-require' name='filter-higher' value='H' type='radio' class='trivia'/>
-		<input id='filter-higher-exclude' name='filter-higher' value='h' type='radio' class='trivia'/>
+		<input id='filter-higher-disable' name='filter-higher' value='-' type='radio' checked class='trivia' />
+		<input id='filter-higher-require' name='filter-higher' value='H' type='radio' class='trivia' />
+		<input id='filter-higher-exclude' name='filter-higher' value='h' type='radio' class='trivia' />
 		<label for='filter-higher-disable' class='trivia exclude'><span class='taper'>Higher</span></label>
 		<label for='filter-higher-require' class='trivia disable'><span class='taper'>Higher</span></label>
 		<label for='filter-higher-exclude' class='trivia require'><span class='taper'>Higher</span></label>
 		
 		<span>&bull;</span>
-		<input id='filter-permanent-disable' name='filter-permanent' value='-' type='radio' checked class='trivia'/>
-		<input id='filter-permanent-require' name='filter-permanent' value='P' type='radio' class='trivia'/>
-		<input id='filter-permanent-exclude' name='filter-permanent' value='p' type='radio' class='trivia'/>
+		<input id='filter-permanent-disable' name='filter-permanent' value='-' type='radio' checked class='trivia' />
+		<input id='filter-permanent-require' name='filter-permanent' value='P' type='radio' class='trivia' />
+		<input id='filter-permanent-exclude' name='filter-permanent' value='p' type='radio' class='trivia' />
 		<label for='filter-permanent-disable' class='trivia exclude'><span class='taper'>Permanent</span></label>
 		<label for='filter-permanent-require' class='trivia disable'><span class='taper'>Permanent</span></label>
 		<label for='filter-permanent-exclude' class='trivia require'><span class='taper'>Permanent</span></label>
