@@ -60,15 +60,33 @@
 				return result;
 			}
 			
-			function generateTreasuresForRequest(treasure, challenge, request, quantity) {
-				switch ( request ) {
-				case 'raw-hoard':   return treasureRawHoard(treasure, challenge, quantity); break;
-				case 'cole-hoard':  return treasureColeHoard(treasure, challenge, quantity); break;
-				case 'raw-party':   return treasureRawParty(treasure, challenge, quantity); break;
-				case 'cole-party':  return treasureColeParty(treasure, challenge, quantity); break;
-				case 'raw-player':  return treasureRawParty(treasure, challenge, quantity / 4); break;
-				case 'cole-player': return treasureColeParty(treasure, challenge, quantity / 4); break;
-				default:            return treasureIndividual(treasure, challenge, quantity); break;
+			function inflateParameters(result, string, leading, separator) {
+				if ( string.charAt(0) === leading ) { string = string.slice(1) }
+				
+				var part, parts = string.split(separator)
+				var object = result || {}
+				
+				for ( part of parts ) {
+					var equals = part.indexOf("=")
+					var value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
+					var key = equals < 0 ? part : part.slice(0, equals)
+					
+					object[key] = value
+				}
+				
+				return object
+			}
+			
+			function generateTreasuresForRequest(treasure, challenge, quantity, kind, raw) {
+				if ( kind === 'player' ) {
+					kind = 'party'
+					quantity /= 4
+				}
+				
+				switch ( kind ) {
+				case 'hoard': return raw ? treasureRawHoard(treasure, challenge, quantity) : treasureColeHoard(treasure, challenge, quantity)
+				case 'party': return raw ? treasureRawParty(treasure, challenge, quantity) : treasureColeParty(treasure, challenge, quantity)
+				default:      return treasureIndividual(treasure, challenge, quantity); break;
 				}
 			}
 			
@@ -79,22 +97,23 @@
 				var kind = form.kind.value
 				var challenge = form.challenge.value
 				var quantity = form.quantity.value || 1
-				var request = (form.raw.checked ? 'raw' : 'cole') + '-' + kind
+				var partition = form.partition.checked
+				var raw = form.raw.checked
 				var treasures
 				var descriptions
 				
-				if ( defaults.partition && quantity > 1 ) {
+				if ( partition && quantity > 1 ) {
 					treasures = []
 					
 					while ( quantity --> 0 ) {
-						treasures = treasures.concat(generateTreasuresForRequest(treasure, challenge, request, 1))
+						treasures = treasures.concat(generateTreasuresForRequest(treasure, challenge, 1, kind, raw))
 						
 						if ( quantity > 0 ) {
 							treasures.push({'descriptions':["-"], 'summarize':true})
 						}
 					}
 				} else {
-					treasures = generateTreasuresForRequest(treasure, challenge, request, quantity)
+					treasures = generateTreasuresForRequest(treasure, challenge, quantity, kind, raw)
 				}
 				
 				treasureLookupItems(treasure, lookup, treasures, {'times':defaults.times})
@@ -113,6 +132,7 @@
 				var beginHTML = "<ul class='treasure'>"
 				var closeHTML = "</ul>"
 				var rulerHTML = "<hr />"
+				var html
 				
 				if ( !treasureLookupItems.excludeMagicItemTable ) {
 					var key, identifier, item, index, count = list.length
@@ -139,26 +159,13 @@
 					items = list.map(i => "<li>" + (i === '-' ? rulerHTML : i) + "</li>")
 				}
 				
-				var html = beginHTML + items.join("") + closeHTML
-				
-				_element('treasure-list').innerHTML = html
-			}
-			
-			function inflateParameters(result, string, leading, separator) {
-				if ( string.charAt(0) === leading ) { string = string.slice(1) }
-				
-				var part, parts = string.split(separator)
-				var object = result || {}
-				
-				for ( part of parts ) {
-					var equals = part.indexOf("=")
-					var value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
-					var key = equals < 0 ? part : part.slice(0, equals)
-					
-					object[key] = value
+				if ( items.length > 0 ) {
+					html = beginHTML + items.join("") + closeHTML
+				} else {
+					html = "<span class='faded'>No Treasure</span>"
 				}
 				
-				return object
+				_element('treasure-list').innerHTML = html
 			}
 			
 			function applyParameters() {
@@ -175,25 +182,25 @@
 					else { form.kind.value = 'hoard' }
 				}
 				
-				value = object['c'] | 0
+				value = (object['c'] || object['challenge']) | 0
 				if ( value > 0 ) { form.challenge.value = value }
 				
-				value = object['n'] | 0
+				value = (object['n'] || object['quantity']) | 0
 				if ( value > 1 ) { form.quantity.value = value }
 				
-				value = object['w'] | 0
+				value = (object['w'] || object['weight']) | 0
 				if ( value > 1 ) { defaults.minimumPoundsToDisplayWeight = value }
 				
-				value = object['m']
+				value = (object['m'] || object['force'])
 				if ( value && treasure.magic[value] ) { treasureLookupItems.forceMagicItemTable = value }
 				
 				value = object['x']
 				if ( value ) { treasureLookupItems.excludeMagicItemTable = true }
 				
-				value = object['p']
-				if ( value ) { defaults.partition = true }
+				value = (object['p'] || object['partition'])
+				if ( value ) { form.partition.checked = true }
 				
-				value = object['raw']
+				value = (object['r'] || object['raw'])
 				if ( value ) { form.raw.checked = true }
 			}
 			
@@ -258,6 +265,10 @@
 				}
 			}
 			
+			function treasuresReadyToDisplay(items) {
+				return items
+			}
+			
 			function populateLookup() {
 				var keys = ['armors', 'weapons', 'items']
 				var valueByKey = new Object()
@@ -303,6 +314,7 @@
 			
 			p.explanation { font-size:80%; color:#999; }
 			span.reroll { color:#123; cursor:pointer; }
+			span.faded { color:#CCC; }
 			
 			.nose, .reroll {
 				-webkit-touch-callout:none;
@@ -318,16 +330,17 @@
 		<h4>Treasure</h4>
 		
 		<form id='treasure-form' onsubmit="generateTreasure(); return false">
-		<select name='kind' id='treasure-kind'>
+		<select name='kind' id='treasure-kind' title='Type of treasure'>
 			<option value="individual">Individual Treasure</option>
 			<option value="hoard" selected>Treasure Hoard</option>
 			<option value="party">Party Treasure</option>
 			<option value="player">Player (&frac14; Party)</option>
 		</select>
-		<input name='challenge' id='treasure-challenge' type='number' value='4' min='0' max='30' />
-		&times; <input type='number' name='quantity' value='1' min='1' max='99' id='treasure-quantity' />
-		<input type='submit' value='Roll' />
-		<input type='checkbox' name='raw' id='treasure-raw' /><label for='treasure-raw'> RaW</label>
+		<input name='challenge' id='treasure-challenge' type='number' value='4' min='0' max='30' title='Challenge rating or level' />
+		&times; <input type='number' name='quantity' value='1' min='1' max='99' id='treasure-quantity' title='Number of times to roll' />
+		<input type='submit' value='Roll' title='Generate random treasure' />
+		<input type='checkbox' name='partition' id='treasure-partition' title='Separate multiple rolls' /><label for='treasure-partition' class='nose'> &horbar;</label>
+		<input type='checkbox' name='raw' id='treasure-raw' title='Rules as Written - do not mix rarity' /><label for='treasure-raw' class='nose'> RaW</label>
 		</form>
 		
 		<p id='treasure-list'></p>
