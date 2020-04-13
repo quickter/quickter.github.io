@@ -418,16 +418,9 @@ function treasureColeParty(treasure, level, quantity, singlePointsTotal) {
 }
 
 function treasureLookupMagicItemEntry(treasure, lookup, entry, times) {
-	var armor = entry.armor || false, armorName
-	var weapon = entry.weapon || false, weaponName
-	
-	if ( armor ) {
-		armor = treasureFrequencyPrefix(armor)
-		armorName = lookup.armors
-		armorName = armorName && armorName[armor]
-		armorName = armorName && armorName.name
-		armorName = armorName || armor
-	}
+	var armor = entry.armor || false, armorItem, armorName
+	var weapon = entry.weapon || false, weaponItem, weaponName
+	var weight = 0
 	
 	if ( weapon ) {
 		if ( weapon.length > 0 ) {
@@ -436,14 +429,26 @@ function treasureLookupMagicItemEntry(treasure, lookup, entry, times) {
 			weapon = treasureFrequencyElement(treasure.magic.weapons).weapon
 		}
 		
-		weaponName = lookup.weapons
-		weaponName = weaponName && weaponName[weapon]
-		weaponName = weaponName && weaponName.name
+		weaponItem = lookup.weapons
+		weaponItem = weaponItem && weaponItem[weapon]
+		weaponName = weaponItem && weaponItem.name
 		weaponName = weaponName || weapon
+		
+		if ( weaponItem ) { weight = weaponItem.weight || 0 }
+	}
+	
+	if ( armor ) {
+		armor = treasureFrequencyPrefix(armor)
+		armorItem = lookup.armors
+		armorItem = armorItem && armorItem[armor]
+		armorName = armorItem && armorItem.name
+		armorName = armorName || armor
+		
+		if ( armorItem ) { weight = armorItem.weight || 0 }
 	}
 	
 	if ( entry.item === 'armor' && entry.armor && entry.bonus > 0 && !entry.variant ) {
-		return {'item':entry.item, 'armor':armor, 'bonus':entry.bonus, 'description':armorName + " +" + entry.bonus}
+		return {'item':entry.item, 'armor':armor, 'bonus':entry.bonus, 'weight':weight, 'description':armorName + " +" + entry.bonus}
 	}
 	
 	var item = lookup.items[entry.item], itemName = item.name || entry.item
@@ -480,8 +485,9 @@ function treasureLookupMagicItemEntry(treasure, lookup, entry, times) {
 	
 	if ( armor ) { description += ", " + armorName }
 	if ( weapon ) { description += ", " + weaponName }
+	if ( item && item.weight ) { weight = item.weight }
 	
-	return {'item':entry.item, 'armor':armor, 'weapon':weapon, 'variant':variant, 'quantity':quantity, 'bonus':entry.bonus, 'description':description}
+	return {'item':entry.item, 'armor':armor, 'weapon':weapon, 'variant':variant, 'quantity':quantity, 'bonus':entry.bonus, 'weight':weight, 'description':description}
 }
 
 function treasureLookupMagicItemKey(treasure, lookup, key, times) {
@@ -540,6 +546,7 @@ function treasureLookupItems(treasure, lookup, tableKeyCounts, options) {
 					if ( item ) {
 						entry.items.push(item)
 						entry.descriptions.push(prefix + item.description)
+						entry.pounds = item.weight
 					}
 				}
 			}
