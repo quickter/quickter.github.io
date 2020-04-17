@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Bestiary</title>
+		<meta name="author" content="Cole">
+		<meta name="keywords" content="dnd,5e,dungeons,dragons,monsters,creatures,beasts">
+		<meta name="description" content="Bestiary">
+		<script src="data/bestiary.js"></script>
+		<script src="src/sort.js"></script>
+		
+		<script type="text/javascript">
+			'use strict';
+			
+			function _element(id) {
+				if ( id && Node.ELEMENT_NODE === id.nodeType ) return id;
+				else if ( 'body' === id || 'head' === id ) return document[id];
+				else return document.getElementById(id);
+			}
+			
+			function _assignClass(element, c) {
+				var result = 0;
+				var action = ( arguments.length > 2 ) ? arguments[2] || 0 : 1
+				
+				if ( element.classList && 'function' === typeof element.classList.contains ) {
+					if ( !(action > 0 || action < 0) ) {
+						result = element.classList.toggle(c) ? 1 : -1
+					} else if ( element.classList.contains(c) ) {
+						result = !( action > 0 ) ? element.classList.remove(c) || -1 : 0
+					} else {
+						result = !( action < 0 ) ? element.classList.add(c) || 1 : 0
+					}
+				} else if ( element.className && 'function' === typeof element.className.search ) {
+					var pattern = new RegExp('(^|\\s+)'+c+'(\\s+|$)');
+					
+					if ( element.className.search(pattern) < 0 ) {
+						if ( !(action < 0) ) {
+							element.className = element.className !== "" ? element.className + " " + c : c
+							result = 1
+						}
+					} else {
+						if ( !(action > 0) ) {
+							element.className = element.className.replace(pattern, " ").trim()
+							result = -1
+						}
+					}
+				} else if ( !(action < 0) ) {
+					element.className = c
+					result = 1
+				}
+				
+				return result;
+			}
+			
+			function assignClassToElements(className, selector, ascend, rule) {
+				var element, elements = document.querySelectorAll(selector)
+				var value, index
+				var count = elements.length
+				
+				ascend = ascend || 0
+				
+				for ( element of elements ) {
+					value = rule(element)
+					
+					for ( index = 0 ; index < ascend ; ++index ) {
+						element = element.parentElement
+					}
+					
+					if ( _assignClass(element, className, value) > 0 || value > 0 ) {
+						count -= 1
+					}
+				}
+				
+				return count
+			}
+			
+			function inflateParameters(result, string, leading, separator) {
+				if ( string.charAt(0) === leading ) { string = string.slice(1) }
+				
+				var part, parts = string.split(separator)
+				var object = result || {}
+				
+				for ( part of parts ) {
+					var equals = part.indexOf("=")
+					var value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
+					var key = equals < 0 ? part : part.slice(0, equals)
+					
+					object[key] = value
+				}
+				
+				return object
+			}
+			
+			function selectorAssignChecked(selector, checked) {
+				var selectorChecked = selector + ':checked'
+				var selectorUnchecked = selector + ':not(:checked)'
+				var element, elements
+				
+				if ( checked ) {
+					checked = checked > 0
+					elements = document.querySelectorAll(checked ? selectorUnchecked : selectorChecked)
+				} else {
+					var elementsChecked = document.querySelectorAll(selectorChecked)
+					var elementsUnchecked = document.querySelectorAll(selectorUnchecked)
+					
+					checked = elementsUnchecked.length > elementsChecked.length
+					elements = checked ? elementsUnchecked : elementsChecked
+				}
+				
+				for ( element of elements ) {
+					element.checked = checked
+				}
+			}
+			
+			function filterAssignToggleChecked(value) {
+				selectorAssignChecked('table#monster-table tr:not(.filtered) > td.monster-name > label > input.toggle', value)
+			}
+			
+			function filterAssignChosenChecked(value) {
+				selectorAssignChecked('table#monster-table tr:not(.filtered) > td.monster-selected > input.monster-selection', value)
+			}
+			
+			function filterMonstersByChosen() {
+				var count = assignClassToElements('filtered', 'table#monster-table tr.monster > td.monster-selected > input.monster-selection', 2, e => e.checked ? -1 : 1)
+				
+				_element('monster-text-filter-count').innerHTML = count || ''
+			}
+			
+			function filterMonstersByToggle() {
+				var count = assignClassToElements('filtered', 'table#monster-table tr.monster > td.monster-name > label.toggle > input', 3, e => e.checked ? -1 : 1)
+				
+				_element('monster-text-filter-count').innerHTML = count || ''
+			}
+			
+			function filterMonstersByName(pattern) {
+				var className = 'filtered'
+				var selector = 'table#monster-table tr.monster > td.monster-name'
+				var count
+				
+				if ( !pattern ) {
+					count = assignClassToElements(className, selector, 1, e => -1)
+					count = 0
+				} else if ( pattern.search(/[[?*.|^${}\\]/) < 0 ) {
+					pattern = pattern.toLowerCase()
+					count = assignClassToElements(className, selector, 1, e => e.textContent.toLowerCase().indexOf(pattern) < 0 ? 1 : -1)
+				} else {
+					try { pattern = new RegExp(pattern, 'ius') }
+					catch (error) { return }
+					
+					count = assignClassToElements(className, selector, 1, e => e.textContent.search(pattern) < 0 ? 1 : -1)
+				}
+				
+				_element('monster-text-filter-count').innerHTML = count || ''
+				
+				if ( count > 0 && count < 4 ) {
+					filterAssignToggleChecked(1)
+				}
+			}
+			
+			function filterMonstersByKeys(keys) {
+				var form = _element('monster-form')
+				var recognized = []
+				var key
+				
+				for ( key of keys ) {
+					if ( form['toggle_' + key] ) {
+						form['toggle_' + key].checked = true
+						recognized.push(key)
+					}
+				}
+				
+				if ( recognized.length > 0 ) {
+					filterMonstersByToggle()
+				}
+			}
+			
+			function hashChanged(event) {
+				var form = _element('monster-form')
+				var key, keys = location.hash.slice(1).split(",").map(s => s.trim())
+				
+				filterMonstersByKeys(keys)
+			}
+			
+			function applyParameters() {
+				var form = _element('monster-form')
+				var object = inflateParameters(null, location.search, '?', '&')
+				var key, value
+				
+				value = object['f']
+				if ( value ) {
+					form['monster-text-filter'].value = value
+					filterMonstersByName(value)
+				}
+			}
+			
+			function handleSearch(event) {
+				var value = typeof event === 'string' ? event : event.target.value || ""
+				
+				if ( value === '#' ) {
+					filterMonstersByChosen()
+				} else if ( value === '/' ) {
+					filterMonstersByToggle()
+				} else {
+					filterMonstersByName(value)
+				}
+			}
+			
+			function referenceKey(name) {
+				return name.toLowerCase().replace(/(['‘’()×.,:]+|\ba\s|\bof\s|\bthe\s)/g, '').replace(/[-+ \t]+/g, '')
+			}
+			
+			function resolveReferences(text, object) {
+				text = text.replace(/\{=([^{}\/]+)\}/g, (match, key) => "<span class='property " + key + "'>" + (object[key] || '-') + "</span>")
+				text = text.replace(/\{=([^{}\/]+)\/([^{}\/]+)\}/g, (match, key, modifier) => "<span class='property " + key + "'>" + (object[key] || '-') + "</span>")
+				text = text.replace(/\{@atk ([^|{}]+)\}/g, (match, type) => "<i>" + type.replace(/./g, l => (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " ") + " Attack:</i> ")
+				text = text.replace(/\{@h\}/g, "<i>Hit:</i> ")
+				text = text.replace(/\{@recharge\}/g, "<span class='entries recharge'></span>")
+				text = text.replace(/\{@hit ([^|{}]+)\}/g, (match, text) => (+text < 0 ? "" : "+") + text + "")
+				text = text.replace(/\{@(dice|damage) ([^|{}]+)\}/g, "<span class='entries $1' onclick='handleDice(event, \"$2\")'>$2</span>")
+				text = text.replace(/\{@link ([^|{}]+)(\|[^|{}]*)*\}/g, "<span class='entries link'>$1</span>")
+				text = text.replace(/\{@i ([^|{}]+)\}/g, (match, text) => "<i>" + text + "</i>")
+				text = text.replace(/\{@item ([^|{}]+)\}/g, (match, name) => "<a href='#" + referenceKey(name) + "'>" + name + "</a>")
+				text = text.replace(/\{@([^{} ]+)\s+[^|{}]*\|\|([^|{}]+)\}/g, "<span class='entries $1'>$2</span>")
+				text = text.replace(/\{@([^{} ]+)\s+([^|{}]+)(\|[^|{}]*)*\}/g, "<span class='entries $1'>$2</span>")
+				
+				return text
+			}
+			
+			function descriptionFromEntries(entries, begin, close, object) {
+				var result = ""
+				
+				if ( Array.isArray(entries) ) {
+					result += entries.map(e => descriptionFromEntries(e, begin, close, object)).join("")
+				} else if ( !entries ) {
+					result = ""
+				} else if ( typeof entries === 'string' ) {
+					result = begin + resolveReferences(entries, object) + close
+				} else if ( typeof entries === 'number' ) {
+					result = begin + entries + close
+				} else if ( entries.type === 'table' && Array.isArray(entries.rows) ) {
+					result = "<table class='entries'>"
+					
+					if ( entries.caption ) {
+						result += "<caption>" + resolveReferences(entries.caption, object) + "</caption>"
+					}
+					
+					if ( entries.colLabels && Array.isArray(entries.colLabels) && entries.colLabels.length > 0 ) {
+						result += "<tr>" + entries.colLabels.map(h => "<th>" + resolveReferences(h, object) + "</th>").join("") + "</tr>"
+					}
+					
+					result += entries.rows.map(r => "<tr>" + r.map(c => "<td>" + descriptionFromEntries(c, "", "", object) + "</td>").join("") + "</tr>").join("")
+					result += "</table>"
+				} else if ( entries.type === 'cell' && entries.roll ) {
+					result = begin + resolveReferences(entries.roll.entry, object) + close
+				} else if ( entries.type === 'list' ) {
+					var list = entries.entries || entries.items
+					var text = list.filter(i => typeof i === 'string')
+					var term = list.filter(i => i.name && i.entry)
+					
+					if ( text.length > 0 ) {
+						result = "<ul class='entries'>" + descriptionFromEntries(text, "<li>", "</li>", object) + "</ul>"
+					}
+					
+					if ( term.length > 0 ) {
+						result = "<dl class='entries compact'>" +
+							term.map(i => "<dt>" + resolveReferences(i.name, object) + "</dt><dd>" + resolveReferences(i.entry, object) + "</dd>").join("") + "</dl>"
+					}
+				} else if ( entries.type === 'inset' && entries.entries ) {
+					result = "<dl class='entries'><dt>" + resolveReferences(entries.name, object) + "</dt>" +
+						descriptionFromEntries(entries.entries, "<dd>", "</dd>", object) + "</dl>"
+				} else if ( entries.name && entries.entries ) {
+					result = begin + "<span class='prominent entries'>" + resolveReferences(entries.name, object) + "</span> " +
+						descriptionFromEntries(entries.entries, "<span class='follow entries'>", "</span><br /><span class='indent entries'></span>", object) + close
+				} else {
+					result = begin + entries.type + close
+				}
+				
+				return result
+			}
+			
+			function parseMonster(monster, lookup) {
+				var result = new Object()
+				var key, item, index, value, array, prefix, suffix
+				
+				result.name = monster.name
+				result.namekey = result.name.replace(/['‘’]/g, '')
+				result.key = referenceKey(monster.name)
+				result.page = monster.page || false
+				
+				var source = monster.source
+				
+				if ( typeof source === 'string' && source.startsWith('UA') ) { source = 'UA' }
+				
+				value = lookup.sources[source]
+				
+				if ( value ) {
+					result.source = value.key
+					result.sourcename = value.name
+				} else {
+					result.source = source
+					result.sourcename = source
+				}
+				
+				result.sourcename = result.sourcename.replace(/'/g, "’")
+				
+				var typeTags, type = monster.type
+				
+				if ( typeof type === 'string' ) {
+					typeTags = false
+					type = type
+				} else if ( type && type.type ) {
+					typeTags = type.tags
+					type = type.type
+				} else {
+					typeTags = false
+					type = "?"
+				}
+				
+				if ( lookup.monstertypes[type] ) {
+					value = lookup.monstertypes[type]
+					
+					result.type = value.key
+					result.typename = value.name.toLowerCase()
+					result.typeconcise = value.abbreviation
+				} else {
+					result.type = type
+					result.typename = type.toLowerCase()
+					result.typeconcise = "?"
+				}
+				
+				if ( typeof typeTags === 'string' ) {
+					result.typetags = " (" + typeTags + ")"
+				} else if ( typeTags && Array.isArray(typeTags) && typeTags.length > 0 ) {
+					result.typetags = " (" + typeTags.join(", ") + ")"
+				} else {
+					result.typetags = ""
+				}
+				
+				var size = monster.size
+				
+				if ( typeof size === 'string' && lookup.sizes[size] ) {
+					size = lookup.sizes[size]
+					
+					result.size = size.key
+					result.sizekey = size.order
+					result.sizename = size.name
+					result.sizeconcise = size.key
+				} else {
+					result.size = size
+					result.sizekey = -1
+					result.sizename = size || "?"
+					result.sizeconcise = size || "?"
+				}
+				
+				var alignment = monster.alignment
+				
+				if ( typeof alignment === 'string' ) {
+					result.alignment = alignment
+				} else if ( Array.isArray(alignment) ) {
+					suffix = " "
+					array = []
+					
+					var hasNX = alignment.includes('NX')
+					var hasNY = alignment.includes('NY')
+					
+					if ( hasNX || hasNY ) {
+						array.push("Any")
+					}
+					
+					if ( hasNX && hasNY ) {
+						var missing = ["L", "C", "G", "E"].filter(a => !alignment.includes(a))[0]
+						
+						alignment.push("Non-" + lookup.alignments[missing].name)
+					} else if ( hasNX ) {
+						alignment.push(lookup.alignments[alignment[alignment.length - 1]].name)
+					} else if ( hasNY ) {
+						alignment.push(lookup.alignments[alignment[0]].name)
+					} else {
+						for ( value of alignment ) {
+							if ( typeof value === 'string' ) {
+								if ( lookup.alignments[value] ) {
+									if ( alignment.length === 1 && value !== 'U' ) {
+										array.push("Any")
+									}
+								
+									array.push(lookup.alignments[value].name)
+								} else {
+									array.push(value)
+								}
+							} else if ( typeof value.special === 'string' ) {
+								array.push(value.special)
+							} else if ( value.alignment && value.chance ) {
+								array.push(value.alignment.map(a => lookup.alignments[a].name).join(" ") + " (" + value.chance + "%)")
+								suffix = " or "
+							}
+						}
+					}
+					
+					if ( hasNX || hasNY ) {
+						array.push("Alignment")
+					}
+					
+					result.alignment = array.join(suffix).toLowerCase()
+				} else {
+					result.alignment = "Unknown"
+				}
+				
+				var armorclass = monster.ac
+				
+				if ( typeof armorclass === 'string' || typeof armorclass === 'number' ) {
+					result.ac = +armorclass
+					result.armorclass = armorclass
+				} else if ( armorclass ) {
+					result.ac = 0
+					array = []
+					
+					if ( !Array.isArray(armorclass) ) {
+						armorclass = [armorclass]
+					}
+					
+					for ( value of armorclass ) {
+						if ( typeof value === 'string' || typeof value === 'number' ) {
+							result.ac = +value
+							array.push(value)
+							continue
+						}
+						
+						prefix = ""
+						suffix = ""
+						
+						if ( typeof value.condition === 'string' ) {
+							suffix = " " + resolveReferences(value.condition, monster)
+						}
+						
+						if ( typeof value.from === 'string' ) {
+							prefix = " (" + resolveReferences(value.from) + ")"
+						} else if ( Array.isArray(value.from) ) {
+							prefix = " (" + value.from.map(f => resolveReferences(f)).join(", ") + ")"
+						}
+						
+						if ( !result.ac || !value.condition ) {
+							result.ac = value.ac
+						}
+						
+						array.push(value.ac + prefix + suffix)
+					}
+					
+					result.armorclass = array.join(", ")
+				} else {
+					result.ac = "?"
+					result.armorclass = armorclass
+				}
+				
+				var hitpoints = monster.hp
+				
+				if ( typeof hitpoints === 'string' || typeof hitpoints === 'number' ) {
+					result.hp = +hitpoints
+					result.hitpoints = hitpoints
+					result.hitpointstags = ""
+				} else if ( hitpoints.average ) {
+					result.hp = +hitpoints.average
+					result.hitpoints = hitpoints.average
+					
+					if ( hitpoints.formula ) {
+						result.hitpointstags = " (" + hitpoints.formula + ")"
+					} else {
+						result.hitpointstags = ""
+					}
+				} else if ( hitpoints.special ) {
+					result.hp = "*"
+					result.hitpoints = hitpoints.special
+					result.hitpointstags = ""
+				} else {
+					result.hp = 0
+					result.hitpoints = hitpoints
+					result.hitpointstags = ""
+				}
+				
+				var speed = monster.speed
+				var units = " ft."
+				result.movement = []
+				
+				if ( typeof speed === 'string' || typeof speed === 'number' ) {
+					result.speed = speed + units
+				} else if ( speed ) {
+					var keysForSpeed = ['walk', 'burrow', 'climb', 'fly', 'swim']
+					array = []
+					
+					for ( key of keysForSpeed ) {
+						value = speed[key]
+						prefix = key !== 'walk' ? key + " " : ""
+						
+						if ( typeof value === 'string' || typeof value === 'number' ) {
+							array.push(prefix + value + units)
+						} else if ( value && value.number ) {
+							suffix = value.condition ? "" + value.condition + "" : ""
+							array.push(prefix + value.number + units + suffix)
+							
+							if ( value.condition ) {
+								result.movement.push(value.condition)
+							}
+						}
+					}
+					
+					result.speed = array.join(", ")
+				} else {
+					result.speed = "?"
+				}
+				
+				var keysForAttributes = ['str=Str', 'dex=Dex', 'con=Con', 'int=Int', 'wis=Wis', 'cha=Cha']
+				suffix = "mod"
+				
+				for ( key of keysForAttributes ) {
+					index = key.indexOf('=')
+					
+					if ( index < 0 ) {
+						prefix = key
+					} else {
+						prefix = key.slice(index + 1)
+						key = key.slice(0, index)
+					}
+					
+					value = monster[key]
+					
+					if ( typeof value === 'string' || typeof value === 'number' ) {
+						result[key] = value
+						result[key + suffix] = (value < 10 ? "" : "+") + (Math.floor(value / 2) - 5)
+					} else {
+						result[key] = ""
+						result[key + suffix] = 0
+					}
+				}
+				
+				var save = monster.save
+				array = []
+				
+				if ( save ) {
+					for ( key of keysForAttributes ) {
+						index = key.indexOf('=')
+						
+						if ( index < 0 ) {
+							prefix = key
+						} else {
+							prefix = key.slice(index + 1)
+							key = key.slice(0, index)
+						}
+						
+						value = save[key]
+						
+						if ( typeof value === 'string' || typeof value === 'number' ) {
+							array.push(prefix + " " + value)
+						}
+					}
+				}
+				
+				result.savingthrows = array.join(", ")
+				
+				var keysForSkill = [
+					'Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception',
+					'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine',
+					'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion',
+					'Sleight of Hand', 'Stealth', 'Survival'
+				]
+				var skill = monster.skill
+				array = []
+				
+				if ( skill ) {
+					for ( key of keysForSkill ) {
+						value = skill[key.toLowerCase()]
+						
+						if ( typeof value === 'string' || typeof value === 'number' ) {
+							array.push(key + " " + value)
+						}
+					}
+				}
+				
+				array.sort()
+				result.skills = array.join(", ")
+				
+				var keysForResistances = [
+					'vulnerable=vulnerabilities', 'resistance=resistances', 'immune=immunities',
+					'conditionImmune=unconditionals', 'senses', 'languages'
+				]
+				
+				for ( key of keysForResistances ) {
+					index = key.indexOf('=')
+					
+					if ( index < 0 ) {
+						prefix = key
+					} else {
+						prefix = key.slice(index + 1)
+						key = key.slice(0, index)
+					}
+					
+					value = monster[key]
+					
+					if ( typeof value === 'string' ) {
+						result[prefix] = value
+					} else if ( Array.isArray(value) ) {
+						array = []
+						
+						for ( item of value ) {
+							if ( typeof item === 'string' ) {
+								array.push(item)
+							} else if ( item[key] && Array.isArray(item[key]) ) {
+								array.push(item[key].join(", ") + (item.note ? " " + item.note : ""))
+							}
+						}
+						
+						result[prefix] = array.join(", ")
+					} else {
+						result[prefix] = ""
+					}
+				}
+				
+				var value = monster.passive
+				
+				if ( typeof value === 'string' || typeof value === 'number' ) {
+					result.senses = result.senses + (result.senses.length > 0 ? ", " : "") + "passive Perception " + value
+				}
+				
+				if ( result.languages === '' ) {
+					result.languages = "―"
+				}
+				
+				var challenge = monster.cr
+				
+				if ( Array.isArray(challenge) ) { challenge = challenge[0] }
+				if ( challenge && challenge['cr'] ) { challenge = challenge['cr'] }
+				
+				if ( typeof challenge === 'string' && challenge.indexOf('/') >= 0 ) {
+					challenge = challenge.split('/')
+					challenge = challenge[0] / challenge[1]
+				} else if ( isNaN(+challenge) ) {
+					challenge = "?"
+				}
+				
+				var experienceForChallange = [
+					0, 200, 450, 700, 1100, 1800, 2300, 2900, 3900, 5000, 5900,
+					7200, 8400, 10000, 11500, 13000, 15000, 18000, 20000, 22000, 25000,
+					33000, 41000, 50000, 62000, 75000, 90000, 105000, 120000, 135000, 155000
+				]
+				
+				result.challenge = challenge
+				result.challengekey = challenge === "?" ? 1000 : (8 * challenge) | 0
+				result.challengename = challenge === "?" ? "―" : challenge > 0 && challenge < 1 ? "0⅛¼⅜½⅝¾⅞".charAt(Math.round(challenge * 8)) : challenge
+				result.challengexp = challenge > 0 && challenge < 1 ? challenge * experienceForChallange[1] : experienceForChallange[challenge | 0]
+				
+				//if ( ignoreErrata && type === 'dragon' && challenge >= 20 ) {
+				//	var lessForDragons = [500, 5500, 11000, 17500, 25500, 0, 0, 0, 0, 0, 0]
+				//	result.challengexp -= lessForDragons[challenge - 20]
+				//}
+				
+				result.challengeexperience = "(" + result.challengexp + " XP)"
+				
+				var legendary = "The {=name} can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn . The {=name} regains spent legendary actions at the start of its turn."
+				var keysForText = ['trait', 'action=Actions', 'reaction=Reactions', 'legendary=Legendary Actions']
+				var spellcasting = monster.spellcasting
+				array = []
+				
+				result.spellcastingability = false
+				
+				for ( key of keysForText ) {
+					index = key.indexOf('=')
+					
+					if ( index < 0 ) {
+						prefix = ""
+					} else {
+						prefix = key.slice(index + 1)
+						key = key.slice(0, index)
+					}
+					
+					value = monster[key]
+					
+					if ( !value && key === 'trait' && spellcasting ) {
+						value = []
+					}
+					
+					if ( value ) {
+						if ( prefix ) {
+							array.push("<span class='monster-title'>" + prefix + "</span><hr class='monster-thin' />")
+						}
+						
+						if ( key === 'legendary' ) {
+							array.push("<p>" + resolveReferences(legendary, monster) + "</p>")
+						}
+						
+						array.push(descriptionFromEntries(value, "<p>", "</p>", monster))
+						
+						if ( key === 'trait' && spellcasting ) {
+							if ( !Array.isArray(spellcasting) ) {
+								spellcasting = [spellcasting]
+							}
+							
+							for ( item of spellcasting ) {
+								result.spellcastingability = item.ability || false
+							
+								if ( item.name || item.headerEntries ) {
+									array.push(descriptionFromEntries({'name':item.name, 'entries':item.headerEntries || []}, "<p class='spellcasting'>", "</p>", monster))
+								}
+								
+								if ( Array.isArray(item.will) && !(item.hidden && item.hidden.includes('will')) ) {
+									array.push("<div class='spellcasting'><span class='spells-at-will'></span><span class='spells'>" + item.will.map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
+								}
+								
+								if ( item.daily && !(item.hidden && item.hidden.includes('daily')) ) {
+									for ( index = 1 ; index < 10 ; ++index ) {
+										if ( Array.isArray(item.daily[index + 'e']) && item.daily[index + 'e'].length > 0 ) {
+											array.push("<div class='spellcasting'><span class='spell" + (item.daily[index + 'e'].length > 1 ? 's' : '') + "-daily'>" + index + "</span><span class='spells'>" + item.daily[index + 'e'].map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
+										}
+									}
+								}
+								
+								if ( item.spells && !(item.hidden && item.hidden.includes('spells')) ) {
+									if ( item.spells["0"] && Array.isArray(item.spells["0"].spells) && item.spells["0"].spells.length > 0 ) {
+											array.push("<div class='spellcasting'><span class='spell-level-cantrip'></span><span class='spell-slots'></span><span class='spells'>" + item.spells["0"].spells.map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
+									}
+									
+									for ( index = 1 ; index < 10 ; ++index ) {
+										if ( item.spells["" + index] && Array.isArray(item.spells["" + index].spells) && item.spells["" + index].spells.length > 0 ) {
+											array.push("<div class='spellcasting'><span class='spell-level'>" + index + "</span><span class='spell-slots'>" + (item.spells["" + index].slots || '') + "</span><span class='spells'>" + item.spells["" + index].spells.map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
+										}
+									}
+								}
+								
+								if ( item.footerEntries ) {
+									array.push(descriptionFromEntries(item.footerEntries, "<div class='spellcasting'>", "</div>", monster))
+								}
+							}
+						}
+					}
+				}
+				
+				result.descriptionhtml = array.join("")
+				
+				var environments = monster.environment
+				
+				if ( typeof environments === 'string' ) {
+					result.environments = resolveReferences(environments, monster)
+				} else if ( Array.isArray(environments) ) {
+					array = [].concat(environments)
+					array.sort()
+					result.environments = array.join(", ")
+				} else {
+					result.environments = ""
+				}
+				
+				return result
+			}
+			
+			function monstersReadyToDisplay(bestiary) {
+				var result = []
+				var lookup = new Object()
+				var lookupKeys = ['sources', 'sizes', 'monstertypes', 'alignments', 'abilities']
+				var styles
+				var excludeSource = []
+				var key, item, monster
+				var masterList = bestiary.monster
+				
+				for ( key of lookupKeys ) {
+					lookup[key] = new Object()
+					
+					if ( Array.isArray(bestiary[key]) ) {
+						for ( item of bestiary[key] ) {
+							lookup[key][item.key] = item
+						}
+					}
+				}
+				
+				for ( monster of masterList ) {
+					if ( monster['_copy'] ) {
+						continue
+					}
+					
+					if ( excludeSource.includes(monster['source']) ) {
+						continue
+					}
+					
+					item = parseMonster(monster, lookup)
+					
+					// traitTags, senseTags, actionTags, languageTags, damageTags, miscTags, conditionInflict, environment
+					styles = []
+					styles.push(item.typename.toLowerCase())
+					styles.push(item.sizename.toLowerCase())
+					item.styles = styles.join(" ")
+					
+					result.push(item)
+				}
+				
+				result.sort((a, b) => a.key > b.key)
+				
+				return result
+			}
+			
+			function populateLookup() {
+				var keys = []
+				var valueByKey = new Object()
+				
+				for ( var key of keys ) {
+					valueByKey[key] = new Object()
+					
+					for ( var value of treasure[key] ) { valueByKey[key][value.key] = value }
+				}
+				
+				window.lookup = valueByKey
+			}
+			
+			function populateMonsters() {
+				var rowTemplate = "<tr id='monster-{key}' class='monster {styles}'>" +
+					"<td class='monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='monster-selection' /></td>" +
+					"<td class='monster-name natural' data-sort-key='{namekey}'><label class='toggle'><input name='toggle_{key}' type='checkbox' class='toggle' />" +
+						"<a class='monster-name' name='{key}'>{name}</a>" +
+						"<div class='toggled details'><div class='inner details'>" +
+							"<div class='monster-caption'><span class='size'>{sizename}</span> <span class='type'>{typename}{typetags}, </span><span class='alignment'>{alignment}</span></div>" +
+							"<hr class='monster-thick' />" +
+							"<div><span class='prefix armorclass'>{armorclass}</span></div>" +
+							"<div><span class='prefix hitpoints'>{hitpoints}</span><span class='hitpointstags'>{hitpointstags}</span></div>" +
+							"<div><span class='prefix speed'>{speed}</span></div>" +
+							"<hr class='monster-thick' />" +
+							"<table class='abilities'><tr><th>Str</th><th>Dex</th><th>Con</th><th>Int</th><th>Wis</th><th>Cha</th></tr>" +
+							"<tr><td><span class='ability-score'>{str}</span> <span class='ability-modifier'>({strmod})</span></td><td><span class='ability-score'>{dex}</span> <span class='ability-modifier'>({dexmod})</span></td><td><span class='ability-score'>{con}</span> <span class='ability-modifier'>({conmod})</span></td><td><span class='ability-score'>{int}</span> <span class='ability-modifier'>({intmod})</span></td><td><span class='ability-score'>{wis}</span> <span class='ability-modifier'>({wismod})</span></td><td><span class='ability-score'>{cha}</span> <span class='ability-modifier'>({chamod})</span></td></tr></table>" +
+							"<hr class='monster-thick' />" +
+							"<div><span class='prefix skills'>{skills}</span></div>" +
+							"<div><span class='prefix vulnerabilities'>{vulnerabilities}</span></div>" +
+							"<div><span class='prefix resistances'>{resistances}</span></div>" +
+							"<div><span class='prefix immunities'>{immunities}</span></div>" +
+							"<div><span class='prefix unconditionals'>{unconditionals}</span></div>" +
+							"<div><span class='prefix senses'>{senses}</span></div>" +
+							"<div><span class='prefix languages'>{languages}</span></div>" +
+							"<div><span class='prefix challenge'>{challengename}</span> <span class='experience'>{challengeexperience}</span></div>" +
+							"<hr class='monster-thick' />" +
+							"{descriptionhtml}" +
+							"<p class='prefix environments'>{environments}</p>" +
+							"<p class='source'>{sourcename}<span class='page-number'>{page}</span></p>" +
+						"</div></div>" +
+					"</label></td>" +
+					"<td class='monster-size natural monster-size-{sizekey}' data-sort-key='{sizekey}' title='Size {sizename}'>{size}</td>" +
+					"<td class='monster-type natural' title='{typename}'>{typeconcise}</td>" +
+					"<td class='monster-armorclass numeric' title='Armor Class {ac}'>{ac}</td>" +
+					"<td class='monster-hitpoints numeric' title='Hit Points {hp}'>{hp}</td>" +
+					"<td class='monster-challenge numeric' data-sort-key='{challengekey}' title='Challenge Rating {challengename}'>{challengename}</td>" +
+					"<td class='monster-source natural' title='{sourcename} {page}'>{source}</td>" +
+				"</tr>"
+				
+				var header = "<tr id='monster-header' class='monster header'>" +
+					"<th class='monster-selected sortable' data-sort-invert> </th>" +
+					"<th class='monster-name natural sortable' data-sort-format='locale'>Name</th>" +
+					"<th class='monster-size natural sortable' data-sort-format='normal' title='Size'>S</th>" +
+					"<th class='monster-type natural sortable' data-sort-format='normal' title='Type'>T</th>" +
+					"<th class='monster-type numeric sortable' data-sort-format='number' title='Armor Class'>AC</th>" +
+					"<th class='monster-type numeric sortable' data-sort-format='number' title='Hit Points'>HP</th>" +
+					"<th class='monster-type numeric sortable' data-sort-format='number' title='Challenge Rating'>CR</th>" +
+					"<th class='monster-source natural sortable' data-sort-format='normal'>Source</th>" +
+				"</tr>"
+				
+				var list = monstersReadyToDisplay(bestiary)
+				var pattern = /\{([^ {}]+)\}/g
+				var rows = list.map(item => rowTemplate.replace(pattern, (match, key) => item[key]))
+				
+				var form = _element('monster-form')
+				var table = _element('monster-table')
+				
+				table.innerHTML = header + rows.join("")
+				
+				tableSort(table)
+			}
+			
+			function populatePage() {
+				populateLookup()
+				populateMonsters()
+				
+				window.addEventListener('hashchange', hashChanged)
+				
+				applyParameters()
+				hashChanged()
+			}
+		</script>
+		
+		<style>
+			html {
+				background: #EEE;
+			}
+			
+			body {
+				-webkit-font-smoothing: antialiased;
+				-webkit-touch-callout: none;
+				color: #555;
+				background: #FFF;
+				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+				font-size: 14px;
+				line-height: 1.5;
+				padding: 2em;
+				margin: 0 auto;
+				max-width: 50em;
+			}
+			
+			html { background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%); }
+			body { position:relative; box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
+			
+			input#monster-text-filter { font-size:100%; max-width:98%; }
+			span#monster-text-filter-count { opacity:0.5; font-size:60%; }
+			
+			input.toggle, input.filter { display:none; }
+			input.toggle:not(:checked) ~ div.toggled { display:none; }
+			input.toggle:not(:checked) + label + div.toggled { display:none; }
+			
+			div.details { position:relative; white-space:normal; width:0; }
+			div.details > div.details.inner { position:relative; width:40em; max-width:70vw; padding:0.5em 1em 0 1em; margin:0.5em 0; background:#FDF4E8; border:1px solid #EEE; }
+			
+			@media (max-width:420px) {
+				body { font-size:2.8vmin; }
+				th.monster-source, td.monster-source { display:none; }
+			}
+			
+			td.center, th.center { text-align:center; }
+			td.natural, th.natural { text-align:left; }
+			td.numeric, th.numeric { text-align:right; }
+			
+			table#monster-table { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
+			table#monster-table tr.monster { border-bottom:0.25px solid #DDD; }
+			table#monster-table tr.monster > td, #monster-table tr.monster > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
+			table#monster-table a.monster-name { display:block; cursor:pointer; }
+			
+			@media screen {
+				table#monster-table tr.monster > td.monster-hitpoints::before { content:"♥︎"; font-size:50%; opacity:0.25; }
+				table#monster-table tr.monster > td.monster-challenge::before { content:"★"; font-size:50%; opacity:0.25; }
+				table#monster-table tr.monster > td.monster-armorclass::before { content:"♦︎"; font-size:50%; opacity:0.25; }
+			}
+			
+			#monster-table { min-width:90%; }
+			td.monster-source { font-size:80%; }
+			div.details { color:#333; }
+			div.details span.entries.indent + span.entries { margin-left:1em }
+			div.details dl.entries > dt { font-weight:bold; }
+			div.details span.entries { font-style:oblique; }
+			div.details span.prominent { font-weight:bold; }
+			div.details span.prominent::after { content:"."; }
+			div.details table.entries { border-spacing:0; border-collapse:collapse; }
+			div.details table.entries td { vertical-align:top; }
+			div.details table.entries td:not(:last-of-type) { padding-right:1em; }
+			div.details table.entries td:first-child { min-width:4em; white-space:nowrap; }
+			div.details table.entries tr:nth-child(even) { background:#FFFAFA; }
+			div.details div.monster-caption { font-style:oblique; }
+			div.details a, div.details a:visited { text-decoration-color:#CCC; color:inherit; }
+			p.source { font-style:oblique; color:#666; font-size:80%; }
+			p.source > span.page-number:not(:empty)::before { content:" page "; }
+			p.environments { color:#666; font-size:80%; }
+			p.prefix.environments:not(:empty)::before { content:"Environments: "; }
+			div.details table.abilities th { text-align:center; text-transform:uppercase; }
+			div.details table.abilities td { text-align:center; min-width:3em; width:4em; }
+			div.details table.abilities span.ability-score { font-weight:bold; }
+			div.details hr.monster-thin { border:0; height:2px; background:#333; margin-top:0; }
+			div.details hr.monster-thick { border:0; height:4px; background:#333; }
+			div.details span.monster-title { font-variant:small-caps; font-size:125%; }
+			
+			span.prefix:not(:empty)::before { font-weight:bold; }
+			span.prefix.armorclass:not(:empty)::before { content:"Armor Class "; }
+			span.prefix.hitpoints:not(:empty)::before { content:"Hit Points "; }
+			span.prefix.speed:not(:empty)::before { content:"Speed "; }
+			span.prefix.skills:not(:empty)::before { content:"Skills "; }
+			span.prefix.vulnerabilities:not(:empty)::before { content:"Damage Vulnerabilities "; }
+			span.prefix.resistances:not(:empty)::before { content:"Damage Resistances "; }
+			span.prefix.immunities:not(:empty)::before { content:"Damage Immunities "; }
+			span.prefix.unconditionals:not(:empty)::before { content:"Condition Immunities "; }
+			span.prefix.senses:not(:empty)::before { content:"Senses "; }
+			span.prefix.languages:not(:empty)::before { content:"Languages "; }
+			span.prefix.challenge:not(:empty)::before { content:"Challenge Rating "; }
+			span.entries.recharge::before { content:"(Recharge " }
+			span.entries.recharge:empty::after { content:"6)" }
+			span.entries.recharge:not(:empty)::after { content:"—6)" }
+			div.spellcasting span.spells-at-will::after { content:"At will: " }
+			div.spellcasting span.spell-daily::after { content:"/day: " }
+			div.spellcasting span.spells-daily::after { content:"/day each: " }
+			div.spellcasting span.spell-level-cantrip::after { content:"Cantrips (at will): " }
+			div.spellcasting span.spell-level::after { content:" level " }
+			div.spellcasting span.spell-slots:not(:empty)::before { content:" (" }
+			div.spellcasting span.spell-slots:not(:empty)::after { content:" slots): " }
+			
+			dl.compact > dt, dl.compact > dd { }
+			
+			@media screen {
+				div.details hr.monster-thin,
+				div.details hr.monster-thick { background:#933; background-image:linear-gradient(90deg, #933 0%, #C98 70%, #F8F0E6 100%); }
+				div.details > div.details.inner { background-image:linear-gradient(157.5deg, #F0EAE0 0%, #F7EFE4 30%, #FDF4E8 100%); }
+				
+				div.details span.monster-title,
+				div.details table.abilities th,
+				div.details table.abilities span.ability-score,
+				span.prefix:not(:empty)::before { color:#633; }
+			}
+			
+			tr.filtered { display:none; }
+			th.sortable.unsorted, th.sortable.sorted-descending { cursor:s-resize; }
+			th.sortable.sorted-ascending { cursor:n-resize; }
+			th.sortable.sorted-descending { text-decoration:overline; }
+			th.sortable.sorted-ascending { text-decoration:underline; }
+			
+			.action { cursor:pointer; }
+			
+			@media print {
+				th.monster-selected, td.monster-selected { display:none; }
+				div.controls { display:none; }
+				p.source { page-break-after:always; }
+			}
+			
+			.nose, .reroll, .action {
+				-webkit-touch-callout:none;
+				-webkit-user-select:none;
+				-moz-user-select:none;
+				-ms-user-select:none;
+				-o-user-select:none;
+				user-select:none;
+			}
+		</style>
+	</head>
+	<body onload='populatePage()'>
+		<h4>Bestiary</h4>
+		
+		<div id='monster-content-list'>
+			<form id='monster-form'>
+			<div class='controls'>
+			<input id='select-all' type='checkbox' onclick='filterAssignChosenChecked(checked ? 1 : -1)' title='Tap to select matches.' />
+			<label for='select-all'>&nbsp;</label>
+			<input type='search' id='monster-text-filter' name='monster-text-filter' size='36' placeholder='Filter' oninput='handleSearch(event)'>
+			<span id='monster-text-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
+			</div>
+			<table id='monster-table'><tr><td>Loading...</td></tr></table>
+			</form>
+		</div>
+	</body>
+</html>
