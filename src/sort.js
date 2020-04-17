@@ -295,13 +295,28 @@ function tableSort(tableColumn) {
 		}
 	}
 	
-	for ( index = 0, count = sorted.length ; index < count ; ++index ) {
-		tbody.appendChild(rows[sorted[index]])
+	if ( typeof tbody.append === 'function' ) {
+		var all = []
 		
-		array = followers[sorted[index]]
-		total = ( undefined === array ) ? 0 : array.length
-		for ( entry = 0 ; entry < total ; ++entry ) {
-			tbody.appendChild(rows[array[entry]])
+		for ( index = 0, count = sorted.length ; index < count ; ++index ) {
+			all.push(rows[sorted[index]])
+			
+			array = followers[sorted[index]]
+			if ( array ) {
+				all.push.apply(all, array.map(i => rows[i]))
+			}
+		}
+		
+		tbody.append.apply(tbody, all)
+	} else {
+		for ( index = 0, count = sorted.length ; index < count ; ++index ) {
+			tbody.appendChild(rows[sorted[index]])
+			
+			array = followers[sorted[index]]
+			total = ( undefined === array ) ? 0 : array.length
+			for ( entry = 0 ; entry < total ; ++entry ) {
+				tbody.appendChild(rows[array[entry]])
+			}
 		}
 	}
 	
