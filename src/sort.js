@@ -218,7 +218,7 @@ function tableSort(tableColumn) {
 				value = parseFloat(value)
 				if ( isNaN(value) ) { value = null }
 			} else if ( 'natural' === format ) {
-				value = value.replace(/\d+/g, n => "00000000000000000000".substring(n.length) + n)
+				value = value.replace(/\d+/g, function(n) { return "00000000000000000000".substring(n.length) + n })
 			} else if ( 'lower' === format ) {
 				value = value.toLowerCase()
 			} else if ( 'lower-locale' === format ) {
@@ -303,7 +303,7 @@ function tableSort(tableColumn) {
 			
 			array = followers[sorted[index]]
 			if ( array ) {
-				all.push.apply(all, array.map(i => rows[i]))
+				all.push.apply(all, array.map(function(i) { return rows[i] }))
 			}
 		}
 		

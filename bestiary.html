@@ -56,15 +56,16 @@
 			
 			function assignClassToElements(className, selector, ascend, rule) {
 				var element, elements = document.querySelectorAll(selector)
-				var value, index
-				var count = elements.length
+				var value, climb, index = elements.length
+				var count = index
 				
 				ascend = ascend || 0
 				
-				for ( element of elements ) {
+				while ( index --> 0 ) {
+					element = elements[index]
 					value = rule(element)
 					
-					for ( index = 0 ; index < ascend ; ++index ) {
+					for ( climb = 0 ; climb < ascend ; ++climb ) {
 						element = element.parentElement
 					}
 					
@@ -97,7 +98,7 @@
 			function selectorAssignChecked(selector, checked) {
 				var selectorChecked = selector + ':checked'
 				var selectorUnchecked = selector + ':not(:checked)'
-				var element, elements
+				var element, elements, index
 				
 				if ( checked ) {
 					checked = checked > 0
@@ -110,7 +111,11 @@
 					elements = checked ? elementsUnchecked : elementsChecked
 				}
 				
-				for ( element of elements ) {
+				index = elements.length
+				
+				while ( index --> 0 ) {
+					element = elements[index]
+					
 					if ( element.checked !== checked ) {
 						element.checked = checked
 						
