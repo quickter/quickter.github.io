@@ -125,13 +125,13 @@
 			function filterItemsByChosen() {
 				var count = assignClassToElements('filtered', 'table#items-table tr.item > td.item-selected > input.item-selection', 2, e => e.checked ? -1 : 1)
 				
-				_element('items-text-filter-count').innerHTML = count || ''
+				filterApplied(count)
 			}
 			
 			function filterItemsByToggle() {
 				var count = assignClassToElements('filtered', 'table#items-table tr.item > td.item-name > label.toggle > input', 3, e => e.checked ? -1 : 1)
 				
-				_element('items-text-filter-count').innerHTML = count || ''
+				filterApplied(count)
 			}
 			
 			function filterItemsByName(pattern) {
@@ -152,7 +152,7 @@
 					count = assignClassToElements(className, selector, 1, e => e.textContent.search(pattern) < 0 ? 1 : -1)
 				}
 				
-				_element('items-text-filter-count').innerHTML = count || ''
+				filterApplied(count)
 				
 				if ( count > 0 && count < 4 ) {
 					filterAssignToggleChecked(1)
@@ -173,6 +173,26 @@
 				
 				if ( recognized.length > 0 ) {
 					filterItemsByToggle()
+				}
+			}
+			
+			function filterApplied(count) {
+				var element = _element('items-text-filter-count')
+				
+				if ( element ) {
+					element.innerHTML = count || ''
+				}
+				
+				element = _element('select-all')
+				
+				if ( element ) {
+					var selector = 'table#items-table tr.item:not(.filtered) > td.item-selected > input.item-selection'
+					var elementsChecked = document.querySelectorAll(selector + ':checked')
+					var elementsUnchecked = document.querySelectorAll(selector + ':not(:checked)')
+					
+					console.log("filterApplied " + elementsChecked.length + " > " + elementsUnchecked.length)
+					element.indeterminate = elementsChecked.length > 0 && elementsUnchecked.length > 0
+					element.checked = elementsChecked.length > elementsUnchecked.length
 				}
 			}
 			
@@ -210,8 +230,16 @@
 				}
 			}
 			
+			function stripDiacriticals(string) {
+				if ( typeof string.normalize === 'function' ) {
+					return string.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+				} else {
+					return string.replace('é', 'e')
+				}
+			}
+			
 			function referenceKey(name) {
-				return name.toLowerCase().replace(/(['‘’()×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
+				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’()×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
 			}
 			
 			function resolveReferences(text, object) {

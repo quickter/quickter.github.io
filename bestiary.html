@@ -125,13 +125,13 @@
 			function filterMonstersByChosen() {
 				var count = assignClassToElements('filtered', 'table#monster-table tr.monster > td.monster-selected > input.monster-selection', 2, e => e.checked ? -1 : 1)
 				
-				_element('monster-text-filter-count').innerHTML = count || ''
+				filterApplied(count)
 			}
 			
 			function filterMonstersByToggle() {
 				var count = assignClassToElements('filtered', 'table#monster-table tr.monster > td.monster-name > label.toggle > input', 3, e => e.checked ? -1 : 1)
 				
-				_element('monster-text-filter-count').innerHTML = count || ''
+				filterApplied(count)
 			}
 			
 			function filterMonstersByName(pattern) {
@@ -152,7 +152,7 @@
 					count = assignClassToElements(className, selector, 1, e => e.textContent.search(pattern) < 0 ? 1 : -1)
 				}
 				
-				_element('monster-text-filter-count').innerHTML = count || ''
+				filterApplied(count)
 				
 				if ( count > 0 && count < 4 ) {
 					filterAssignToggleChecked(1)
@@ -176,6 +176,25 @@
 				}
 			}
 			
+			function filterApplied(count) {
+				var element = _element('monster-text-filter-count')
+				
+				if ( element ) {
+					element.innerHTML = count || ''
+				}
+				
+				element = _element('select-all')
+				
+				if ( element ) {
+					var selector = 'table#monster-table tr:not(.filtered) > td.monster-selected > input.monster-selection'
+					var elementsChecked = document.querySelectorAll(selector + ':checked')
+					var elementsUnchecked = document.querySelectorAll(selector + ':not(:checked)')
+					
+					element.indeterminate = elementsChecked.length > 0 && elementsUnchecked.length > 0
+					element.checked = elementsChecked.length > elementsUnchecked.length
+				}
+			}
+			
 			function hashChanged(event) {
 				var hash = location.hash
 				
@@ -196,6 +215,33 @@
 					form['monster-text-filter'].value = value
 					filterMonstersByName(value)
 				}
+				
+				value = object['artwork']
+				if ( value ) {
+					key = 'quickter.bestiary.artwork.host'
+					
+					if ( value.indexOf('.') > 0 ) {
+						window.localStorage.setItem(key, value)
+					} else {
+						window.localStorage.removeItem(key)
+					}
+				}
+			}
+			
+			function toggleMonster(key) {
+				var image = _element('artwork-' + key)
+				
+				if ( image && !image.src && image.dataset.path ) {
+					var host = window.localStorage.getItem('quickter.bestiary.artwork.host')
+					
+					if ( host ) {
+						if ( host.indexOf('/') < 0 ) { host = host + "/" }
+						if ( host.indexOf(':') < 0 ) { host = "https://" + host }
+					
+						image.addEventListener('error', e => e.target.parentNode.removeChild(e.target))
+						image.src = host + image.dataset.path
+					}
+				}
 			}
 			
 			function handleSearch(event) {
@@ -210,8 +256,16 @@
 				}
 			}
 			
+			function stripDiacriticals(string) {
+				if ( typeof string.normalize === 'function' ) {
+					return string.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+				} else {
+					return string.replace('é', 'e')
+				}
+			}
+			
 			function referenceKey(name) {
-				return name.toLowerCase().replace(/(['‘’()×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
+				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’()×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
 			}
 			
 			function resolveReferences(text, object) {
@@ -293,6 +347,12 @@
 				result.page = monster.page || false
 				
 				var source = monster.source
+				
+				if ( typeof source === 'string' ) {
+					result.artwork = "img/" + encodeURIComponent(source) + "/" + encodeURIComponent(stripDiacriticals(monster.name)).replace(/'/g, "%27") + ".png"
+				} else {
+					result.artwork = ""
+				}
 				
 				if ( typeof source === 'string' && source.startsWith('UA') ) { source = 'UA' }
 				
@@ -800,17 +860,20 @@
 			}
 			
 			function populateMonsters() {
+				var host = window.localStorage.getItem('quickter.bestiary.artwork.host')
+				
 				var rowTemplate = "<tr id='monster-{key}' class='monster {styles}'>" +
 					"<td class='monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='monster-selection' /></td>" +
 					"<td class='monster-name natural' data-sort-key='{namekey}'>" +
-						"<input id='toggle_{key}' name='toggle_{key}' type='checkbox' class='toggle' />" +
+						"<input id='toggle_{key}' name='toggle_{key}' type='checkbox' class='toggle' onchange='toggleMonster(\"{key}\")' />" +
 						"<label for='toggle_{key}' class='toggle'><a class='monster-name' name='{key}'>{name}</a></label>" +
 						"<div class='toggled details'><div class='inner details'>" +
+							(host ? "<img id='artwork-{key}' data-path='{artwork}' loading='lazy' importance='low' decoding='async' class='lazy artwork' alt=''>" : "") +
 							"<div class='monster-caption'><span class='size'>{sizename}</span> <span class='type'>{typename}{typetags}, </span><span class='alignment'>{alignment}</span></div>" +
 							"<hr class='monster-thick' />" +
-							"<div><span class='prefix armorclass'>{armorclass}</span></div>" +
-							"<div><span class='prefix hitpoints'>{hitpoints}</span><span class='hitpointstags'>{hitpointstags}</span></div>" +
-							"<div><span class='prefix speed'>{speed}</span></div>" +
+							"<div class='beside-artwork'><span class='prefix armorclass'>{armorclass}</span></div>" +
+							"<div class='beside-artwork'><span class='prefix hitpoints'>{hitpoints}</span><span class='hitpointstags'>{hitpointstags}</span></div>" +
+							"<div class='beside-artwork'><span class='prefix speed'>{speed}</span></div>" +
 							"<hr class='monster-thick' />" +
 							"<table class='abilities'><tr><th>Str</th><th>Dex</th><th>Con</th><th>Int</th><th>Wis</th><th>Cha</th></tr>" +
 							"<tr><td><span class='ability-score'>{str}</span> <span class='ability-modifier'>({strmod})</span></td><td><span class='ability-score'>{dex}</span> <span class='ability-modifier'>({dexmod})</span></td><td><span class='ability-score'>{con}</span> <span class='ability-modifier'>({conmod})</span></td><td><span class='ability-score'>{int}</span> <span class='ability-modifier'>({intmod})</span></td><td><span class='ability-score'>{wis}</span> <span class='ability-modifier'>({wismod})</span></td><td><span class='ability-score'>{cha}</span> <span class='ability-modifier'>({chamod})</span></td></tr></table>" +
@@ -898,6 +961,10 @@
 			
 			div.details { position:relative; white-space:normal; width:0; }
 			div.details > div.details.inner { position:relative; width:40em; max-width:70vw; padding:0.5em 1em 0 1em; margin:0.5em 0; background:#FDF4E8; border:1px solid #EEE; }
+			
+			div.details.inner img.artwork { position:absolute; max-width:20vw; max-height:12em; right:-1em; top:2em; }
+			div.details.inner img.artwork:hover { max-width:80vw; max-height:80vh; right:0em; }
+			div.details.inner div.beside-artwork { max-width:60vw; }
 			
 			table#monster-table label.toggle.close { display:none; }
 			@media screen {
