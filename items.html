@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -81,11 +81,12 @@
 				
 				var part, parts = string.split(separator)
 				var object = result || {}
+				var equals, value, key
 				
 				for ( part of parts ) {
-					var equals = part.indexOf("=")
-					var value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
-					var key = equals < 0 ? part : part.slice(0, equals)
+					equals = part.indexOf('=')
+					value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
+					key = (equals < 0) ? part : part.slice(0, equals)
 					
 					object[key] = value
 				}
@@ -185,7 +186,7 @@
 				var element = _element('items-text-filter-count')
 				
 				if ( element ) {
-					element.innerHTML = count || ''
+					element.textContent = count || ''
 				}
 				
 				element = _element('select-all')
@@ -222,7 +223,8 @@
 				value = object['f']
 				if ( value ) {
 					form['items-text-filter'].value = value
-					filterItemsByName(value)
+					
+					setTimeout(filterItemsByName, 0, value)
 				}
 			}
 			
@@ -392,7 +394,7 @@
 					}
 				}
 				
-				if ( item.source && item.source.startsWith('UA') ) { item.source = 'UA' }
+				if ( item.source && item.source.indexOf('UA') === 0 ) { item.source = 'UA' }
 				
 				styles = []
 				category = lookup.categories[item.type]
@@ -459,9 +461,9 @@
 				
 				for ( masterItem of masterList ) {
 					if ( masterItem['_copy'] ) { continue }
-					if ( excludeTypes.includes(masterItem.type) ) { continue }
-					if ( excludeRarity.includes((masterItem.inherits || masterItem).rarity) ) { continue }
-					if ( excludeSource.includes((masterItem.inherits || masterItem).source) ) { continue }
+					if ( excludeTypes.indexOf(masterItem.type) >= 0 ) { continue }
+					if ( excludeRarity.indexOf((masterItem.inherits || masterItem).rarity) >= 0 ) { continue }
+					if ( excludeSource.indexOf((masterItem.inherits || masterItem).source) >= 0 ) { continue }
 					
 					item = parseItem(masterItem, lookup)
 					styles = []
@@ -483,7 +485,7 @@
 				return result
 			}
 			
-			function populateMagicItems() {
+			function tableContent() {
 				var rowTemplate = "<tr id='item-{key}' class='item {styles}'>" +
 					"<td class='item-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='item-selection' onchange='chooseItem(\"{key}\")' /></td>" +
 					"<td class='item-name natural' data-sort-key='{namekey}'>" +
@@ -511,20 +513,25 @@
 					"<th class='item-source natural sortable' data-sort-format='normal'>Source</th>" +
 				"</tr>"
 				
-				var list = magicItemsReadyToDisplay(items)
 				var pattern = /{([^ {}]+)}/g
+				var list = magicItemsReadyToDisplay(items)
 				var rows = list.map(item => rowTemplate.replace(pattern, (match, key) => item[key]))
-				var table = _element('items-table')
 				
-				table.innerHTML = header + rows.join("")
+				return header + rows.join("")
+			}
+			
+			function populateMagicItems() {
+				var table = _element('items-table')
+				var html = tableContent()
+				
+				table.innerHTML = html
 				tableSort(table)
 			}
 			
 			function populatePage() {
-				populateMagicItems()
-				
 				window.addEventListener('hashchange', hashChanged)
 				
+				populateMagicItems()
 				applyParameters()
 				hashChanged()
 			}

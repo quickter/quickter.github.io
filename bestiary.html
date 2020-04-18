@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -81,11 +81,12 @@
 				
 				var part, parts = string.split(separator)
 				var object = result || {}
+				var equals, value, key
 				
 				for ( part of parts ) {
-					var equals = part.indexOf("=")
-					var value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
-					var key = equals < 0 ? part : part.slice(0, equals)
+					equals = part.indexOf('=')
+					value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
+					key = (equals < 0) ? part : part.slice(0, equals)
 					
 					object[key] = value
 				}
@@ -185,7 +186,7 @@
 				var element = _element('monster-text-filter-count')
 				
 				if ( element ) {
-					element.innerHTML = count || ''
+					element.textContent = count || ''
 				}
 				
 				element = _element('select-all')
@@ -222,7 +223,8 @@
 				value = object['f']
 				if ( value ) {
 					form['monster-text-filter'].value = value
-					filterMonstersByName(value)
+					
+					setTimeout(filterMonstersByName, 0, value)
 				}
 				
 				value = object['artwork']
@@ -376,7 +378,7 @@
 					result.artwork = ""
 				}
 				
-				if ( typeof source === 'string' && source.startsWith('UA') ) { source = 'UA' }
+				if ( typeof source === 'string' && source.indexOf('UA') === 0 ) { source = 'UA' }
 				
 				value = lookup.sources[source]
 				
@@ -447,15 +449,15 @@
 					suffix = " "
 					array = []
 					
-					var hasNX = alignment.includes('NX')
-					var hasNY = alignment.includes('NY')
+					var hasNX = alignment.indexOf('NX') >= 0
+					var hasNY = alignment.indexOf('NY') >= 0
 					
 					if ( hasNX || hasNY ) {
 						array.push("Any")
 					}
 					
 					if ( hasNX && hasNY ) {
-						var missing = ["L", "C", "G", "E"].filter(a => !alignment.includes(a))[0]
+						var missing = ["L", "C", "G", "E"].filter(a => alignment.indexOf(a) < 0)[0]
 						
 						alignment.push("Non-" + lookup.alignments[missing].name)
 					} else if ( hasNX ) {
@@ -787,11 +789,11 @@
 									array.push(descriptionFromEntries({'name':item.name, 'entries':item.headerEntries || []}, "<p class='spellcasting'>", "</p>", monster))
 								}
 								
-								if ( Array.isArray(item.will) && !(item.hidden && item.hidden.includes('will')) ) {
+								if ( Array.isArray(item.will) && !(item.hidden && item.hidden.indexOf('will') >= 0) ) {
 									array.push("<div class='spellcasting'><span class='spells-at-will'></span><span class='spells'>" + item.will.map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
 								}
 								
-								if ( item.daily && !(item.hidden && item.hidden.includes('daily')) ) {
+								if ( item.daily && !(item.hidden && item.hidden.indexOf('daily') >= 0) ) {
 									for ( index = 1 ; index < 10 ; ++index ) {
 										if ( Array.isArray(item.daily[index + 'e']) && item.daily[index + 'e'].length > 0 ) {
 											array.push("<div class='spellcasting'><span class='spell" + (item.daily[index + 'e'].length > 1 ? 's' : '') + "-daily'>" + index + "</span><span class='spells'>" + item.daily[index + 'e'].map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
@@ -799,7 +801,7 @@
 									}
 								}
 								
-								if ( item.spells && !(item.hidden && item.hidden.includes('spells')) ) {
+								if ( item.spells && !(item.hidden && item.hidden.indexOf('spells') >= 0) ) {
 									if ( item.spells["0"] && Array.isArray(item.spells["0"].spells) && item.spells["0"].spells.length > 0 ) {
 											array.push("<div class='spellcasting'><span class='spell-level-cantrip'></span><span class='spell-slots'></span><span class='spells'>" + item.spells["0"].spells.map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
 									}
@@ -860,7 +862,7 @@
 						continue
 					}
 					
-					if ( excludeSource.includes(monster['source']) ) {
+					if ( excludeSource.indexOf(monster['source']) >= 0 ) {
 						continue
 					}
 					
@@ -881,7 +883,7 @@
 				return result
 			}
 			
-			function populateMonsters() {
+			function tableContent() {
 				var host = window.localStorage.getItem('quickter.bestiary.artwork.host')
 				
 				var rowTemplate = "<tr id='monster-{key}' class='monster {styles}'>" +
@@ -934,12 +936,18 @@
 					"<th class='monster-source natural sortable' data-sort-format='normal'>Source</th>" +
 				"</tr>"
 				
-				var list = monstersReadyToDisplay(bestiary)
 				var pattern = /\{([^ {}]+)\}/g
+				var list = monstersReadyToDisplay(bestiary)
 				var rows = list.map(item => rowTemplate.replace(pattern, (match, key) => item[key]))
-				var table = _element('monster-table')
 				
-				table.innerHTML = header + rows.join("")
+				return header + rows.join("")
+			}
+			
+			function populateMonsters() {
+				var table = _element('monster-table')
+				var html = tableContent()
+				
+				table.innerHTML = html
 				tableSort(table)
 			}
 			

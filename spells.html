@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,8 +8,8 @@
 		<meta name="author" content="Cole">
 		<meta name="keywords" content="dnd,5e,dungeons,dragons,spells">
 		<meta name="description" content="Spell List">
-		<script src="src/sort.js"></script>
 		<script src="data/spells.js"></script>
+		<script src="src/sort.js"></script>
 		
 		<script type="text/javascript">
 			'use strict';
@@ -59,11 +59,12 @@
 				
 				var part, parts = string.split(separator)
 				var object = result || {}
+				var equals, value, key
 				
 				for ( part of parts ) {
-					var equals = part.indexOf("=")
-					var value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
-					var key = equals < 0 ? part : part.slice(0, equals)
+					equals = part.indexOf('=')
+					value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
+					key = (equals < 0) ? part : part.slice(0, equals)
 					
 					object[key] = value
 				}
@@ -287,7 +288,7 @@
 				return result
 			}
 			
-			function populatePage() {
+			function tableContent() {
 				var rowTemplate = "<tr id='row-{key}' class='spell {styles}'>" +
 					"<td class='prepared'><input id='{key}' name='{key}' type='checkbox' class='spell-selection' /></td>" +
 					"<td class='name' data-sort-key='{namekey}'><label class='toggle'><input type='checkbox' class='toggle' /><span>{name}</span><br /><div class='toggled details'><div class='inner details'><p class='material'>{material}</p>{desc}{higher_level}<p class='classnames'>{classnames}</p><p class='page-{book}'>{page}</p></div></div></label></td>" +
@@ -317,13 +318,20 @@
 				"</tr>"
 				
 				var list = spellsReadyToDisplay(spells)
-				var pattern = RegExp('({[^ }]+})', 'g')
-				var rows = list.map(spell => rowTemplate.replace(pattern, match => spell[match.slice(1, -1)]))
-				var form = _element('spells-form')
-				var table = _element('spells')
+				var pattern = /{([^ }]+)}/g
+				var rows = list.map(spell => rowTemplate.replace(pattern, (match, key) => spell[key]))
 				
+				var form = _element('spells-form')
 				form.everySpell = list.map(spell => spell.key)
-				table.innerHTML = header + rows.join("")
+				
+				return header + rows.join("")
+			}
+			
+			function populatePage() {
+				var table = _element('spells')
+				var html = tableContent()
+				
+				table.innerHTML = html
 				tableSort(table)
 				
 				applyParameters()
