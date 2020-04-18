@@ -153,6 +153,10 @@
 				}
 				
 				_element('items-text-filter-count').innerHTML = count || ''
+				
+				if ( count > 0 && count < 4 ) {
+					filterAssignToggleChecked(1)
+				}
 			}
 			
 			function filterItemsByKeys(keys) {
@@ -173,10 +177,13 @@
 			}
 			
 			function hashChanged(event) {
-				var form = _element('items-form')
-				var key, keys = location.hash.slice(1).split(",").map(s => s.trim())
+				var hash = location.hash
 				
-				filterItemsByKeys(keys)
+				if ( hash && hash.length > 1 ) {
+					filterItemsByKeys(hash.slice(1).split(",").map(s => s.trim()))
+				} else {
+					filterItemsByName('')
+				}
 			}
 			
 			function applyParameters() {
@@ -192,11 +199,19 @@
 			}
 			
 			function handleSearch(event) {
-				filterItemsByName(typeof event === 'string' ? event : event.target.value || "")
+				var value = typeof event === 'string' ? event : event.target.value || ""
+				
+				if ( value === '#' ) {
+					filterItemsByChosen()
+				} else if ( value === '/' ) {
+					filterItemsByToggle()
+				} else {
+					filterItemsByName(value)
+				}
 			}
 			
-			function itemKey(name) {
-				return name.toLowerCase().replace(/(['‘’()×.,:]+|\ba\s|\bof\s|\bthe\s)/g, '').replace(/[-+ \t]+/g, '')
+			function referenceKey(name) {
+				return name.toLowerCase().replace(/(['‘’()×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
 			}
 			
 			function resolveReferences(text, object) {
@@ -204,11 +219,12 @@
 				text = text.replace(/\{=([^{}\/]+)\/([^{}\/]+)\}/g, (match, key, modifier) => "<span class='property " + key + "'>" + (object[key] || '-') + "</span>")
 				text = text.replace(/\{@atk ([^|{}]+)\}/g, (match, type) => "<i>" + type.replace(/./g, l => (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " ") + " Attack:</i> ")
 				text = text.replace(/\{@h\}/g, "<i>Hit:</i> ")
+				text = text.replace(/\{@recharge\}/g, "<span class='entries recharge'></span>")
 				text = text.replace(/\{@hit ([^|{}]+)\}/g, (match, text) => (+text < 0 ? "" : "+") + text + "")
 				text = text.replace(/\{@(dice|damage) ([^|{}]+)\}/g, "<span class='entries $1' onclick='handleDice(event, \"$2\")'>$2</span>")
 				text = text.replace(/\{@link ([^|{}]+)(\|[^|{}]*)*\}/g, "<span class='entries link'>$1</span>")
 				text = text.replace(/\{@i ([^|{}]+)\}/g, (match, text) => "<i>" + text + "</i>")
-				text = text.replace(/\{@item ([^|{}]+)\}/g, (match, name) => "<a href='#" + itemKey(name) + "'>" + name + "</a>")
+				text = text.replace(/\{@item ([^|{}]+)\}/g, (match, name) => "<a href='#" + referenceKey(name) + "'>" + name + "</a>")
 				text = text.replace(/\{@([^{} ]+)\s+[^|{}]*\|\|([^|{}]+)\}/g, "<span class='entries $1'>$2</span>")
 				text = text.replace(/\{@([^{} ]+)\s+([^|{}]+)(\|[^|{}]*)*\}/g, "<span class='entries $1'>$2</span>")
 				
@@ -257,9 +273,9 @@
 				} else if ( entries.type === 'inset' && entries.entries ) {
 					result = "<dl class='entries'><dt>" + resolveReferences(entries.name, object) + "</dt>" +
 						descriptionFromEntries(entries.entries, "<dd>", "</dd>", object) + "</dl>"
-				} else if ( entries.type === 'entries' && entries.entries ) {
+				} else if ( entries.name && entries.entries ) {
 					result = begin + "<span class='prominent entries'>" + resolveReferences(entries.name, object) + "</span> " +
-						descriptionFromEntries(entries.entries, "<span>", "</span><br />", object) + close
+						descriptionFromEntries(entries.entries, "<span class='follow entries'>", "</span><br /><span class='indent entries'></span>", object) + close
 				} else {
 					result = begin + entries.type + close
 				}
@@ -267,21 +283,119 @@
 				return result
 			}
 			
+			function parseItem(masterItem, lookup) {
+				var rarity, category, source
+				var styles, attunement, isMajor
+				var attuneAbbreviation = ["◦", "⦾", "•", "⦿"]
+				var attuneName = ["Minor", "Major", "Minor, Attune", "Major, Attune"]
+				var key, keys = ['rarity', 'tier', 'source', 'page', 'weight', 'value', 'srd', 'sentient', 'curse']
+				var item, type, require, requires, entries
+				
+				type = masterItem['type']
+				
+				if ( type === 'GV' ) {
+					requires = masterItem.requires
+					
+					if ( Array.isArray(requires) ) {
+						for ( require of requires ) {
+							if ( require.type ) { type = require.type; break }
+							if ( require.armor ) { type = 'AA'; break }
+							if ( require.bow || require.crossbow ) { type = 'R'; break }
+							if ( require.weapon || require.sword || require.axe ) { type = 'M'; break }
+							if ( require.name === "Net" ) { type = 'M'; break }
+						}
+					}
+				}
+				
+				item = new Object()
+				item.name = masterItem.name
+				item.type = type
+				item.key = referenceKey(item.name)
+				entries = masterItem['entries']
+				
+				if ( masterItem.inherits ) {
+					masterItem = masterItem.inherits
+					
+					if ( !entries ) { entries = masterItem['entries'] }
+				}
+				
+				for ( key of keys ) {
+					if ( masterItem[key] !== undefined ) {
+						item[key] = masterItem[key]
+					}
+				}
+				
+				if ( item['type'] === undefined ) {
+					if ( masterItem['staff'] ) {
+						item.type = 'ST'
+					} else if ( masterItem['armor'] ) {
+						item.type = 'AA'
+					} else if ( masterItem['weapon'] || masterItem['sword'] || masterItem['axe'] ) {
+						item.type = 'M'
+					} else if ( masterItem['focus'] ) {
+						item.type = 'SCF'
+					} else if ( masterItem['poison'] ) {
+						item.type = 'PS'
+					} else if ( masterItem['wondrous'] || masterItem['reqAttune'] || masterItem['tier'] ) {
+						item.type = 'W'
+					} else {
+						item.type = '?'
+					}
+				}
+				
+				if ( item.source && item.source.startsWith('UA') ) { item.source = 'UA' }
+				
+				styles = []
+				category = lookup.categories[item.type]
+				rarity = lookup.rarities[item.rarity]
+				source = lookup.sources[item.source]
+				
+				if ( !masterItem['reqAttune'] ) {
+					attunement = ''
+				} else if ( typeof masterItem['reqAttune'] === 'string' ) {
+					attunement = " (requires attunement " + masterItem['reqAttune'] + ")"
+				} else {
+					attunement = " (requires attunement)"
+				}
+				
+				if ( item.tier ) {
+					isMajor = item.tier === 'major'
+				} else if ( category && category.tier ) {
+					isMajor = category.tier === 'major' && rarity.value > 1
+				} else {
+					isMajor = rarity && rarity.value > 2
+				}
+				
+				item['page'] = item['page'] || ''
+				item['attunekey'] = (attunement ? 2 : 0) + (isMajor ? 1 : 0)
+				item['attune'] = attuneAbbreviation[item.attunekey]
+				item['attunename'] = attuneName[item.attunekey]
+				item['description'] = descriptionFromEntries(entries, "<p>", "</p>", masterItem)
+				item['namekey'] = item.name.replace(/['‘’]/g, '')
+				item['raritytag'] = rarity && rarity.tag || item.rarity || false
+				item['raritykey'] = rarity && rarity.order || 0
+				item['rarityname'] = rarity && rarity.name || item.rarity || '?'
+				item['rarityabbreviation'] = item.rarityname.slice(0, 1)
+				item['sourcename'] = source && source.name || item.source || '?'
+				item['typename'] = category && category.name || item.type
+				item['caption'] = (category && category.caption || item.typename) + ", " + item.rarityname + attunement + " " + (item.tier || "")
+				
+				item.sourcename = item.sourcename.replace(/'/g, "’")
+				item.attunename = item.attunename.replace(/'/g, "’")
+				
+				return item
+			}
+			
 			function magicItemsReadyToDisplay(treasure) {
 				var result = []
 				var lookup = new Object()
 				var lookupKeys = ['rarities', 'categories', 'sources']
-				var rarity, category, source
-				var styles, attunement, isMajor, isLimited, isCharged
-				var attuneAbbreviation = ["◦", "⦾", "•", "⦿"]
-				var attuneName = ["Minor", "Major", "Minor, Attune", "Major, Attune"]
-				var key, keys = ['rarity', 'tier', 'source', 'page', 'weight', 'value', 'srd', 'sentient', 'curse']
 				var excludeTypes = ['$', 'AIR', 'AT', 'EXP', 'G', 'GS', 'MNT', 'OTH', 'SHP', 'T', 'TAH', 'TG', 'VEH']
 				var excludeRarity = ['none', 'unknown', 'unknown (magic)']
 				var excludeSource = ['AI', 'DC', 'HftT', 'IMR', 'LLK', 'RMBRE', 'SDW', 'VGM']
-				var finiteCategories = ['Ammo', 'Poison', 'Potion', 'Scroll']
-				var chargeCategories = ['Wand', 'Staff']
-				var item, masterItem, type, require, requires, entries
+				var item, masterItem
+				var styles
+				var key
 				var masterList = treasure.item.concat(treasure.variant)
 				
 				for ( key of lookupKeys ) {
@@ -295,119 +409,22 @@
 				}
 				
 				for ( masterItem of masterList ) {
-					if ( masterItem['_copy'] ) {
-						continue
-					}
+					if ( masterItem['_copy'] ) { continue }
+					if ( excludeTypes.includes(masterItem.type) ) { continue }
+					if ( excludeRarity.includes((masterItem.inherits || masterItem).rarity) ) { continue }
+					if ( excludeSource.includes((masterItem.inherits || masterItem).source) ) { continue }
 					
-					type = masterItem['type']
-					
-					if ( type === 'GV' ) {
-						requires = masterItem.requires
-						
-						if ( Array.isArray(requires) ) {
-							for ( require of requires ) {
-								if ( require.type ) { type = require.type; break }
-								if ( require.armor ) { type = 'AA'; break }
-								if ( require.bow || require.crossbow ) { type = 'R'; break }
-								if ( require.weapon || require.sword || require.axe ) { type = 'M'; break }
-								if ( require.name === "Net" ) { type = 'M'; break }
-							}
-						}
-					}
-					
-					if ( excludeTypes.includes(type) ) {
-						continue
-					}
-					
-					item = new Object()
-					item.name = masterItem.name
-					item.type = type
-					item.key = itemKey(item.name)
-					entries = masterItem['entries']
-					
-					if ( masterItem.inherits ) {
-						masterItem = masterItem.inherits
-						
-						if ( !entries ) { entries = masterItem['entries'] }
-					}
-					
-					if ( excludeRarity.includes(masterItem['rarity']) || excludeSource.includes(masterItem['source']) ) {
-						continue
-					}
-					
-					for ( key of keys ) {
-						if ( masterItem[key] !== undefined ) {
-							item[key] = masterItem[key]
-						}
-					}
-					
-					if ( item['type'] === undefined ) {
-						if ( masterItem['staff'] ) {
-							item.type = 'ST'
-						} else if ( masterItem['armor'] ) {
-							item.type = 'AA'
-						} else if ( masterItem['weapon'] || masterItem['sword'] || masterItem['axe'] ) {
-							item.type = 'M'
-						} else if ( masterItem['focus'] ) {
-							item.type = 'SCF'
-						} else if ( masterItem['poison'] ) {
-							item.type = 'PS'
-						} else if ( masterItem['wondrous'] || masterItem['reqAttune'] || masterItem['tier'] ) {
-							item.type = 'W'
-						} else {
-							item.type = '?'
-						}
-					}
-					
-					if ( item.source && item.source.startsWith('UA') ) { item.source = 'UA' }
-					
+					item = parseItem(masterItem, lookup)
 					styles = []
-					category = lookup.categories[item.type]
-					rarity = lookup.rarities[item.rarity]
-					source = lookup.sources[item.source]
-					
-					if ( !masterItem['reqAttune'] ) {
-						attunement = ''
-					} else if ( typeof masterItem['reqAttune'] === 'string' ) {
-						attunement = " (requires attunement " + masterItem['reqAttune'] + ")"
-					} else {
-						attunement = " (requires attunement)"
-					}
-					
-					if ( item.tier ) {
-						isMajor = item.tier === 'major'
-					} else if ( category && category.tier ) {
-						isMajor = category.tier === 'major' && rarity.value > 1
-					} else {
-						isMajor = rarity && rarity.value > 2
-					}
-					
-					isLimited = masterItem['finite'] || finiteCategories.includes(category.name)
-					isCharged = masterItem['charge'] || chargeCategories.includes(category.name)
 					
 					if ( item.tier ) { styles.push(item.tier) }
-					if ( item.rarity ) { styles.push(rarity && rarity.tag || item.rarity) }
-					styles.push(attunement ? 'is-attune' : 'not-attune')
-					styles.push(isMajor ? 'is-major' : 'not-major')
+					if ( item.raritytag ) { styles.push(item.raritytag) }
+					styles.push(item.attunekey & 2 ? 'is-attune' : 'not-attune')
+					styles.push(item.attunekey & 1 ? 'is-major' : 'not-major')
 					styles.push(item.curse ? 'is-curse' : 'not-curse')
 					styles.push(item.sentient ? 'is-sentient' : 'not-sentient')
 					
-					item['styles'] = styles.join(" ")
-					item['page'] = item['page'] || ''
-					item['attunekey'] = (attunement ? 2 : 0) + (isMajor ? 1 : 0)
-					item['attune'] = attuneAbbreviation[item.attunekey]
-					item['attunename'] = attuneName[item.attunekey]
-					item['description'] = descriptionFromEntries(entries, "<p>", "</p>", masterItem)
-					item['namekey'] = item.name.replace(/['‘’]/g, '')
-					item['raritykey'] = rarity && rarity.order || 0
-					item['rarityname'] = rarity && rarity.name || item.rarity || '?'
-					item['rarityabbreviation'] = item.rarityname.slice(0, 1)
-					item['sourcename'] = source && source.name || item.source || '?'
-					item['typename'] = category && category.name || item.type
-					item['caption'] = (category && category.caption || item.typename) + ", " + item.rarityname + attunement + " " + (item.tier || "")
-					
-					item.sourcename = item.sourcename.replace(/'/g, "’")
-					item.attunename = item.attunename.replace(/'/g, "’")
+					item.styles = styles.join(" ")
 					
 					result.push(item)
 				}
@@ -417,24 +434,11 @@
 				return result
 			}
 			
-			function populateLookup() {
-				var keys = []
-				var valueByKey = new Object()
-				
-				for ( var key of keys ) {
-					valueByKey[key] = new Object()
-					
-					for ( var value of treasure[key] ) { valueByKey[key][value.key] = value }
-				}
-				
-				window.lookup = valueByKey
-			}
-			
 			function populateMagicItems() {
 				var rowTemplate = "<tr id='item-{key}' class='item {styles}'>" +
 					"<td class='item-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='item-selection' /></td>" +
 					"<td class='item-name natural' data-sort-key='{namekey}'><label class='toggle'><input name='toggle_{key}' type='checkbox' class='toggle' />" +
-						"<a name='{key}'>{name}</a><br />" +
+						"<a class='item-name' name='{key}'>{name}</a>" +
 						"<div class='toggled details'><div class='inner details'>" +
 							"<p class='item-caption'>{caption}</p>" +
 							"{description}" +
@@ -457,9 +461,8 @@
 				"</tr>"
 				
 				var list = magicItemsReadyToDisplay(items)
-				var pattern = RegExp('({[^ }]+})', 'g')
-				var rows = list.map(item => rowTemplate.replace(pattern, match => item[match.slice(1, -1)]))
-				var form = _element('items-form')
+				var pattern = /{([^ {}]+)}/g
+				var rows = list.map(item => rowTemplate.replace(pattern, (match, key) => item[key]))
 				var table = _element('items-table')
 				
 				table.innerHTML = header + rows.join("")
@@ -467,7 +470,6 @@
 			}
 			
 			function populatePage() {
-				populateLookup()
 				populateMagicItems()
 				
 				window.addEventListener('hashchange', hashChanged)
@@ -507,6 +509,7 @@
 			
 			div.details { position:relative; white-space:normal; width:0; }
 			div.details > div.details.inner { position:relative; width:40em; max-width:80vw; padding:0 1em; margin:0.5em 0; background:#FAFAFA; border:1px solid #EEE; }
+			div.details span.entries.indent + span.entries { margin-left:1em }
 			
 			@media (max-width:420px) {
 				body { font-size:2.8vmin; }
@@ -519,6 +522,7 @@
 			table#items-table { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
 			table#items-table tr.item { border-bottom:0.25px solid #DDD; }
 			table#items-table tr.item > td, #items-table tr.item > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
+			table#items-table a.item-name { display:block; cursor:pointer; }
 			
 			#items-table { min-width:90%; }
 			td.item-type, td.item-source { font-size:80%; }
@@ -597,11 +601,13 @@
 		
 		<div id='treasure-content-list'>
 			<form id='items-form'>
-			<input id='select-all' type='checkbox' onclick='filterAssignChosenChecked(checked ? 1 : -1)' />
+			<div class='controls'>
+			<input id='select-all' type='checkbox' onclick='filterAssignChosenChecked(checked ? 1 : -1)' title='Tap to select matches.' />
 			<label for='select-all'>&nbsp;</label>
 			<input type='search' id='items-text-filter' name='items-text-filter' size='36' placeholder='Filter' oninput='handleSearch(event)'>
-			<span id='items-text-filter-count' class='action' onclick='filterAssignToggleChecked()'></span>
-			<table id='items-table'></table>
+			<span id='items-text-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
+			</div>
+			<table id='items-table'><tr><td>Loading...</td></tr></table>
 			</form>
 		</div>
 	</body>

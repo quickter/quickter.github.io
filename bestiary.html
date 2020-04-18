@@ -177,10 +177,13 @@
 			}
 			
 			function hashChanged(event) {
-				var form = _element('monster-form')
-				var key, keys = location.hash.slice(1).split(",").map(s => s.trim())
+				var hash = location.hash
 				
-				filterMonstersByKeys(keys)
+				if ( hash && hash.length > 1 ) {
+					filterMonstersByKeys(hash.slice(1).split(",").map(s => s.trim()))
+				} else {
+					filterMonstersByName('')
+				}
 			}
 			
 			function applyParameters() {
@@ -208,7 +211,7 @@
 			}
 			
 			function referenceKey(name) {
-				return name.toLowerCase().replace(/(['‘’()×.,:]+|\ba\s|\bof\s|\bthe\s)/g, '').replace(/[-+ \t]+/g, '')
+				return name.toLowerCase().replace(/(['‘’()×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
 			}
 			
 			function resolveReferences(text, object) {
@@ -785,6 +788,7 @@
 					styles = []
 					styles.push(item.typename.toLowerCase())
 					styles.push(item.sizename.toLowerCase())
+					styles.push(item.spellcaster ? 'is-spellcaster' : 'not-spellcaster')
 					item.styles = styles.join(" ")
 					
 					result.push(item)
@@ -793,19 +797,6 @@
 				result.sort((a, b) => a.key > b.key)
 				
 				return result
-			}
-			
-			function populateLookup() {
-				var keys = []
-				var valueByKey = new Object()
-				
-				for ( var key of keys ) {
-					valueByKey[key] = new Object()
-					
-					for ( var value of treasure[key] ) { valueByKey[key][value.key] = value }
-				}
-				
-				window.lookup = valueByKey
 			}
 			
 			function populateMonsters() {
@@ -859,17 +850,13 @@
 				var list = monstersReadyToDisplay(bestiary)
 				var pattern = /\{([^ {}]+)\}/g
 				var rows = list.map(item => rowTemplate.replace(pattern, (match, key) => item[key]))
-				
-				var form = _element('monster-form')
 				var table = _element('monster-table')
 				
 				table.innerHTML = header + rows.join("")
-				
 				tableSort(table)
 			}
 			
 			function populatePage() {
-				populateLookup()
 				populateMonsters()
 				
 				window.addEventListener('hashchange', hashChanged)
@@ -1002,23 +989,23 @@
 			}
 			
 			@media screen and (hover) and (color) {
-				table#monster-table tr.monster th.monster-type { padding-left:0.375em; }
-				table#monster-table tr.monster td.monster-type > span { display:none; }
-				table#monster-table tr.monster td.monster-type::after { opacity:0.75; }
-				table#monster-table tr.monster.aberration td.monster-type::after { content:"👽"; }
-				table#monster-table tr.monster.beast td.monster-type::after { content:"🐺"; }
-				table#monster-table tr.monster.celestial td.monster-type::after { content:"🦄"; }
-				table#monster-table tr.monster.construct td.monster-type::after { content:"👤"; }
-				table#monster-table tr.monster.dragon td.monster-type::after { content:"🐉"; }
-				table#monster-table tr.monster.elemental td.monster-type::after { content:"🔥"; }
-				table#monster-table tr.monster.fiend td.monster-type::after { content:"👺"; }
-				table#monster-table tr.monster.fey td.monster-type::after { content:"🧚"; }
-				table#monster-table tr.monster.giant td.monster-type::after { content:"🗿"; }
-				table#monster-table tr.monster.humanoid td.monster-type::after { content:"🧝"; }
-				table#monster-table tr.monster.monstrosity td.monster-type::after { content:"🦂"; }
-				table#monster-table tr.monster.plant td.monster-type::after { content:"🌿"; }
-				table#monster-table tr.monster.ooze td.monster-type::after { content:"🦠"; }
-				table#monster-table tr.monster.undead td.monster-type::after { content:"🧟"; }
+				table#monster-table.emoji tr.monster th.monster-type { padding-left:0.375em; }
+				table#monster-table.emoji tr.monster td.monster-type > span { display:none; }
+				table#monster-table.emoji tr.monster td.monster-type::after { opacity:0.75; }
+				table#monster-table.emoji tr.monster.aberration td.monster-type::after { content:"👽"; }
+				table#monster-table.emoji tr.monster.beast td.monster-type::after { content:"🐺"; }
+				table#monster-table.emoji tr.monster.celestial td.monster-type::after { content:"🦄"; }
+				table#monster-table.emoji tr.monster.construct td.monster-type::after { content:"👤"; }
+				table#monster-table.emoji tr.monster.dragon td.monster-type::after { content:"🐉"; }
+				table#monster-table.emoji tr.monster.elemental td.monster-type::after { content:"🔥"; }
+				table#monster-table.emoji tr.monster.fiend td.monster-type::after { content:"👺"; }
+				table#monster-table.emoji tr.monster.fey td.monster-type::after { content:"🧚"; }
+				table#monster-table.emoji tr.monster.giant td.monster-type::after { content:"🗿"; }
+				table#monster-table.emoji tr.monster.humanoid td.monster-type::after { content:"🧝"; }
+				table#monster-table.emoji tr.monster.monstrosity td.monster-type::after { content:"🦂"; }
+				table#monster-table.emoji tr.monster.plant td.monster-type::after { content:"🌿"; }
+				table#monster-table.emoji tr.monster.ooze td.monster-type::after { content:"🦠"; }
+				table#monster-table.emoji tr.monster.undead td.monster-type::after { content:"🧟"; }
 			}
 			
 			@media print {
@@ -1048,7 +1035,7 @@
 			<input type='search' id='monster-text-filter' name='monster-text-filter' size='36' placeholder='Filter' oninput='handleSearch(event)'>
 			<span id='monster-text-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
 			</div>
-			<table id='monster-table'><tr><td>Loading...</td></tr></table>
+			<table id='monster-table' class='emoji'><tr><td>Loading...</td></tr></table>
 			</form>
 		</div>
 	</body>
