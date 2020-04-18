@@ -655,6 +655,7 @@
 				
 				result.challengeexperience = "(" + result.challengexp + " XP)"
 				
+				var cardinality = ["th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"]
 				var legendary = "The {=name} can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn . The {=name} regains spent legendary actions at the start of its turn."
 				var keysForText = ['trait', 'action=Actions', 'reaction=Reactions', 'legendary=Legendary Actions']
 				var spellcasting = monster.spellcasting
@@ -720,7 +721,7 @@
 									
 									for ( index = 1 ; index < 10 ; ++index ) {
 										if ( item.spells["" + index] && Array.isArray(item.spells["" + index].spells) && item.spells["" + index].spells.length > 0 ) {
-											array.push("<div class='spellcasting'><span class='spell-level'>" + index + "</span><span class='spell-slots'>" + (item.spells["" + index].slots || '') + "</span><span class='spells'>" + item.spells["" + index].spells.map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
+											array.push("<div class='spellcasting'><span class='spell-level'>" + index + cardinality[index] + "</span><span class='spell-slots'>" + (item.spells["" + index].slots || '') + "</span><span class='spells'>" + item.spells["" + index].spells.map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
 										}
 									}
 								}
@@ -837,7 +838,7 @@
 						"</div></div>" +
 					"</label></td>" +
 					"<td class='monster-size natural monster-size-{sizekey}' data-sort-key='{sizekey}' title='Size {sizename}'>{size}</td>" +
-					"<td class='monster-type natural' title='{typename}'>{typeconcise}</td>" +
+					"<td class='monster-type natural' title='{typename}'><span>{typeconcise}</span></td>" +
 					"<td class='monster-armorclass numeric' title='Armor Class {ac}'>{ac}</td>" +
 					"<td class='monster-hitpoints numeric' title='Hit Points {hp}'>{hp}</td>" +
 					"<td class='monster-challenge numeric' data-sort-key='{challengekey}' title='Challenge Rating {challengename}'>{challengename}</td>" +
@@ -922,6 +923,7 @@
 			table#monster-table tr.monster { border-bottom:0.25px solid #DDD; }
 			table#monster-table tr.monster > td, #monster-table tr.monster > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
 			table#monster-table a.monster-name { display:block; cursor:pointer; }
+			/*	table#monster-table input.toggle:checked ~ a.monster-name { font-variant:small-caps; font-weight:bold; } */
 			
 			@media screen {
 				table#monster-table tr.monster > td.monster-hitpoints::before { content:"♥︎"; font-size:50%; opacity:0.25; }
@@ -980,6 +982,14 @@
 			
 			dl.compact > dt, dl.compact > dd { }
 			
+			tr.filtered { display:none; }
+			th.sortable.unsorted, th.sortable.sorted-descending { cursor:s-resize; }
+			th.sortable.sorted-ascending { cursor:n-resize; }
+			th.sortable.sorted-descending { text-decoration:overline; }
+			th.sortable.sorted-ascending { text-decoration:underline; }
+			
+			.action { cursor:pointer; }
+			
 			@media screen {
 				div.details hr.monster-thin,
 				div.details hr.monster-thick { background:#933; background-image:linear-gradient(90deg, #933 0%, #C98 70%, #F8F0E6 100%); }
@@ -991,13 +1001,25 @@
 				span.prefix:not(:empty)::before { color:#633; }
 			}
 			
-			tr.filtered { display:none; }
-			th.sortable.unsorted, th.sortable.sorted-descending { cursor:s-resize; }
-			th.sortable.sorted-ascending { cursor:n-resize; }
-			th.sortable.sorted-descending { text-decoration:overline; }
-			th.sortable.sorted-ascending { text-decoration:underline; }
-			
-			.action { cursor:pointer; }
+			@media screen and (hover) and (color) {
+				table#monster-table tr.monster th.monster-type { padding-left:0.375em; }
+				table#monster-table tr.monster td.monster-type > span { display:none; }
+				table#monster-table tr.monster td.monster-type::after { opacity:0.75; }
+				table#monster-table tr.monster.aberration td.monster-type::after { content:"👽"; }
+				table#monster-table tr.monster.beast td.monster-type::after { content:"🐺"; }
+				table#monster-table tr.monster.celestial td.monster-type::after { content:"🦄"; }
+				table#monster-table tr.monster.construct td.monster-type::after { content:"👤"; }
+				table#monster-table tr.monster.dragon td.monster-type::after { content:"🐉"; }
+				table#monster-table tr.monster.elemental td.monster-type::after { content:"🔥"; }
+				table#monster-table tr.monster.fiend td.monster-type::after { content:"👺"; }
+				table#monster-table tr.monster.fey td.monster-type::after { content:"🧚"; }
+				table#monster-table tr.monster.giant td.monster-type::after { content:"🗿"; }
+				table#monster-table tr.monster.humanoid td.monster-type::after { content:"🧝"; }
+				table#monster-table tr.monster.monstrosity td.monster-type::after { content:"🦂"; }
+				table#monster-table tr.monster.plant td.monster-type::after { content:"🌿"; }
+				table#monster-table tr.monster.ooze td.monster-type::after { content:"🦠"; }
+				table#monster-table tr.monster.undead td.monster-type::after { content:"🧟"; }
+			}
 			
 			@media print {
 				th.monster-selected, td.monster-selected { display:none; }
