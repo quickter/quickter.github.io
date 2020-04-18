@@ -182,6 +182,16 @@
 				}
 			}
 			
+			function filterMonstersBySearch(value) {
+				if ( value === '#' ) {
+					filterMonstersByChosen()
+				} else if ( value === '/' ) {
+					filterMonstersByToggle()
+				} else {
+					filterMonstersByName(value)
+				}
+			}
+			
 			function filterApplied(count) {
 				var element = _element('monster-text-filter-count')
 				
@@ -200,10 +210,10 @@
 					element.checked = elementsChecked.length > elementsUnchecked.length
 				}
 				
-				chooseMonster(false)
+				handleSelect(false)
 			}
 			
-			function hashChanged(event) {
+			function handleHashChanged(event) {
 				var hash = location.hash
 				
 				if ( hash && hash.length > 1 ) {
@@ -239,7 +249,7 @@
 				}
 			}
 			
-			function chooseMonster(key) {
+			function handleSelect(key) {
 				var share = _element('share-selection')
 				
 				if ( share ) {
@@ -252,7 +262,7 @@
 				}
 			}
 			
-			function toggleMonster(key) {
+			function handleToggle(key) {
 				var image = _element('artwork-' + key)
 				
 				if ( image && !image.src && image.dataset.path ) {
@@ -271,13 +281,17 @@
 			function handleSearch(event) {
 				var value = typeof event === 'string' ? event : event.target.value || ""
 				
-				if ( value === '#' ) {
-					filterMonstersByChosen()
-				} else if ( value === '/' ) {
-					filterMonstersByToggle()
-				} else {
-					filterMonstersByName(value)
-				}
+				filterMonstersBySearch(value)
+			}
+			
+			function handleSubmit(event) {
+				var value = event.target['monster-text-filter'].value
+				
+				filterMonstersBySearch(value)
+				
+				event.preventDefault()
+				
+				return false
 			}
 			
 			function stripDiacriticals(string) {
@@ -887,9 +901,9 @@
 				var host = window.localStorage.getItem('quickter.bestiary.artwork.host')
 				
 				var rowTemplate = "<tr id='monster-{key}' class='monster {styles}'>" +
-					"<td class='monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='monster-selection' onchange='chooseMonster(\"{key}\")' /></td>" +
+					"<td class='monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='monster-selection' onchange='handleSelect(\"{key}\")' /></td>" +
 					"<td class='monster-name natural' data-sort-key='{namekey}'>" +
-						"<input id='toggle_{key}' name='toggle_{key}' type='checkbox' class='toggle' onchange='toggleMonster(\"{key}\")' />" +
+						"<input id='toggle_{key}' name='toggle_{key}' type='checkbox' class='toggle' onchange='handleToggle(\"{key}\")' />" +
 						"<label for='toggle_{key}' class='toggle'><a class='monster-name' name='{key}'>{name}</a></label>" +
 						"<div class='toggled details'><div class='inner details'>" +
 							(host ? "<img id='artwork-{key}' data-path='{artwork}' loading='lazy' importance='low' decoding='async' class='lazy artwork' alt=''>" : "") +
@@ -952,18 +966,19 @@
 			}
 			
 			function populatePage() {
+				_element('monster-form').addEventListener('submit', handleSubmit)
+				window.addEventListener('hashchange', handleHashChanged)
+				
 				populateMonsters()
-				
-				window.addEventListener('hashchange', hashChanged)
-				
 				applyParameters()
-				hashChanged()
+				handleHashChanged()
 			}
 		</script>
 		
 		<style>
 			html {
 				background: #EEE;
+				overflow-y: scroll;
 			}
 			
 			body {
@@ -983,7 +998,7 @@
 			body { position:relative; box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
 			
 			div#controls { position:absolute; right:2em; top:1.5em; }
-			a#share-selection { font-size:150%; color:inherit; text-decoration-color:#CCC; }
+			a#share-selection { font-size:150%; color:inherit; text-decoration:none; border-bottom:2px solid #999; }
 			
 			input#monster-text-filter { font-size:100%; max-width:98%; }
 			span#monster-text-filter-count { opacity:0.5; font-size:60%; }
