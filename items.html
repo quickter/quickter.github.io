@@ -128,13 +128,13 @@
 			}
 			
 			function filterItemsByChosen() {
-				var count = assignClassToElements('filtered', 'table#items-table tr.item > td.item-selected > input.item-selection', 2, e => e.checked ? -1 : 1)
+				var count = assignClassToElements('filtered', 'table#items-table tr.item > td.item-selected > input.item-selection', 2, function (e) { return e.checked ? -1 : 1 })
 				
 				filterApplied(count)
 			}
 			
 			function filterItemsByToggle() {
-				var count = assignClassToElements('filtered', 'table#items-table tr.item > td.item-name > input.toggle', 2, e => e.checked ? -1 : 1)
+				var count = assignClassToElements('filtered', 'table#items-table tr.item > td.item-name > input.toggle', 2, function (e) { return e.checked ? -1 : 1 })
 				
 				filterApplied(count)
 			}
@@ -145,16 +145,16 @@
 				var count
 				
 				if ( !pattern ) {
-					count = assignClassToElements(className, selector, 1, e => -1)
+					count = assignClassToElements(className, selector, 1, function (e) { return -1 })
 					count = 0
 				} else if ( pattern.search(/[[?*.|^${}\\]/) < 0 ) {
 					pattern = pattern.toLowerCase()
-					count = assignClassToElements(className, selector, 1, e => e.textContent.toLowerCase().indexOf(pattern) < 0 ? 1 : -1)
+					count = assignClassToElements(className, selector, 1, function (e) { return e.textContent.toLowerCase().indexOf(pattern) < 0 ? 1 : -1 })
 				} else {
 					try { pattern = new RegExp(pattern, 'ius') }
 					catch (error) { return }
 					
-					count = assignClassToElements(className, selector, 1, e => e.textContent.search(pattern) < 0 ? 1 : -1)
+					count = assignClassToElements(className, selector, 1, function (e) { return e.textContent.search(pattern) < 0 ? 1 : -1 })
 				}
 				
 				filterApplied(count)
@@ -207,7 +207,7 @@
 				var hash = location.hash
 				
 				if ( hash && hash.length > 1 ) {
-					filterItemsByKeys(hash.slice(1).split(",").map(s => s.trim()))
+					filterItemsByKeys(hash.slice(1).split(",").map(function (s) { return s.trim() }))
 					
 					_element('items-text-filter').value = '#'
 				} else {
@@ -234,7 +234,7 @@
 				if ( share ) {
 					var selector = 'table#items-table tr:not(.filtered) > td.item-selected > input.item-selection:checked'
 					var elements = document.querySelectorAll(selector)
-					var keys = [].map.call(elements, e => e.id.slice(7))
+					var keys = [].map.call(elements, function (e) { return e.id.slice(7) })
 					var hash = keys.join(",")
 					
 					share.href = "#" + hash
@@ -266,16 +266,16 @@
 			}
 			
 			function resolveReferences(text, object) {
-				text = text.replace(/\{=([^{}\/]+)\}/g, (match, key) => "<span class='property " + key + "'>" + (object[key] || '-') + "</span>")
-				text = text.replace(/\{=([^{}\/]+)\/([^{}\/]+)\}/g, (match, key, modifier) => "<span class='property " + key + "'>" + (object[key] || '-') + "</span>")
-				text = text.replace(/\{@atk ([^|{}]+)\}/g, (match, type) => "<i>" + type.replace(/./g, l => (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " ") + " Attack:</i> ")
+				text = text.replace(/\{=([^{}\/]+)\}/g, function (match, key) { return "<span class='property " + key + "'>" + (object[key] || '-') + "</span>" })
+				text = text.replace(/\{=([^{}\/]+)\/([^{}\/]+)\}/g, function (match, key, modifier) { return "<span class='property " + key + "'>" + (object[key] || '-') + "</span>" })
+				text = text.replace(/\{@atk ([^|{}]+)\}/g, function (match, type) { return "<i>" + type.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</i> " })
 				text = text.replace(/\{@h\}/g, "<i>Hit:</i> ")
 				text = text.replace(/\{@recharge\}/g, "<span class='entries recharge'></span>")
-				text = text.replace(/\{@hit ([^|{}]+)\}/g, (match, text) => (+text < 0 ? "" : "+") + text + "")
+				text = text.replace(/\{@hit ([^|{}]+)\}/g, function (match, text) { return (+text < 0 ? "" : "+") + text + "" })
 				text = text.replace(/\{@(dice|damage) ([^|{}]+)\}/g, "<span class='entries $1' onclick='handleDice(event, \"$2\")'>$2</span>")
 				text = text.replace(/\{@link ([^|{}]+)(\|[^|{}]*)*\}/g, "<span class='entries link'>$1</span>")
-				text = text.replace(/\{@i ([^|{}]+)\}/g, (match, text) => "<i>" + text + "</i>")
-				text = text.replace(/\{@item ([^|{}]+)\}/g, (match, name) => "<a href='#" + referenceKey(name) + "'>" + name + "</a>")
+				text = text.replace(/\{@i ([^|{}]+)\}/g, function (match, text) { return "<i>" + text + "</i>" })
+				text = text.replace(/\{@item ([^|{}]+)\}/g, function (match, name) { return "<a href='#" + referenceKey(name) + "'>" + name + "</a>" })
 				text = text.replace(/\{@([^{} ]+)\s+[^|{}]*\|\|([^|{}]+)\}/g, "<span class='entries $1'>$2</span>")
 				text = text.replace(/\{@([^{} ]+)\s+([^|{}]+)(\|[^|{}]*)*\}/g, "<span class='entries $1'>$2</span>")
 				
@@ -286,7 +286,7 @@
 				var result = ""
 				
 				if ( Array.isArray(entries) ) {
-					result += entries.map(e => descriptionFromEntries(e, begin, close, object)).join("")
+					result += entries.map(function (e) { return descriptionFromEntries(e, begin, close, object) }).join("")
 				} else if ( !entries ) {
 					result = ""
 				} else if ( typeof entries === 'string' ) {
@@ -301,17 +301,17 @@
 					}
 					
 					if ( entries.colLabels && Array.isArray(entries.colLabels) && entries.colLabels.length > 0 ) {
-						result += "<tr>" + entries.colLabels.map(h => "<th>" + resolveReferences(h, object) + "</th>").join("") + "</tr>"
+						result += "<tr>" + entries.colLabels.map(function (h) { return "<th>" + resolveReferences(h, object) + "</th>" }).join("") + "</tr>"
 					}
 					
-					result += entries.rows.map(r => "<tr>" + r.map(c => "<td>" + descriptionFromEntries(c, "", "", object) + "</td>").join("") + "</tr>").join("")
+					result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + descriptionFromEntries(c, "", "", object ) + "</td>" }).join("") + "</tr>" }).join("")
 					result += "</table>"
 				} else if ( entries.type === 'cell' && entries.roll ) {
 					result = begin + resolveReferences(entries.roll.entry, object) + close
 				} else if ( entries.type === 'list' ) {
 					var list = entries.entries || entries.items
-					var text = list.filter(i => typeof i === 'string')
-					var term = list.filter(i => i.name && i.entry)
+					var text = list.filter(function (i) { return typeof i === 'string' })
+					var term = list.filter(function (i) { return i.name && i.entry })
 					
 					if ( text.length > 0 ) {
 						result = "<ul class='entries'>" + descriptionFromEntries(text, "<li>", "</li>", object) + "</ul>"
@@ -319,7 +319,7 @@
 					
 					if ( term.length > 0 ) {
 						result = "<dl class='entries compact'>" +
-							term.map(i => "<dt>" + resolveReferences(i.name, object) + "</dt><dd>" + resolveReferences(i.entry, object) + "</dd>").join("") + "</dl>"
+							term.map(function (i) { return "<dt>" + resolveReferences(i.name, object) + "</dt><dd>" + resolveReferences(i.entry, object) + "</dd>" }).join("") + "</dl>"
 					}
 				} else if ( entries.type === 'inset' && entries.entries ) {
 					result = "<dl class='entries'><dt>" + resolveReferences(entries.name, object) + "</dt>" +
@@ -480,7 +480,7 @@
 					result.push(item)
 				}
 				
-				result.sort((a, b) => a.key > b.key)
+				result.sort(function (a, b) { return a.key > b.key })
 				
 				return result
 			}
@@ -515,7 +515,7 @@
 				
 				var pattern = /{([^ {}]+)}/g
 				var list = magicItemsReadyToDisplay(items)
-				var rows = list.map(item => rowTemplate.replace(pattern, (match, key) => item[key]))
+				var rows = list.map(function (item) { return rowTemplate.replace(pattern, function (match, key) { return item[key] }) })
 				
 				return header + rows.join("")
 			}
@@ -672,7 +672,7 @@
 		</style>
 	</head>
 	<body onload='populatePage()'>
-		<h4>Items</h4>
+		<h4>Items !of</h4>
 		
 		<div id='treasure-content-list'>
 			<form id='items-form'>
