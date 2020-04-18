@@ -928,7 +928,7 @@
 							"{descriptionhtml}" +
 							"<p class='prefix environments'>{environments}</p>" +
 							"<p class='source'>{sourcename}<span class='page-number'>{page}</span></p>" +
-							"<label for='toggle_{key}' class='toggle close action'>&times;</label>" +
+							"<label for='toggle_{key}' class='toggle close action'>&mdash;</label>" +
 						"</div></div>" +
 					"</td>" +
 					"<td class='monster-size natural monster-size-{sizekey}' data-sort-key='{sizekey}' title='Size {sizename}'>{size}</td>" +
@@ -1017,7 +1017,7 @@
 			table#monster-table label.toggle.close { display:none; }
 			@media screen {
 				table#monster-table label.toggle.close { display:inline-block; position:absolute; border-radius:50%; border:0.25em solid #F8ECE0; bottom:0.375em; right:0.375em; }
-				table#monster-table label.toggle.close { font-size:150%; text-align:center; line-height:1.0em; width:1.125em; height:1.125em; }
+				table#monster-table label.toggle.close { font-size:150%; text-align:center; line-height:1.125em; width:1.125em; height:1.125em; }
 				table#monster-table input.toggle:checked + label.toggle > a:after { content:" ▲"; opacity:0.25; }
 			}
 			
