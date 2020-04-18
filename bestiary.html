@@ -802,8 +802,9 @@
 			function populateMonsters() {
 				var rowTemplate = "<tr id='monster-{key}' class='monster {styles}'>" +
 					"<td class='monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='monster-selection' /></td>" +
-					"<td class='monster-name natural' data-sort-key='{namekey}'><label class='toggle'><input name='toggle_{key}' type='checkbox' class='toggle' />" +
-						"<a class='monster-name' name='{key}'>{name}</a>" +
+					"<td class='monster-name natural' data-sort-key='{namekey}'>" +
+						"<input id='toggle_{key}' name='toggle_{key}' type='checkbox' class='toggle' />" +
+						"<label for='toggle_{key}' class='toggle'><a class='monster-name' name='{key}'>{name}</a></label>" +
 						"<div class='toggled details'><div class='inner details'>" +
 							"<div class='monster-caption'><span class='size'>{sizename}</span> <span class='type'>{typename}{typetags}, </span><span class='alignment'>{alignment}</span></div>" +
 							"<hr class='monster-thick' />" +
@@ -826,8 +827,9 @@
 							"{descriptionhtml}" +
 							"<p class='prefix environments'>{environments}</p>" +
 							"<p class='source'>{sourcename}<span class='page-number'>{page}</span></p>" +
+							"<label for='toggle_{key}' class='toggle close action'>&times;</label>" +
 						"</div></div>" +
-					"</label></td>" +
+					"</td>" +
 					"<td class='monster-size natural monster-size-{sizekey}' data-sort-key='{sizekey}' title='Size {sizename}'>{size}</td>" +
 					"<td class='monster-type natural' title='{typename}'><span>{typeconcise}</span></td>" +
 					"<td class='monster-armorclass numeric' title='Armor Class {ac}'>{ac}</td>" +
@@ -896,6 +898,13 @@
 			
 			div.details { position:relative; white-space:normal; width:0; }
 			div.details > div.details.inner { position:relative; width:40em; max-width:70vw; padding:0.5em 1em 0 1em; margin:0.5em 0; background:#FDF4E8; border:1px solid #EEE; }
+			
+			table#monster-table label.toggle.close { display:none; }
+			@media screen {
+				table#monster-table label.toggle.close { display:inline-block; position:absolute; border-radius:50%; border:0.25em solid #F8ECE0; bottom:0.375em; right:0.375em; }
+				table#monster-table label.toggle.close { font-size:150%; text-align:center; line-height:1.0em; width:1.125em; height:1.125em; }
+				table#monster-table input.toggle:checked + label.toggle > a:after { content:" ▲"; opacity:0.25; }
+			}
 			
 			@media (max-width:420px) {
 				body { font-size:2.8vmin; }

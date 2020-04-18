@@ -286,7 +286,7 @@
 			function parseItem(masterItem, lookup) {
 				var rarity, category, source
 				var styles, attunement, isMajor
-				var attuneAbbreviation = ["◦", "⦾", "•", "⦿"]
+				var attuneAbbreviation = ["◦", "⚪︎", "•", "⚫︎"]
 				var attuneName = ["Minor", "Major", "Minor, Attune", "Major, Attune"]
 				var key, keys = ['rarity', 'tier', 'source', 'page', 'weight', 'value', 'srd', 'sentient', 'curse']
 				var item, type, require, requires, entries
@@ -437,14 +437,16 @@
 			function populateMagicItems() {
 				var rowTemplate = "<tr id='item-{key}' class='item {styles}'>" +
 					"<td class='item-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='item-selection' /></td>" +
-					"<td class='item-name natural' data-sort-key='{namekey}'><label class='toggle'><input name='toggle_{key}' type='checkbox' class='toggle' />" +
-						"<a class='item-name' name='{key}'>{name}</a>" +
+					"<td class='item-name natural' data-sort-key='{namekey}'>" +
+						"<input id='toggle_{key}' name='toggle_{key}' type='checkbox' class='toggle' />" +
+						"<label for='toggle_{key}' class='toggle item-name'><a class='item-name' name='{key}'>{name}</a></label>" +
 						"<div class='toggled details'><div class='inner details'>" +
 							"<p class='item-caption'>{caption}</p>" +
 							"{description}" +
 							"<p class='source'>{sourcename}<span class='page'>{page}</span></p>" +
+							"<label for='toggle_{key}' class='toggle close action'>&times;</label>" +
 						"</div></div>" +
-					"</label></td>" +
+					"</td>" +
 					"<td class='item-type natural'>{typename}</td>" +
 					"<td class='item-rarity center' title='{rarityname}' data-sort-key='{raritykey}'>{rarityabbreviation}</td>" +
 					"<td class='item-attune center' title='{attunename}' data-sort-key='{attunekey}'>{attune}</td>" +
@@ -508,8 +510,15 @@
 			input.toggle:not(:checked) + label + div.toggled { display:none; }
 			
 			div.details { position:relative; white-space:normal; width:0; }
-			div.details > div.details.inner { position:relative; width:40em; max-width:80vw; padding:0 1em; margin:0.5em 0; background:#FAFAFA; border:1px solid #EEE; }
+			div.details > div.details.inner { position:relative; width:40em; max-width:70vw; padding:0 1em; margin:0.5em 0; background:#FAFAFA; border:1px solid #EEE; }
 			div.details span.entries.indent + span.entries { margin-left:1em }
+			
+			table#items-table label.toggle.close { display:none; }
+			@media screen {
+				table#items-table label.toggle.close { display:inline-block; position:absolute; border-radius:50%; border:0.25em solid #EEE; bottom:0.375em; right:0.375em; }
+				table#items-table label.toggle.close { font-size:150%; text-align:center; line-height:1.0em; width:1.125em; height:1.125em; }
+				table#items-table input.toggle:checked + label.toggle > a:after { content:" ▲"; opacity:0.25; }
+			}
 			
 			@media (max-width:420px) {
 				body { font-size:2.8vmin; }
@@ -530,11 +539,12 @@
 			div.details dl.entries > dt { font-weight:bold; }
 			div.details span.entries { font-style:oblique; }
 			div.details span.prominent { font-weight:bold; }
+			div.details span.prominent::after { content:"."; }
 			div.details table.entries { border-spacing:0; border-collapse:collapse; }
 			div.details table.entries td { vertical-align:top; }
 			div.details table.entries td:not(:last-of-type) { padding-right:1em; }
 			div.details table.entries td:first-child { min-width:4em; white-space:nowrap; }
-			div.details table.entries tr:nth-child(even) { background:#FFFAFA; }
+			div.details table.entries tr:nth-child(even) { background:#FFF6F6; }
 			div.details p.item-caption { font-style:oblique; }
 			div.details a, div.details a:visited { text-decoration-color:#CCC; color:inherit; }
 			p.source { font-style:oblique; color:#666; font-size:80%; }
