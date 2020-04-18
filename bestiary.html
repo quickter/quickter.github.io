@@ -110,12 +110,16 @@
 				}
 				
 				for ( element of elements ) {
-					element.checked = checked
+					if ( element.checked !== checked ) {
+						element.checked = checked
+						
+						if ( typeof element.onchange === 'function' ) { element.onchange() }
+					}
 				}
 			}
 			
 			function filterAssignToggleChecked(value) {
-				selectorAssignChecked('table#monster-table tr:not(.filtered) > td.monster-name > label > input.toggle', value)
+				selectorAssignChecked('table#monster-table tr:not(.filtered) > td.monster-name > input.toggle', value)
 			}
 			
 			function filterAssignChosenChecked(value) {
@@ -129,7 +133,7 @@
 			}
 			
 			function filterMonstersByToggle() {
-				var count = assignClassToElements('filtered', 'table#monster-table tr.monster > td.monster-name > label.toggle > input', 3, e => e.checked ? -1 : 1)
+				var count = assignClassToElements('filtered', 'table#monster-table tr.monster > td.monster-name > input.toggle', 2, e => e.checked ? -1 : 1)
 				
 				filterApplied(count)
 			}
@@ -165,14 +169,15 @@
 				var key
 				
 				for ( key of keys ) {
-					if ( form['toggle_' + key] ) {
-						form['toggle_' + key].checked = true
+					if ( form['select_' + key] ) {
+						form['select_' + key].checked = true
 						recognized.push(key)
 					}
 				}
 				
 				if ( recognized.length > 0 ) {
-					filterMonstersByToggle()
+					filterMonstersByChosen()
+					filterAssignToggleChecked(1)
 				}
 			}
 			
@@ -193,6 +198,8 @@
 					element.indeterminate = elementsChecked.length > 0 && elementsUnchecked.length > 0
 					element.checked = elementsChecked.length > elementsUnchecked.length
 				}
+				
+				chooseMonster(false)
 			}
 			
 			function hashChanged(event) {
@@ -200,6 +207,8 @@
 				
 				if ( hash && hash.length > 1 ) {
 					filterMonstersByKeys(hash.slice(1).split(",").map(s => s.trim()))
+					
+					_element('monster-text-filter').value = '#'
 				} else {
 					filterMonstersByName('')
 				}
@@ -225,6 +234,19 @@
 					} else {
 						window.localStorage.removeItem(key)
 					}
+				}
+			}
+			
+			function chooseMonster(key) {
+				var share = _element('share-selection')
+				
+				if ( share ) {
+					var selector = 'table#monster-table tr:not(.filtered) > td.monster-selected > input.monster-selection:checked'
+					var elements = document.querySelectorAll(selector)
+					var keys = [].map.call(elements, e => e.id.slice(7))
+					var hash = keys.join(",")
+					
+					share.href = "#" + hash
 				}
 			}
 			
@@ -863,7 +885,7 @@
 				var host = window.localStorage.getItem('quickter.bestiary.artwork.host')
 				
 				var rowTemplate = "<tr id='monster-{key}' class='monster {styles}'>" +
-					"<td class='monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='monster-selection' /></td>" +
+					"<td class='monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='monster-selection' onchange='chooseMonster(\"{key}\")' /></td>" +
 					"<td class='monster-name natural' data-sort-key='{namekey}'>" +
 						"<input id='toggle_{key}' name='toggle_{key}' type='checkbox' class='toggle' onchange='toggleMonster(\"{key}\")' />" +
 						"<label for='toggle_{key}' class='toggle'><a class='monster-name' name='{key}'>{name}</a></label>" +
@@ -951,6 +973,9 @@
 			
 			html { background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%); }
 			body { position:relative; box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
+			
+			div#controls { position:absolute; right:2em; top:1.5em; }
+			a#share-selection { font-size:150%; color:inherit; text-decoration-color:#CCC; }
 			
 			input#monster-text-filter { font-size:100%; max-width:98%; }
 			span#monster-text-filter-count { opacity:0.5; font-size:60%; }
@@ -1086,7 +1111,7 @@
 			
 			@media print {
 				th.monster-selected, td.monster-selected { display:none; }
-				div.controls { display:none; }
+				div.filtering, div.controls { display:none; }
 				p.source { page-break-after:always; }
 			}
 			
@@ -1105,13 +1130,16 @@
 		
 		<div id='monster-content-list'>
 			<form id='monster-form'>
-			<div class='controls'>
-			<input id='select-all' type='checkbox' onclick='filterAssignChosenChecked(checked ? 1 : -1)' title='Tap to select matches.' />
-			<label for='select-all'>&nbsp;</label>
-			<input type='search' id='monster-text-filter' name='monster-text-filter' size='36' placeholder='Filter' oninput='handleSearch(event)'>
-			<span id='monster-text-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
-			</div>
-			<table id='monster-table' class='emoji'><tr><td>Loading...</td></tr></table>
+				<div id='controls'>
+					<a id='share-selection' href='' title='Share selection'>⇧</a>
+				</div>
+				<div class='filtering'>
+					<input id='select-all' type='checkbox' onclick='filterAssignChosenChecked(checked ? 1 : -1)' title='Tap to select matches.' />
+					<label for='select-all'>&nbsp;</label>
+					<input type='search' id='monster-text-filter' name='monster-text-filter' size='36' placeholder='Filter' oninput='handleSearch(event)'>
+					<span id='monster-text-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
+				</div>
+				<table id='monster-table' class='emoji'><tr><td>Loading...</td></tr></table>
 			</form>
 		</div>
 	</body>
