@@ -289,51 +289,51 @@
 				return text
 			}
 			
-			function descriptionFromEntries(entries, begin, close, object) {
+			function descriptionFromEntries(entries, begin, close) {
 				var result = ""
 				
 				if ( Array.isArray(entries) ) {
-					result += entries.map(function (e) { return descriptionFromEntries(e, begin, close, object) }).join("")
+					result += entries.map(function (e) { return descriptionFromEntries(e, begin, close) }).join("")
 				} else if ( !entries ) {
 					result = ""
 				} else if ( typeof entries === 'string' ) {
-					result = begin + resolveReferences(entries, object) + close
+					result = begin + entries + close
 				} else if ( typeof entries === 'number' ) {
 					result = begin + entries + close
 				} else if ( entries.type === 'table' && Array.isArray(entries.rows) ) {
 					result = "<table class='entries'>"
 					
 					if ( entries.caption ) {
-						result += "<caption>" + resolveReferences(entries.caption, object) + "</caption>"
+						result += "<caption>" + entries.caption + "</caption>"
 					}
 					
 					if ( entries.colLabels && Array.isArray(entries.colLabels) && entries.colLabels.length > 0 ) {
-						result += "<tr>" + entries.colLabels.map(function (h) { return "<th>" + resolveReferences(h, object) + "</th>" }).join("") + "</tr>"
+						result += "<tr>" + entries.colLabels.map(function (h) { return "<th>" + h + "</th>" }).join("") + "</tr>"
 					}
 					
-					result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + descriptionFromEntries(c, "", "", object ) + "</td>" }).join("") + "</tr>" }).join("")
+					result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + descriptionFromEntries(c, "", "" ) + "</td>" }).join("") + "</tr>" }).join("")
 					result += "</table>"
 				} else if ( entries.type === 'cell' && entries.roll ) {
-					result = begin + resolveReferences(entries.roll.entry, object) + close
+					result = begin + entries.roll.entry + close
 				} else if ( entries.type === 'list' ) {
 					var list = entries.entries || entries.items
 					var text = list.filter(function (i) { return typeof i === 'string' })
 					var term = list.filter(function (i) { return i.name && i.entry })
 					
 					if ( text.length > 0 ) {
-						result = "<ul class='entries'>" + descriptionFromEntries(text, "<li>", "</li>", object) + "</ul>"
+						result = "<ul class='entries'>" + descriptionFromEntries(text, "<li>", "</li>") + "</ul>"
 					}
 					
 					if ( term.length > 0 ) {
 						result = "<dl class='entries compact'>" +
-							term.map(function (i) { return "<dt>" + resolveReferences(i.name, object) + "</dt><dd>" + resolveReferences(i.entry, object) + "</dd>" }).join("") + "</dl>"
+							term.map(function (i) { return "<dt>" + i.name + "</dt><dd>" + i.entry + "</dd>" }).join("") + "</dl>"
 					}
 				} else if ( entries.type === 'inset' && entries.entries ) {
-					result = "<dl class='entries'><dt>" + resolveReferences(entries.name, object) + "</dt>" +
-						descriptionFromEntries(entries.entries, "<dd>", "</dd>", object) + "</dl>"
+					result = "<dl class='entries'><dt>" + entries.name + "</dt>" +
+						descriptionFromEntries(entries.entries, "<dd>", "</dd>") + "</dl>"
 				} else if ( entries.name && entries.entries ) {
-					result = begin + "<span class='prominent entries'>" + resolveReferences(entries.name, object) + "</span> " +
-						descriptionFromEntries(entries.entries, "<span class='follow entries'>", "</span><br /><span class='indent entries'></span>", object) + close
+					result = begin + "<span class='prominent entries'>" + entries.name + "</span> " +
+						descriptionFromEntries(entries.entries, "<span class='follow entries'>", "</span><br /><span class='indent entries'></span>") + close
 				} else {
 					result = begin + entries.type + close
 				}
@@ -428,7 +428,7 @@
 				item['attunekey'] = (attunement ? 2 : 0) + (isMajor ? 1 : 0)
 				item['attune'] = attuneAbbreviation[item.attunekey]
 				item['attunename'] = attuneName[item.attunekey]
-				item['description'] = descriptionFromEntries(entries, "<p>", "</p>", masterItem)
+				item['description'] = resolveReferences(descriptionFromEntries(entries, "<p>", "</p>"), masterItem)
 				item['namekey'] = item.name.replace(/['‘’]/g, '')
 				item['raritytag'] = rarity && rarity.tag || item.rarity || false
 				item['raritykey'] = rarity && rarity.order || 0

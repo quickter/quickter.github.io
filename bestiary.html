@@ -303,55 +303,51 @@
 				return text
 			}
 			
-			function resolveReferencesInArray(array, object) {
-				return array.map(function(text) { return resolveReferences(text, object) })
-			}
-			
-			function descriptionFromEntries(entries, begin, close, object) {
+			function descriptionFromEntries(entries, begin, close) {
 				var result = ""
 				
 				if ( Array.isArray(entries) ) {
-					result += entries.map(function (e) { return descriptionFromEntries(e, begin, close, object) }).join("")
+					result += entries.map(function (e) { return descriptionFromEntries(e, begin, close) }).join("")
 				} else if ( !entries ) {
 					result = ""
 				} else if ( typeof entries === 'string' ) {
-					result = begin + resolveReferences(entries, object) + close
+					result = begin + entries + close
 				} else if ( typeof entries === 'number' ) {
 					result = begin + entries + close
 				} else if ( entries.type === 'table' && Array.isArray(entries.rows) ) {
 					result = "<table class='entries'>"
 					
 					if ( entries.caption ) {
-						result += "<caption>" + resolveReferences(entries.caption, object) + "</caption>"
+						result += "<caption>" + entries.caption + "</caption>"
 					}
 					
 					if ( entries.colLabels && Array.isArray(entries.colLabels) && entries.colLabels.length > 0 ) {
-						result += "<tr>" + entries.colLabels.map(function (h) { return "<th>" + resolveReferences(h, object) + "</th>" }).join("") + "</tr>"
+						result += "<tr>" + entries.colLabels.map(function (h) { return "<th>" + h + "</th>" }).join("") + "</tr>"
 					}
 					
-					result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + descriptionFromEntries(c, "", "", object ) + "</td>" }).join("") + "</tr>" }).join("")
+					result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + descriptionFromEntries(c, "", "" ) + "</td>" }).join("") + "</tr>" }).join("")
 					result += "</table>"
 				} else if ( entries.type === 'cell' && entries.roll ) {
-					result = begin + resolveReferences(entries.roll.entry, object) + close
+					result = begin + entries.roll.entry + close
 				} else if ( entries.type === 'list' ) {
 					var list = entries.entries || entries.items
 					var text = list.filter(function (i) { return typeof i === 'string' })
 					var term = list.filter(function (i) { return i.name && i.entry })
 					
 					if ( text.length > 0 ) {
-						result = "<ul class='entries'>" + descriptionFromEntries(text, "<li>", "</li>", object) + "</ul>"
+						result = "<ul class='entries'>" + descriptionFromEntries(text, "<li>", "</li>") + "</ul>"
 					}
 					
 					if ( term.length > 0 ) {
 						result = "<dl class='entries compact'>" +
-							term.map(function (i) { return "<dt>" + resolveReferences(i.name, object) + "</dt><dd>" + resolveReferences(i.entry, object) + "</dd>" }).join("") + "</dl>"
+							term.map(function (i) { return "<dt>" + i.name + "</dt><dd>" + i.entry + "</dd>" }).join("") + "</dl>"
 					}
 				} else if ( entries.type === 'inset' && entries.entries ) {
-					result = "<dl class='entries'><dt>" + resolveReferences(entries.name, object) + "</dt>" +
-						descriptionFromEntries(entries.entries, "<dd>", "</dd>", object) + "</dl>"
+					result = "<dl class='entries'><dt>" + entries.name + "</dt>" +
+						descriptionFromEntries(entries.entries, "<dd>", "</dd>") + "</dl>"
 				} else if ( entries.name && entries.entries ) {
-					result = begin + "<span class='prominent entries'>" + resolveReferences(entries.name, object) + "</span> " +
-						descriptionFromEntries(entries.entries, "<span class='follow entries'>", "</span><br /><span class='indent entries'></span>", object) + close
+					result = begin + "<span class='prominent entries'>" + entries.name + "</span> " +
+						descriptionFromEntries(entries.entries, "<span class='follow entries'>", "</span><br /><span class='indent entries'></span>") + close
 				} else {
 					result = begin + entries.type + close
 				}
@@ -516,13 +512,13 @@
 						suffix = ""
 						
 						if ( typeof value.condition === 'string' ) {
-							suffix = " " + resolveReferences(value.condition, monster)
+							suffix = " " + value.condition
 						}
 						
 						if ( typeof value.from === 'string' ) {
-							prefix = " (" + resolveReferences(value.from) + ")"
+							prefix = " (" + value + ")"
 						} else if ( Array.isArray(value.from) ) {
-							prefix = " (" + value.from.map(function (f) { return resolveReferences(f) }).join(", ") + ")"
+							prefix = " (" + value.from.join(", ") + ")"
 						}
 						
 						if ( !result.ac || !value.condition ) {
@@ -532,7 +528,7 @@
 						array.push(value.ac + prefix + suffix)
 					}
 					
-					result.armorclass = array.join(", ")
+					result.armorclass = resolveReferences(array.join(", "), monster)
 				} else {
 					result.ac = "?"
 					result.armorclass = armorclass
@@ -741,7 +737,7 @@
 				result.challengeexperience = "(" + result.challengexp + " XP)"
 				
 				var cardinality = ["th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"]
-				var legendary = "The {=name} can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn . The {=name} regains spent legendary actions at the start of its turn."
+				var legendary = "The {=name} can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The {=name} regains spent legendary actions at the start of its turn."
 				var keysForText = ['trait', 'action=Actions', 'reaction=Reactions', 'legendary=Legendary Actions']
 				var spellcasting = monster.spellcasting
 				array = []
@@ -770,10 +766,10 @@
 						}
 						
 						if ( key === 'legendary' ) {
-							array.push("<p>" + resolveReferences(legendary, monster) + "</p>")
+							array.push("<p>" + legendary + "</p>")
 						}
 						
-						array.push(descriptionFromEntries(value, "<p>", "</p>", monster))
+						array.push(descriptionFromEntries(value, "<p>", "</p>"))
 						
 						if ( key === 'trait' && spellcasting ) {
 							if ( !Array.isArray(spellcasting) ) {
@@ -784,42 +780,42 @@
 								result.spellcastingability = item.ability || false
 							
 								if ( item.name || item.headerEntries ) {
-									array.push(descriptionFromEntries({'name':item.name, 'entries':item.headerEntries || []}, "<p class='spellcasting'>", "</p>", monster))
+									array.push(descriptionFromEntries({'name':item.name, 'entries':item.headerEntries || []}, "<p class='spellcasting'>", "</p>"))
 								}
 								
 								if ( Array.isArray(item.will) && !(item.hidden && item.hidden.indexOf('will') >= 0) ) {
-									array.push("<div class='spellcasting'><span class='spells-at-will'></span><span class='spells'>" + resolveReferencesInArray(item.will, monster).join(", ") + "</span></div>")
+									array.push("<div class='spellcasting'><span class='spells-at-will'></span><span class='spells'>" + item.will.join(", ") + "</span></div>")
 								}
 								
 								if ( item.daily && !(item.hidden && item.hidden.indexOf('daily') >= 0) ) {
 									for ( index = 1 ; index < 10 ; ++index ) {
 										if ( Array.isArray(item.daily[index + 'e']) && item.daily[index + 'e'].length > 0 ) {
-											array.push("<div class='spellcasting'><span class='spell" + (item.daily[index + 'e'].length > 1 ? 's' : '') + "-daily'>" + index + "</span><span class='spells'>" + resolveReferencesInArray(item.daily[index + 'e'], monster).join(", ") + "</span></div>")
+											array.push("<div class='spellcasting'><span class='spell" + (item.daily[index + 'e'].length > 1 ? 's' : '') + "-daily'>" + index + "</span><span class='spells'>" + item.daily[index + 'e'].join(", ") + "</span></div>")
 										}
 									}
 								}
 								
 								if ( item.spells && !(item.hidden && item.hidden.indexOf('spells') >= 0) ) {
 									if ( item.spells["0"] && Array.isArray(item.spells["0"].spells) && item.spells["0"].spells.length > 0 ) {
-											array.push("<div class='spellcasting'><span class='spell-level-cantrip'></span><span class='spell-slots'></span><span class='spells'>" + resolveReferencesInArray(item.spells["0"].spells, monster).join(", ") + "</span></div>")
+											array.push("<div class='spellcasting'><span class='spell-level-cantrip'></span><span class='spell-slots'></span><span class='spells'>" + item.spells["0"].spells.join(", ") + "</span></div>")
 									}
 									
 									for ( index = 1 ; index < 10 ; ++index ) {
 										if ( item.spells["" + index] && Array.isArray(item.spells["" + index].spells) && item.spells["" + index].spells.length > 0 ) {
-											array.push("<div class='spellcasting'><span class='spell-level'>" + index + cardinality[index] + "</span><span class='spell-slots'>" + (item.spells["" + index].slots || '') + "</span><span class='spells'>" + resolveReferencesInArray(item.spells["" + index].spells, monster).join(", ") + "</span></div>")
+											array.push("<div class='spellcasting'><span class='spell-level'>" + index + cardinality[index] + "</span><span class='spell-slots'>" + (item.spells["" + index].slots || '') + "</span><span class='spells'>" + item.spells["" + index].spells.join(", ") + "</span></div>")
 										}
 									}
 								}
 								
 								if ( item.footerEntries ) {
-									array.push(descriptionFromEntries(item.footerEntries, "<div class='spellcasting'>", "</div>", monster))
+									array.push(descriptionFromEntries(item.footerEntries, "<div class='spellcasting'>", "</div>"))
 								}
 							}
 						}
 					}
 				}
 				
-				result.descriptionhtml = array.join("")
+				result.descriptionhtml = resolveReferences(array.join(""), monster)
 				
 				var environments = monster.environment
 				
