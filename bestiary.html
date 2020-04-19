@@ -125,28 +125,28 @@
 			}
 			
 			function filterAssignToggleChecked(value) {
-				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.monster-name > input.toggle', value)
+				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.name > input.toggle', value)
 			}
 			
 			function filterAssignChosenChecked(value) {
-				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.monster-selected > input.monster-selection', value)
+				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.selected > input.selection', value)
 			}
 			
 			function filterPrimaryByChosen() {
-				var count = assignClassToElements('filtered', 'table#primary-table tr.monster > td.monster-selected > input.monster-selection', 2, function (e) { return e.checked ? -1 : 1 })
+				var count = assignClassToElements('filtered', 'table#primary-table tr.primary > td.selected > input.selection', 2, function (e) { return e.checked ? -1 : 1 })
 				
 				filterApplied(count)
 			}
 			
 			function filterPrimaryByToggle() {
-				var count = assignClassToElements('filtered', 'table#primary-table tr.monster > td.monster-name > input.toggle', 2, function (e) { return e.checked ? -1 : 1 })
+				var count = assignClassToElements('filtered', 'table#primary-table tr.primary > td.name > input.toggle', 2, function (e) { return e.checked ? -1 : 1 })
 				
 				filterApplied(count)
 			}
 			
 			function filterPrimaryByName(pattern) {
 				var className = 'filtered'
-				var selector = 'table#primary-table tr.monster > td.monster-name'
+				var selector = 'table#primary-table tr.primary > td.name'
 				var count
 				
 				if ( !pattern ) {
@@ -204,17 +204,6 @@
 					element.textContent = count || ''
 				}
 				
-				element = _element('select-all')
-				
-				if ( element ) {
-					var selector = 'table#primary-table tr:not(.filtered) > td.monster-selected > input.monster-selection'
-					var elementsChecked = document.querySelectorAll(selector + ':checked')
-					var elementsUnchecked = document.querySelectorAll(selector + ':not(:checked)')
-					
-					element.indeterminate = elementsChecked.length > 0 && elementsUnchecked.length > 0
-					element.checked = elementsChecked.length > elementsUnchecked.length
-				}
-				
 				handleSelect(false)
 			}
 			
@@ -232,40 +221,24 @@
 				}
 			}
 			
-			function applyParameters() {
-				var form = _element('primary-form')
-				var object = inflateParameters(null, location.search, '?', '&')
-				var key, value
-				
-				value = object['f']
-				if ( value ) {
-					form.f.value = value
-					
-					setTimeout(filterPrimaryByName, 0, value)
-				}
-				
-				value = object['artwork']
-				if ( value ) {
-					key = 'quickter.bestiary.artwork.host'
-					
-					if ( value.indexOf('.') > 0 ) {
-						window.localStorage.setItem(key, value)
-					} else {
-						window.localStorage.removeItem(key)
-					}
-				}
-			}
-			
 			function handleSelect(key) {
 				var share = _element('share-selection')
+				var selector = 'table#primary-table tr:not(.filtered) > td.selected > input.selection'
+				var elementsChecked = document.querySelectorAll(selector + ':checked')
+				var elementsUnchecked = document.querySelectorAll(selector + ':not(:checked)')
 				
 				if ( share ) {
-					var selector = 'table#primary-table tr:not(.filtered) > td.monster-selected > input.monster-selection:checked'
-					var elements = document.querySelectorAll(selector)
-					var keys = Array.prototype.map.call(elements, function (e) { return e.id.slice(7) })
+					var keys = Array.prototype.map.call(elementsChecked, function (e) { return e.id.slice(7) })
 					var hash = keys.sort().join(",")
 					
 					share.href = "#" + hash
+				}
+				
+				var all = _element('select-all')
+				
+				if ( all ) {
+					all.indeterminate = elementsChecked.length > 0 && elementsUnchecked.length > 0
+					all.checked = elementsChecked.length > elementsUnchecked.length
 				}
 			}
 			
@@ -911,9 +884,9 @@
 			function primaryTableContent() {
 				var host = window.localStorage.getItem('quickter.bestiary.artwork.host')
 				
-				var rowTemplate = "<tr id='monster-{key}' class='monster {styles}'>" +
-					"<td class='monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='monster-selection' onchange='handleSelect(\"{key}\")' /></td>" +
-					"<td class='monster-name natural' data-sort-key='{namekey}'>" +
+				var rowTemplate = "<tr id='monster-{key}' class='primary monster {styles}'>" +
+					"<td class='selected monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='handleSelect(\"{key}\")' /></td>" +
+					"<td class='name monster-name natural' data-sort-key='{namekey}'>" +
 						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' onchange='handleToggle(\"{key}\")' />" +
 						"<label for='toggle-{key}' class='toggle'><a id='{key}' class='monster-name'>{name}</a></label>" +
 						"<div class='toggled details'><div class='inner details'>" +
@@ -950,7 +923,7 @@
 					"<td class='monster-source natural' title='{sourcename} {page}'>{source}</td>" +
 				"</tr>"
 				
-				var header = "<tr id='monster-header' class='monster header'>" +
+				var header = "<tr id='monster-header' class='primary monster header'>" +
 					"<th class='monster-selected sortable' data-sort-invert> </th>" +
 					"<th class='monster-name natural sortable' data-sort-format='locale'>Name</th>" +
 					"<th class='monster-size natural sortable' data-sort-format='normal' title='Size'>S</th>" +
@@ -968,19 +941,35 @@
 				return header + rows.join("")
 			}
 			
+			function applyParameters() {
+				var form = _element('primary-form')
+				var object = inflateParameters(null, location.search, '?', '&')
+				var key, value
+				
+				value = object['f']
+				if ( value ) {
+					form.f.value = value
+					
+					setTimeout(filterPrimaryByName, 0, value)
+				}
+				
+				value = object['artwork']
+				if ( value ) {
+					key = 'quickter.bestiary.artwork.host'
+					
+					if ( value.indexOf('.') > 0 ) {
+						window.localStorage.setItem(key, value)
+					} else {
+						window.localStorage.removeItem(key)
+					}
+				}
+			}
+			
 			function populatePrimaryTable() {
 				var table = _element('primary-table')
-				
-				console.time("primaryTableContent")
 				var html = primaryTableContent()
-				console.timeEnd("primaryTableContent")
 				
-				console.log("populatePrimaryTable " + html.length)
-				
-				console.time("populatePrimaryTable")
 				table.innerHTML = html
-				console.timeEnd("populatePrimaryTable")
-				
 				tableSort(table)
 			}
 			
@@ -1050,25 +1039,25 @@
 			td.numeric, th.numeric { text-align:right; }
 			
 			table#primary-table { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
-			table#primary-table tr.monster { border-bottom:0.25px solid #DDD; }
-			table#primary-table tr.monster > td, #primary-table tr.monster > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
+			table#primary-table tr.primary { border-bottom:0.25px solid #DDD; }
+			table#primary-table tr.primary > td, #primary-table tr.primary > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
 			table#primary-table a.monster-name { display:block; cursor:pointer; }
 			/*	table#primary-table input.toggle:checked ~ a.monster-name { font-variant:small-caps; font-weight:bold; } */
 			
 			@media screen {
-				table#primary-table tr.monster > td.monster-hitpoints::before { content:"♥︎"; font-size:50%; opacity:0.25; }
-				table#primary-table tr.monster > td.monster-challenge::before { content:"★"; font-size:50%; opacity:0.25; }
-				table#primary-table tr.monster > td.monster-armorclass::before { content:"♦︎"; font-size:50%; opacity:0.25; }
+				table#primary-table tr.primary > td.monster-hitpoints::before { content:"♥︎"; font-size:50%; opacity:0.25; }
+				table#primary-table tr.primary > td.monster-challenge::before { content:"★"; font-size:50%; opacity:0.25; }
+				table#primary-table tr.primary > td.monster-armorclass::before { content:"♦︎"; font-size:50%; opacity:0.25; }
 			}
 			
 			table#primary-table { table-layout:fixed; width:100%; }
-			table#primary-table tr.monster > th.monster-selected { width:1.25em; }
-			table#primary-table tr.monster > th.monster-size,
-			table#primary-table tr.monster > th.monster-type { width:1.5em; }
-			table#primary-table tr.monster > th.monster-armorclass,
-			table#primary-table tr.monster > th.monster-challenge { width:2em; }
-			table#primary-table tr.monster > th.monster-hitpoints { width:3em; }
-			table#primary-table tr.monster > th.monster-source { width:3em; }
+			table#primary-table tr.primary > th.monster-selected { width:1.25em; }
+			table#primary-table tr.primary > th.monster-size,
+			table#primary-table tr.primary > th.monster-type { width:1.5em; }
+			table#primary-table tr.primary > th.monster-armorclass,
+			table#primary-table tr.primary > th.monster-challenge { width:2em; }
+			table#primary-table tr.primary > th.monster-hitpoints { width:3em; }
+			table#primary-table tr.primary > th.monster-source { width:3em; }
 			
 			td.monster-source { font-size:80%; }
 			div.details { color:#333; }
@@ -1140,23 +1129,23 @@
 			}
 			
 			@media screen and (hover) and (color) {
-				table#primary-table.emoji tr.monster th.monster-type { padding-left:0.375em; }
-				table#primary-table.emoji tr.monster td.monster-type > span { display:none; }
-				table#primary-table.emoji tr.monster td.monster-type::after { opacity:0.75; }
-				table#primary-table.emoji tr.monster.aberration td.monster-type::after { content:"👽"; }
-				table#primary-table.emoji tr.monster.beast td.monster-type::after { content:"🐺"; }
-				table#primary-table.emoji tr.monster.celestial td.monster-type::after { content:"🦄"; }
-				table#primary-table.emoji tr.monster.construct td.monster-type::after { content:"👤"; }
-				table#primary-table.emoji tr.monster.dragon td.monster-type::after { content:"🐉"; }
-				table#primary-table.emoji tr.monster.elemental td.monster-type::after { content:"🔥"; }
-				table#primary-table.emoji tr.monster.fiend td.monster-type::after { content:"👺"; }
-				table#primary-table.emoji tr.monster.fey td.monster-type::after { content:"🧚"; }
-				table#primary-table.emoji tr.monster.giant td.monster-type::after { content:"🗿"; }
-				table#primary-table.emoji tr.monster.humanoid td.monster-type::after { content:"🧝"; }
-				table#primary-table.emoji tr.monster.monstrosity td.monster-type::after { content:"🦂"; }
-				table#primary-table.emoji tr.monster.plant td.monster-type::after { content:"🌿"; }
-				table#primary-table.emoji tr.monster.ooze td.monster-type::after { content:"🦠"; }
-				table#primary-table.emoji tr.monster.undead td.monster-type::after { content:"🧟"; }
+				table#primary-table.emoji tr.primary th.monster-type { padding-left:0.375em; }
+				table#primary-table.emoji tr.primary td.monster-type > span { display:none; }
+				table#primary-table.emoji tr.primary td.monster-type::after { opacity:0.75; }
+				table#primary-table.emoji tr.primary.aberration td.monster-type::after { content:"👽"; }
+				table#primary-table.emoji tr.primary.beast td.monster-type::after { content:"🐺"; }
+				table#primary-table.emoji tr.primary.celestial td.monster-type::after { content:"🦄"; }
+				table#primary-table.emoji tr.primary.construct td.monster-type::after { content:"👤"; }
+				table#primary-table.emoji tr.primary.dragon td.monster-type::after { content:"🐉"; }
+				table#primary-table.emoji tr.primary.elemental td.monster-type::after { content:"🔥"; }
+				table#primary-table.emoji tr.primary.fiend td.monster-type::after { content:"👺"; }
+				table#primary-table.emoji tr.primary.fey td.monster-type::after { content:"🧚"; }
+				table#primary-table.emoji tr.primary.giant td.monster-type::after { content:"🗿"; }
+				table#primary-table.emoji tr.primary.humanoid td.monster-type::after { content:"🧝"; }
+				table#primary-table.emoji tr.primary.monstrosity td.monster-type::after { content:"🦂"; }
+				table#primary-table.emoji tr.primary.plant td.monster-type::after { content:"🌿"; }
+				table#primary-table.emoji tr.primary.ooze td.monster-type::after { content:"🦠"; }
+				table#primary-table.emoji tr.primary.undead td.monster-type::after { content:"🧟"; }
 			}
 			
 			@media print {

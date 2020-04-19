@@ -125,28 +125,28 @@
 			}
 			
 			function filterAssignToggleChecked(value) {
-				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.item-name > input.toggle', value)
+				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.name > input.toggle', value)
 			}
 			
 			function filterAssignChosenChecked(value) {
-				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.item-selected > input.item-selection', value)
+				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.selected > input.selection', value)
 			}
 			
 			function filterPrimaryByChosen() {
-				var count = assignClassToElements('filtered', 'table#primary-table tr.item > td.item-selected > input.item-selection', 2, function (e) { return e.checked ? -1 : 1 })
+				var count = assignClassToElements('filtered', 'table#primary-table tr.primary > td.selected > input.selection', 2, function (e) { return e.checked ? -1 : 1 })
 				
 				filterApplied(count)
 			}
 			
 			function filterPrimaryByToggle() {
-				var count = assignClassToElements('filtered', 'table#primary-table tr.item > td.item-name > input.toggle', 2, function (e) { return e.checked ? -1 : 1 })
+				var count = assignClassToElements('filtered', 'table#primary-table tr.primary > td.name > input.toggle', 2, function (e) { return e.checked ? -1 : 1 })
 				
 				filterApplied(count)
 			}
 			
 			function filterPrimaryByName(pattern) {
 				var className = 'filtered'
-				var selector = 'table#primary-table tr.item > td.item-name'
+				var selector = 'table#primary-table tr.primary > td.name'
 				var count
 				
 				if ( !pattern ) {
@@ -206,15 +206,6 @@
 				
 				element = _element('select-all')
 				
-				if ( element ) {
-					var selector = 'table#primary-table tr.item:not(.filtered) > td.item-selected > input.item-selection'
-					var elementsChecked = document.querySelectorAll(selector + ':checked')
-					var elementsUnchecked = document.querySelectorAll(selector + ':not(:checked)')
-					
-					element.indeterminate = elementsChecked.length > 0 && elementsUnchecked.length > 0
-					element.checked = elementsChecked.length > elementsUnchecked.length
-				}
-				
 				handleSelect(false)
 			}
 			
@@ -232,29 +223,24 @@
 				}
 			}
 			
-			function applyParameters() {
-				var form = _element('primary-form')
-				var object = inflateParameters(null, location.search, '?', '&')
-				var key, value
-				
-				value = object['f']
-				if ( value ) {
-					form.f.value = value
-					
-					setTimeout(filterPrimaryByName, 0, value)
-				}
-			}
-			
 			function handleSelect(key) {
 				var share = _element('share-selection')
+				var selector = 'table#primary-table tr:not(.filtered) > td.selected > input.selection'
+				var elementsChecked = document.querySelectorAll(selector + ':checked')
+				var elementsUnchecked = document.querySelectorAll(selector + ':not(:checked)')
 				
 				if ( share ) {
-					var selector = 'table#primary-table tr:not(.filtered) > td.item-selected > input.item-selection:checked'
-					var elements = document.querySelectorAll(selector)
-					var keys = Array.prototype.map.call(elements, function (e) { return e.id.slice(7) })
+					var keys = Array.prototype.map.call(elementsChecked, function (e) { return e.id.slice(7) })
 					var hash = keys.sort().join(",")
 					
 					share.href = "#" + hash
+				}
+				
+				var all = _element('select-all')
+				
+				if ( all ) {
+					all.indeterminate = elementsChecked.length > 0 && elementsUnchecked.length > 0
+					all.checked = elementsChecked.length > elementsUnchecked.length
 				}
 			}
 			
@@ -507,9 +493,9 @@
 			}
 			
 			function primaryTableContent() {
-				var rowTemplate = "<tr id='item-{key}' class='item {styles}'>" +
-					"<td class='item-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='item-selection' onchange='handleSelect(\"{key}\")' /></td>" +
-					"<td class='item-name natural' data-sort-key='{namekey}'>" +
+				var rowTemplate = "<tr id='item-{key}' class='primary item {styles}'>" +
+					"<td class='selected item-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='handleSelect(\"{key}\")' /></td>" +
+					"<td class='name item-name natural' data-sort-key='{namekey}'>" +
 						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' />" +
 						"<label for='toggle-{key}' class='toggle item-name'><a id='{key}' class='item-name'>{name}</a></label>" +
 						"<div class='toggled details'><div class='inner details'>" +
@@ -525,7 +511,7 @@
 					"<td class='item-source natural' title='{sourcename}'>{source}</td>" +
 				"</tr>"
 				
-				var header = "<tr id='item-header' class='item header'>" +
+				var header = "<tr id='item-header' class='primary item header'>" +
 					"<th class='item-selected sortable' data-sort-invert> </th>" +
 					"<th class='item-name natural sortable' data-sort-format='locale'>Name</th>" +
 					"<th class='item-type natural sortable' data-sort-format='normal'>Type</th>" +
@@ -547,6 +533,19 @@
 				
 				table.innerHTML = html
 				tableSort(table)
+			}
+			
+			function applyParameters() {
+				var form = _element('primary-form')
+				var object = inflateParameters(null, location.search, '?', '&')
+				var key, value
+				
+				value = object['f']
+				if ( value ) {
+					form.f.value = value
+					
+					setTimeout(filterPrimaryByName, 0, value)
+				}
 			}
 			
 			function populatePage() {
@@ -611,16 +610,16 @@
 			td.natural, th.natural { text-align:left; }
 			
 			table#primary-table { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
-			table#primary-table tr.item { border-bottom:0.25px solid #DDD; }
-			table#primary-table tr.item > td, #primary-table tr.item > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
+			table#primary-table tr.primary { border-bottom:0.25px solid #DDD; }
+			table#primary-table tr.primary > td, #primary-table tr.primary > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
 			table#primary-table a.item-name { display:block; cursor:pointer; }
 			
 			table#primary-table { table-layout:fixed; width:100%; }
-			table#primary-table tr.item > th.item-selected { width:1.25em; }
-			table#primary-table tr.item > th.item-rarity,
-			table#primary-table tr.item > th.item-attune { width:1.5em; }
-			table#primary-table tr.item > th.item-type,
-			table#primary-table tr.item > th.item-source { width:3em; }
+			table#primary-table tr.primary > th.item-selected { width:1.25em; }
+			table#primary-table tr.primary > th.item-rarity,
+			table#primary-table tr.primary > th.item-attune { width:1.5em; }
+			table#primary-table tr.primary > th.item-type,
+			table#primary-table tr.primary > th.item-source { width:3em; }
 			
 			td.item-type, td.item-source { font-size:80%; }
 			div.details p:not(:first-of-type) { text-indent:1em; }
