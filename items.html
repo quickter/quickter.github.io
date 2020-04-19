@@ -531,7 +531,7 @@
 					"<th class='item-type natural sortable' data-sort-format='normal'>Type</th>" +
 					"<th class='item-rarity center sortable' data-sort-format='number'>R</th>" +
 					"<th class='item-attune center sortable' data-sort-format='number'>A</th>" +
-					"<th class='item-source natural sortable' data-sort-format='normal'>Source</th>" +
+					"<th class='item-source natural sortable' data-sort-format='normal'>From</th>" +
 				"</tr>"
 				
 				var pattern = /{([^ {}]+)}/g
@@ -615,7 +615,13 @@
 			table#items-table tr.item > td, #items-table tr.item > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
 			table#items-table a.item-name { display:block; cursor:pointer; }
 			
-			#items-table { min-width:90%; }
+			table#items-table { table-layout:fixed; width:100%; }
+			table#items-table tr.item > th.item-selected { width:1.25em; }
+			table#items-table tr.item > th.item-rarity,
+			table#items-table tr.item > th.item-attune { width:1.5em; }
+			table#items-table tr.item > th.item-type,
+			table#items-table tr.item > th.item-source { width:3em; }
+			
 			td.item-type, td.item-source { font-size:80%; }
 			div.details p:not(:first-of-type) { text-indent:1em; }
 			div.details dl.entries > dt { font-weight:bold; }

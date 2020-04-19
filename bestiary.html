@@ -955,10 +955,10 @@
 					"<th class='monster-name natural sortable' data-sort-format='locale'>Name</th>" +
 					"<th class='monster-size natural sortable' data-sort-format='normal' title='Size'>S</th>" +
 					"<th class='monster-type natural sortable' data-sort-format='normal' title='Type'>T</th>" +
-					"<th class='monster-type numeric sortable' data-sort-format='number' title='Armor Class'>AC</th>" +
-					"<th class='monster-type numeric sortable' data-sort-format='number' title='Hit Points'>HP</th>" +
-					"<th class='monster-type numeric sortable' data-sort-format='number' title='Challenge Rating'>CR</th>" +
-					"<th class='monster-source natural sortable' data-sort-format='normal'>Source</th>" +
+					"<th class='monster-armorclass numeric sortable' data-sort-format='number' title='Armor Class'>AC</th>" +
+					"<th class='monster-hitpoints numeric sortable' data-sort-format='number' title='Hit Points'>HP</th>" +
+					"<th class='monster-challenge numeric sortable' data-sort-format='number' title='Challenge Rating'>CR</th>" +
+					"<th class='monster-source natural sortable' data-sort-format='normal'>From</th>" +
 				"</tr>"
 				
 				var pattern = /\{([^ {}]+)\}/g
@@ -1053,7 +1053,15 @@
 				table#monster-table tr.monster > td.monster-armorclass::before { content:"♦︎"; font-size:50%; opacity:0.25; }
 			}
 			
-			#monster-table { min-width:90%; }
+			table#monster-table { table-layout:fixed; width:100%; }
+			table#monster-table tr.monster > th.monster-selected { width:1.25em; }
+			table#monster-table tr.monster > th.monster-size,
+			table#monster-table tr.monster > th.monster-type { width:1.5em; }
+			table#monster-table tr.monster > th.monster-armorclass,
+			table#monster-table tr.monster > th.monster-challenge { width:2em; }
+			table#monster-table tr.monster > th.monster-hitpoints { width:3em; }
+			table#monster-table tr.monster > th.monster-source { width:3em; }
+			
 			td.monster-source { font-size:80%; }
 			div.details { color:#333; }
 			div.details span.entries.indent + span.entries { margin-left:1em }
