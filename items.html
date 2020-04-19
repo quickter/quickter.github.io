@@ -125,28 +125,28 @@
 			}
 			
 			function filterAssignToggleChecked(value) {
-				selectorAssignChecked('table#items-table tr:not(.filtered) > td.item-name > input.toggle', value)
+				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.item-name > input.toggle', value)
 			}
 			
 			function filterAssignChosenChecked(value) {
-				selectorAssignChecked('table#items-table tr:not(.filtered) > td.item-selected > input.item-selection', value)
+				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.item-selected > input.item-selection', value)
 			}
 			
-			function filterItemsByChosen() {
-				var count = assignClassToElements('filtered', 'table#items-table tr.item > td.item-selected > input.item-selection', 2, function (e) { return e.checked ? -1 : 1 })
+			function filterPrimaryByChosen() {
+				var count = assignClassToElements('filtered', 'table#primary-table tr.item > td.item-selected > input.item-selection', 2, function (e) { return e.checked ? -1 : 1 })
 				
 				filterApplied(count)
 			}
 			
-			function filterItemsByToggle() {
-				var count = assignClassToElements('filtered', 'table#items-table tr.item > td.item-name > input.toggle', 2, function (e) { return e.checked ? -1 : 1 })
+			function filterPrimaryByToggle() {
+				var count = assignClassToElements('filtered', 'table#primary-table tr.item > td.item-name > input.toggle', 2, function (e) { return e.checked ? -1 : 1 })
 				
 				filterApplied(count)
 			}
 			
-			function filterItemsByName(pattern) {
+			function filterPrimaryByName(pattern) {
 				var className = 'filtered'
-				var selector = 'table#items-table tr.item > td.item-name'
+				var selector = 'table#primary-table tr.item > td.item-name'
 				var count
 				
 				if ( !pattern ) {
@@ -169,8 +169,8 @@
 				}
 			}
 			
-			function filterItemsByKeys(keys) {
-				var form = _element('items-form')
+			function filterPrimaryByKeys(keys) {
+				var form = _element('primary-form')
 				var recognized = []
 				var key
 				
@@ -182,23 +182,23 @@
 				}
 				
 				if ( recognized.length > 0 ) {
-					filterItemsByChosen()
+					filterPrimaryByChosen()
 					filterAssignToggleChecked(1)
 				}
 			}
 			
-			function filterItemsBySearch(value) {
+			function filterPrimaryBySearch(value) {
 				if ( value === '#' ) {
-					filterItemsByChosen()
+					filterPrimaryByChosen()
 				} else if ( value === '/' ) {
-					filterItemsByToggle()
+					filterPrimaryByToggle()
 				} else {
-					filterItemsByName(value)
+					filterPrimaryByName(value)
 				}
 			}
 			
 			function filterApplied(count) {
-				var element = _element('items-text-filter-count')
+				var element = _element('primary-filter-count')
 				
 				if ( element ) {
 					element.textContent = count || ''
@@ -207,7 +207,7 @@
 				element = _element('select-all')
 				
 				if ( element ) {
-					var selector = 'table#items-table tr.item:not(.filtered) > td.item-selected > input.item-selection'
+					var selector = 'table#primary-table tr.item:not(.filtered) > td.item-selected > input.item-selection'
 					var elementsChecked = document.querySelectorAll(selector + ':checked')
 					var elementsUnchecked = document.querySelectorAll(selector + ':not(:checked)')
 					
@@ -224,16 +224,16 @@
 				if ( hash && hash.length > 1 ) {
 					var keys = hash.slice(1).split(",").map(function (s) { return s.trim() })
 					
-					filterItemsByKeys(keys)
+					filterPrimaryByKeys(keys)
 					
-					_element('items-text-filter').value = '#'
+					_element('primary-filter').value = '#'
 				} else {
-					filterItemsByName('')
+					filterPrimaryByName('')
 				}
 			}
 			
 			function applyParameters() {
-				var form = _element('items-form')
+				var form = _element('primary-form')
 				var object = inflateParameters(null, location.search, '?', '&')
 				var key, value
 				
@@ -241,7 +241,7 @@
 				if ( value ) {
 					form.f.value = value
 					
-					setTimeout(filterItemsByName, 0, value)
+					setTimeout(filterPrimaryByName, 0, value)
 				}
 			}
 			
@@ -249,10 +249,10 @@
 				var share = _element('share-selection')
 				
 				if ( share ) {
-					var selector = 'table#items-table tr:not(.filtered) > td.item-selected > input.item-selection:checked'
+					var selector = 'table#primary-table tr:not(.filtered) > td.item-selected > input.item-selection:checked'
 					var elements = document.querySelectorAll(selector)
 					var keys = Array.prototype.map.call(elements, function (e) { return e.id.slice(7) })
-					var hash = keys.join(",")
+					var hash = keys.sort().join(",")
 					
 					share.href = "#" + hash
 				}
@@ -261,13 +261,13 @@
 			function handleSearch(event) {
 				var value = typeof event === 'string' ? event : event.target.value || ""
 				
-				filterItemsBySearch(value)
+				filterPrimaryBySearch(value)
 			}
 			
 			function handleSubmit(event) {
 				var value = event.target.f.value
 				
-				filterItemsBySearch(value)
+				filterPrimaryBySearch(value)
 				
 				event.preventDefault()
 				
@@ -506,17 +506,17 @@
 				return result
 			}
 			
-			function tableContent() {
+			function primaryTableContent() {
 				var rowTemplate = "<tr id='item-{key}' class='item {styles}'>" +
 					"<td class='item-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='item-selection' onchange='handleSelect(\"{key}\")' /></td>" +
 					"<td class='item-name natural' data-sort-key='{namekey}'>" +
-						"<input id='toggle_{key}' name='toggle_{key}' type='checkbox' class='toggle' />" +
-						"<label for='toggle_{key}' class='toggle item-name'><a class='item-name' name='{key}'>{name}</a></label>" +
+						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' />" +
+						"<label for='toggle-{key}' class='toggle item-name'><a id='{key}' class='item-name'>{name}</a></label>" +
 						"<div class='toggled details'><div class='inner details'>" +
 							"<p class='item-caption'>{caption}</p>" +
 							"{description}" +
 							"<p class='source'>{sourcename}<span class='page'>{page}</span></p>" +
-							"<label for='toggle_{key}' class='toggle close action'>&mdash;</label>" +
+							"<label for='toggle-{key}' class='toggle close action'>&mdash;</label>" +
 						"</div></div>" +
 					"</td>" +
 					"<td class='item-type natural'>{typename}</td>" +
@@ -541,19 +541,19 @@
 				return header + rows.join("")
 			}
 			
-			function populateMagicItems() {
-				var table = _element('items-table')
-				var html = tableContent()
+			function populatePrimaryTable() {
+				var table = _element('primary-table')
+				var html = primaryTableContent()
 				
 				table.innerHTML = html
 				tableSort(table)
 			}
 			
 			function populatePage() {
-				_element('items-form').addEventListener('submit', handleSubmit)
+				_element('primary-form').addEventListener('submit', handleSubmit)
 				window.addEventListener('hashchange', handleHashChanged)
 				
-				populateMagicItems()
+				populatePrimaryTable()
 				applyParameters()
 				handleHashChanged()
 			}
@@ -584,8 +584,8 @@
 			div#controls { position:absolute; right:2em; top:1.5em; }
 			a#share-selection { font-size:150%; color:inherit; text-decoration:none; border-bottom:2px solid #999; }
 			
-			input#items-text-filter { font-size:100%; max-width:98%; }
-			span#items-text-filter-count { opacity:0.5; font-size:60%; }
+			input#primary-filter { font-size:100%; max-width:98%; }
+			span#primary-filter-count { opacity:0.5; font-size:60%; }
 			
 			input.toggle, input.filter { display:none; }
 			input.toggle:not(:checked) ~ div.toggled { display:none; }
@@ -595,11 +595,11 @@
 			div.details > div.details.inner { position:relative; width:40em; max-width:70vw; padding:0 1em; margin:0.5em 0; background:#FAFAFA; border:1px solid #EEE; }
 			div.details span.entries.indent + span.entries { margin-left:1em }
 			
-			table#items-table label.toggle.close { display:none; }
+			table#primary-table label.toggle.close { display:none; }
 			@media screen {
-				table#items-table label.toggle.close { display:inline-block; position:absolute; border-radius:50%; border:0.25em solid #EEE; bottom:0.375em; right:0.375em; }
-				table#items-table label.toggle.close { font-size:150%; text-align:center; line-height:1.125em; width:1.125em; height:1.125em; }
-				table#items-table input.toggle:checked + label.toggle > a:after { content:" ▲"; opacity:0.25; }
+				table#primary-table label.toggle.close { display:inline-block; position:absolute; border-radius:50%; border:0.25em solid #EEE; bottom:0.375em; right:0.375em; }
+				table#primary-table label.toggle.close { font-size:150%; text-align:center; line-height:1.125em; width:1.125em; height:1.125em; }
+				table#primary-table input.toggle:checked + label.toggle > a:after { content:" ▲"; opacity:0.25; }
 			}
 			
 			@media (max-width:420px) {
@@ -610,17 +610,17 @@
 			td.center, th.center { text-align:center; }
 			td.natural, th.natural { text-align:left; }
 			
-			table#items-table { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
-			table#items-table tr.item { border-bottom:0.25px solid #DDD; }
-			table#items-table tr.item > td, #items-table tr.item > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
-			table#items-table a.item-name { display:block; cursor:pointer; }
+			table#primary-table { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
+			table#primary-table tr.item { border-bottom:0.25px solid #DDD; }
+			table#primary-table tr.item > td, #primary-table tr.item > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
+			table#primary-table a.item-name { display:block; cursor:pointer; }
 			
-			table#items-table { table-layout:fixed; width:100%; }
-			table#items-table tr.item > th.item-selected { width:1.25em; }
-			table#items-table tr.item > th.item-rarity,
-			table#items-table tr.item > th.item-attune { width:1.5em; }
-			table#items-table tr.item > th.item-type,
-			table#items-table tr.item > th.item-source { width:3em; }
+			table#primary-table { table-layout:fixed; width:100%; }
+			table#primary-table tr.item > th.item-selected { width:1.25em; }
+			table#primary-table tr.item > th.item-rarity,
+			table#primary-table tr.item > th.item-attune { width:1.5em; }
+			table#primary-table tr.item > th.item-type,
+			table#primary-table tr.item > th.item-source { width:3em; }
 			
 			td.item-type, td.item-source { font-size:80%; }
 			div.details p:not(:first-of-type) { text-indent:1em; }
@@ -651,27 +651,27 @@
 			th.sortable.sorted-descending { text-decoration:overline; }
 			th.sortable.sorted-ascending { text-decoration:underline; }
 			
-			input#filter-rarity-mundane:not(:checked) ~ table#items-table tr.mundane { display:none; }
-			input#filter-rarity-common:not(:checked) ~ table#items-table tr.common { display:none; }
-			input#filter-rarity-uncommon:not(:checked) ~ table#items-table tr.uncommon { display:none; }
-			input#filter-rarity-rare:not(:checked) ~ table#items-table tr.rare { display:none; }
-			input#filter-rarity-veryrare:not(:checked) ~ table#items-table tr.veryrare { display:none; }
-			input#filter-rarity-legendary:not(:checked) ~ table#items-table tr.legendary { display:none; }
-			input#filter-rarity-artifact:not(:checked) ~ table#items-table tr.artifact { display:none; }
+			input#filter-rarity-mundane:not(:checked) ~ table#primary-table tr.mundane { display:none; }
+			input#filter-rarity-common:not(:checked) ~ table#primary-table tr.common { display:none; }
+			input#filter-rarity-uncommon:not(:checked) ~ table#primary-table tr.uncommon { display:none; }
+			input#filter-rarity-rare:not(:checked) ~ table#primary-table tr.rare { display:none; }
+			input#filter-rarity-veryrare:not(:checked) ~ table#primary-table tr.veryrare { display:none; }
+			input#filter-rarity-legendary:not(:checked) ~ table#primary-table tr.legendary { display:none; }
+			input#filter-rarity-artifact:not(:checked) ~ table#primary-table tr.artifact { display:none; }
 			
-			input#filter-category-ammo:not(:checked) ~ table#items-table tr.ammo { display:none; }
-			input#filter-category-armor:not(:checked) ~ table#items-table tr.armor { display:none; }
-			input#filter-category-focus:not(:checked) ~ table#items-table tr.focus { display:none; }
-			input#filter-category-music:not(:checked) ~ table#items-table tr.music { display:none; }
-			input#filter-category-potion:not(:checked) ~ table#items-table tr.potion { display:none; }
-			input#filter-category-poison:not(:checked) ~ table#items-table tr.poison { display:none; }
-			input#filter-category-rod:not(:checked) ~ table#items-table tr.rod { display:none; }
-			input#filter-category-ring:not(:checked) ~ table#items-table tr.ring { display:none; }
-			input#filter-category-shield:not(:checked) ~ table#items-table tr.shield { display:none; }
-			input#filter-category-staff:not(:checked) ~ table#items-table tr.staff { display:none; }
-			input#filter-category-scroll:not(:checked) ~ table#items-table tr.scroll { display:none; }
-			input#filter-category-wand:not(:checked) ~ table#items-table tr.wand { display:none; }
-			input#filter-category-magic:not(:checked) ~ table#items-table tr.magic { display:none; }
+			input#filter-category-ammo:not(:checked) ~ table#primary-table tr.ammo { display:none; }
+			input#filter-category-armor:not(:checked) ~ table#primary-table tr.armor { display:none; }
+			input#filter-category-focus:not(:checked) ~ table#primary-table tr.focus { display:none; }
+			input#filter-category-music:not(:checked) ~ table#primary-table tr.music { display:none; }
+			input#filter-category-potion:not(:checked) ~ table#primary-table tr.potion { display:none; }
+			input#filter-category-poison:not(:checked) ~ table#primary-table tr.poison { display:none; }
+			input#filter-category-rod:not(:checked) ~ table#primary-table tr.rod { display:none; }
+			input#filter-category-ring:not(:checked) ~ table#primary-table tr.ring { display:none; }
+			input#filter-category-shield:not(:checked) ~ table#primary-table tr.shield { display:none; }
+			input#filter-category-staff:not(:checked) ~ table#primary-table tr.staff { display:none; }
+			input#filter-category-scroll:not(:checked) ~ table#primary-table tr.scroll { display:none; }
+			input#filter-category-wand:not(:checked) ~ table#primary-table tr.wand { display:none; }
+			input#filter-category-magic:not(:checked) ~ table#primary-table tr.magic { display:none; }
 			
 			input#filter-require-curse:checked ~ table#spells tr:not(.is-curse):not(.header) { display:none; }
 			input#filter-exclude-curse:checked ~ table#spells tr.is-curse { display:none; }
@@ -703,18 +703,18 @@
 	<body onload='populatePage()'>
 		<h4>Items</h4>
 		
-		<div id='treasure-content-list'>
-			<form id='items-form'>
+		<div id='primary-content-list'>
+			<form id='primary-form'>
 				<div id='controls'>
 					<a id='share-selection' href='' title='Share selection'>⇧</a>
 				</div>
 				<div class='filtering'>
 					<input type='checkbox' id='select-all' name='a' onclick='filterAssignChosenChecked(checked ? 1 : -1)' title='Tap to select matches.' />
 					<label for='select-all'>&nbsp;</label>
-					<input type='search' id='items-text-filter' name='f' size='36' placeholder='Filter' oninput='handleSearch(event)'>
-					<span id='items-text-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
+					<input type='search' id='primary-filter' name='f' size='36' placeholder='Filter' oninput='handleSearch(event)'>
+					<span id='primary-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
 				</div>
-				<table id='items-table'><tr><td>Loading...</td></tr></table>
+				<table id='primary-table'><tr><td>Loading...</td></tr></table>
 			</form>
 		</div>
 	</body>
