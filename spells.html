@@ -181,14 +181,10 @@
 					}
 				}
 				
-				console.log("filterPrimaryByKeys")
-				console.log(keys)
-				console.log(recognized)
-				
 				if ( recognized.length > 0 ) {
 					filterPrimaryByChosen()
 					
-					if ( recognized.length < 20 ) {
+					if ( recognized.length < 30 ) {
 						filterAssignToggleChecked(1)
 					}
 				}
@@ -276,7 +272,7 @@
 			}
 			
 			function referenceKey(name) {
-				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’()×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
+				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’(){}×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
 			}
 			
 			function resolveReferences(text, object) {
@@ -337,7 +333,7 @@
 					spell = 1 ? {} : {}
 					styles = []
 					
-					spell['key'] = s.name.toLowerCase().replace(/[^a-z0-9]|.*['‘’]s /g, '')
+					spell['key'] = referenceKey(s.name)
 					
 					for ( key of keys ) {
 						if ( s[key] !== undefined && s[key] !== false ) { spell[key] = s[key] }

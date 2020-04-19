@@ -183,7 +183,10 @@
 				
 				if ( recognized.length > 0 ) {
 					filterPrimaryByChosen()
-					filterAssignToggleChecked(1)
+					
+					if ( recognized.length < 30 ) {
+						filterAssignToggleChecked(1)
+					}
 				}
 			}
 			
@@ -283,7 +286,7 @@
 			}
 			
 			function referenceKey(name) {
-				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’()×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
+				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’(){}×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
 			}
 			
 			function resolveReferences(text, object) {
@@ -781,6 +784,7 @@
 				var legendary = "The {=name} can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The {=name} regains spent legendary actions at the start of its turn."
 				var keysForText = ['trait', 'action=Actions', 'reaction=Reactions', 'legendary=Legendary Actions', 'variant=Variant']
 				var spellcasting = monster.spellcasting
+				var spells
 				array = []
 				
 				result.spellcastingability = false
@@ -819,9 +823,36 @@
 							
 							for ( item of spellcasting ) {
 								result.spellcastingability = item.ability || false
-							
+								spells = []
+								
+								if ( Array.isArray(item.will) ) {
+									spells.push.apply(spells, item.will)
+								}
+								
+								if ( item.daily ) {
+									for ( index = 1 ; index < 10 ; ++index ) {
+										if ( Array.isArray(item.daily[index + "e"]) ) {
+											spells.push.apply(spells, item.daily[index + "e"])
+										}
+									}
+								}
+								
+								if ( item.spells ) {
+									for ( index = 0 ; index < 10 ; ++index ) {
+										if ( item.spells["" + index] && Array.isArray(item.spells["" + index].spells) ) {
+											spells.push.apply(spells, item.spells["" + index].spells)
+										}
+									}
+								}
+								
+								spells = spells.map(function (spell) { return spell.replace(/[^{}]*\{@spell ([^{}|]+)\}[^{}]*/g, "$1") })
+								spells = spells.map(referenceKey)
+								spells.sort()
+								spells = spells.join(",")
+								
 								if ( item.name || item.headerEntries ) {
-									array.push(descriptionFromEntries({'name':item.name, 'entries':item.headerEntries || []}, "<p class='spellcasting'>", "</p>"))
+									spells = "<a class='spellcasting spells' href='spells.html#" + spells + "' >" + item.name + "</a>"
+									array.push(descriptionFromEntries({'name':spells, 'entries':item.headerEntries || []}, "<p class='spellcasting'>", "</p>"))
 								}
 								
 								if ( Array.isArray(item.will) && !(item.hidden && item.hidden.indexOf('will') >= 0) ) {

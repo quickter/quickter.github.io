@@ -183,7 +183,10 @@
 				
 				if ( recognized.length > 0 ) {
 					filterPrimaryByChosen()
-					filterAssignToggleChecked(1)
+					
+					if ( recognized.length < 30 ) {
+						filterAssignToggleChecked(1)
+					}
 				}
 			}
 			
@@ -269,7 +272,7 @@
 			}
 			
 			function referenceKey(name) {
-				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’()×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
+				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’(){}×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
 			}
 			
 			function resolveReferences(text, object) {
