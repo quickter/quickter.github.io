@@ -133,13 +133,13 @@
 			}
 			
 			function filterMonstersByChosen() {
-				var count = assignClassToElements('filtered', 'table#monster-table tr.monster > td.monster-selected > input.monster-selection', 2, e => e.checked ? -1 : 1)
+				var count = assignClassToElements('filtered', 'table#monster-table tr.monster > td.monster-selected > input.monster-selection', 2, function (e) { return e.checked ? -1 : 1 })
 				
 				filterApplied(count)
 			}
 			
 			function filterMonstersByToggle() {
-				var count = assignClassToElements('filtered', 'table#monster-table tr.monster > td.monster-name > input.toggle', 2, e => e.checked ? -1 : 1)
+				var count = assignClassToElements('filtered', 'table#monster-table tr.monster > td.monster-name > input.toggle', 2, function (e) { return e.checked ? -1 : 1 })
 				
 				filterApplied(count)
 			}
@@ -150,16 +150,16 @@
 				var count
 				
 				if ( !pattern ) {
-					count = assignClassToElements(className, selector, 1, e => -1)
+					count = assignClassToElements(className, selector, 1, function (e) { return -1 })
 					count = 0
 				} else if ( pattern.search(/[[?*.|^${}\\]/) < 0 ) {
 					pattern = pattern.toLowerCase()
-					count = assignClassToElements(className, selector, 1, e => e.textContent.toLowerCase().indexOf(pattern) < 0 ? 1 : -1)
+					count = assignClassToElements(className, selector, 1, function (e) { return e.textContent.toLowerCase().indexOf(pattern) < 0 ? 1 : -1 })
 				} else {
 					try { pattern = new RegExp(pattern, 'ius') }
 					catch (error) { return }
 					
-					count = assignClassToElements(className, selector, 1, e => e.textContent.search(pattern) < 0 ? 1 : -1)
+					count = assignClassToElements(className, selector, 1, function (e) { return e.textContent.search(pattern) < 0 ? 1 : -1 })
 				}
 				
 				filterApplied(count)
@@ -222,7 +222,9 @@
 				var hash = location.hash
 				
 				if ( hash && hash.length > 1 ) {
-					filterMonstersByKeys(hash.slice(1).split(",").map(s => s.trim()))
+					var keys = hash.slice(1).split(",").map(function (s) { return s.trim() })
+					
+					filterMonstersByKeys(keys)
 					
 					_element('monster-text-filter').value = '#'
 				} else {
@@ -237,7 +239,7 @@
 				
 				value = object['f']
 				if ( value ) {
-					form['monster-text-filter'].value = value
+					form.f.value = value
 					
 					setTimeout(filterMonstersByName, 0, value)
 				}
@@ -260,7 +262,7 @@
 				if ( share ) {
 					var selector = 'table#monster-table tr:not(.filtered) > td.monster-selected > input.monster-selection:checked'
 					var elements = document.querySelectorAll(selector)
-					var keys = [].map.call(elements, e => e.id.slice(7))
+					var keys = Array.prototype.map.call(elements, function (e) { return e.id.slice(7) })
 					var hash = keys.join(",")
 					
 					share.href = "#" + hash
@@ -276,8 +278,8 @@
 					if ( host ) {
 						if ( host.indexOf('/') < 0 ) { host = host + "/" }
 						if ( host.indexOf(':') < 0 ) { host = "https://" + host }
-					
-						image.addEventListener('error', e => e.target.parentNode.removeChild(e.target))
+						
+						image.addEventListener('error', function(e) { e.target.parentNode.removeChild(e.target) })
 						image.src = host + image.dataset.path
 					}
 				}
@@ -290,7 +292,7 @@
 			}
 			
 			function handleSubmit(event) {
-				var value = event.target['monster-text-filter'].value
+				var value = event.target.f.value
 				
 				filterMonstersBySearch(value)
 				
@@ -312,27 +314,31 @@
 			}
 			
 			function resolveReferences(text, object) {
-				text = text.replace(/\{=([^{}\/]+)\}/g, (match, key) => "<span class='property " + key + "'>" + (object[key] || '-') + "</span>")
-				text = text.replace(/\{=([^{}\/]+)\/([^{}\/]+)\}/g, (match, key, modifier) => "<span class='property " + key + "'>" + (object[key] || '-') + "</span>")
-				text = text.replace(/\{@atk ([^|{}]+)\}/g, (match, type) => "<i>" + type.replace(/./g, l => (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " ") + " Attack:</i> ")
+				text = text.replace(/\{=([^{}\/]+)\}/g, function (match, key) { return "<span class='property " + key + "'>" + (object[key] || '-') + "</span>" })
+				text = text.replace(/\{=([^{}\/]+)\/([^{}\/]+)\}/g, function (match, key, modifier) { return "<span class='property " + key + "'>" + (object[key] || '-') + "</span>" })
+				text = text.replace(/\{@atk ([^|{}]+)\}/g, function (match, type) { return "<i>" + type.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</i> " })
 				text = text.replace(/\{@h\}/g, "<i>Hit:</i> ")
 				text = text.replace(/\{@recharge\}/g, "<span class='entries recharge'></span>")
-				text = text.replace(/\{@hit ([^|{}]+)\}/g, (match, text) => (+text < 0 ? "" : "+") + text + "")
+				text = text.replace(/\{@hit ([^|{}]+)\}/g, function (match, text) { return (+text < 0 ? "" : "+") + text + "" })
 				text = text.replace(/\{@(dice|damage) ([^|{}]+)\}/g, "<span class='entries $1' onclick='handleDice(event, \"$2\")'>$2</span>")
 				text = text.replace(/\{@link ([^|{}]+)(\|[^|{}]*)*\}/g, "<span class='entries link'>$1</span>")
-				text = text.replace(/\{@i ([^|{}]+)\}/g, (match, text) => "<i>" + text + "</i>")
-				text = text.replace(/\{@item ([^|{}]+)\}/g, (match, name) => "<a href='#" + referenceKey(name) + "'>" + name + "</a>")
+				text = text.replace(/\{@i ([^|{}]+)\}/g, function (match, text) { return "<i>" + text + "</i>" })
+				text = text.replace(/\{@item ([^|{}]+)\}/g, function (match, name) { return "<a href='#" + referenceKey(name) + "'>" + name + "</a>" })
 				text = text.replace(/\{@([^{} ]+)\s+[^|{}]*\|\|([^|{}]+)\}/g, "<span class='entries $1'>$2</span>")
 				text = text.replace(/\{@([^{} ]+)\s+([^|{}]+)(\|[^|{}]*)*\}/g, "<span class='entries $1'>$2</span>")
 				
 				return text
 			}
 			
+			function resolveReferencesInArray(array, object) {
+				return array.map(function(text) { return resolveReferences(text, object) })
+			}
+			
 			function descriptionFromEntries(entries, begin, close, object) {
 				var result = ""
 				
 				if ( Array.isArray(entries) ) {
-					result += entries.map(e => descriptionFromEntries(e, begin, close, object)).join("")
+					result += entries.map(function (e) { return descriptionFromEntries(e, begin, close, object) }).join("")
 				} else if ( !entries ) {
 					result = ""
 				} else if ( typeof entries === 'string' ) {
@@ -347,17 +353,17 @@
 					}
 					
 					if ( entries.colLabels && Array.isArray(entries.colLabels) && entries.colLabels.length > 0 ) {
-						result += "<tr>" + entries.colLabels.map(h => "<th>" + resolveReferences(h, object) + "</th>").join("") + "</tr>"
+						result += "<tr>" + entries.colLabels.map(function (h) { return "<th>" + resolveReferences(h, object) + "</th>" }).join("") + "</tr>"
 					}
 					
-					result += entries.rows.map(r => "<tr>" + r.map(c => "<td>" + descriptionFromEntries(c, "", "", object) + "</td>").join("") + "</tr>").join("")
+					result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + descriptionFromEntries(c, "", "", object ) + "</td>" }).join("") + "</tr>" }).join("")
 					result += "</table>"
 				} else if ( entries.type === 'cell' && entries.roll ) {
 					result = begin + resolveReferences(entries.roll.entry, object) + close
 				} else if ( entries.type === 'list' ) {
 					var list = entries.entries || entries.items
-					var text = list.filter(i => typeof i === 'string')
-					var term = list.filter(i => i.name && i.entry)
+					var text = list.filter(function (i) { return typeof i === 'string' })
+					var term = list.filter(function (i) { return i.name && i.entry })
 					
 					if ( text.length > 0 ) {
 						result = "<ul class='entries'>" + descriptionFromEntries(text, "<li>", "</li>", object) + "</ul>"
@@ -365,7 +371,7 @@
 					
 					if ( term.length > 0 ) {
 						result = "<dl class='entries compact'>" +
-							term.map(i => "<dt>" + resolveReferences(i.name, object) + "</dt><dd>" + resolveReferences(i.entry, object) + "</dd>").join("") + "</dl>"
+							term.map(function (i) { return "<dt>" + resolveReferences(i.name, object) + "</dt><dd>" + resolveReferences(i.entry, object) + "</dd>" }).join("") + "</dl>"
 					}
 				} else if ( entries.type === 'inset' && entries.entries ) {
 					result = "<dl class='entries'><dt>" + resolveReferences(entries.name, object) + "</dt>" +
@@ -476,7 +482,7 @@
 					}
 					
 					if ( hasNX && hasNY ) {
-						var missing = ["L", "C", "G", "E"].filter(a => alignment.indexOf(a) < 0)[0]
+						var missing = ["L", "C", "G", "E"].filter(function(a) { return alignment.indexOf(a) < 0 })[0]
 						
 						alignment.push("Non-" + lookup.alignments[missing].name)
 					} else if ( hasNX ) {
@@ -498,7 +504,7 @@
 							} else if ( typeof value.special === 'string' ) {
 								array.push(value.special)
 							} else if ( value.alignment && value.chance ) {
-								array.push(value.alignment.map(a => lookup.alignments[a].name).join(" ") + " (" + value.chance + "%)")
+								array.push(value.alignment.map(function (a) { return lookup.alignments[a].name }).join(" ") + " (" + value.chance + "%)")
 								suffix = " or "
 							}
 						}
@@ -543,7 +549,7 @@
 						if ( typeof value.from === 'string' ) {
 							prefix = " (" + resolveReferences(value.from) + ")"
 						} else if ( Array.isArray(value.from) ) {
-							prefix = " (" + value.from.map(f => resolveReferences(f)).join(", ") + ")"
+							prefix = " (" + value.from.map(function (f) { return resolveReferences(f) }).join(", ") + ")"
 						}
 						
 						if ( !result.ac || !value.condition ) {
@@ -809,25 +815,25 @@
 								}
 								
 								if ( Array.isArray(item.will) && !(item.hidden && item.hidden.indexOf('will') >= 0) ) {
-									array.push("<div class='spellcasting'><span class='spells-at-will'></span><span class='spells'>" + item.will.map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
+									array.push("<div class='spellcasting'><span class='spells-at-will'></span><span class='spells'>" + resolveReferencesInArray(item.will, monster).join(", ") + "</span></div>")
 								}
 								
 								if ( item.daily && !(item.hidden && item.hidden.indexOf('daily') >= 0) ) {
 									for ( index = 1 ; index < 10 ; ++index ) {
 										if ( Array.isArray(item.daily[index + 'e']) && item.daily[index + 'e'].length > 0 ) {
-											array.push("<div class='spellcasting'><span class='spell" + (item.daily[index + 'e'].length > 1 ? 's' : '') + "-daily'>" + index + "</span><span class='spells'>" + item.daily[index + 'e'].map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
+											array.push("<div class='spellcasting'><span class='spell" + (item.daily[index + 'e'].length > 1 ? 's' : '') + "-daily'>" + index + "</span><span class='spells'>" + resolveReferencesInArray(item.daily[index + 'e'], monster).join(", ") + "</span></div>")
 										}
 									}
 								}
 								
 								if ( item.spells && !(item.hidden && item.hidden.indexOf('spells') >= 0) ) {
 									if ( item.spells["0"] && Array.isArray(item.spells["0"].spells) && item.spells["0"].spells.length > 0 ) {
-											array.push("<div class='spellcasting'><span class='spell-level-cantrip'></span><span class='spell-slots'></span><span class='spells'>" + item.spells["0"].spells.map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
+											array.push("<div class='spellcasting'><span class='spell-level-cantrip'></span><span class='spell-slots'></span><span class='spells'>" + resolveReferencesInArray(item.spells["0"].spells, monster).join(", ") + "</span></div>")
 									}
 									
 									for ( index = 1 ; index < 10 ; ++index ) {
 										if ( item.spells["" + index] && Array.isArray(item.spells["" + index].spells) && item.spells["" + index].spells.length > 0 ) {
-											array.push("<div class='spellcasting'><span class='spell-level'>" + index + cardinality[index] + "</span><span class='spell-slots'>" + (item.spells["" + index].slots || '') + "</span><span class='spells'>" + item.spells["" + index].spells.map(s => resolveReferences(s, monster)).join(", ") + "</span></div>")
+											array.push("<div class='spellcasting'><span class='spell-level'>" + index + cardinality[index] + "</span><span class='spell-slots'>" + (item.spells["" + index].slots || '') + "</span><span class='spells'>" + resolveReferencesInArray(item.spells["" + index].spells, monster).join(", ") + "</span></div>")
 										}
 									}
 								}
@@ -897,7 +903,7 @@
 					result.push(item)
 				}
 				
-				result.sort((a, b) => a.key > b.key)
+				result.sort(function (a, b) { return a.key > b.key })
 				
 				return result
 			}
@@ -940,7 +946,7 @@
 					"<td class='monster-type natural' title='{typename}'><span>{typeconcise}</span></td>" +
 					"<td class='monster-armorclass numeric' title='Armor Class {ac}'>{ac}</td>" +
 					"<td class='monster-hitpoints numeric' title='Hit Points {hp}'>{hp}</td>" +
-					"<td class='monster-challenge numeric' data-sort-key='{challengekey}' title='Challenge Rating {challengename}'>{challengename}</td>" +
+					"<td class='monster-challenge numeric' data-sort-key='{challengekey}' title='Challenge Rating {challengename} {challengeexperience}'>{challengename}</td>" +
 					"<td class='monster-source natural' title='{sourcename} {page}'>{source}</td>" +
 				"</tr>"
 				
@@ -957,7 +963,7 @@
 				
 				var pattern = /\{([^ {}]+)\}/g
 				var list = monstersReadyToDisplay(bestiary)
-				var rows = list.map(item => rowTemplate.replace(pattern, (match, key) => item[key]))
+				var rows = list.map(function (item) { return rowTemplate.replace(pattern, function (match, key) { return item[key] }) })
 				
 				return header + rows.join("")
 			}
@@ -1162,9 +1168,9 @@
 					<a id='share-selection' href='' title='Share selection'>⇧</a>
 				</div>
 				<div class='filtering'>
-					<input id='select-all' type='checkbox' onclick='filterAssignChosenChecked(checked ? 1 : -1)' title='Tap to select matches.' />
+					<input type='checkbox' id='select-all' name='a' onclick='filterAssignChosenChecked(checked ? 1 : -1)' title='Tap to select matches.' />
 					<label for='select-all'>&nbsp;</label>
-					<input type='search' id='monster-text-filter' name='monster-text-filter' size='36' placeholder='Filter' oninput='handleSearch(event)'>
+					<input type='search' id='monster-text-filter' name='f' size='36' placeholder='Filter' oninput='handleSearch(event)'>
 					<span id='monster-text-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
 				</div>
 				<table id='monster-table' class='emoji'><tr><td>Loading...</td></tr></table>

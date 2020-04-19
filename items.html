@@ -222,7 +222,9 @@
 				var hash = location.hash
 				
 				if ( hash && hash.length > 1 ) {
-					filterItemsByKeys(hash.slice(1).split(",").map(function (s) { return s.trim() }))
+					var keys = hash.slice(1).split(",").map(function (s) { return s.trim() })
+					
+					filterItemsByKeys(keys)
 					
 					_element('items-text-filter').value = '#'
 				} else {
@@ -237,7 +239,7 @@
 				
 				value = object['f']
 				if ( value ) {
-					form['items-text-filter'].value = value
+					form.f.value = value
 					
 					setTimeout(filterItemsByName, 0, value)
 				}
@@ -263,7 +265,7 @@
 			}
 			
 			function handleSubmit(event) {
-				var value = event.target['items-text-filter'].value
+				var value = event.target.f.value
 				
 				filterItemsBySearch(value)
 				
@@ -701,9 +703,9 @@
 					<a id='share-selection' href='' title='Share selection'>⇧</a>
 				</div>
 				<div class='filtering'>
-					<input id='select-all' type='checkbox' onclick='filterAssignChosenChecked(checked ? 1 : -1)' title='Tap to select matches.' />
+					<input type='checkbox' id='select-all' name='a' onclick='filterAssignChosenChecked(checked ? 1 : -1)' title='Tap to select matches.' />
 					<label for='select-all'>&nbsp;</label>
-					<input type='search' id='items-text-filter' name='items-text-filter' size='36' placeholder='Filter' oninput='handleSearch(event)'>
+					<input type='search' id='items-text-filter' name='f' size='36' placeholder='Filter' oninput='handleSearch(event)'>
 					<span id='items-text-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
 				</div>
 				<table id='items-table'><tr><td>Loading...</td></tr></table>
