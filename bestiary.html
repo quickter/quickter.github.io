@@ -287,27 +287,62 @@
 			}
 			
 			function resolveReferences(text, object) {
-				text = text.replace(/\{=([^{}\/]+)\}/g, function (match, key) { return "<span class='property " + key + "'>" + (object[key] || '-') + "</span>" })
-				text = text.replace(/\{=([^{}\/]+)\/([^{}\/]+)\}/g, function (match, key, modifier) { return "<span class='property " + key + "'>" + (object[key] || '-') + "</span>" })
-				text = text.replace(/\{@atk ([^|{}]+)\}/g, function (match, type) { return "<i>" + type.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</i> " })
-				text = text.replace(/\{@h\}/g, "<i>Hit:</i> ")
+				text = text.replace(/\{=([^{}]+)\}/g, function (match, list) {
+					var part = list.split('/'), key = part[0], value = object[key]
+					
+					if ( value && part.length > 1 ) {
+						switch ( part[1] ) {
+						case 'l': value = value.toLocaleLowerCase(); break
+						case 'u': value = value.toLocaleUpperCase(); break
+						case 'a': value = "a"; break
+						case 'at': value = "A"; break
+						}
+					}
+					
+					return "<span class='property " + key + "'>" + (value || '-') + "</span>"
+				})
+				
+				text = text.replace(/\{@([^{} ]+)\s+([^{}]+)\}/g, function (match, type, list) {
+					var part = list.split('|')
+					
+					switch ( type ) {
+					case "h": return "<span class='entries hit italic'>Hit: " + list + "</span> "
+					case "recharge": return "<span class='entries recharge'>" + list + "</span>"
+					case "b": case "bold": return "<span class='entries bold'>" + list + "</span>"
+					case "i": case "italic": return "<span class='entries italic'>" + list + "</span>"
+					case "dice": case "damage": return "<span class='entries " + type + " italic' onclick='handleDice(event, \"" + part[0] + "\")'>" + (part[1] || part[0]) + "</span>"
+					case "chance": return "<span class='entries " + type + "' onclick='handleChance(event, \"" + part[0] + "\")'>" + (part[1] || part[0] + " percent") + "</span>"
+					case "link": return "<span class='entries " + type + " italic'>" + list + "</span>"
+					case "hit": return (+list < 0 ? "" : "+") + list
+					case "atk": return "<span class='entries attack italic'>" + list.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</span> "
+					case "dc": return list
+					case "item": return "<a class='entries item' href='items.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+					case "spell": return "<a class='entries spell italic' href='spells.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+					case "creature": return "<a class='entries creature' href='bestiary.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+					case "condition": case "skill": case "sense": case "action": case "hazard": return "<span class='entries " + type + "'>" + part[0] + "</span>"
+					case "filter": return (part.length > 2 && part[1] === 'spells') ? "<a class='entries spell italic' href='spells.html?" + part[2] + "'>" + part[0] + "</a>" : "<span class='entries italic " + type + "'>" + part[0] + "</span>"
+					case "adventure": return "<span class='entries italic " + type + "'>" + part[0] + "</span>"
+					case "table": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
+					case "book": return "<span class='entries italic " + type + "'>" + (part[3] || part[0]) + "</span>"
+					default: return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
+					}
+				})
+				
+				text = text.replace(/\{@h\}/g, "<span class='entries hit italic'>Hit:</span> ")
 				text = text.replace(/\{@recharge\}/g, "<span class='entries recharge'></span>")
-				text = text.replace(/\{@hit ([^|{}]+)\}/g, function (match, text) { return (+text < 0 ? "" : "+") + text + "" })
-				text = text.replace(/\{@(dice|damage) ([^|{}]+)\}/g, "<span class='entries $1' onclick='handleDice(event, \"$2\")'>$2</span>")
-				text = text.replace(/\{@link ([^|{}]+)(\|[^|{}]*)*\}/g, "<span class='entries link'>$1</span>")
-				text = text.replace(/\{@i ([^|{}]+)\}/g, function (match, text) { return "<i>" + text + "</i>" })
-				text = text.replace(/\{@item ([^|{}]+)\}/g, function (match, name) { return "<a href='#" + referenceKey(name) + "'>" + name + "</a>" })
-				text = text.replace(/\{@([^{} ]+)\s+[^|{}]*\|\|([^|{}]+)\}/g, "<span class='entries $1'>$2</span>")
-				text = text.replace(/\{@([^{} ]+)\s+([^|{}]+)(\|[^|{}]*)*\}/g, "<span class='entries $1'>$2</span>")
 				
 				return text
 			}
 			
-			function descriptionFromEntries(entries, begin, close) {
+			function descriptionFromEntries(entries, begin, close, depth) {
 				var result = ""
 				
+				depth = depth | 0
+				
+				var depthClass = depth > 0 ? " entries-depth-" + depth : ""
+				
 				if ( Array.isArray(entries) ) {
-					result += entries.map(function (e) { return descriptionFromEntries(e, begin, close) }).join("")
+					result += entries.map(function (e) { return descriptionFromEntries(e, begin, close, depth) }).join("")
 				} else if ( !entries ) {
 					result = ""
 				} else if ( typeof entries === 'string' ) {
@@ -315,7 +350,7 @@
 				} else if ( typeof entries === 'number' ) {
 					result = begin + entries + close
 				} else if ( entries.type === 'table' && Array.isArray(entries.rows) ) {
-					result = "<table class='entries'>"
+					result = "<table class='entries" + depthClass + "'>"
 					
 					if ( entries.caption ) {
 						result += "<caption>" + entries.caption + "</caption>"
@@ -325,7 +360,7 @@
 						result += "<tr>" + entries.colLabels.map(function (h) { return "<th>" + h + "</th>" }).join("") + "</tr>"
 					}
 					
-					result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + descriptionFromEntries(c, "", "" ) + "</td>" }).join("") + "</tr>" }).join("")
+					result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + descriptionFromEntries(c, "", "", depth + 1) + "</td>" }).join("") + "</tr>" }).join("")
 					result += "</table>"
 				} else if ( entries.type === 'cell' && entries.roll ) {
 					result = begin + entries.roll.entry + close
@@ -335,19 +370,25 @@
 					var term = list.filter(function (i) { return i.name && i.entry })
 					
 					if ( text.length > 0 ) {
-						result = "<ul class='entries'>" + descriptionFromEntries(text, "<li>", "</li>") + "</ul>"
+						result = "<ul class='entries" + depthClass + "'>" + descriptionFromEntries(text, "<li>", "</li>", depth + 1) + "</ul>"
 					}
 					
 					if ( term.length > 0 ) {
-						result = "<dl class='entries compact'>" +
+						result = "<dl class='entries compact" + depthClass + "'>" +
 							term.map(function (i) { return "<dt>" + i.name + "</dt><dd>" + i.entry + "</dd>" }).join("") + "</dl>"
 					}
 				} else if ( entries.type === 'inset' && entries.entries ) {
-					result = "<dl class='entries'><dt>" + entries.name + "</dt>" +
-						descriptionFromEntries(entries.entries, "<dd>", "</dd>") + "</dl>"
+					result = "<dl class='entries" + depthClass + "'><dt>" + entries.name + "</dt>" +
+						descriptionFromEntries(entries.entries, "<dd>", "</dd>", depth + 1) + "</dl>"
 				} else if ( entries.name && entries.entries ) {
-					result = begin + "<span class='prominent entries'>" + entries.name + "</span> " +
-						descriptionFromEntries(entries.entries, "<span class='follow entries'>", "</span><br /><span class='indent entries'></span>") + close
+					var spacer = "<br /><span class='indent entries" + depthClass + "'></span>"
+					
+					result = begin + "<span class='prominent entries" + depthClass + "'>" + entries.name + "</span> " +
+						descriptionFromEntries(entries.entries, "<span class='follow entries" + depthClass + "'>", "</span>" + spacer, depth + 1) + close
+					
+					result = result.replace(spacer + close, close)
+				} else if ( entries.entries ) {
+					result = descriptionFromEntries(entries.entries, begin, close, depth + 1)
 				} else {
 					result = begin + entries.type + close
 				}
@@ -738,7 +779,7 @@
 				
 				var cardinality = ["th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"]
 				var legendary = "The {=name} can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The {=name} regains spent legendary actions at the start of its turn."
-				var keysForText = ['trait', 'action=Actions', 'reaction=Reactions', 'legendary=Legendary Actions']
+				var keysForText = ['trait', 'action=Actions', 'reaction=Reactions', 'legendary=Legendary Actions', 'variant=Variant']
 				var spellcasting = monster.spellcasting
 				array = []
 				
@@ -811,6 +852,8 @@
 									array.push(descriptionFromEntries(item.footerEntries, "<div class='spellcasting'>", "</div>"))
 								}
 							}
+							
+							array.push("<br/>")
 						}
 					}
 				}
@@ -1059,7 +1102,8 @@
 			div.details { color:#333; }
 			div.details span.entries.indent + span.entries { margin-left:1em }
 			div.details dl.entries > dt { font-weight:bold; }
-			div.details span.entries { font-style:oblique; }
+			div.details .entries.italic { font-style:oblique; }
+			div.details .entries.bold { font-weight:bold; }
 			div.details span.prominent { font-weight:bold; }
 			div.details span.prominent::after { content:"."; }
 			div.details table.entries { border-spacing:0; border-collapse:collapse; }

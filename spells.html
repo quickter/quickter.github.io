@@ -181,6 +181,10 @@
 					}
 				}
 				
+				console.log("filterPrimaryByKeys")
+				console.log(keys)
+				console.log(recognized)
+				
 				if ( recognized.length > 0 ) {
 					filterPrimaryByChosen()
 					
@@ -276,18 +280,49 @@
 			}
 			
 			function resolveReferences(text, object) {
-				text = text.replace(/\{=([^{}\/]+)\}/g, function (match, key) { return "<span class='property " + key + "'>" + (object[key] || '-') + "</span>" })
-				text = text.replace(/\{=([^{}\/]+)\/([^{}\/]+)\}/g, function (match, key, modifier) { return "<span class='property " + key + "'>" + (object[key] || '-') + "</span>" })
-				text = text.replace(/\{@atk ([^|{}]+)\}/g, function (match, type) { return "<i>" + type.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</i> " })
-				text = text.replace(/\{@h\}/g, "<i>Hit:</i> ")
+				text = text.replace(/\{=([^{}]+)\}/g, function (match, list) {
+					var part = list.split('/'), key = part[0], value = object[key]
+					
+					if ( value && part.length > 1 ) {
+						switch ( part[1] ) {
+						case 'l': value = value.toLocaleLowerCase(); break
+						case 'u': value = value.toLocaleUpperCase(); break
+						case 'a': value = "a"; break
+						case 'at': value = "A"; break
+						}
+					}
+					
+					return "<span class='property " + key + "'>" + (value || '-') + "</span>"
+				})
+				
+				text = text.replace(/\{@([^{} ]+)\s+([^{}]+)\}/g, function (match, type, list) {
+					var part = list.split('|')
+					
+					switch ( type ) {
+					case "h": return "<span class='entries hit italic'>Hit: " + list + "</span> "
+					case "recharge": return "<span class='entries recharge'>" + list + "</span>"
+					case "b": case "bold": return "<span class='entries bold'>" + list + "</span>"
+					case "i": case "italic": return "<span class='entries italic'>" + list + "</span>"
+					case "dice": case "damage": return "<span class='entries " + type + " italic' onclick='handleDice(event, \"" + part[0] + "\")'>" + (part[1] || part[0]) + "</span>"
+					case "chance": return "<span class='entries " + type + "' onclick='handleChance(event, \"" + part[0] + "\")'>" + (part[1] || part[0] + " percent") + "</span>"
+					case "link": return "<span class='entries " + type + " italic'>" + list + "</span>"
+					case "hit": return (+list < 0 ? "" : "+") + list
+					case "atk": return "<span class='entries attack italic'>" + list.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</span> "
+					case "dc": return list
+					case "item": return "<a class='entries item' href='items.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+					case "spell": return "<a class='entries spell italic' href='spells.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+					case "creature": return "<a class='entries creature' href='bestiary.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+					case "condition": case "skill": case "sense": case "action": case "hazard": return "<span class='entries " + type + "'>" + part[0] + "</span>"
+					case "filter": return (part.length > 2 && part[1] === 'spells') ? "<a class='entries spell italic' href='spells.html?" + part[2] + "'>" + part[0] + "</a>" : "<span class='entries italic " + type + "'>" + part[0] + "</span>"
+					case "adventure": return "<span class='entries italic " + type + "'>" + part[0] + "</span>"
+					case "table": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
+					case "book": return "<span class='entries italic " + type + "'>" + (part[3] || part[0]) + "</span>"
+					default: return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
+					}
+				})
+				
+				text = text.replace(/\{@h\}/g, "<span class='entries hit italic'>Hit:</span> ")
 				text = text.replace(/\{@recharge\}/g, "<span class='entries recharge'></span>")
-				text = text.replace(/\{@hit ([^|{}]+)\}/g, function (match, text) { return (+text < 0 ? "" : "+") + text + "" })
-				text = text.replace(/\{@(dice|damage) ([^|{}]+)\}/g, "<span class='entries $1' onclick='handleDice(event, \"$2\")'>$2</span>")
-				text = text.replace(/\{@link ([^|{}]+)(\|[^|{}]*)*\}/g, "<span class='entries link'>$1</span>")
-				text = text.replace(/\{@i ([^|{}]+)\}/g, function (match, text) { return "<i>" + text + "</i>" })
-				text = text.replace(/\{@item ([^|{}]+)\}/g, function (match, name) { return "<a href='#" + referenceKey(name) + "'>" + name + "</a>" })
-				text = text.replace(/\{@([^{} ]+)\s+[^|{}]*\|\|([^|{}]+)\}/g, "<span class='entries $1'>$2</span>")
-				text = text.replace(/\{@([^{} ]+)\s+([^|{}]+)(\|[^|{}]*)*\}/g, "<span class='entries $1'>$2</span>")
 				
 				return text
 			}
@@ -400,6 +435,7 @@
 					spell['namekey'] = spell.name.replace(/['‘’]/g, '')
 					spell['title_ritual'] = spell.ritual ? ", Ritual " + Math.floor(spell.castingkey + 10) + " Minutes" : ""
 					spell['title_concentration'] = spell.concentration ? "Concentration, " : ""
+					spell['descriptionhtml'] = resolveReferences(s['desc'] || '', s)
 					
 					if ( spell['material'] === undefined ) { spell['material'] = '' }
 					if ( spell['damage'] === undefined ) { spell['damage'] = '' }
@@ -415,13 +451,13 @@
 			
 			function primaryTableContent() {
 				var rowTemplate = "<tr id='item-{key}' class='primary spell {styles}'>" +
- 					"<td class='selected spell-prepared'><input id='select-{key}' name='select-{key}' type='checkbox' class='selection' onchange='handleSelect(\"{key}\")' /> </td>" +
+ 					"<td class='selected spell-prepared'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='handleSelect(\"{key}\")' /> </td>" +
 					"<td class='name spell-name' data-sort-key='{namekey}'>" +
 						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' />" +
 						"<label for='toggle-{key}' class='toggle spell-name'><a id='{key}' class='spell-name'>{name}</a></label>" +
 						"<div class='toggled details'><div class='inner details'>" +
 							"<p class='material'>{material}</p>" +
-							"{desc}{higher_level}" +
+							"{descriptionhtml}{higher_level}" +
 							"<p class='classnames'>{classnames}</p>" +
 							"<p class='source page-{book}'><span class='page'>{page}</span></p>" +
 						"</div></div>" +
@@ -497,23 +533,24 @@
 // 			}
 			
 			function applyFilters(form, object) {
+				var form = _element('primary-form')
 				var key, value, values, v, V
 				
-				value = object['l'] || ''
+				value = object['l'] || object['level'] || ''
 				for ( v = 0 ; v < 10 ; ++v ) { _element('filter-level-' + v).checked = !(value && value.indexOf(v) < 0) }
 				
-				value = object['c'] || 'any'
+				value = (object['c'] || object['class'] || 'any').toLowerCase()
 				form['crass'].value = value
 				
-				value = object['s'] || ''
+				value = (object['s'] || object['school'] || '').toLowerCase()
 				values = ['a', 'c', 'd', 'e', 'v', 'i', 'n', 't']
 				for ( v of values ) { _element('filter-school-' + v).checked = !(value && value.indexOf(v) < 0) }
 				
-				value = object['t'] || ''
+				value = (object['t'] || object['time'] || '').toLowerCase()
 				values = ['r', 'b', 'a', 'm', 'h']
 				for ( v of values ) { _element('filter-casting-' + v).checked = !(value && value.indexOf(v) < 0) }
 				
-				value = object['b'] || ''
+				value = (object['b'] || object['source'] || '').toLowerCase()
 				values = ['ph', 'xg', 'ee', 'sc', 'rt']
 				for ( v of values ) { _element('filter-book-' + v).checked = !(value.length > 0 && value.indexOf(v) < 0) }
 				
@@ -647,7 +684,8 @@
 			td.item-type, td.item-source { font-size:80%; }
 			div.details p:not(:first-of-type) { text-indent:1em; }
 			div.details dl.entries > dt { font-weight:bold; }
-			div.details span.entries { font-style:oblique; }
+			div.details .entries.italic { font-style:oblique; }
+			div.details .entries.bold { font-weight:bold; }
 			div.details span.prominent { font-weight:bold; }
 			div.details span.prominent::after { content:"."; }
 			div.details table.entries { border-spacing:0; border-collapse:collapse; }
