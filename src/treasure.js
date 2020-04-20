@@ -464,19 +464,15 @@ function treasureLookupMagicItemEntry(treasure, lookup, entry, times) {
 		if ( armorItem ) { weight = armorItem.weight || 0 }
 	}
 	
-	if ( entry.item === 'armor' && entry.armor && entry.bonus > 0 && !entry.variant ) {
-		return {'item':entry.item, 'armor':armor, 'bonus':entry.bonus, 'weight':weight, 'description':armorName + " +" + entry.bonus}
-	}
-	
-	var item = lookup.items[entry.item], itemName = item.name || entry.item
-	var variant = entry.variant || item.variant || false, variantName
-	var quantity = item.quantity ? treasureDiceRoll(item.quantity) : 0
-	var description = itemName
+	var itemName = entry.name
+	var integrate, variant = entry.variant || false
+	var quantity = entry.quantity ? treasureDiceRoll(entry.quantity) : 0
+	var words, description, reference, suffix = ""
 	
 	times = times || treasureDefaults.times
 	
 	if ( entry.bonus ) {
-		description += (entry.bonus < 0 ? " " : " +") + entry.bonus
+		itemName += (entry.bonus < 0 ? " " : " +") + entry.bonus
 	}
 	
 	if ( quantity > 0 ) {
@@ -489,24 +485,41 @@ function treasureLookupMagicItemEntry(treasure, lookup, entry, times) {
 			
 			variant = variants
 			variants = treasureCoalesceArrayElements(variants, times)
-			description += " (" + variants.join(", ") + ")"
-		} else if ( item.unit ) {
-			description += " (" + quantity + " " + item.unit + ")"
+			suffix += " (" + variants.join(", ") + ")"
+		} else if ( entry.unit ) {
+			suffix += " (" + quantity + " " + entry.unit + ")"
 		} else {
-			description += times + quantity
+			suffix += times + quantity
 		}
 	} else {
 		if ( variant ) {
+			integrate = entry.integrate
 			variant = treasureFrequencyPrefix(variant)
-			description += " (" + variant + ")"
+			if ( !integrate && integrate !== 0 ) { integrate = "$" }
+			
+			switch ( integrate ) {
+			case "of": case "from": itemName += " " + integrate + " " + variant; break
+			case "()": itemName += " (" + variant + ")"; break
+			case ",": itemName += ", " + variant; break
+			case "$": suffix += " (" + variant + ")"; break
+			default: words = itemName.split(" "); words.splice(integrate, 0, "" + variant); itemName = words.join(" "); break
+			}
 		}
 	}
 	
-	if ( armor ) { description += ", " + armorName }
-	if ( weapon ) { description += ", " + weaponName }
-	if ( item && item.weight ) { weight = item.weight }
+	if ( armor ) { suffix += ", " + armorName }
+	if ( weapon ) { suffix += ", " + weaponName }
+	if ( entry.weight ) { weight = entry.weight }
 	
-	return {'item':entry.item, 'armor':armor, 'weapon':weapon, 'variant':variant, 'quantity':quantity, 'bonus':entry.bonus, 'weight':weight, 'description':description}
+	description = itemName + suffix
+	
+	if ( entry.key ) {
+		reference = "{@item " + entry.key + "||" + itemName + "}" + suffix
+	} else {
+		reference = "{@item " + itemName + "}" + suffix
+	}
+	
+	return {'name':itemName, 'armor':armor, 'weapon':weapon, 'variant':variant, 'quantity':quantity, 'bonus':entry.bonus, 'weight':weight, 'reference':reference, 'description':description}
 }
 
 function treasureLookupMagicItemKey(treasure, lookup, key, times) {
@@ -537,11 +550,13 @@ function treasureLookupItems(treasure, lookup, tableKeyCounts, options) {
 		if ( entry.table === 'coins' ) {
 			count = entry.count.reduce((s, v) => s + v, 0)
 			entry.descriptions = [count + entry.key]
+			entry.references = [count + "{@treasure-coin " + entry.key + "}"]
 			entry.pounds = count / coinsPerPound
 		}
 		
 		if ( entry.table === 'gem' || entry.table === 'art' ) {
 			entry.names = []
+			entry.references = []
 			entry.descriptions = []
 			
 			for ( count of entry.count ) {
@@ -550,11 +565,13 @@ function treasureLookupItems(treasure, lookup, tableKeyCounts, options) {
 				
 				entry.names.push(name)
 				entry.descriptions.push(prefix + name)
+				entry.references.push(prefix + "{@treasure-" + entry.table + " " + entry.key + "||" + name + "}")
 			}
 		}
 		
 		if ( entry.table === 'magic' ) {
 			entry.items = []
+			entry.references = []
 			entry.descriptions = []
 			
 			for ( count of entry.count ) {
@@ -566,11 +583,13 @@ function treasureLookupItems(treasure, lookup, tableKeyCounts, options) {
 					if ( item ) {
 						entry.items.push(item)
 						entry.descriptions.push(prefix + item.description)
+						entry.references.push(prefix + item.reference)
 						entry.pounds = item.weight
 					}
 				}
 			}
 			
+			entry.references = treasureCoalesceArrayElements(entry.references, times)
 			entry.descriptions = treasureCoalesceArrayElements(entry.descriptions, times)
 		}
 	}
@@ -580,7 +599,7 @@ function treasureValueSummary(gp, pounds, minimumPoundsToDisplayWeight) {
 	minimumPoundsToDisplayWeight = minimumPoundsToDisplayWeight || treasureDefaults.minimumPoundsToDisplayWeight
 	
 	if ( pounds > minimumPoundsToDisplayWeight ) {
-		var weighs = pounds > 4000 ? (pounds / 20).toFixed(2) + " tons" : Math.floor(pounds) + "lb"
+		var weighs = pounds > 4000 ? (pounds / 2000).toFixed(2) + " tons" : Math.floor(pounds) + "lb"
 		
 		return "(Total " + gp + "gp, Weighs " + weighs + ")"
 	} else {
@@ -588,20 +607,22 @@ function treasureValueSummary(gp, pounds, minimumPoundsToDisplayWeight) {
 	}
 }
 
-function treasureDescriptions(tableKeyCounts, minimumPoundsToDisplayWeight) {
+function treasureDescriptions(tableKeyCounts, property, minimumPoundsToDisplayWeight) {
 	var descriptions = []
-	var entry
+	var entry, value, add
 	var index, count, sum = 0, pounds = 0
 	
 	for ( entry of tableKeyCounts ) {
-		if ( entry.descriptions ) {
+		value = (property === 'references' ? entry.references : null) || entry.descriptions
+		
+		if ( value ) {
 			if ( entry.summarize && (sum > 0 || pounds > 0) ) {
 				descriptions.push(treasureValueSummary(sum / 100, pounds, minimumPoundsToDisplayWeight))
 				sum = 0
 				pounds = 0
 			}
 			
-			descriptions.push.apply(descriptions, entry.descriptions)
+			descriptions.push.apply(descriptions, value)
 		} else {
 			descriptions.push(entry.count.reduce((s, v) => s + v, 0) + " " + entry.table + " " + entry.key)
 		}

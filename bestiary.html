@@ -178,6 +178,8 @@
 					if ( form['select_' + key] ) {
 						form['select_' + key].checked = true
 						recognized.push(key)
+					} else {
+						console.log("unrecognized monster key " + key)
 					}
 				}
 				
@@ -1066,7 +1068,7 @@
 				background: #FFF;
 				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 				font-size: 14px;
-				line-height: 1.5;
+				line-height: 1.75;
 				padding: 2em;
 				margin: 0 auto;
 				max-width: 50em;
@@ -1086,7 +1088,7 @@
 			input.toggle:not(:checked) + label + div.toggled { display:none; }
 			
 			div.details { position:relative; white-space:normal; width:0; }
-			div.details > div.details.inner { position:relative; width:40em; max-width:70vw; padding:0.5em 1em 0 1em; margin:0.5em 0; background:#FDF4E8; border:1px solid #EEE; }
+			div.details > div.details.inner { position:relative; width:40em; max-width:70vw; line-height:1.5; padding:0.5em 1em 0 1em; margin:0.5em 0; background:#FDF4E8; border:1px solid #EEE; }
 			
 			div.details.inner img.artwork { position:absolute; max-width:20vw; max-height:12em; right:-1em; top:2em; }
 			div.details.inner img.artwork:hover { max-width:80vw; max-height:80vh; right:0em; }

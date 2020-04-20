@@ -71,6 +71,66 @@
 				return object
 			}
 			
+			function stripDiacriticals(string) {
+				if ( typeof string.normalize === 'function' ) {
+					return string.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+				} else {
+					return string.replace('é', 'e')
+				}
+			}
+			
+			function referenceKey(name) {
+				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’(){}×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
+			}
+			
+			function resolveReferences(text, object) {
+				text = text.replace(/\{=([^{}]+)\}/g, function (match, list) {
+					var part = list.split('/'), key = part[0], value = object[key]
+					
+					if ( value && part.length > 1 ) {
+						switch ( part[1] ) {
+						case 'l': value = value.toLocaleLowerCase(); break
+						case 'u': value = value.toLocaleUpperCase(); break
+						case 'a': value = "a"; break
+						case 'at': value = "A"; break
+						}
+					}
+					
+					return "<span class='property " + key + "'>" + (value || '-') + "</span>"
+				})
+				
+				text = text.replace(/\{@([^{} ]+)\s+([^{}]+)\}/g, function (match, type, list) {
+					var part = list.split('|')
+					
+					switch ( type ) {
+					case "h": return "<span class='entries hit italic'>Hit: " + list + "</span> "
+					case "recharge": return "<span class='entries recharge'>" + list + "</span>"
+					case "b": case "bold": return "<span class='entries bold'>" + list + "</span>"
+					case "i": case "italic": return "<span class='entries italic'>" + list + "</span>"
+					case "dice": case "damage": return "<span class='entries " + type + " italic' onclick='handleDice(event, \"" + part[0] + "\")'>" + (part[1] || part[0]) + "</span>"
+					case "chance": return "<span class='entries " + type + "' onclick='handleChance(event, \"" + part[0] + "\")'>" + (part[1] || part[0] + " percent") + "</span>"
+					case "link": return "<span class='entries " + type + " italic'>" + list + "</span>"
+					case "hit": return (+list < 0 ? "" : "+") + list
+					case "atk": return "<span class='entries attack italic'>" + list.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</span> "
+					case "dc": return list
+					case "item": return "<a class='entries item' href='items.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+					case "spell": return "<a class='entries spell italic' href='spells.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+					case "creature": return "<a class='entries creature' href='bestiary.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+					case "condition": case "skill": case "sense": case "action": case "hazard": return "<span class='entries " + type + "'>" + part[0] + "</span>"
+					case "filter": return (part.length > 2 && part[1] === 'spells') ? "<a class='entries spell italic' href='spells.html?" + part[2] + "'>" + part[0] + "</a>" : "<span class='entries italic " + type + "'>" + part[0] + "</span>"
+					case "adventure": return "<span class='entries italic " + type + "'>" + part[0] + "</span>"
+					case "table": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
+					case "book": return "<span class='entries italic " + type + "'>" + (part[3] || part[0]) + "</span>"
+					default: return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
+					}
+				})
+				
+				text = text.replace(/\{@h\}/g, "<span class='entries hit italic'>Hit:</span> ")
+				text = text.replace(/\{@recharge\}/g, "<span class='entries recharge'></span>")
+				
+				return text
+			}
+			
 			function generateTreasuresForRequest(treasure, challenge, quantity, kind, raw) {
 				if ( kind === 'player' ) {
 					kind = 'party'
@@ -111,14 +171,14 @@
 				}
 				
 				treasureLookupItems(treasure, lookup, treasures)
-				descriptions = treasureDescriptions(treasures)
+				descriptions = treasureDescriptions(treasures, 'references')
 				displayTreasure(treasure, descriptions)
 			}
 			
 			function handleReroll(key, identifier) {
 				var item = treasureLookupMagicItemKey(treasure, lookup, key.toLowerCase())
 				
-				_element(identifier).innerHTML = " " + item.description
+				_element(identifier).innerHTML = " " + resolveReferences(item.reference, item)
 			}
 			
 			function displayTreasure(treasure, list) {
@@ -155,6 +215,7 @@
 				
 				if ( items.length > 0 ) {
 					html = beginHTML + items.join("") + closeHTML
+					html = resolveReferences(html, treasure)
 				} else {
 					html = "<span class='faded'>No Treasure</span>"
 				}
@@ -232,9 +293,9 @@
 							keys.splice(index, 1)
 						}
 						
-						if ( !lookup.items[entry.item] ) {
-							console.log("Missing item " + entry.item)
-						}
+						//if ( !lookup.items[entry.name] ) {
+						//	console.log("Missing item " + entry.item)
+						//}
 						if ( entry.armor && !lookup.armors[entry.armor] && !Array.isArray(entry.armor) ) {
 							console.log("Missing armor " + entry.armor)
 						}
@@ -260,18 +321,16 @@
 			}
 			
 			function populateLookup() {
-				var keys = ['armors', 'weapons', 'items']
-				var valueByKey = new Object()
+				var key, keys = ['armors', 'weapons']
+				var value, valueByKey = new Object()
 				
-				for ( var key of keys ) {
+				for ( key of keys ) {
 					valueByKey[key] = new Object()
 					
-					for ( var value of treasure[key] ) { valueByKey[key][value.key] = value }
+					for ( value of treasure[key] ) { valueByKey[key][value.key] = value }
 				}
 				
 				window.lookup = valueByKey
-				
-				validateTreasure()
 			}
 			
 			function populatePage() {
@@ -306,6 +365,23 @@
 			span.reroll { color:#123; cursor:pointer; }
 			span.faded { color:#CCC; }
 			
+			a { color:inherit; text-decoration:none; }
+			
+			input.big-button { font-size:150%; border-radius:0.5em; border:3px solid #CCC; padding:0.5em 1.5em; background:#F8F8F8; margin:0 1em; }
+			input.big-number { font-size:125%; }
+			
+			#treasure-list { font-size:125%; }
+			#treasure-list ul { list-style-type:circle; list-style-position:outside; }
+			
+			@media (max-width:360px) {
+				input.big-number { font-size:100%; }
+				#treasure-list { font-size:100%; }
+			}
+			
+			@media screen {
+				input.treasure { background-image:linear-gradient(135deg, #EEB 0%, #FFD 70%, #FFF 100%); border-color:#642; color:#642; }
+			}
+			
 			.nose, .reroll {
 				-webkit-touch-callout:none;
 				-webkit-user-select:none;
@@ -320,15 +396,15 @@
 		<h4>Treasure</h4>
 		
 		<form id='treasure-form' onsubmit="generateTreasure(); return false">
-		<select name='kind' id='treasure-kind' title='Type of treasure'>
+		<select name='kind' id='treasure-kind' class='big-select' title='Type of treasure'>
 			<option value="individual">Individual Treasure</option>
 			<option value="hoard" selected>Treasure Hoard</option>
 			<option value="party">Party Treasure</option>
 			<option value="player">Player (&frac14; Party)</option>
 		</select>
-		<input name='challenge' id='treasure-challenge' type='number' value='4' min='0' max='30' title='Challenge rating or level' />
-		&times; <input type='number' name='quantity' value='1' min='1' max='99' id='treasure-quantity' title='Number of times to roll' />
-		<input type='submit' value='Roll' title='Generate random treasure' />
+		<input name='challenge' id='treasure-challenge' type='number' value='4' min='0' max='30' class='big-number' title='Challenge rating or level' />
+		&times; <input type='number' name='quantity' value='1' min='1' max='99' id='treasure-quantity' class='big-number' title='Number of times to roll' />
+		<input type='submit' class='big-button treasure' value='Roll' title='Generate random treasure' />
 		<input type='checkbox' name='partition' id='treasure-partition' title='Separate multiple rolls' /><label for='treasure-partition' class='nose'> &horbar;</label>
 		<input type='checkbox' name='raw' id='treasure-raw' title='Rules as Written - do not mix rarity' /><label for='treasure-raw' class='nose'> RaW</label>
 		</form>

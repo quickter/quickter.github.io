@@ -178,6 +178,8 @@
 					if ( form['select_' + key] ) {
 						form['select_' + key].checked = true
 						recognized.push(key)
+					} else {
+						console.log("unrecognized spell key " + key)
 					}
 				}
 				
@@ -615,7 +617,7 @@
 			input.toggle:not(:checked) + label + div.toggled { display:none; }
 			
 			div.details { position:relative; white-space:normal; width:0; }
-			div.details > div.details.inner { position:relative; width:40em; max-width:70vw; padding:0 1em; margin:0.5em 0; background:#FAFAFA; border:1px solid #EEE; }
+			div.details > div.details.inner { position:relative; width:40em; max-width:70vw; line-height:1.5; padding:0 1em; margin:0.5em 0; background:#FAFAFA; border:1px solid #EEE; }
 			div.details span.entries.indent + span.entries { margin-left:1em }
 			
 			table#primary-table label.toggle.close { display:none; }
