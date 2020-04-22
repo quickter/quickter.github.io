@@ -144,7 +144,11 @@
 				}
 			}
 			
-			function generateTreasure() {
+			function generateTreasure(event) {
+				if ( event && typeof event.preventDefault === 'function' ) {
+					event.preventDefault()
+				}
+				
 				var treasure = window.treasure
 				var lookup = window.lookup
 				var form = _element('treasure-form')
@@ -173,6 +177,8 @@
 				treasureLookupItems(treasure, lookup, treasures)
 				descriptions = treasureDescriptions(treasures, 'references')
 				displayTreasure(treasure, descriptions)
+				
+				return false
 			}
 			
 			function handleReroll(key, identifier) {
@@ -395,7 +401,7 @@
 	<body onload='populatePage()'>
 		<h4>Treasure</h4>
 		
-		<form id='treasure-form' onsubmit="generateTreasure(); return false">
+		<form id='treasure-form' onsubmit="return generateTreasure(event)">
 		<select name='kind' id='treasure-kind' class='big-select' title='Type of treasure'>
 			<option value="individual">Individual Treasure</option>
 			<option value="hoard" selected>Treasure Hoard</option>
