@@ -80,8 +80,8 @@ var bestiary = {
 		{"key":"undead", "name":"Undead", "abbreviation":"U", "description":"Undead are once-living creatures brought to a horrifying state of undeath through the practice of necromantic magic or some unholy curse. Undead include walking corpses, such as vampires and zombies, as well as bodiless spirits, such as ghosts and specters."}
 	],
 	"encountergroup": [
-		{"synthesize":"Abyss", "kind":"demon", "list":["Cambion", "Devourer", "Merrow", "Morkoth", "Nightmare", "Retriever"]},
-		{"synthesize":"Hells", "kind":"devil", "list":["Cambion", "Hell Hound", "Morkoth", "Nightmare"]},
+		{"synthesize":"Abyssal", "kind":"demon", "list":["Cambion", "Devourer", "Merrow", "Morkoth", "Nightmare", "Retriever"]},
+		{"synthesize":"Infernal", "kind":"devil", "list":["Cambion", "Hell Hound", "Morkoth", "Nightmare"]},
 		{"synthesize":"Astral", "kind":"gith", "list":["Alhoon", "Astral Dreadnought", "Berbalang", "Devourer", "Elder Brain", "Marut", "Mind Flayer", "Morkoth", "Neogi", "Neogi Master", "Ulitharid"]},
 		{"synthesize":"Ethereal", "list":["Devourer", "Ghost", "Ki-rin", "Marut", "Nagpa", "Neogi", "Neogi Master", "Night Hag", "Nightmare", "Phase Spider", "Sea Hag", "Succubus/Incubus", "Yeth Hound"]},
 		{"synthesize":"Feywild", "type":"fey", "list":["Deva", "Devourer", "Displacer Beast", "Flying Sword", "Fomorian", "Neogi Hatchling", "Neogi", "Neogi Master", "Owlbear"]},
@@ -155,7 +155,7 @@ var bestiary = {
 		{"name":"Neogi"},
 		{"name":"Norker"},
 		{"name":"Ogre", "list":["Troll"], "excludenames":["Ogre Zombie"]},
-		{"language":"Orc", "list":["Giant Bat"]},
+		{"language":"Orc", "list":[]},
 		{"name":"Quaggoth", "excludenames":["Quaggoth Spore Servant"]},
 		{"name":"Remorhaz"},
 		{"language":"Sahuagin"},

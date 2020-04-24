@@ -450,14 +450,16 @@
 				var key, experienceKey, creature, challenge, experience
 				var parts, candidates, costs, byExperience
 				var lowerIndex, upperIndex, lowerCost, upperCost
-				var lowerNumber, upperNumber, number, pairs
+				var lowerNumber, upperNumber, lowerMinimum, lowerMaximum
 				var lowerCreature, upperCreature, environments
+				var pairs, previous
 				
 				if ( !groups || multiplier.maximum < 2 || multiplier.maximum < multiplier.minimum || multiplier.experienceLimit < multiplier.experience ) {
 					return false
 				}
 				
 				groups = [].concat(groups)
+				pairs = []
 				
 				while ( groups.length > 0 ) {
 					group = groups.splice(encounterRandomInteger(groups.length), 1)[0]
@@ -492,6 +494,8 @@
 						continue
 					}
 					
+					previous = false
+					
 					for ( upperIndex = costs.length ; upperIndex --> 0 ; ) {
 						upperCost = costs[upperIndex]
 						
@@ -499,14 +503,16 @@
 							lowerCost = costs[lowerIndex]
 							
 							for ( upperNumber = Math.floor(Math.min(multiplier.experienceLimit / upperCost, multiplier.maximum / 2)) ; upperNumber > 0 ; --upperNumber ) {
-								lowerNumber = Math.min(Math.floor((multiplier.experienceLimit - upperNumber * upperCost) / lowerCost), multiplier.maximum - upperNumber)
-								number = Math.max(Math.ceil((multiplier.experience - upperNumber * upperCost) / lowerCost), multiplier.minimum - upperNumber)
+								lowerMaximum = Math.min(Math.floor((multiplier.experienceLimit - upperNumber * upperCost) / lowerCost), multiplier.maximum - upperNumber)
+								lowerMinimum = Math.max(Math.ceil((multiplier.experience - upperNumber * upperCost) / lowerCost), multiplier.minimum - upperNumber)
 								
-								if ( lowerNumber < number ) { continue }
-								if ( number < upperNumber ) { continue }
+								if ( lowerMaximum < lowerMinimum ) { continue }
+								if ( lowerMinimum < upperNumber ) { continue }
+								if ( previous && upperNumber === previous.upperNumber && lowerMaximum === previous.lowerMaximum ) { continue }
 								
 								lowerCreature = encounterRandomElement(byExperience[lowerCost])
 								upperCreature = encounterRandomElement(byExperience[upperCost])
+								lowerNumber = lowerMinimum < lowerMaximum ? lowerMinimum + encounterRandomInteger(1 + lowerMaximum - lowerMinimum) : lowerMinimum
 								
 								if ( environment == 'all' ) {
 									environments = []
@@ -528,19 +534,28 @@
 									}
 								}
 								
-								return {
+								pairs.push({
 									'upperCreature':upperCreature,
 									'upperExperience':upperCost,
 									'upperNumber':upperNumber,
 									'lowerCreature':lowerCreature,
 									'lowerExperience':lowerCost,
-									'lowerNumber':number < lowerNumber ? number + encounterRandomInteger(1 + lowerNumber - number) : number,
-									'lowerMinimum':number,
-									'lowerMaximum':lowerNumber,
+									'lowerNumber':lowerNumber,
+									'lowerMinimum':lowerMinimum,
+									'lowerMaximum':lowerMaximum,
 									'environment':environment
-								}
+								})
+								
+								previous = pairs[pairs.length - 1]
+								lowerIndex = 0
+								break
 							}
 						}
+					}
+					
+					if ( pairs.length > 0 ) {
+						console.log(pairs)
+						return encounterRandomElement(pairs)
 					}
 				}
 				
@@ -669,25 +684,12 @@
 				return challenge > 0 && challenge < 1 ? "0⅛¼⅜½⅝¾⅞".charAt(Math.round(challenge * 8)) : challenge
 			}
 			
-			function generateEncounter(event) {
-				if ( event && typeof event.preventDefault === 'function' ) {
-					event.preventDefault()
-				}
-				
-				var encounter = window.encounter
-				var form = _element('encounter-form')
-				var characterLevels = form.level.value.split(",")
-				var difficulty, difficulties = form.difficulty.value.split(",")
-				var environment, environments = form.environment.value.split(",")
+			function generateEncounterList(encounter, characterLevels, difficulties, environments, uniform) {
+				var difficulty, environment, repeat
 				var limit, limits = encounterLimits(encounter, characterLevels)
 				var index, count, prior, range, number, challenge, threshold, sum, creature
 				var constraint, multiplier, group, key
 				var rows = [], auxilaryRows = []
-				var html = "<ol class='encounters'>"
-				
-				if ( difficulties[0] === '' ) {
-					difficulties.splice(0, 1)
-				}
 				
 				for ( limit of limits ) {
 					if ( !limit.uniformChallengeRatingForNumber ) {
@@ -700,79 +702,95 @@
 						}
 					}
 					
-					for ( index = 0, count = limit.multipliers.length ; index < count ; ++index ) {
-						environment = encounterRandomEnvironment(encounter, environments)
-						multiplier = limit.multipliers[index]
-						threshold = multiplier.experience
-						group = encounterRandomGroup(encounter, multiplier, environment)
-						
-						if ( !group && environments.indexOf(environment) < 0 ) {
-							group = encounterRandomGroup(encounter, multiplier, 'all')
-							environment = group.environment || "any"
-						}
-						
-						if ( !group ) {
-							continue
-						}
-						
-						if ( group.lowerMaximum > group.lowerMinimum ) {
-							sum = group.upperExperience * group.upperNumber
-							sum = (sum + group.lowerExperience * group.lowerMinimum) + "-" + (sum + group.lowerExperience * group.lowerMaximum)
-							range = group.lowerMinimum + "-" + group.lowerMaximum
-						} else {
-							sum = group.upperExperience * group.upperNumber + group.lowerExperience * group.lowerMinimum
-							range = group.lowerMinimum
-						}
-						
-						key = [group.upperCreature.key, group.lowerCreature.key].join('_')
-						creature = " " + group.upperNumber + " &times; {@creature " + key + "||" + group.upperCreature.name + "} and " + group.lowerNumber + " &times; {@creature " + key + "||" + group.lowerCreature.name + "} {@hoard " + group.upperCreature.challenge + "||Hoard}"
-						
-						challenge = challengeName(group.lowerCreature.challenge)
-						constraint = group.upperNumber + " &times; CR " + challengeName(group.upperCreature.challenge) + " and " + range + " &times; CR " + challenge + " (" + (false ? threshold + " <= " : "") + sum + (false ? " <= " + multiplier.experienceLimit : "") + " XP) "
-						
-						rows.push(limit.difficulty + " " + constraint + environment + creature)
+					switch ( uniform ) {
+					case 'uniform': repeat = 0; break
+					case 'pair':    repeat = 2; break
+					default:        repeat = 1; break
 					}
 					
-					prior = false
-					
-					for ( index = 1, count = limit.uniformChallengeRatingForNumber.length ; index < count ; ++index ) {
-						number = index
-						threshold = limit.experienceForNumber[number]
-						challenge = limit.uniformChallengeRatingForNumber[number]
-						
-						if ( challenge === null ) {
-							continue
-						}
-						
-						if ( challenge === limit.uniformChallengeRatingForNumber[index + 1] ) {
-							if ( !prior ) {
-								prior = number
+					while ( repeat --> 0 ) {
+						for ( index = 0, count = limit.multipliers.length ; index < count ; ++index ) {
+							environment = encounterRandomEnvironment(encounter, environments)
+							multiplier = limit.multipliers[index]
+							threshold = multiplier.experience
+							group = encounterRandomGroup(encounter, multiplier, environment)
+							
+							if ( !group && environments.indexOf(environment) < 0 ) {
+								group = encounterRandomGroup(encounter, multiplier, 'all')
+								environment = group.environment || "any"
 							}
 							
-							continue
-						}
-						
-						sum = encounterExperienceSum(encounter, [challenge])
-						sum = prior ? (prior * sum) + "-" + (index * sum) : (index * sum)
-						environment = encounterRandomEnvironment(encounter, environments)
-						creature = encounterRandomCreature(encounter, challenge, environment)
-						
-						if ( !creature && environments.indexOf(environment) < 0 ) {
-							creature = encounterRandomCreature(encounter, challenge, 'all')
-							environment = encounterRandomElement(creature.environments)
-						}
-						
-						challenge = challengeName(challenge)
-						range = prior ? prior + "-" + index : ( index >= 15 && index + 1 == count ) ? index + "+" : index
-						constraint = range + " &times; CR " + challenge + " (" + sum + (false ? " >= " + threshold : "") + " XP) "
-						prior = false
-						
-						if ( creature ) {
-							creature = creature ? " " + (prior ? prior + encounterRandomInteger(1 + index - prior) : index) + " &times; {@creature " + creature.name + "} {@hoard " + challenge + "||Hoard}" : ""
+							if ( !group ) {
+								continue
+							}
+							
+							if ( group.lowerMaximum > group.lowerMinimum ) {
+								sum = group.upperExperience * group.upperNumber
+								sum = (sum + group.lowerExperience * group.lowerMinimum) + "-" + (sum + group.lowerExperience * group.lowerMaximum)
+								range = group.lowerMinimum + "-" + group.lowerMaximum
+							} else {
+								sum = group.upperExperience * group.upperNumber + group.lowerExperience * group.lowerMinimum
+								range = group.lowerMinimum
+							}
+							
+							key = [group.upperCreature.key, group.lowerCreature.key].join('_')
+							creature = " " + group.upperNumber + " &times; {@creature " + key + "||" + group.upperCreature.name + "} and " + group.lowerNumber + " &times; {@creature " + key + "||" + group.lowerCreature.name + "} &bull; {@hoard " + group.upperCreature.challenge + "||Hoard}"
+							
+							challenge = challengeName(group.lowerCreature.challenge)
+							constraint = group.upperNumber + " &times; CR " + challengeName(group.upperCreature.challenge) + " and " + range + " &times; CR " + challenge + " (" + (false ? threshold + " <= " : "") + sum + (false ? " <= " + multiplier.experienceLimit : "") + " XP) "
 							
 							rows.push(limit.difficulty + " " + constraint + environment + creature)
-						} else {
-							auxilaryRows.push(limit.difficulty + " " + constraint + environment)
+						}
+					}
+					
+					switch ( uniform ) {
+					case 'uniform': repeat = 2; break
+					case 'pair':    repeat = 0; break
+					default:        repeat = 1; break
+					}
+					
+					while ( repeat --> 0 ) {
+						prior = false
+						
+						for ( index = 1, count = limit.uniformChallengeRatingForNumber.length ; index < count ; ++index ) {
+							number = index
+							threshold = limit.experienceForNumber[number]
+							challenge = limit.uniformChallengeRatingForNumber[number]
+							
+							if ( challenge === null ) {
+								continue
+							}
+							
+							if ( challenge === limit.uniformChallengeRatingForNumber[index + 1] ) {
+								if ( !prior ) {
+									prior = number
+								}
+								
+								continue
+							}
+							
+							sum = encounterExperienceSum(encounter, [challenge])
+							sum = prior ? (prior * sum) + "-" + (index * sum) : (index * sum)
+							environment = encounterRandomEnvironment(encounter, environments)
+							creature = encounterRandomCreature(encounter, challenge, environment)
+							
+							if ( !creature && environments.indexOf(environment) < 0 ) {
+								creature = encounterRandomCreature(encounter, challenge, 'all')
+								environment = encounterRandomElement(creature.environments)
+							}
+							
+							challenge = challengeName(challenge)
+							range = prior ? prior + "-" + index : ( index >= 15 && index + 1 == count ) ? index + "+" : index
+							constraint = range + " &times; CR " + challenge + " (" + sum + (false ? " >= " + threshold : "") + " XP) "
+							prior = false
+							
+							if ( creature ) {
+								creature = creature ? " " + (prior ? prior + encounterRandomInteger(1 + index - prior) : index) + " &times; {@creature " + creature.name + "} &bull; {@hoard " + challenge + "||Hoard}" : ""
+								
+								rows.push(limit.difficulty + " " + constraint + environment + creature)
+							} else {
+								auxilaryRows.push(limit.difficulty + " " + constraint + environment)
+							}
 						}
 					}
 				}
@@ -784,10 +802,42 @@
 					rows = rows.concat(encounterRandomElements(auxilaryRows, maximumEncounters - rows.length))
 				}
 				
+				var html = "<ol class='encounters'>"
+				
 				html += "<li>" + rows.join("</li><li>") + "</li>"
 				html += "</ol>"
 				html = resolveReferences(html)
 				html = html.replace(/_/g, ',')
+				
+				return html
+			}
+			
+			function generateEncounter(event) {
+				if ( event && typeof event.preventDefault === 'function' ) {
+					event.preventDefault()
+				}
+				
+				var encounter = window.encounter
+				var form = _element('encounter-form')
+				var characterLevels = form.level.value
+				var difficulties = form.difficulty.value
+				var environments = form.environment.value
+				var composition = form.composition.value
+				
+				characterLevels = characterLevels ? characterLevels.split(',') : ['1']
+				
+				if ( difficulties === 'day' ) {
+					var limits = encounterExperiencePerDifficulty(encounter, characterLevels)
+					
+					_element('encounter-list').textContent = "Roughly 6 - 8 encounters of medium to hard difficulty totalling " + limits[4] + " XP in the adventuring day."
+					
+					return
+				}
+				
+				difficulties = difficulties ? difficulties.split(',') : []
+				environments = environments ? environments.split(',') : []
+				
+				var html = generateEncounterList(encounter, characterLevels, difficulties, environments, composition)
 				
 				_element('encounter-list').innerHTML = html
 				
@@ -814,17 +864,21 @@
 				var experienceForChallengeRating = encounter.xp4cr
 				var creature, creatureList = [], creatureBy = new Object()
 				var challenge, name, experience, experienceKey
-				var environment, environments = []
+				var environment, synthesized = [], environments = []
 				var language, languages, languageList = []
 				var key, anyEnvironment = 'all', noEnvironment = 'unspecified'
 				var entry, array, varieties, varietyList = []
 				var type, typeList = []
+				var group, where, found, synthesize
 				
 				creatureBy[anyEnvironment] = new Object()
+				creatureBy[noEnvironment] = new Object()
 				creatureBy.key = new Object()
 				creatureBy.language = new Object()
 				creatureBy.type = new Object()
 				creatureBy.variety = new Object()
+				
+				synthesized.push(noEnvironment)
 				
 				for ( creature of bestiary.monster ) {
 					entry = new Object()
@@ -962,8 +1016,6 @@
 					creatureBy[anyEnvironment][challenge].push(entry.key)
 				}
 				
-				var group, where, found, synthesize
-				
 				creatureBy[anyEnvironment].groups = []
 				
 				for ( group of bestiary.encountergroup ) {
@@ -979,7 +1031,7 @@
 					
 					if ( synthesize && !creatureBy[synthesize] ) {
 						creatureBy[synthesize] = new Object()
-						environments.push(synthesize)
+						synthesized.push(synthesize)
 					}
 					
 					for ( entry of creatureList ) {
@@ -1041,28 +1093,55 @@
 				typeList.sort()
 				varietyList.sort()
 				languageList.sort()
+				synthesized.sort()
 				environments.sort()
 				encounter.list = new Object()
 				encounter.list.types = typeList
 				encounter.list.varieties = varietyList
 				encounter.list.languages = languageList
-				encounter.list.environments = environments
+				encounter.list.environments = environments.concat(synthesized)
+				encounter.list.commonEnvironments = environments
+				encounter.list.syntheticEnvironments = synthesized
 				encounter.list.creatures = creatureList
 				encounter.creatureBy = creatureBy
 			}
 			
-			function populateSelect(element, values, names) {
+			function populateSelect(element, groups) {
 				var anyOption = "<option value=''>Any</option>"
-				var templateOption = "<option value='{value}'>{value}</option>"
-				var options = values.map(function (value) { return templateOption.replace(/{value}/g, value) }).join("")
+				var templateGroup = "<optgroup label='{label}'>{options}</optgroup>"
+				var templateOption = "<option value='{value}'>{name}</option>"
+				var group, optionsGroups = []
+				var option, options, list
+				var rows = []
+				
+				for ( group of groups ) {
+					list = group.options || [group]
+					options = []
+					
+					for ( option of list ) {
+						if ( typeof option === 'string' ) {
+							options.push(templateOption.replace("{value}", option).replace("{name}", option))
+						} else {
+							options.push(templateOption.replace("{value}", option.value).replace("{name}", option.name || option.value))
+						}
+					}
+					
+					if ( typeof group.label === 'string' ) {
+						rows.push(templateGroup.replace("{label}", group.label).replace("{options}", options.join("")))
+					} else {
+						rows.push.apply(rows, options)
+					}
+				}
 				
 				element = _element(element)
-				element.innerHTML = anyOption + options
+				element.innerHTML = anyOption + rows.join("")
 			}
 			
 			function populateForm(encounter) {
-				populateSelect('difficulty', encounter.difficulties)
-				populateSelect('environment', encounter.list.environments)
+				populateSelect('difficulty', [{'label':"Level", 'options':encounter.difficulties.slice(0, -1)}, {'label':"Group", 'options':encounter.difficulties.slice(-1)}])
+				populateSelect('environment', [{'label':"Prime Material", 'options':encounter.list.commonEnvironments}, {'label':"Planar", 'options':encounter.list.syntheticEnvironments}])
+				populateSelect('composition', [{'name':"Mixed Groups", 'value':'pair'}, {'name':"Uniform Groups", 'value':'uniform'}])
+				//populateSelect('group', ['1', '2', '3-6', '7-10', '11-14', '15+'])
 			}
 			
 			function populatePage() {
@@ -1102,6 +1181,8 @@
 			p#encounter-list a.entries { color:#036; text-decoration-color:#CCC; }
 			p#encounter-list a.entries.hoard { color:#630; }
 			
+			p.explanation { font-size:80%; color:#999; }
+			
 			.nose, .reroll {
 				-webkit-touch-callout:none;
 				-webkit-user-select:none;
@@ -1117,15 +1198,16 @@
 		
 		<form id='encounter-form' onsubmit="generateEncounter(); return false">
 		
-		<div class='options'><span>Character Level</span><input type='text' id='level' name='level' placeholder='3, 3, 3, 4' /></div>
-		<!--div class='options'><span>Difficulty</span><input type='text' id='difficulty' name='difficulty' placeholder='easy, deadly' /></div-->
-		<!--div class='options'><span>Environment</span><input type='text' id='environment' name='environment' placeholder='forest, grassland' /></div-->
+		<div class='options'><span>Character Levels</span><input type='text' id='level' name='level' placeholder='3, 3, 3, 4' /></div>
 		<div class='options'><span>Difficulty</span><select id='difficulty' name='difficulty'></select></div>
 		<div class='options'><span>Environment</span><select id='environment' name='environment'></select></div>
+		<div class='options'><span>Composition</span><select id='composition' name='composition'></select></div>
 		<div class='options'><input type='submit' class='big-button treasure' value='Roll' title='Generate random treasure' /></div>
 		
 		</form>
 		
 		<p id='encounter-list'></p>
+		
+		<p class='explanation'>Any creature can appear in a uniform group but only some travel in mixed groups.</p>
 	</body>
 </html>
