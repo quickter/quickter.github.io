@@ -175,6 +175,8 @@
 				var key
 				
 				for ( key of keys ) {
+					key = key.trim()
+					
 					if ( form['select_' + key] ) {
 						form['select_' + key].checked = true
 						recognized.push(key)
@@ -216,7 +218,7 @@
 				var hash = location.hash
 				
 				if ( hash && hash.length > 1 ) {
-					var keys = hash.slice(1).split(",").map(function (s) { return s.trim() })
+					var keys = hash.slice(1).split(',')
 					
 					filterPrimaryByKeys(keys)
 					
