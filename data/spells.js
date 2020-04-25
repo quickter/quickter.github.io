@@ -1,4 +1,12 @@
-var spells = [
+var spellbook = {
+"sources":[
+	{"key":"phb", "name":"Player's Handbook"},
+	{"key":"eepc", "name":"Elemental Evil Player's Companion"},
+	{"key":"trot", "name":"The Rise of Tiamat"},
+	{"key":"scag", "name":"Sword Coast Adventurer's Guide"},
+	{"key":"xgte", "name":"Xanathar's Guide to Everything"},
+],
+"spells":[
 	{
 		"key": "horridwilting",
 		"name": "Abi-Dalzim’s Horrid Wilting",
@@ -7561,3 +7569,4 @@ var spells = [
 		"oaths": "Devotion"
 	}
 ]
+}

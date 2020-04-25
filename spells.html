@@ -15,16 +15,16 @@
 		<script type="text/javascript">
 			'use strict';
 			
-			function parseSpell(s) {
+			function parseSpell(masterSpell, lookup) {
 				var spell = new Object()
 				var keys = ['name', 'level', 'school', 'casting_time', 'range', 'components', 'material', 'duration', 'ritual', 'concentration', 'defense', 'attack', 'save', 'permanent', 'damage', 'damage_type', 'classes', 'desc', 'higher_level', 'book', 'page', 'circles', 'oaths', 'domains', 'patrons', 'archetype']
 				var key, value, scalar, casting
 				var styles = []
 				
-				spell['key'] = libraryKey(s.name)
+				spell['key'] = libraryKey(masterSpell.name)
 				
 				for ( key of keys ) {
-					if ( s[key] !== undefined && s[key] !== false ) { spell[key] = s[key] }
+					if ( masterSpell[key] !== undefined && masterSpell[key] !== false ) { spell[key] = masterSpell[key] }
 				}
 				
 				value = spell['archetype']
@@ -113,13 +113,14 @@
 				spell['sv'] = value ? value.substring ? value.substring(0, 3) : "*" : ""
 				
 				spell['page'] = +spell.page || spell.page
+				spell['sourcename'] = lookup.sources[spell.book].name
 				spell['styles'] = styles.join(" ")
 				spell['ss'] = (spell['school'] === 'Illusion') ? 'Ill' : spell['school'].substring(0, 2)
 				spell['vsm'] = spell['components'].join("")
 				spell['namekey'] = spell.name.replace(/['‘’]/g, '')
 				spell['title_ritual'] = spell.ritual ? ", Ritual " + Math.floor(spell.castingkey + 10) + " Minutes" : ""
 				spell['title_concentration'] = spell.concentration ? "Concentration, " : ""
-				spell['descriptionhtml'] = libraryResolveReferences(s['desc'] || '', s)
+				spell['descriptionhtml'] = libraryResolveReferences(masterSpell['desc'] || '', masterSpell)
 				
 				if ( spell['material'] === undefined ) { spell['material'] = '' }
 				if ( spell['damage'] === undefined ) { spell['damage'] = '' }
@@ -128,16 +129,26 @@
 				return spell
 			}
 			
-			function parseSpells(spells) {
+			function parseSpells(spellbook) {
 				var result = []
+				var entry, lookup = []
+				var key, keys = ['sources']
 				var masterSpell, spell, text
 				
-				for ( masterSpell of spells ) {
-					spell = parseSpell(masterSpell)
+				for ( key of keys ) {
+					lookup[key] = new Object()
+					
+					for ( entry of spellbook[key] ) {
+						lookup[key][entry.key] = entry
+					}
+				}
+				
+				for ( masterSpell of spellbook.spells ) {
+					spell = parseSpell(masterSpell, lookup)
 					
 					text = [
 						spell.name, spell.material, spell.descriptionhtml, spell.higher_level, spell.classnames,
-						spell.book, "pg " + spell.page
+						spell.sourcename, "pg " + spell.page
 					]
 					spell.searchableText = text.join(" ")
 					
@@ -154,7 +165,7 @@
 					"<p class='material'>{material}</p>" +
 					"{descriptionhtml}{higher_level}" +
 					"<p class='classnames'>{classnames}</p>" +
-					"<p class='source page-{book}'><span class='page'>{page}</span></p>" +
+					"<p class='source page-{book}'>{sourcename}<span class='page'>{page}</span></p>" +
 					""
 				
 				return libraryRenderTemplateItem(template, item)
@@ -283,7 +294,7 @@
 				libraryForm().addEventListener('submit', libraryHandleSubmit)
 				window.addEventListener('hashchange', libraryHandleHashChanged)
 				
-				populateLibrary(parseSpells(spells))
+				populateLibrary(parseSpells(spellbook))
 				applyParameters()
 				libraryHandleHashChanged()
 			}

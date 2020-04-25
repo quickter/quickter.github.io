@@ -327,7 +327,17 @@ function libraryHandleDice(event, dice) {
 		}
 	}
 	
-	element.textContent = rolls > 0 ? " : " + sum : ""
+	var text = ""
+	
+	if ( rolls > 0 ) {
+		text = " : " + sum
+		
+		if ( element.textContent == text ) {
+			text += "↺"
+		}
+	}
+	
+	element.textContent = text
 }
 
 function libraryHandleChance(event, chance) {
@@ -435,7 +445,9 @@ function libraryResolveEntries(entries, begin, close, depth) {
 		}
 		
 		if ( entries.colLabels && Array.isArray(entries.colLabels) && entries.colLabels.length > 0 ) {
-			result += "<tr>" + entries.colLabels.map(function (h) { return "<th>" + h + "</th>" }).join("") + "</tr>"
+			var isDice = /^\s*\d*[dD]\d+\s*$/
+			
+			result += "<tr>" + entries.colLabels.map(function (h) { return "<th>" + (isDice.test(h) ? "{@dice " + h + "}" : h) + "</th>" }).join("") + "</tr>"
 		}
 		
 		result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + libraryResolveEntries(c, "", "", depth + 1) + "</td>" }).join("") + "</tr>" }).join("")
