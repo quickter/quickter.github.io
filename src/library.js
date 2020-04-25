@@ -257,6 +257,99 @@ function libraryHandleSubmit(event) {
 	return false
 }
 
+function libraryRandomInteger(count) {
+	if ( crypto && crypto.getRandomValues ) {
+		var randomValues = new Uint32Array(1)
+		
+		crypto.getRandomValues(randomValues)
+		
+		return randomValues[0] % count
+	} else {
+		return Math.floor(Math.random() * Math.floor(count)) | 0
+	}
+}
+
+function libraryHandleDice(event, dice) {
+	var className = 'rolled'
+	var target = event && (event.currentTarget || event.target)
+	var element = target && target.getElementsByClassName(className)[0]
+	
+	if ( !target || !element ) { return }
+	
+	var matches = dice.toLowerCase().replace(/\s+/g, '').split(/(\b[+-]?\d*d?\d+\b)/g)
+	var index, count = matches && matches.length
+	var value, found, sides, roll, rolls = 0, modifiers = 0
+	var sum = 0
+	
+	for ( index = 1 ; index < count ; index += 2 ) {
+		value = matches[index]
+		found = value.indexOf('d')
+		
+		if ( found < 0 ) {
+			value = parseInt(value)
+			
+			if ( value ) {
+				sum += value
+				modifiers += 1
+			}
+		} else {
+			sides = parseInt(value.slice(found + 1)) || 0
+			value = found > 0 ? parseInt(value.slice(0, found)) : 1
+			
+			if ( sides > 1 ) {
+				rolls += 1
+				
+				while ( value --> 0 ) {
+					sum += 1 + libraryRandomInteger(sides)
+				}
+			}
+		}
+	}
+	
+	if ( target.parentElement.tagName === 'TH' ) {
+		var cell = target.parentElement
+		var row = cell.parentElement
+		var table = row.parentElement
+		count = table.childElementCount
+		
+		if ( rolls === 1 && modifiers === 0 && count === sides + 1 ) {
+			for ( index = 1 ; index < count ; ++index ) {
+				libraryAssignClass(table.children[index], className, index === sum ? 1 : -1)
+			}
+		} else if ( row.firstElementChild === cell ) {
+			for ( index = 1 ; index < count ; ++index ) {
+				value = table.children[index].firstElementChild.textContent
+				value = value.split(/\D+/)
+				value = value.length < 3 ? value.length < 2 ? +value[0] === sum : +value[0] <= sum && sum <= +value[1] : false
+				
+				libraryAssignClass(table.children[index], className, value ? 1 : -1)
+			}
+		}
+	}
+	
+	element.textContent = rolls > 0 ? " : " + sum : ""
+}
+
+function libraryHandleChance(event, chance) {
+	var className = 'rolled'
+	var target = event && (event.currentTarget || event.target)
+	var element = target && target.getElementsByClassName(className)[0]
+	
+	if ( !target || !element ) { return }
+	
+	chance = parseInt(chance)
+	
+	if ( !chance ) { return }
+	
+	let value = 1 + libraryRandomInteger(100)
+	let success = value <= chance
+	
+	libraryAssignClass(element, className + '-success', success ? 1 : -1)
+	libraryAssignClass(element, className + '-failure', success ? -1 : 1)
+	
+	element.textContent = " (" + value + ")"
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 function libraryStripDiacriticals(string) {
@@ -295,8 +388,8 @@ function libraryResolveReferences(text, object) {
 		case "recharge": return "<span class='entries recharge'>" + list + "</span>"
 		case "b": case "bold": return "<span class='entries bold'>" + list + "</span>"
 		case "i": case "italic": return "<span class='entries italic'>" + list + "</span>"
-		case "dice": case "damage": return "<span class='entries " + type + " italic action' onclick='libraryHandleDice(event, \"" + part[0] + "\")'>" + (part[1] || part[0]) + "</span>"
-		case "chance": return "<span class='entries " + type + " action' onclick='libraryHandleChance(event, \"" + part[0] + "\")'>" + (part[1] || part[0] + " percent") + "</span>"
+		case "dice": case "damage": return "<span class='entries " + type + " italic action' onclick='libraryHandleDice(event, \"" + part[0] + "\")'>" + (part[1] || part[0]) + "<span class='rolled'></span></span>"
+		case "chance": return "<span class='entries " + type + " action' onclick='libraryHandleChance(event, \"" + part[0] + "\")'>" + (part[1] || part[0] + " percent") + "<span class='rolled'></span></span>"
 		case "link": return "<span class='entries " + type + " italic'>" + list + "</span>"
 		case "hit": return (+list < 0 ? "" : "+") + list
 		case "atk": return "<span class='entries attack italic'>" + list.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</span> "

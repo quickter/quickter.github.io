@@ -2095,7 +2095,7 @@ var items = {
                     "type": "table",
                     "caption": "",
                     "colLabels": [
-                        "d10",
+                        "{@dice d10}",
                         " Damage Type",
                         "Color"
                     ],
@@ -3722,7 +3722,7 @@ var items = {
                     "type": "table",
                     "caption": "Barrier Peaks Trinkets",
                     "colLabels": [
-                        "d100",
+                        "{@dice d100}",
                         "Trinket"
                     ],
                     "colStyles": [
@@ -4975,7 +4975,7 @@ var items = {
                 {
                     "type": "table",
                     "colLabels": [
-                        "d6",
+                        "{@dice d6}",
                         "Lycanthropy"
                     ],
                     "colStyles": [
@@ -6537,7 +6537,7 @@ var items = {
                             "type": "table",
                             "caption": "Possible Map Mission Landmarks",
                             "colLabels": [
-                                "d8",
+                                "{@dice d8}",
                                 "Landmark"
                             ],
                             "colStyles": [
@@ -7380,7 +7380,7 @@ var items = {
                         "col-10"
                     ],
                     "colLabels": [
-                        "d4",
+                        "{@dice d4}",
                         "Decision"
                     ],
                     "rows": [
@@ -9756,7 +9756,7 @@ var items = {
                 {
                     "type": "table",
                     "colLabels": [
-                        "d12",
+                        "{@dice d12}",
                         "effect"
                     ],
                     "colStyles": [
@@ -10666,7 +10666,7 @@ var items = {
                 {
                     "type": "table",
                     "colLabels": [
-                        "d8",
+                        "{@dice d8}",
                         "Trinket"
                     ],
                     "colStyles": [
@@ -16971,7 +16971,7 @@ var items = {
                     "type": "table",
                     "caption": "1st-Level Spells",
                     "colLabels": [
-                        "d6",
+                        "{@dice d6}",
                         "spell"
                     ],
                     "colStyles": [
@@ -17009,7 +17009,7 @@ var items = {
                     "type": "table",
                     "caption": "2nd-Level Spells",
                     "colLabels": [
-                        "d6",
+                        "{@dice d6}",
                         "spell"
                     ],
                     "colStyles": [
@@ -17047,7 +17047,7 @@ var items = {
                     "type": "table",
                     "caption": "3rd-Level Spells",
                     "colLabels": [
-                        "d6",
+                        "{@dice d6}",
                         "spell"
                     ],
                     "colStyles": [
@@ -17085,7 +17085,7 @@ var items = {
                     "type": "table",
                     "caption": "4th-Level Spells",
                     "colLabels": [
-                        "d4",
+                        "{@dice d4}",
                         "spell"
                     ],
                     "colStyles": [
@@ -17115,7 +17115,7 @@ var items = {
                     "type": "table",
                     "caption": "5th-Level Spells",
                     "colLabels": [
-                        "d4",
+                        "{@dice d4}",
                         "spell"
                     ],
                     "colStyles": [
@@ -17802,7 +17802,7 @@ var items = {
                         {
                             "type": "table",
                             "colLabels": [
-                                "d6",
+                                "{@dice d6}",
                                 "Reading"
                             ],
                             "colStyles": [
@@ -19041,7 +19041,7 @@ var items = {
                     "type": "table",
                     "caption": "Pixie Dust",
                     "colLabels": [
-                        "d100",
+                        "{@dice d100}",
                         "Magical Effect"
                     ],
                     "colStyles": [
@@ -22789,7 +22789,7 @@ var items = {
                     "type": "table",
                     "caption": "Quirks of Your Sending Stone",
                     "colLabels": [
-                        "d8",
+                        "{@dice d8}",
                         "quirk"
                     ],
                     "colStyles": [
@@ -26160,7 +26160,7 @@ var items = {
                                             "type": "table",
                                             "caption": "Personality Traits",
                                             "colLabels": [
-                                                "d8",
+                                                "{@dice d8}",
                                                 "Personality Trait"
                                             ],
                                             "colStyles": [
@@ -26206,7 +26206,7 @@ var items = {
                                             "type": "table",
                                             "caption": "Ideals",
                                             "colLabels": [
-                                                "d6",
+                                                "{@dice d6}",
                                                 "Ideal"
                                             ],
                                             "colStyles": [
@@ -26244,7 +26244,7 @@ var items = {
                                             "type": "table",
                                             "caption": "Bonds",
                                             "colLabels": [
-                                                "d6",
+                                                "{@dice d6}",
                                                 "Bond"
                                             ],
                                             "colStyles": [
@@ -26282,7 +26282,7 @@ var items = {
                                             "type": "table",
                                             "caption": "Flaws",
                                             "colLabels": [
-                                                "d6",
+                                                "{@dice d6}",
                                                 "Flaw"
                                             ],
                                             "colStyles": [
@@ -26756,7 +26756,7 @@ var items = {
                     "type": "table",
                     "caption": "Infernal Machine Properties",
                     "colLabels": [
-                        "d100",
+                        "{@dice d100}",
                         "Beneficial Property",
                         "Detrimental Property"
                     ],
@@ -27859,7 +27859,7 @@ var items = {
                     "type": "table",
                     "caption": "Acquisitions Incorporated Trinkets",
                     "colLabels": [
-                        "d100",
+                        "{@dice d100}",
                         "Trinket"
                     ],
                     "colStyles": [
@@ -30715,7 +30715,7 @@ var items = {
                     "type": "table",
                     "caption": "Things Recorded in Your Whisper Jar",
                     "colLabels": [
-                        "d8",
+                        "{@dice d8}",
                         "Recording"
                     ],
                     "colStyles": [
@@ -33934,7 +33934,7 @@ var items = {
                         "type": "table",
                         "caption": "",
                         "colLabels": [
-                            "d20",
+                            "{@dice d20}",
                             "New Form"
                         ],
                         "colStyles": [

@@ -205,7 +205,7 @@
 					result.hitpoints = hitpoints.average
 					
 					if ( hitpoints.formula ) {
-						result.hitpointstags = " (" + hitpoints.formula + ")"
+						result.hitpointstags = libraryResolveReferences(" ({@dice " + hitpoints.formula + "})")
 					} else {
 						result.hitpointstags = ""
 					}
@@ -312,7 +312,7 @@
 						value = skill[key.toLowerCase()]
 						
 						if ( typeof value === 'string' || typeof value === 'number' ) {
-							array.push(key + " " + value)
+							array.push(key + libraryResolveReferences(" {@dice d20" + value + "|" + value + "}"))
 						}
 					}
 				}
@@ -839,6 +839,12 @@
 				div.details table.abilities th,
 				div.details table.abilities span.ability-score,
 				span.prefix:not(:empty)::before { color:#633; }
+				
+				div.details table.entries tr.rolled { background:#DEF; }
+				div.details span.entries.action { text-decoration:underline; text-decoration-color:#CAA; }
+				div.details span.rolled { color:#666; font-weight:normal; font-style:normal; }
+				div.details span.rolled-success { color:#696; text-decoration-color:inherit; }
+				div.details span.rolled-failure { color:#966; text-decoration-color:inherit; }
 			}
 			
 			@media screen and (hover) and (color) {
@@ -864,6 +870,7 @@
 			@media print {
 				th.monster-selected, td.monster-selected { display:none; }
 				div.filtering, div#controls { display:none; }
+				div.details span.rolled { display:none; }
 				p.source { page-break-after:always; }
 			}
 			

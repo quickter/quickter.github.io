@@ -333,6 +333,10 @@
 				table#library-table label.toggle.close { display:inline-block; position:absolute; border-radius:50%; border:0.25em solid #EEE; bottom:0.375em; right:0.375em; }
 				table#library-table label.toggle.close { font-size:150%; text-align:center; line-height:1.125em; width:1.125em; height:1.125em; }
 				table#library-table input.toggle:checked + label.toggle > a:after { content:" ▲"; opacity:0.25; }
+				
+				div.details table.entries tr.rolled { background:#DEF; }
+				div.details span.entries.action { text-decoration:underline; text-decoration-color:#CCC; }
+				div.details span.rolled { color:#666; font-weight:normal; font-style:normal; }
 			}
 			
 			@media (max-width:600px) {
@@ -498,6 +502,7 @@
 			@media print {
 				th.spell-prepared, td.spell-prepared { display:none; }
 				div.filtering, div#controls { display:none; }
+				div.details span.rolled { display:none; }
 				input.filter, span.caption { display:none; }
 				p.source { page-break-after:always; }
 			}
