@@ -9,393 +9,13 @@
 		<meta name="keywords" content="dnd,5e,dungeons,dragons,magic,items">
 		<meta name="description" content="Magic Items">
 		<script src="data/items.js"></script>
+		<script src="src/library.js"></script>
 		<script src="src/sort.js"></script>
 		
 		<script type="text/javascript">
 			'use strict';
 			
-			function _element(id) {
-				if ( id && Node.ELEMENT_NODE === id.nodeType ) return id;
-				else if ( 'body' === id || 'head' === id ) return document[id];
-				else return document.getElementById(id);
-			}
-			
-			function _assignClass(element, c) {
-				var result = 0;
-				var action = ( arguments.length > 2 ) ? arguments[2] || 0 : 1
-				
-				if ( element.classList && 'function' === typeof element.classList.contains ) {
-					if ( !(action > 0 || action < 0) ) {
-						result = element.classList.toggle(c) ? 1 : -1
-					} else if ( element.classList.contains(c) ) {
-						result = !( action > 0 ) ? element.classList.remove(c) || -1 : 0
-					} else {
-						result = !( action < 0 ) ? element.classList.add(c) || 1 : 0
-					}
-				} else if ( element.className && 'function' === typeof element.className.search ) {
-					var pattern = new RegExp('(^|\\s+)'+c+'(\\s+|$)');
-					
-					if ( element.className.search(pattern) < 0 ) {
-						if ( !(action < 0) ) {
-							element.className = element.className !== "" ? element.className + " " + c : c
-							result = 1
-						}
-					} else {
-						if ( !(action > 0) ) {
-							element.className = element.className.replace(pattern, " ").trim()
-							result = -1
-						}
-					}
-				} else if ( !(action < 0) ) {
-					element.className = c
-					result = 1
-				}
-				
-				return result;
-			}
-			
-			function assignClassToElements(className, selector, ascend, rule) {
-				var element, elements = document.querySelectorAll(selector)
-				var value, climb, index = elements.length
-				var count = index
-				
-				ascend = ascend || 0
-				
-				while ( index --> 0 ) {
-					element = elements[index]
-					value = rule(element)
-					
-					for ( climb = 0 ; climb < ascend ; ++climb ) {
-						element = element.parentElement
-					}
-					
-					if ( _assignClass(element, className, value) > 0 || value > 0 ) {
-						count -= 1
-					}
-				}
-				
-				return count
-			}
-			
-			function inflateParameters(result, string, leading, separator) {
-				if ( string.charAt(0) === leading ) { string = string.slice(1) }
-				
-				var part, parts = string.split(separator)
-				var object = result || {}
-				var equals, value, key
-				
-				for ( part of parts ) {
-					equals = part.indexOf('=')
-					value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
-					key = (equals < 0) ? part : part.slice(0, equals)
-					
-					object[key] = value
-				}
-				
-				return object
-			}
-			
-			function selectorAssignChecked(selector, checked) {
-				var selectorChecked = selector + ':checked'
-				var selectorUnchecked = selector + ':not(:checked)'
-				var element, elements, index
-				
-				if ( checked ) {
-					checked = checked > 0
-					elements = document.querySelectorAll(checked ? selectorUnchecked : selectorChecked)
-				} else {
-					var elementsChecked = document.querySelectorAll(selectorChecked)
-					var elementsUnchecked = document.querySelectorAll(selectorUnchecked)
-					
-					checked = elementsUnchecked.length > elementsChecked.length
-					elements = checked ? elementsUnchecked : elementsChecked
-				}
-				
-				index = elements.length
-				
-				while ( index --> 0 ) {
-					element = elements[index]
-					
-					if ( element.checked !== checked ) {
-						element.checked = checked
-						
-						if ( typeof element.onchange === 'function' ) { element.onchange() }
-					}
-				}
-			}
-			
-			function filterAssignToggleChecked(value) {
-				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.name > input.toggle', value)
-			}
-			
-			function filterAssignChosenChecked(value) {
-				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.selected > input.selection', value)
-			}
-			
-			function filterPrimaryByChosen() {
-				var count = assignClassToElements('filtered', 'table#primary-table tr.primary > td.selected > input.selection', 2, function (e) { return e.checked ? -1 : 1 })
-				
-				filterApplied(count)
-			}
-			
-			function filterPrimaryByToggle() {
-				var count = assignClassToElements('filtered', 'table#primary-table tr.primary > td.name > input.toggle', 2, function (e) { return e.checked ? -1 : 1 })
-				
-				filterApplied(count)
-			}
-			
-			function filterPrimaryByName(pattern) {
-				var className = 'filtered'
-				var selector = 'table#primary-table tr.primary > td.name'
-				var table = _element('primary-table')
-				var text = table.primaryItemText
-				var count
-				
-				if ( !pattern ) {
-					count = assignClassToElements(className, selector, 1, function (e) { return -1 })
-					count = 0
-				} else if ( pattern.search(/[[?*.|^${}\\]/) < 0 ) {
-					pattern = pattern.toLowerCase()
-					count = assignClassToElements(className, selector, 1, function (e) { return text[e.id.slice(5)].toLowerCase().indexOf(pattern) < 0 ? 1 : -1 })
-				} else {
-					try { pattern = new RegExp(pattern, 'ius') }
-					catch (error) { return }
-					
-					count = assignClassToElements(className, selector, 1, function (e) { return text[e.id.slice(5)].search(pattern) < 0 ? 1 : -1 })
-				}
-				
-				filterApplied(count)
-				
-				if ( count > 0 && count < 4 ) {
-					filterAssignToggleChecked(1)
-				}
-			}
-			
-			function filterPrimaryByKeys(keys) {
-				var form = _element('primary-form')
-				var recognized = []
-				var key
-				
-				for ( key of keys ) {
-					key = key.trim()
-					
-					if ( form['select_' + key] ) {
-						form['select_' + key].checked = true
-						recognized.push(key)
-					} else {
-						console.log("unrecognized item key " + key)
-					}
-				}
-				
-				if ( recognized.length > 0 ) {
-					filterPrimaryByChosen()
-					
-					if ( recognized.length < 30 ) {
-						filterAssignToggleChecked(1)
-					}
-				}
-			}
-			
-			function filterPrimaryBySearch(value) {
-				if ( value === '#' ) {
-					filterPrimaryByChosen()
-				} else if ( value === '/' ) {
-					filterPrimaryByToggle()
-				} else {
-					filterPrimaryByName(value)
-				}
-			}
-			
-			function filterApplied(count) {
-				var element = _element('primary-filter-count')
-				
-				if ( element ) {
-					element.textContent = count || ''
-				}
-				
-				element = _element('select-all')
-				
-				handleSelect(false)
-			}
-			
-			function handleHashChanged(event) {
-				var hash = location.hash
-				
-				if ( hash && hash.length > 1 ) {
-					var keys = hash.slice(1).split(',')
-					
-					filterPrimaryByKeys(keys)
-					
-					_element('primary-filter').value = '#'
-				} else {
-					filterPrimaryByName('')
-				}
-			}
-			
-			function handleSelect(key) {
-				var share = _element('share-selection')
-				var selector = 'table#primary-table tr:not(.filtered) > td.selected > input.selection'
-				var elementsChecked = document.querySelectorAll(selector + ':checked')
-				var elementsUnchecked = document.querySelectorAll(selector + ':not(:checked)')
-				
-				if ( share ) {
-					var keys = Array.prototype.map.call(elementsChecked, function (e) { return e.id.slice(7) })
-					var hash = keys.sort().join(",")
-					
-					share.href = "#" + hash
-				}
-				
-				var all = _element('select-all')
-				
-				if ( all ) {
-					all.indeterminate = elementsChecked.length > 0 && elementsUnchecked.length > 0
-					all.checked = elementsChecked.length > elementsUnchecked.length
-				}
-			}
-			
-			function handleToggle(key) {
-				populatePrimaryItem(key)
-			}
-			
-			function handleSearch(event) {
-				var value = typeof event === 'string' ? event : event.target.value || ""
-				
-				filterPrimaryBySearch(value)
-			}
-			
-			function handleSubmit(event) {
-				var value = event.target.f.value
-				
-				filterPrimaryBySearch(value)
-				
-				event.preventDefault()
-				
-				return false
-			}
-			
-			function stripDiacriticals(string) {
-				if ( typeof string.normalize === 'function' ) {
-					return string.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
-				} else {
-					return string.replace('é', 'e')
-				}
-			}
-			
-			function referenceKey(name) {
-				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’(){}×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
-			}
-			
-			function resolveReferences(text, object) {
-				text = text.replace(/\{=([^{}]+)\}/g, function (match, list) {
-					var part = list.split('/'), key = part[0], value = object[key]
-					
-					if ( value && part.length > 1 ) {
-						switch ( part[1] ) {
-						case 'l': value = value.toLocaleLowerCase(); break
-						case 'u': value = value.toLocaleUpperCase(); break
-						case 'a': value = "a"; break
-						case 'at': value = "A"; break
-						}
-					}
-					
-					return "<span class='property " + key + "'>" + (value || '-') + "</span>"
-				})
-				
-				text = text.replace(/\{@([^{} ]+)\s+([^{}]+)\}/g, function (match, type, list) {
-					var part = list.split('|')
-					
-					switch ( type ) {
-					case "h": return "<span class='entries hit italic'>Hit: " + list + "</span> "
-					case "recharge": return "<span class='entries recharge'>" + list + "</span>"
-					case "b": case "bold": return "<span class='entries bold'>" + list + "</span>"
-					case "i": case "italic": return "<span class='entries italic'>" + list + "</span>"
-					case "dice": case "damage": return "<span class='entries " + type + " italic' onclick='handleDice(event, \"" + part[0] + "\")'>" + (part[1] || part[0]) + "</span>"
-					case "chance": return "<span class='entries " + type + "' onclick='handleChance(event, \"" + part[0] + "\")'>" + (part[1] || part[0] + " percent") + "</span>"
-					case "link": return "<span class='entries " + type + " italic'>" + list + "</span>"
-					case "hit": return (+list < 0 ? "" : "+") + list
-					case "atk": return "<span class='entries attack italic'>" + list.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</span> "
-					case "dc": return list
-					case "item": return "<a class='entries item' href='items.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
-					case "spell": return "<a class='entries spell italic' href='spells.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
-					case "creature": return "<a class='entries creature' href='bestiary.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
-					case "condition": case "skill": case "sense": case "action": case "hazard": return "<span class='entries " + type + "'>" + part[0] + "</span>"
-					case "filter": return (part.length > 2 && part[1] === 'spells') ? "<a class='entries spell italic' href='spells.html?" + part[2] + "'>" + part[0] + "</a>" : "<span class='entries italic " + type + "'>" + part[0] + "</span>"
-					case "adventure": return "<span class='entries italic " + type + "'>" + part[0] + "</span>"
-					case "table": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
-					case "book": return "<span class='entries italic " + type + "'>" + (part[3] || part[0]) + "</span>"
-					default: return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
-					}
-				})
-				
-				text = text.replace(/\{@h\}/g, "<span class='entries hit italic'>Hit:</span> ")
-				text = text.replace(/\{@recharge\}/g, "<span class='entries recharge'></span>")
-				
-				return text
-			}
-			
-			function descriptionFromEntries(entries, begin, close, depth) {
-				var result = ""
-				
-				depth = depth | 0
-				
-				var depthClass = depth > 0 ? " entries-depth-" + depth : ""
-				
-				if ( Array.isArray(entries) ) {
-					result += entries.map(function (e) { return descriptionFromEntries(e, begin, close, depth) }).join("")
-				} else if ( !entries ) {
-					result = ""
-				} else if ( typeof entries === 'string' ) {
-					result = begin + entries + close
-				} else if ( typeof entries === 'number' ) {
-					result = begin + entries + close
-				} else if ( entries.type === 'table' && Array.isArray(entries.rows) ) {
-					result = "<table class='entries" + depthClass + "'>"
-					
-					if ( entries.caption ) {
-						result += "<caption>" + entries.caption + "</caption>"
-					}
-					
-					if ( entries.colLabels && Array.isArray(entries.colLabels) && entries.colLabels.length > 0 ) {
-						result += "<tr>" + entries.colLabels.map(function (h) { return "<th>" + h + "</th>" }).join("") + "</tr>"
-					}
-					
-					result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + descriptionFromEntries(c, "", "", depth + 1) + "</td>" }).join("") + "</tr>" }).join("")
-					result += "</table>"
-				} else if ( entries.type === 'cell' && entries.roll ) {
-					result = begin + entries.roll.entry + close
-				} else if ( entries.type === 'list' ) {
-					var list = entries.entries || entries.items
-					var text = list.filter(function (i) { return typeof i === 'string' })
-					var term = list.filter(function (i) { return i.name && i.entry })
-					
-					if ( text.length > 0 ) {
-						result = "<ul class='entries" + depthClass + "'>" + descriptionFromEntries(text, "<li>", "</li>", depth + 1) + "</ul>"
-					}
-					
-					if ( term.length > 0 ) {
-						result = "<dl class='entries compact" + depthClass + "'>" +
-							term.map(function (i) { return "<dt>" + i.name + "</dt><dd>" + i.entry + "</dd>" }).join("") + "</dl>"
-					}
-				} else if ( entries.type === 'inset' && entries.entries ) {
-					result = "<dl class='entries" + depthClass + "'><dt>" + entries.name + "</dt>" +
-						descriptionFromEntries(entries.entries, "<dd>", "</dd>", depth + 1) + "</dl>"
-				} else if ( entries.name && entries.entries ) {
-					var spacer = "<br /><span class='indent entries" + depthClass + "'></span>"
-					
-					result = begin + "<span class='prominent entries" + depthClass + "'>" + entries.name + "</span> " +
-						descriptionFromEntries(entries.entries, "<span class='follow entries" + depthClass + "'>", "</span>" + spacer, depth + 1) + close
-					
-					result = result.replace(spacer + close, close)
-				} else if ( entries.entries ) {
-					result = descriptionFromEntries(entries.entries, begin, close, depth + 1)
-				} else {
-					result = begin + entries.type + close
-				}
-				
-				return result
-			}
-			
-			function parseItem(masterItem, lookup) {
+			function parseTreasureItem(masterItem, lookup) {
 				var rarity, category, source
 				var styles, attunement, isMajor
 				var attuneAbbreviation = ["◦", "⚪︎", "•", "⚫︎"]
@@ -422,7 +42,7 @@
 				item = new Object()
 				item.name = masterItem.name
 				item.type = type
-				item.key = referenceKey(item.name)
+				item.key = libraryKey(item.name)
 				entries = masterItem['entries']
 				
 				if ( masterItem.inherits ) {
@@ -482,7 +102,7 @@
 				item['attunekey'] = (attunement ? 2 : 0) + (isMajor ? 1 : 0)
 				item['attune'] = attuneAbbreviation[item.attunekey]
 				item['attunename'] = attuneName[item.attunekey]
-				item['description'] = resolveReferences(descriptionFromEntries(entries, "<p>", "</p>"), masterItem)
+				item['description'] = libraryResolveReferences(libraryResolveEntries(entries, "<p>", "</p>"), masterItem)
 				item['namekey'] = item.name.replace(/['‘’]/g, '')
 				item['raritytag'] = rarity && rarity.tag || item.rarity || false
 				item['raritykey'] = rarity && rarity.order || 0
@@ -498,7 +118,7 @@
 				return item
 			}
 			
-			function magicItemsReadyToDisplay(treasure) {
+			function parseTreasureItems(treasure) {
 				var result = []
 				var lookup = new Object()
 				var lookupKeys = ['rarities', 'categories', 'sources']
@@ -526,7 +146,7 @@
 					if ( excludeRarity.indexOf((masterItem.inherits || masterItem).rarity) >= 0 ) { continue }
 					if ( excludeSource.indexOf((masterItem.inherits || masterItem).source) >= 0 ) { continue }
 					
-					item = parseItem(masterItem, lookup)
+					item = parseTreasureItem(masterItem, lookup)
 					styles = []
 					
 					if ( item.tier ) { styles.push(item.tier) }
@@ -541,7 +161,7 @@
 					text = [
 						item.name, item.caption, item.description, item.sourcename, "pg " + item.page
 					]
-					item.plainText = text.join(" ").replace(/<[^<>]+>/g, ' ').replace(/\s+/g, ' ')
+					item.searchableText = text.join(" ")
 					
 					result.push(item)
 				}
@@ -551,7 +171,7 @@
 				return result
 			}
 			
-			function primaryItemContent(item) {
+			function renderItem(item) {
 				var template = "" +
 					"<p class='item-caption'>{caption}</p>" +
 					"{description}" +
@@ -559,15 +179,12 @@
 					"<label for='toggle-{key}' class='toggle close action'>&mdash;</label>" +
 					""
 				
-				var pattern = /\{([^ {}]+)\}/g
-				var html = template.replace(pattern, function (match, key) { return item[key] })
-				
-				return html
+				return libraryRenderTemplateItem(template, item)
 			}
 			
-			function primaryTableContent(list) {
-				var rowTemplate = "<tr id='item-{key}' class='primary item {styles}'>" +
-					"<td class='selected item-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='handleSelect(\"{key}\")' /></td>" +
+			function renderItemTable(list) {
+				var rowTemplate = "<tr id='item-{key}' class='library item {styles}'>" +
+					"<td class='selected item-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='libraryHandleSelect(\"{key}\")' /></td>" +
 					"<td class='name item-name natural' id='name-{key}' data-sort-key='{namekey}'>" +
 						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' onchange='handleToggle(\"{key}\")' />" +
 						"<label for='toggle-{key}' class='toggle item-name'><a id='{key}' class='item-name'>{name}</a></label>" +
@@ -580,7 +197,7 @@
 					"<td class='item-source natural' title='{sourcename}'>{source}</td>" +
 				"</tr>"
 				
-				var header = "<tr id='item-header' class='primary item header'>" +
+				var header = "<tr id='item-header' class='library item header'>" +
 					"<th class='item-selected sortable' data-sort-invert> </th>" +
 					"<th class='item-name natural sortable' data-sort-format='locale'>Name</th>" +
 					"<th class='item-type natural sortable' data-sort-format='normal'>Type</th>" +
@@ -589,63 +206,16 @@
 					"<th class='item-source natural sortable' data-sort-format='normal'>From</th>" +
 				"</tr>"
 				
-				var pattern = /{([^ {}]+)}/g
-				var rows = list.map(function (item) { return rowTemplate.replace(pattern, function (match, key) { return item[key] }) })
-				
-				return header + rows.join("")
+				return header + libraryRenderTemplateItemArray(rowTemplate, list).join("")
 			}
 			
-			function populatePrimaryItem(item) {
-				var key
-				
-				if ( typeof item === 'string' ) {
-					key = item
-					item = false
-				} else {
-					key = item.key
-				}
-				
-				var element = key && _element('inner-' + key)
-				
-				if ( !element || element.childElementCount > 0 ) {
-					return
-				}
-				
-				if ( !item ) {
-					var table = _element('primary-table')
-					var list = table.primaryItemList
-					
-					item = table.primaryItemList[key]
-					
-					if ( item ) {
-						delete table.primaryItemList[key]
-					} else {
-						return
-					}
-				}
-				
-				element.innerHTML = primaryItemContent(item)
-			}
-			
-			function populatePrimaryTable(list) {
-				var table = _element('primary-table')
-				var html = primaryTableContent(list)
-				var item, searchableText = new Object(), searchableItem = new Object()
-				
-				for ( item of list ) {
-					searchableItem[item.key] = item
-					searchableText[item.key] = item.plainText
-				}
-				
-				table.primaryItemList = searchableItem
-				table.primaryItemText = searchableText
-				table.innerHTML = html
-				tableSort(table)
+			function handleToggle(key) {
+				libraryPopulateItem(key, renderItem)
 			}
 			
 			function applyParameters() {
-				var form = _element('primary-form')
-				var object = inflateParameters(null, location.search, '?', '&')
+				var form = libraryForm()
+				var object = libraryInflateParameters(null, location.search, '?', '&')
 				var key, value
 				
 				value = object['f']
@@ -656,13 +226,19 @@
 				}
 			}
 			
-			function populatePage() {
-				_element('primary-form').addEventListener('submit', handleSubmit)
-				window.addEventListener('hashchange', handleHashChanged)
+			function populateLibrary(items) {
+				var table = libraryPopulateTable(items, renderItemTable)
 				
-				populatePrimaryTable(magicItemsReadyToDisplay(items))
+				tableSort(table)
+			}
+			
+			function populatePage() {
+				libraryForm().addEventListener('submit', libraryHandleSubmit)
+				window.addEventListener('hashchange', libraryHandleHashChanged)
+				
+				populateLibrary(parseTreasureItems(items))
 				applyParameters()
-				handleHashChanged()
+				libraryHandleHashChanged()
 			}
 		</script>
 		
@@ -691,8 +267,8 @@
 			div#controls { position:absolute; right:2em; top:1.5em; }
 			a#share-selection { font-size:150%; color:inherit; text-decoration:none; border-bottom:2px solid #999; }
 			
-			input#primary-filter { font-size:100%; max-width:98%; }
-			span#primary-filter-count { opacity:0.5; font-size:60%; }
+			input#library-filter { font-size:100%; max-width:98%; }
+			span#library-filter-count { opacity:0.5; font-size:60%; }
 			
 			input.toggle, input.filter { display:none; }
 			input.toggle:not(:checked) ~ div.toggled { display:none; }
@@ -702,11 +278,11 @@
 			div.details > div.details.inner { position:relative; width:40em; max-width:70vw; line-height:1.5; padding:0 1em; margin:0.5em 0; background:#FAFAFA; border:1px solid #EEE; }
 			div.details span.entries.indent + span.entries { margin-left:1em }
 			
-			table#primary-table label.toggle.close { display:none; }
+			table#library-table label.toggle.close { display:none; }
 			@media screen {
-				table#primary-table label.toggle.close { display:inline-block; position:absolute; border-radius:50%; border:0.25em solid #EEE; bottom:0.375em; right:0.375em; }
-				table#primary-table label.toggle.close { font-size:150%; text-align:center; line-height:1.125em; width:1.125em; height:1.125em; }
-				table#primary-table input.toggle:checked + label.toggle > a:after { content:" ▲"; opacity:0.25; }
+				table#library-table label.toggle.close { display:inline-block; position:absolute; border-radius:50%; border:0.25em solid #EEE; bottom:0.375em; right:0.375em; }
+				table#library-table label.toggle.close { font-size:150%; text-align:center; line-height:1.125em; width:1.125em; height:1.125em; }
+				table#library-table input.toggle:checked + label.toggle > a:after { content:" ▲"; opacity:0.25; }
 			}
 			
 			@media (max-width:420px) {
@@ -717,17 +293,17 @@
 			td.center, th.center { text-align:center; }
 			td.natural, th.natural { text-align:left; }
 			
-			table#primary-table { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
-			table#primary-table tr.primary { border-bottom:0.25px solid #DDD; }
-			table#primary-table tr.primary > td, #primary-table tr.primary > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
-			table#primary-table a.item-name { display:block; cursor:pointer; }
+			table#library-table { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
+			table#library-table tr.library { border-bottom:0.25px solid #DDD; }
+			table#library-table tr.library > td, #library-table tr.library > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
+			table#library-table a.item-name { display:block; cursor:pointer; }
 			
-			table#primary-table { table-layout:fixed; width:100%; }
-			table#primary-table tr.primary > th.item-selected { width:1.25em; }
-			table#primary-table tr.primary > th.item-rarity,
-			table#primary-table tr.primary > th.item-attune { width:1.5em; }
-			table#primary-table tr.primary > th.item-type,
-			table#primary-table tr.primary > th.item-source { width:3em; }
+			table#library-table { table-layout:fixed; width:100%; }
+			table#library-table tr.library > th.item-selected { width:1.25em; }
+			table#library-table tr.library > th.item-rarity,
+			table#library-table tr.library > th.item-attune { width:1.5em; }
+			table#library-table tr.library > th.item-type,
+			table#library-table tr.library > th.item-source { width:3em; }
 			
 			td.item-type, td.item-source { font-size:80%; }
 			div.details p:not(:first-of-type) { text-indent:1em; }
@@ -759,27 +335,27 @@
 			th.sortable.sorted-descending { text-decoration:overline; }
 			th.sortable.sorted-ascending { text-decoration:underline; }
 			
-			input#filter-rarity-mundane:not(:checked) ~ table#primary-table tr.mundane { display:none; }
-			input#filter-rarity-common:not(:checked) ~ table#primary-table tr.common { display:none; }
-			input#filter-rarity-uncommon:not(:checked) ~ table#primary-table tr.uncommon { display:none; }
-			input#filter-rarity-rare:not(:checked) ~ table#primary-table tr.rare { display:none; }
-			input#filter-rarity-veryrare:not(:checked) ~ table#primary-table tr.veryrare { display:none; }
-			input#filter-rarity-legendary:not(:checked) ~ table#primary-table tr.legendary { display:none; }
-			input#filter-rarity-artifact:not(:checked) ~ table#primary-table tr.artifact { display:none; }
+			input#filter-rarity-mundane:not(:checked) ~ table#library-table tr.mundane { display:none; }
+			input#filter-rarity-common:not(:checked) ~ table#library-table tr.common { display:none; }
+			input#filter-rarity-uncommon:not(:checked) ~ table#library-table tr.uncommon { display:none; }
+			input#filter-rarity-rare:not(:checked) ~ table#library-table tr.rare { display:none; }
+			input#filter-rarity-veryrare:not(:checked) ~ table#library-table tr.veryrare { display:none; }
+			input#filter-rarity-legendary:not(:checked) ~ table#library-table tr.legendary { display:none; }
+			input#filter-rarity-artifact:not(:checked) ~ table#library-table tr.artifact { display:none; }
 			
-			input#filter-category-ammo:not(:checked) ~ table#primary-table tr.ammo { display:none; }
-			input#filter-category-armor:not(:checked) ~ table#primary-table tr.armor { display:none; }
-			input#filter-category-focus:not(:checked) ~ table#primary-table tr.focus { display:none; }
-			input#filter-category-music:not(:checked) ~ table#primary-table tr.music { display:none; }
-			input#filter-category-potion:not(:checked) ~ table#primary-table tr.potion { display:none; }
-			input#filter-category-poison:not(:checked) ~ table#primary-table tr.poison { display:none; }
-			input#filter-category-rod:not(:checked) ~ table#primary-table tr.rod { display:none; }
-			input#filter-category-ring:not(:checked) ~ table#primary-table tr.ring { display:none; }
-			input#filter-category-shield:not(:checked) ~ table#primary-table tr.shield { display:none; }
-			input#filter-category-staff:not(:checked) ~ table#primary-table tr.staff { display:none; }
-			input#filter-category-scroll:not(:checked) ~ table#primary-table tr.scroll { display:none; }
-			input#filter-category-wand:not(:checked) ~ table#primary-table tr.wand { display:none; }
-			input#filter-category-magic:not(:checked) ~ table#primary-table tr.magic { display:none; }
+			input#filter-category-ammo:not(:checked) ~ table#library-table tr.ammo { display:none; }
+			input#filter-category-armor:not(:checked) ~ table#library-table tr.armor { display:none; }
+			input#filter-category-focus:not(:checked) ~ table#library-table tr.focus { display:none; }
+			input#filter-category-music:not(:checked) ~ table#library-table tr.music { display:none; }
+			input#filter-category-potion:not(:checked) ~ table#library-table tr.potion { display:none; }
+			input#filter-category-poison:not(:checked) ~ table#library-table tr.poison { display:none; }
+			input#filter-category-rod:not(:checked) ~ table#library-table tr.rod { display:none; }
+			input#filter-category-ring:not(:checked) ~ table#library-table tr.ring { display:none; }
+			input#filter-category-shield:not(:checked) ~ table#library-table tr.shield { display:none; }
+			input#filter-category-staff:not(:checked) ~ table#library-table tr.staff { display:none; }
+			input#filter-category-scroll:not(:checked) ~ table#library-table tr.scroll { display:none; }
+			input#filter-category-wand:not(:checked) ~ table#library-table tr.wand { display:none; }
+			input#filter-category-magic:not(:checked) ~ table#library-table tr.magic { display:none; }
 			
 			input#filter-require-curse:checked ~ table#spells tr:not(.is-curse):not(.header) { display:none; }
 			input#filter-exclude-curse:checked ~ table#spells tr.is-curse { display:none; }
@@ -811,18 +387,18 @@
 	<body onload='populatePage()'>
 		<h4>Items</h4>
 		
-		<div id='primary-content-list'>
-			<form id='primary-form'>
+		<div id='library-content-list'>
+			<form id='library-form'>
 				<div id='controls'>
 					<a id='share-selection' href='' title='Share selection'>⇧</a>
 				</div>
 				<div class='filtering'>
-					<input type='checkbox' id='select-all' name='a' onclick='filterAssignChosenChecked(checked ? 1 : -1)' title='Tap to select matches.' />
+					<input type='checkbox' id='select-all' name='a' onclick='libraryChooseUnfiltered(checked ? 1 : -1)' title='Tap to select matches.' />
 					<label for='select-all'>&nbsp;</label>
-					<input type='search' id='primary-filter' name='f' size='36' placeholder='Filter' oninput='handleSearch(event)'>
-					<span id='primary-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
+					<input type='search' id='library-filter' name='f' size='36' placeholder='Filter' oninput='libraryHandleSearch(event)'>
+					<span id='library-filter-count' class='action' onclick='libraryToggleUnfiltered()' title='Number of matches.  Tap to expand.'></span>
 				</div>
-				<table id='primary-table'><tr><td>Loading...</td></tr></table>
+				<table id='library-table'><tr><td>Loading...</td></tr></table>
 			</form>
 		</div>
 	</body>

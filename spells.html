@@ -9,449 +9,137 @@
 		<meta name="keywords" content="dnd,5e,dungeons,dragons,magic,spells">
 		<meta name="description" content="Spells">
 		<script src="data/spells.js"></script>
+		<script src="src/library.js"></script>
 		<script src="src/sort.js"></script>
 		
 		<script type="text/javascript">
 			'use strict';
 			
-			function _element(id) {
-				if ( id && Node.ELEMENT_NODE === id.nodeType ) return id;
-				else if ( 'body' === id || 'head' === id ) return document[id];
-				else return document.getElementById(id);
-			}
-			
-			function _assignClass(element, c) {
-				var result = 0;
-				var action = ( arguments.length > 2 ) ? arguments[2] || 0 : 1
+			function parseSpell(s) {
+				var spell = new Object()
+				var keys = ['name', 'level', 'school', 'casting_time', 'range', 'components', 'material', 'duration', 'ritual', 'concentration', 'defense', 'attack', 'save', 'permanent', 'damage', 'damage_type', 'classes', 'desc', 'higher_level', 'book', 'page', 'circles', 'oaths', 'domains', 'patrons', 'archetype']
+				var key, value, scalar, casting
+				var styles = []
 				
-				if ( element.classList && 'function' === typeof element.classList.contains ) {
-					if ( !(action > 0 || action < 0) ) {
-						result = element.classList.toggle(c) ? 1 : -1
-					} else if ( element.classList.contains(c) ) {
-						result = !( action > 0 ) ? element.classList.remove(c) || -1 : 0
-					} else {
-						result = !( action < 0 ) ? element.classList.add(c) || 1 : 0
-					}
-				} else if ( element.className && 'function' === typeof element.className.search ) {
-					var pattern = new RegExp('(^|\\s+)'+c+'(\\s+|$)');
-					
-					if ( element.className.search(pattern) < 0 ) {
-						if ( !(action < 0) ) {
-							element.className = element.className !== "" ? element.className + " " + c : c
-							result = 1
-						}
-					} else {
-						if ( !(action > 0) ) {
-							element.className = element.className.replace(pattern, " ").trim()
-							result = -1
-						}
-					}
-				} else if ( !(action < 0) ) {
-					element.className = c
-					result = 1
-				}
-				
-				return result;
-			}
-			
-			function assignClassToElements(className, selector, ascend, rule) {
-				var element, elements = document.querySelectorAll(selector)
-				var value, climb, index = elements.length
-				var count = index
-				
-				ascend = ascend || 0
-				
-				while ( index --> 0 ) {
-					element = elements[index]
-					value = rule(element)
-					
-					for ( climb = 0 ; climb < ascend ; ++climb ) {
-						element = element.parentElement
-					}
-					
-					if ( _assignClass(element, className, value) > 0 || value > 0 ) {
-						count -= 1
-					}
-				}
-				
-				return count
-			}
-			
-			function inflateParameters(result, string, leading, separator) {
-				if ( string.charAt(0) === leading ) { string = string.slice(1) }
-				
-				var part, parts = string.split(separator)
-				var object = result || {}
-				var equals, value, key
-				
-				for ( part of parts ) {
-					equals = part.indexOf('=')
-					value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
-					key = (equals < 0) ? part : part.slice(0, equals)
-					
-					object[key] = value
-				}
-				
-				return object
-			}
-			
-			function selectorAssignChecked(selector, checked) {
-				var selectorChecked = selector + ':checked'
-				var selectorUnchecked = selector + ':not(:checked)'
-				var element, elements, index
-				
-				if ( checked ) {
-					checked = checked > 0
-					elements = document.querySelectorAll(checked ? selectorUnchecked : selectorChecked)
-				} else {
-					var elementsChecked = document.querySelectorAll(selectorChecked)
-					var elementsUnchecked = document.querySelectorAll(selectorUnchecked)
-					
-					checked = elementsUnchecked.length > elementsChecked.length
-					elements = checked ? elementsUnchecked : elementsChecked
-				}
-				
-				index = elements.length
-				
-				while ( index --> 0 ) {
-					element = elements[index]
-					
-					if ( element.checked !== checked ) {
-						element.checked = checked
-						
-						if ( typeof element.onchange === 'function' ) { element.onchange() }
-					}
-				}
-			}
-			
-			function filterAssignToggleChecked(value) {
-				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.name > input.toggle', value)
-			}
-			
-			function filterAssignChosenChecked(value) {
-				selectorAssignChecked('table#primary-table tr:not(.filtered) > td.selected > input.selection', value)
-			}
-			
-			function filterPrimaryByChosen() {
-				var count = assignClassToElements('filtered', 'table#primary-table tr.primary > td.selected > input.selection', 2, function (e) { return e.checked ? -1 : 1 })
-				
-				filterApplied(count)
-			}
-			
-			function filterPrimaryByToggle() {
-				var count = assignClassToElements('filtered', 'table#primary-table tr.primary > td.name > input.toggle', 2, function (e) { return e.checked ? -1 : 1 })
-				
-				filterApplied(count)
-			}
-			
-			function filterPrimaryByName(pattern) {
-				var className = 'filtered'
-				var selector = 'table#primary-table tr.primary > td.name'
-				var table = _element('primary-table')
-				var text = table.primaryItemText
-				var count
-				
-				if ( !pattern ) {
-					count = assignClassToElements(className, selector, 1, function (e) { return -1 })
-					count = 0
-				} else if ( pattern.search(/[[?*.|^${}\\]/) < 0 ) {
-					pattern = pattern.toLowerCase()
-					count = assignClassToElements(className, selector, 1, function (e) { return text[e.id.slice(5)].toLowerCase().indexOf(pattern) < 0 ? 1 : -1 })
-				} else {
-					try { pattern = new RegExp(pattern, 'ius') }
-					catch (error) { return }
-					
-					count = assignClassToElements(className, selector, 1, function (e) { return text[e.id.slice(5)].search(pattern) < 0 ? 1 : -1 })
-				}
-				
-				filterApplied(count)
-				
-				if ( count > 0 && count < 4 ) {
-					filterAssignToggleChecked(1)
-				}
-			}
-			
-			function filterPrimaryByKeys(keys) {
-				var form = _element('primary-form')
-				var recognized = []
-				var key
+				spell['key'] = libraryKey(s.name)
 				
 				for ( key of keys ) {
-					key = key.trim()
-					
-					if ( form['select_' + key] ) {
-						form['select_' + key].checked = true
-						recognized.push(key)
-					} else {
-						console.log("unrecognized spell key " + key)
-					}
+					if ( s[key] !== undefined && s[key] !== false ) { spell[key] = s[key] }
 				}
 				
-				if ( recognized.length > 0 ) {
-					filterPrimaryByChosen()
-					
-					if ( recognized.length < 30 ) {
-						filterAssignToggleChecked(1)
-					}
-				}
-			}
-			
-			function filterPrimaryBySearch(value) {
-				if ( value === '#' ) {
-					filterPrimaryByChosen()
-				} else if ( value === '/' ) {
-					filterPrimaryByToggle()
+				value = spell['archetype']
+				if ( value && value.length > 0 ) {
+					value = value.concat(spell['classes'])
+					value.sort()
+					styles.push('archetype')
 				} else {
-					filterPrimaryByName(value)
+					value = spell['classes']
 				}
+				spell['classnames'] = value.join(", ")
+				spell['classstyles'] = value.map(function (c) { return c.replace(/[: ]+/g, '-') })
+				
+				styles.push('level-' + spell['level'])
+				styles.push('book-' + spell['book'])
+				styles.push('' + spell['school'].toLowerCase())
+				styles.push.apply(styles, spell['classstyles'])
+				styles.push(spell['higher_level'] ? 'has-higher-level' : 'not-higher-level')
+				styles.push(spell['save'] ? 'has-save' : 'not-save')
+				styles.push(spell['damage'] ? 'is-damage' : 'not-damage')
+				styles.push(spell['attack'] ? 'is-attack' : 'not-attack')
+				styles.push(spell['defense'] ? 'is-defense' : 'not-defense')
+				styles.push(spell['permanent'] ? 'is-permanent' : 'not-permanent')
+				styles.push(spell['ritual'] ? 'is-ritual' : 'not-ritual')
+				styles.push(spell['concentration'] ? 'is-concentration' : 'not-concentration')
+				
+				value = spell['damage_type']
+				if ( value && value != '*' ) { styles.push(value) }
+				
+				value = spell['casting_time'].toLowerCase()
+				if ( value.indexOf('reaction') > 0 ) { casting = 1/32 }
+				else if ( value.indexOf('bonus') > 0 ) { casting = 1/16 }
+				else if ( value.indexOf('action') > 0 ) { casting = 1/8 }
+				else if ( value.indexOf('minute') > 0 ) { casting = parseInt(value) || 1 }
+				else if ( value.indexOf('hour') > 0 ) { casting = (parseInt(value) || 1) * 60 }
+				else { casting = 0 }
+				
+				if ( casting < 1/16 ) { styles.push('reaction'); value = "Reaction" }
+				else if ( casting < 1/8 ) { styles.push('bonusaction'); value = "Bonus" }
+				else if ( casting < 1 ) { styles.push('action'); value = "Action" }
+				else if ( casting < 60 ) { styles.push('cast-minutes'); value = casting + "m" }
+				else { styles.push('cast-hours'); value = (casting / 60) + "h" }
+				spell['castingkey'] = casting
+				spell['casting'] = value
+				
+				scalar = 1
+				value = spell['duration']
+				if ( 'Up to ' === value.substring(0, 6) ) { value = value.substring(6); scalar = 15/16 }
+				if ( value === 'Instantaneous' ) { value = 0 }
+				else if ( value === 'Instantaneous/1 hour' ) { value = 61 }
+				else if ( value === 'Until dispelled' ) { value = 2000000000 }
+				else if ( value === 'Special' ) { value = 1000000000 }
+				else if ( value.indexOf('round') > 0 ) { value = parseInt(value) * scalar / 10 }
+				else if ( value.indexOf('minute') > 0 ) { value = parseInt(value) * scalar }
+				else if ( value.indexOf('hour') > 0 ) { value = parseInt(value) * scalar * 60 }
+				else if ( value.indexOf('day') > 0 ) { value = parseInt(value) * scalar * 1440 }
+				else { value = 0 }
+				spell['durationkey'] = value
+				
+				if ( value === 0 ) { styles.push('duration-instant') }
+				else if ( value < 1 ) { styles.push('duration-rounds') }
+				else if ( value < 60 ) { styles.push('duration-minutes') }
+				else if ( value < 1440 ) { styles.push('duration-hours') }
+				else { styles.push('duration-days') }
+				
+				value = spell['duration']
+				value = value.replace('Up to ', '…')
+				value = value.replace('Instantaneous/1 hour', 'Special')
+				value = value.replace('Instantaneous', 'Instant')
+				value = value.replace('Until dispelled', 'Dispel')
+				spell['period'] = value
+				
+				value = spell['range']
+				if ( value === 'Self' || value < 0 ) { value = 0 }
+				else if ( value === 'Touch' || value === 0 ) { value = 1 }
+				else if ( value === 'Sight' ) { value = 1000000000 }
+				else if ( value === 'Unlimited' ) { value = 2000000000 }
+				else if ( value.indexOf && value.indexOf('mile') > 0 ) { value = parseInt(value) * 5280 }
+				spell['rangekey'] = value
+				
+				value = spell['higher_level']
+				value = value ? value.replace("<p>", "<p class='higher-level'>") : ""
+				spell['higher_level'] = value
+				
+				value = spell['save']
+				spell['sv'] = value ? value.substring ? value.substring(0, 3) : "*" : ""
+				
+				spell['page'] = +spell.page || spell.page
+				spell['styles'] = styles.join(" ")
+				spell['ss'] = (spell['school'] === 'Illusion') ? 'Ill' : spell['school'].substring(0, 2)
+				spell['vsm'] = spell['components'].join("")
+				spell['namekey'] = spell.name.replace(/['‘’]/g, '')
+				spell['title_ritual'] = spell.ritual ? ", Ritual " + Math.floor(spell.castingkey + 10) + " Minutes" : ""
+				spell['title_concentration'] = spell.concentration ? "Concentration, " : ""
+				spell['descriptionhtml'] = libraryResolveReferences(s['desc'] || '', s)
+				
+				if ( spell['material'] === undefined ) { spell['material'] = '' }
+				if ( spell['damage'] === undefined ) { spell['damage'] = '' }
+				if ( spell['damage_type'] === undefined ) { spell['damage_type'] = '' }
+				
+				return spell
 			}
 			
-			function filterApplied(count) {
-				var element = _element('primary-filter-count')
-				
-				if ( element ) {
-					element.textContent = count || ''
-				}
-				
-				element = _element('select-all')
-				
-				handleSelect(false)
-			}
-			
-			function handleHashChanged(event) {
-				var hash = location.hash
-				
-				if ( hash && hash.length > 1 ) {
-					var keys = hash.slice(1).split(',')
-					
-					filterPrimaryByKeys(keys)
-					
-					_element('primary-filter').value = '#'
-				} else {
-					filterPrimaryByName('')
-				}
-			}
-			
-			function handleSelect(key) {
-				var share = _element('share-selection')
-				var selector = 'table#primary-table tr:not(.filtered) > td.selected > input.selection'
-				var elementsChecked = document.querySelectorAll(selector + ':checked')
-				var elementsUnchecked = document.querySelectorAll(selector + ':not(:checked)')
-				
-				if ( share ) {
-					var keys = Array.prototype.map.call(elementsChecked, function (e) { return e.id.slice(7) })
-					var hash = keys.sort().join(",")
-					
-					share.href = "#" + hash
-				}
-				
-				var all = _element('select-all')
-				
-				if ( all ) {
-					all.indeterminate = elementsChecked.length > 0 && elementsUnchecked.length > 0
-					all.checked = elementsChecked.length > elementsUnchecked.length
-				}
-			}
-			
-			function handleToggle(key) {
-				populatePrimaryItem(key)
-			}
-			
-			function handleSearch(event) {
-				var value = typeof event === 'string' ? event : event.target.value || ""
-				
-				filterPrimaryBySearch(value)
-			}
-			
-			function handleSubmit(event) {
-				var value = event.target.f.value
-				
-				filterPrimaryBySearch(value)
-				
-				event.preventDefault()
-				
-				return false
-			}
-			
-			function stripDiacriticals(string) {
-				if ( typeof string.normalize === 'function' ) {
-					return string.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
-				} else {
-					return string.replace('é', 'e')
-				}
-			}
-			
-			function referenceKey(name) {
-				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’(){}×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
-			}
-			
-			function resolveReferences(text, object) {
-				text = text.replace(/\{=([^{}]+)\}/g, function (match, list) {
-					var part = list.split('/'), key = part[0], value = object[key]
-					
-					if ( value && part.length > 1 ) {
-						switch ( part[1] ) {
-						case 'l': value = value.toLocaleLowerCase(); break
-						case 'u': value = value.toLocaleUpperCase(); break
-						case 'a': value = "a"; break
-						case 'at': value = "A"; break
-						}
-					}
-					
-					return "<span class='property " + key + "'>" + (value || '-') + "</span>"
-				})
-				
-				text = text.replace(/\{@([^{} ]+)\s+([^{}]+)\}/g, function (match, type, list) {
-					var part = list.split('|')
-					
-					switch ( type ) {
-					case "h": return "<span class='entries hit italic'>Hit: " + list + "</span> "
-					case "recharge": return "<span class='entries recharge'>" + list + "</span>"
-					case "b": case "bold": return "<span class='entries bold'>" + list + "</span>"
-					case "i": case "italic": return "<span class='entries italic'>" + list + "</span>"
-					case "dice": case "damage": return "<span class='entries " + type + " italic' onclick='handleDice(event, \"" + part[0] + "\")'>" + (part[1] || part[0]) + "</span>"
-					case "chance": return "<span class='entries " + type + "' onclick='handleChance(event, \"" + part[0] + "\")'>" + (part[1] || part[0] + " percent") + "</span>"
-					case "link": return "<span class='entries " + type + " italic'>" + list + "</span>"
-					case "hit": return (+list < 0 ? "" : "+") + list
-					case "atk": return "<span class='entries attack italic'>" + list.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</span> "
-					case "dc": return list
-					case "item": return "<a class='entries item' href='items.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
-					case "spell": return "<a class='entries spell italic' href='spells.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
-					case "creature": return "<a class='entries creature' href='bestiary.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
-					case "condition": case "skill": case "sense": case "action": case "hazard": return "<span class='entries " + type + "'>" + part[0] + "</span>"
-					case "filter": return (part.length > 2 && part[1] === 'spells') ? "<a class='entries spell italic' href='spells.html?" + part[2] + "'>" + part[0] + "</a>" : "<span class='entries italic " + type + "'>" + part[0] + "</span>"
-					case "adventure": return "<span class='entries italic " + type + "'>" + part[0] + "</span>"
-					case "table": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
-					case "book": return "<span class='entries italic " + type + "'>" + (part[3] || part[0]) + "</span>"
-					default: return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
-					}
-				})
-				
-				text = text.replace(/\{@h\}/g, "<span class='entries hit italic'>Hit:</span> ")
-				text = text.replace(/\{@recharge\}/g, "<span class='entries recharge'></span>")
-				
-				return text
-			}
-			
-			function spellsReadyToDisplay(spells) {
+			function parseSpells(spells) {
 				var result = []
-				var keys = ['name', 'level', 'school', 'casting_time', 'range', 'components', 'material', 'duration', 'ritual', 'concentration', 'defense', 'attack', 'save', 'permanent', 'damage', 'damage_type', 'classes', 'desc', 'higher_level', 'book', 'page', 'circles', 'oaths', 'domains', 'patrons', 'archetype']
-				var spell, value, styles, text, scalar, casting
-				var s, key
+				var masterSpell, spell, text
 				
-				for ( s of spells ) {
-					spell = 1 ? {} : {}
-					styles = []
-					
-					spell['key'] = referenceKey(s.name)
-					
-					for ( key of keys ) {
-						if ( s[key] !== undefined && s[key] !== false ) { spell[key] = s[key] }
-					}
-					
-					value = spell['archetype']
-					if ( value && value.length > 0 ) {
-						value = value.concat(spell['classes'])
-						value.sort()
-						styles.push('archetype')
-					} else {
-						value = spell['classes']
-					}
-					spell['classnames'] = value.join(", ")
-					spell['classstyles'] = value.map(function (c) { return c.replace(/[: ]+/g, '-') })
-					
-					styles.push('level-' + spell['level'])
-					styles.push('book-' + spell['book'])
-					styles.push('' + spell['school'].toLowerCase())
-					styles.push.apply(styles, spell['classstyles'])
-					styles.push(spell['higher_level'] ? 'has-higher-level' : 'not-higher-level')
-					styles.push(spell['save'] ? 'has-save' : 'not-save')
-					styles.push(spell['damage'] ? 'is-damage' : 'not-damage')
-					styles.push(spell['attack'] ? 'is-attack' : 'not-attack')
-					styles.push(spell['defense'] ? 'is-defense' : 'not-defense')
-					styles.push(spell['permanent'] ? 'is-permanent' : 'not-permanent')
-					styles.push(spell['ritual'] ? 'is-ritual' : 'not-ritual')
-					styles.push(spell['concentration'] ? 'is-concentration' : 'not-concentration')
-					
-					value = spell['damage_type']
-					if ( value && value != '*' ) { styles.push(value) }
-					
-					value = spell['casting_time'].toLowerCase()
-					if ( value.indexOf('reaction') > 0 ) { casting = 1/32 }
-					else if ( value.indexOf('bonus') > 0 ) { casting = 1/16 }
-					else if ( value.indexOf('action') > 0 ) { casting = 1/8 }
-					else if ( value.indexOf('minute') > 0 ) { casting = parseInt(value) || 1 }
-					else if ( value.indexOf('hour') > 0 ) { casting = (parseInt(value) || 1) * 60 }
-					else { casting = 0 }
-					
-					if ( casting < 1/16 ) { styles.push('reaction'); value = "Reaction" }
-					else if ( casting < 1/8 ) { styles.push('bonusaction'); value = "Bonus" }
-					else if ( casting < 1 ) { styles.push('action'); value = "Action" }
-					else if ( casting < 60 ) { styles.push('cast-minutes'); value = casting + "m" }
-					else { styles.push('cast-hours'); value = (casting / 60) + "h" }
-					spell['castingkey'] = casting
-					spell['casting'] = value
-					
-					scalar = 1
-					value = spell['duration']
-					if ( 'Up to ' === value.substring(0, 6) ) { value = value.substring(6); scalar = 15/16 }
-					if ( value === 'Instantaneous' ) { value = 0 }
-					else if ( value === 'Instantaneous/1 hour' ) { value = 61 }
-					else if ( value === 'Until dispelled' ) { value = 2000000000 }
-					else if ( value === 'Special' ) { value = 1000000000 }
-					else if ( value.indexOf('round') > 0 ) { value = parseInt(value) * scalar / 10 }
-					else if ( value.indexOf('minute') > 0 ) { value = parseInt(value) * scalar }
-					else if ( value.indexOf('hour') > 0 ) { value = parseInt(value) * scalar * 60 }
-					else if ( value.indexOf('day') > 0 ) { value = parseInt(value) * scalar * 1440 }
-					else { value = 0 }
-					spell['durationkey'] = value
-					
-					if ( value === 0 ) { styles.push('duration-instant') }
-					else if ( value < 1 ) { styles.push('duration-rounds') }
-					else if ( value < 60 ) { styles.push('duration-minutes') }
-					else if ( value < 1440 ) { styles.push('duration-hours') }
-					else { styles.push('duration-days') }
-					
-					value = spell['duration']
-					value = value.replace('Up to ', '…')
-					value = value.replace('Instantaneous/1 hour', 'Special')
-					value = value.replace('Instantaneous', 'Instant')
-					value = value.replace('Until dispelled', 'Dispel')
-					spell['period'] = value
-					
-					value = spell['range']
-					if ( value === 'Self' || value < 0 ) { value = 0 }
-					else if ( value === 'Touch' || value === 0 ) { value = 1 }
-					else if ( value === 'Sight' ) { value = 1000000000 }
-					else if ( value === 'Unlimited' ) { value = 2000000000 }
-					else if ( value.indexOf && value.indexOf('mile') > 0 ) { value = parseInt(value) * 5280 }
-					spell['rangekey'] = value
-					
-					value = spell['higher_level']
-					value = value ? value.replace("<p>", "<p class='higher-level'>") : ""
-					spell['higher_level'] = value
-					
-					value = spell['save']
-					spell['sv'] = value ? value.substring ? value.substring(0, 3) : "*" : ""
-					
-					spell['page'] = +spell.page || spell.page
-					spell['styles'] = styles.join(" ")
-					spell['ss'] = (spell['school'] === 'Illusion') ? 'Ill' : spell['school'].substring(0, 2)
-					spell['vsm'] = spell['components'].join("")
-					spell['namekey'] = spell.name.replace(/['‘’]/g, '')
-					spell['title_ritual'] = spell.ritual ? ", Ritual " + Math.floor(spell.castingkey + 10) + " Minutes" : ""
-					spell['title_concentration'] = spell.concentration ? "Concentration, " : ""
-					spell['descriptionhtml'] = resolveReferences(s['desc'] || '', s)
-					
-					if ( spell['material'] === undefined ) { spell['material'] = '' }
-					if ( spell['damage'] === undefined ) { spell['damage'] = '' }
-					if ( spell['damage_type'] === undefined ) { spell['damage_type'] = '' }
+				for ( masterSpell of spells ) {
+					spell = parseSpell(masterSpell)
 					
 					text = [
 						spell.name, spell.material, spell.descriptionhtml, spell.higher_level, spell.classnames,
 						spell.book, "pg " + spell.page
 					]
-					spell.plainText = text.join(" ").replace(/<[^<>]+>/g, ' ').replace(/\s+/g, ' ')
+					spell.searchableText = text.join(" ")
 					
 					result.push(spell)
 				}
@@ -461,7 +149,7 @@
 				return result
 			}
 			
-			function primaryItemContent(item) {
+			function renderItem(item) {
 				var template = "" +
 					"<p class='material'>{material}</p>" +
 					"{descriptionhtml}{higher_level}" +
@@ -469,15 +157,12 @@
 					"<p class='source page-{book}'><span class='page'>{page}</span></p>" +
 					""
 				
-				var pattern = /\{([^ {}]+)\}/g
-				var html = template.replace(pattern, function (match, key) { return item[key] })
-				
-				return html
+				return libraryRenderTemplateItem(template, item)
 			}
 			
-			function primaryTableContent(list) {
-				var rowTemplate = "<tr id='item-{key}' class='primary spell {styles}'>" +
- 					"<td class='selected spell-prepared'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='handleSelect(\"{key}\")' /> </td>" +
+			function renderItemTable(list) {
+				var rowTemplate = "<tr id='item-{key}' class='library spell {styles}'>" +
+ 					"<td class='selected spell-prepared'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='libraryHandleSelect(\"{key}\")' /> </td>" +
 					"<td class='name spell-name' id='name-{key}' data-sort-key='{namekey}'>" +
 						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' onchange='handleToggle(\"{key}\")' />" +
 						"<label for='toggle-{key}' class='toggle spell-name'><a id='{key}' class='spell-name'>{name}</a></label>" +
@@ -495,7 +180,7 @@
 					//"<td class='spell-save'>{sv}</td>" +
 				"</tr>"
 				
-				var header = "<tr id='header' class='primary spell header'>" +
+				var header = "<tr id='header' class='library header'>" +
  					"<th class='spell-prepared sortable' data-sort-invert> </th>" +
 					"<th class='spell-name natural sortable' data-sort-format='locale'>Name</th>" +
 					"<th class='spell-level numeric sortable sorted-ascending' data-sort-format='number'>Level</th>" +
@@ -509,58 +194,7 @@
 					//"<th class='spell-save sortable' data-sort-format='natural'>Save</th>" +
 				"</tr>"
 				
-				var pattern = /{([^ }]+)}/g
-				var rows = list.map(function (item) { return rowTemplate.replace(pattern, function (match, key) { return item[key] }) })
-				
-				return header + rows.join("")
-			}
-			
-			function populatePrimaryItem(item) {
-				var key
-				
-				if ( typeof item === 'string' ) {
-					key = item
-					item = false
-				} else {
-					key = item.key
-				}
-				
-				var element = key && _element('inner-' + key)
-				
-				if ( !element || element.childElementCount > 0 ) {
-					return
-				}
-				
-				if ( !item ) {
-					var table = _element('primary-table')
-					var list = table.primaryItemList
-					
-					item = table.primaryItemList[key]
-					
-					if ( item ) {
-						delete table.primaryItemList[key]
-					} else {
-						return
-					}
-				}
-				
-				element.innerHTML = primaryItemContent(item)
-			}
-			
-			function populatePrimaryTable(list) {
-				var table = _element('primary-table')
-				var html = primaryTableContent(list)
-				var item, searchableText = new Object(), searchableItem = new Object()
-				
-				for ( item of list ) {
-					searchableItem[item.key] = item
-					searchableText[item.key] = item.plainText
-				}
-				
-				table.primaryItemList = searchableItem
-				table.primaryItemText = searchableText
-				table.innerHTML = html
-				tableSort(table)
+				return header + libraryRenderTemplateItemArray(rowTemplate, list).join("")
 			}
 			
 // 			function deflateParameters() {
@@ -594,26 +228,26 @@
 // 			}
 			
 			function applyFilters(form, object) {
-				var form = _element('primary-form')
+				var form = libraryForm()
 				var key, value, values, v, V
 				
 				value = object['l'] || object['level'] || ''
-				for ( v = 0 ; v < 10 ; ++v ) { _element('filter-level-' + v).checked = !(value && value.indexOf(v) < 0) }
+				for ( v = 0 ; v < 10 ; ++v ) { form['filter-level-' + v].checked = !(value && value.indexOf(v) < 0) }
 				
 				value = (object['c'] || object['class'] || 'any').toLowerCase()
 				form['crass'].value = value
 				
 				value = (object['s'] || object['school'] || '').toLowerCase()
 				values = ['a', 'c', 'd', 'e', 'v', 'i', 'n', 't']
-				for ( v of values ) { _element('filter-school-' + v).checked = !(value && value.indexOf(v) < 0) }
+				for ( v of values ) { form['filter-school-' + v].checked = !(value && value.indexOf(v) < 0) }
 				
 				value = (object['t'] || object['time'] || '').toLowerCase()
 				values = ['r', 'b', 'a', 'm', 'h']
-				for ( v of values ) { _element('filter-casting-' + v).checked = !(value && value.indexOf(v) < 0) }
+				for ( v of values ) { form['filter-casting-' + v].checked = !(value && value.indexOf(v) < 0) }
 				
 				value = (object['b'] || object['source'] || '').toLowerCase()
 				values = ['ph', 'xg', 'ee', 'sc', 'rt']
-				for ( v of values ) { _element('filter-book-' + v).checked = !(value.length > 0 && value.indexOf(v) < 0) }
+				for ( v of values ) { form['filter-book-' + v].checked = !(value.length > 0 && value.indexOf(v) < 0) }
 				
 				value = object['a'] || ''
 				values = ['r:ritual', 'c:concentration', 'f:defense', 'a:attack', 's:save', 'd:damage', 'h:higher', 'p:permanent']
@@ -621,8 +255,8 @@
 			}
 			
 			function applyParameters() {
-				var form = _element('primary-form')
-				var object = inflateParameters(null, location.search, '?', '&')
+				var form = libraryForm()
+				var object = libraryInflateParameters(null, location.search, '?', '&')
 				var key, value
 				
 				value = object['f']
@@ -635,13 +269,23 @@
 				applyFilters(form, object)
 			}
 			
-			function populatePage() {
-				_element('primary-form').addEventListener('submit', handleSubmit)
-				window.addEventListener('hashchange', handleHashChanged)
+			function handleToggle(key) {
+				libraryPopulateItem(key, renderItem)
+			}
+			
+			function populateLibrary(items) {
+				var table = libraryPopulateTable(items, renderItemTable)
 				
-				populatePrimaryTable(spellsReadyToDisplay(spells))
+				tableSort(table)
+			}
+			
+			function populatePage() {
+				libraryForm().addEventListener('submit', libraryHandleSubmit)
+				window.addEventListener('hashchange', libraryHandleHashChanged)
+				
+				populateLibrary(parseSpells(spells))
 				applyParameters()
-				handleHashChanged()
+				libraryHandleHashChanged()
 			}
 		</script>
 		
@@ -672,8 +316,8 @@
 			
 			div#controls > button { border:solid #CCC 0.125em; border-radius:0.25em 0.25em; background:#EEE; min-width:4em; min-height:2em; }
 			
-			input#primary-filter { font-size:100%; max-width:98%; }
-			span#primary-filter-count { opacity:0.5; font-size:60%; }
+			input#library-filter { font-size:100%; max-width:98%; }
+			span#library-filter-count { opacity:0.5; font-size:60%; }
 			
 			input.toggle, input.filter { display:none; }
 			input.toggle:not(:checked) ~ div.toggled { display:none; }
@@ -683,12 +327,12 @@
 			div.details > div.details.inner { position:relative; width:40em; max-width:70vw; line-height:1.5; padding:0 1em; margin:0.5em 0; background:#FAFAFA; border:1px solid #EEE; }
 			div.details span.entries.indent + span.entries { margin-left:1em }
 			
-			table#primary-table label.toggle.close { display:none; }
+			table#library-table label.toggle.close { display:none; }
 			
 			@media screen {
-				table#primary-table label.toggle.close { display:inline-block; position:absolute; border-radius:50%; border:0.25em solid #EEE; bottom:0.375em; right:0.375em; }
-				table#primary-table label.toggle.close { font-size:150%; text-align:center; line-height:1.125em; width:1.125em; height:1.125em; }
-				table#primary-table input.toggle:checked + label.toggle > a:after { content:" ▲"; opacity:0.25; }
+				table#library-table label.toggle.close { display:inline-block; position:absolute; border-radius:50%; border:0.25em solid #EEE; bottom:0.375em; right:0.375em; }
+				table#library-table label.toggle.close { font-size:150%; text-align:center; line-height:1.125em; width:1.125em; height:1.125em; }
+				table#library-table input.toggle:checked + label.toggle > a:after { content:" ▲"; opacity:0.25; }
 			}
 			
 			@media (max-width:600px) {
@@ -711,21 +355,21 @@
 			td.natural, th.natural { text-align:left; }
 			td.numeric, th.numeric { text-align:right; }
 			
-			table#primary-table { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
-			table#primary-table tr.primary { border-bottom:0.25px solid #DDD; }
-			table#primary-table tr.primary > td, #primary-table tr.primary > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
-			table#primary-table a.item-name { display:block; cursor:pointer; }
+			table#library-table { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
+			table#library-table tr.library { border-bottom:0.25px solid #DDD; }
+			table#library-table tr.library > td, #library-table tr.library > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
+			table#library-table a.item-name { display:block; cursor:pointer; }
 			
-			table#primary-table { table-layout:fixed; width:100%; }
-			table#primary-table tr.primary > th.spell-prepared { width:1.25em; }
-			table#primary-table tr.primary > th.spell-level { width:2.5em; }
-			table#primary-table tr.primary > th.spell-school { width:1.5em; }
-			table#primary-table tr.primary > th.spell-casting { width:3.5em; }
-			table#primary-table tr.primary > th.spell-range { width:4.5em; }
-			table#primary-table tr.primary > th.spell-components { width:2em; }
-			table#primary-table tr.primary > th.spell-duration { width:6em; }
-			table#primary-table tr.primary > th.spell-damage { width:3em; }
-			table#primary-table tr.primary > th.spell-source { width:3em; }
+			table#library-table { table-layout:fixed; width:100%; }
+			table#library-table tr.library > th.spell-prepared { width:1.25em; }
+			table#library-table tr.library > th.spell-level { width:2.5em; }
+			table#library-table tr.library > th.spell-school { width:1.5em; }
+			table#library-table tr.library > th.spell-casting { width:3.5em; }
+			table#library-table tr.library > th.spell-range { width:4.5em; }
+			table#library-table tr.library > th.spell-components { width:2em; }
+			table#library-table tr.library > th.spell-duration { width:6em; }
+			table#library-table tr.library > th.spell-damage { width:3em; }
+			table#library-table tr.library > th.spell-source { width:3em; }
 			
 			p.higher-level:not(:empty):before { content:"At Higher Level. "; font-weight:bold; font-style:italic; }
 			p.material:not(:empty):before { content:"Materials: "; font-weight:bold; }
@@ -765,47 +409,47 @@
 			th.sortable.sorted-descending { text-decoration:overline; }
 			th.sortable.sorted-ascending { text-decoration:underline; }
 			
-			input#filter-level-0:not(:checked) ~ table#primary-table tr.level-0 { display:none; }
-			input#filter-level-1:not(:checked) ~ table#primary-table tr.level-1 { display:none; }
-			input#filter-level-2:not(:checked) ~ table#primary-table tr.level-2 { display:none; }
-			input#filter-level-3:not(:checked) ~ table#primary-table tr.level-3 { display:none; }
-			input#filter-level-4:not(:checked) ~ table#primary-table tr.level-4 { display:none; }
-			input#filter-level-5:not(:checked) ~ table#primary-table tr.level-5 { display:none; }
-			input#filter-level-6:not(:checked) ~ table#primary-table tr.level-6 { display:none; }
-			input#filter-level-7:not(:checked) ~ table#primary-table tr.level-7 { display:none; }
-			input#filter-level-8:not(:checked) ~ table#primary-table tr.level-8 { display:none; }
-			input#filter-level-9:not(:checked) ~ table#primary-table tr.level-9 { display:none; }
+			input#filter-level-0:not(:checked) ~ table#library-table tr.level-0 { display:none; }
+			input#filter-level-1:not(:checked) ~ table#library-table tr.level-1 { display:none; }
+			input#filter-level-2:not(:checked) ~ table#library-table tr.level-2 { display:none; }
+			input#filter-level-3:not(:checked) ~ table#library-table tr.level-3 { display:none; }
+			input#filter-level-4:not(:checked) ~ table#library-table tr.level-4 { display:none; }
+			input#filter-level-5:not(:checked) ~ table#library-table tr.level-5 { display:none; }
+			input#filter-level-6:not(:checked) ~ table#library-table tr.level-6 { display:none; }
+			input#filter-level-7:not(:checked) ~ table#library-table tr.level-7 { display:none; }
+			input#filter-level-8:not(:checked) ~ table#library-table tr.level-8 { display:none; }
+			input#filter-level-9:not(:checked) ~ table#library-table tr.level-9 { display:none; }
 			
-			input#filter-school-a:not(:checked) ~ table#primary-table tr.abjuration { display:none; }
-			input#filter-school-c:not(:checked) ~ table#primary-table tr.conjuration { display:none; }
-			input#filter-school-d:not(:checked) ~ table#primary-table tr.divination { display:none; }
-			input#filter-school-e:not(:checked) ~ table#primary-table tr.enchantment { display:none; }
-			input#filter-school-v:not(:checked) ~ table#primary-table tr.evocation { display:none; }
-			input#filter-school-i:not(:checked) ~ table#primary-table tr.illusion { display:none; }
-			input#filter-school-n:not(:checked) ~ table#primary-table tr.necromancy { display:none; }
-			input#filter-school-t:not(:checked) ~ table#primary-table tr.transmutation { display:none; }
+			input#filter-school-a:not(:checked) ~ table#library-table tr.abjuration { display:none; }
+			input#filter-school-c:not(:checked) ~ table#library-table tr.conjuration { display:none; }
+			input#filter-school-d:not(:checked) ~ table#library-table tr.divination { display:none; }
+			input#filter-school-e:not(:checked) ~ table#library-table tr.enchantment { display:none; }
+			input#filter-school-v:not(:checked) ~ table#library-table tr.evocation { display:none; }
+			input#filter-school-i:not(:checked) ~ table#library-table tr.illusion { display:none; }
+			input#filter-school-n:not(:checked) ~ table#library-table tr.necromancy { display:none; }
+			input#filter-school-t:not(:checked) ~ table#library-table tr.transmutation { display:none; }
 			
-			input#filter-book-ph:not(:checked) ~ table#primary-table tr.book-phb { display:none; }
-			input#filter-book-xg:not(:checked) ~ table#primary-table tr.book-xgte { display:none; }
-			input#filter-book-ee:not(:checked) ~ table#primary-table tr.book-eepc { display:none; }
-			input#filter-book-sc:not(:checked) ~ table#primary-table tr.book-scag { display:none; }
-			input#filter-book-rt:not(:checked) ~ table#primary-table tr.book-trot { display:none; }
+			input#filter-book-ph:not(:checked) ~ table#library-table tr.book-phb { display:none; }
+			input#filter-book-xg:not(:checked) ~ table#library-table tr.book-xgte { display:none; }
+			input#filter-book-ee:not(:checked) ~ table#library-table tr.book-eepc { display:none; }
+			input#filter-book-sc:not(:checked) ~ table#library-table tr.book-scag { display:none; }
+			input#filter-book-rt:not(:checked) ~ table#library-table tr.book-trot { display:none; }
 			
-			input#filter-class-bard:checked ~ table#primary-table tr.spell:not(.Bard) { display:none; }
-			input#filter-class-cleric:checked ~ table#primary-table tr.spell:not(.Cleric) { display:none; }
-			input#filter-class-druid:checked ~ table#primary-table tr.spell:not(.Druid) { display:none; }
-			input#filter-class-paladin:checked ~ table#primary-table tr.spell:not(.Paladin) { display:none; }
-			input#filter-class-ranger:checked ~ table#primary-table tr.spell:not(.Ranger) { display:none; }
-			input#filter-class-sorcerer:checked ~ table#primary-table tr.spell:not(.Sorcerer) { display:none; }
-			input#filter-class-warlock:checked ~ table#primary-table tr.spell:not(.Warlock) { display:none; }
-			input#filter-class-wizard:checked ~ table#primary-table tr.spell:not(.Wizard) { display:none; }
+			input#filter-class-bard:checked ~ table#library-table tr.spell:not(.Bard) { display:none; }
+			input#filter-class-cleric:checked ~ table#library-table tr.spell:not(.Cleric) { display:none; }
+			input#filter-class-druid:checked ~ table#library-table tr.spell:not(.Druid) { display:none; }
+			input#filter-class-paladin:checked ~ table#library-table tr.spell:not(.Paladin) { display:none; }
+			input#filter-class-ranger:checked ~ table#library-table tr.spell:not(.Ranger) { display:none; }
+			input#filter-class-sorcerer:checked ~ table#library-table tr.spell:not(.Sorcerer) { display:none; }
+			input#filter-class-warlock:checked ~ table#library-table tr.spell:not(.Warlock) { display:none; }
+			input#filter-class-wizard:checked ~ table#library-table tr.spell:not(.Wizard) { display:none; }
 			
-			input#filter-casting-r:not(:checked) ~ table#primary-table tr.reaction { display:none; }
-			input#filter-casting-b:not(:checked) ~ table#primary-table tr.bonusaction { display:none; }
-			input#filter-casting-a:not(:checked) ~ table#primary-table tr.action { display:none; }
-			input#filter-casting-m:not(:checked) ~ table#primary-table tr.cast-minutes { display:none; }
-			input#filter-casting-h:not(:checked) ~ table#primary-table tr.cast-hours { display:none; }
-			input#filter-casting-o:not(:checked) ~ table#primary-table tr.cast-other { display:none; }
+			input#filter-casting-r:not(:checked) ~ table#library-table tr.reaction { display:none; }
+			input#filter-casting-b:not(:checked) ~ table#library-table tr.bonusaction { display:none; }
+			input#filter-casting-a:not(:checked) ~ table#library-table tr.action { display:none; }
+			input#filter-casting-m:not(:checked) ~ table#library-table tr.cast-minutes { display:none; }
+			input#filter-casting-h:not(:checked) ~ table#library-table tr.cast-hours { display:none; }
+			input#filter-casting-o:not(:checked) ~ table#library-table tr.cast-other { display:none; }
 			
 			label.trivia.disable > span { opacity:0.5; }
 			label.trivia.exclude { position:relative; }
@@ -814,22 +458,22 @@
 			input.trivia:not(:checked) + input.trivia + .trivia + label.trivia + label.trivia { display:none; }
 			input.trivia:not(:checked) + label.trivia { display:none; }
 			
-			input#filter-ritual-require:checked ~ table#primary-table tr:not(.is-ritual):not(.header) { display:none; }
-			input#filter-ritual-exclude:checked ~ table#primary-table tr.is-ritual { display:none; }
-			input#filter-concentration-require:checked ~ table#primary-table tr:not(.is-concentration):not(.header) { display:none; }
-			input#filter-concentration-exclude:checked ~ table#primary-table tr.is-concentration { display:none; }
-			input#filter-attack-require:checked ~ table#primary-table tr:not(.is-attack):not(.header) { display:none; }
-			input#filter-attack-exclude:checked ~ table#primary-table tr.is-attack { display:none; }
-			input#filter-save-require:checked ~ table#primary-table tr:not(.has-save):not(.header) { display:none; }
-			input#filter-save-exclude:checked ~ table#primary-table tr.has-save { display:none; }
-			input#filter-higher-require:checked ~ table#primary-table tr:not(.has-higher-level):not(.header) { display:none; }
-			input#filter-higher-exclude:checked ~ table#primary-table tr.has-higher-level { display:none; }
-			input#filter-defense-require:checked ~ table#primary-table tr:not(.is-defense):not(.header) { display:none; }
-			input#filter-defense-exclude:checked ~ table#primary-table tr.is-defense { display:none; }
-			input#filter-damage-require:checked ~ table#primary-table tr:not(.is-damage):not(.header) { display:none; }
-			input#filter-damage-exclude:checked ~ table#primary-table tr.is-damage { display:none; }
-			input#filter-permanent-require:checked ~ table#primary-table tr:not(.is-permanent):not(.header) { display:none; }
-			input#filter-permanent-exclude:checked ~ table#primary-table tr.is-permanent { display:none; }
+			input#filter-ritual-require:checked ~ table#library-table tr:not(.is-ritual):not(.header) { display:none; }
+			input#filter-ritual-exclude:checked ~ table#library-table tr.is-ritual { display:none; }
+			input#filter-concentration-require:checked ~ table#library-table tr:not(.is-concentration):not(.header) { display:none; }
+			input#filter-concentration-exclude:checked ~ table#library-table tr.is-concentration { display:none; }
+			input#filter-attack-require:checked ~ table#library-table tr:not(.is-attack):not(.header) { display:none; }
+			input#filter-attack-exclude:checked ~ table#library-table tr.is-attack { display:none; }
+			input#filter-save-require:checked ~ table#library-table tr:not(.has-save):not(.header) { display:none; }
+			input#filter-save-exclude:checked ~ table#library-table tr.has-save { display:none; }
+			input#filter-higher-require:checked ~ table#library-table tr:not(.has-higher-level):not(.header) { display:none; }
+			input#filter-higher-exclude:checked ~ table#library-table tr.has-higher-level { display:none; }
+			input#filter-defense-require:checked ~ table#library-table tr:not(.is-defense):not(.header) { display:none; }
+			input#filter-defense-exclude:checked ~ table#library-table tr.is-defense { display:none; }
+			input#filter-damage-require:checked ~ table#library-table tr:not(.is-damage):not(.header) { display:none; }
+			input#filter-damage-exclude:checked ~ table#library-table tr.is-damage { display:none; }
+			input#filter-permanent-require:checked ~ table#library-table tr:not(.is-permanent):not(.header) { display:none; }
+			input#filter-permanent-exclude:checked ~ table#library-table tr.is-permanent { display:none; }
 			
 			.action { cursor:pointer; }
 			.filter, .trivia { cursor:pointer; -webkit-tap-highlight-color:transparent; }
@@ -871,18 +515,18 @@
 	<body onload='populatePage()'>
 		<h4>Spells</h4>
 		
-		<div id='primary-content-list'>
-			<form id='primary-form'>
+		<div id='library-content-list'>
+			<form id='library-form'>
 				<div id='controls'>
 					<button type='reset' title='Show all spells'>↻</button>
 					<a id='share-selection' href='' title='Share selection'>⇧</a>
 				</div>
 				
 				<div class='filtering'>
-					<input type='checkbox' id='select-all' name='a' onclick='filterAssignChosenChecked(checked ? 1 : -1)' title='Tap to select matches.' />
+					<input type='checkbox' id='select-all' name='a' onclick='libraryChooseUnfiltered(checked ? 1 : -1)' title='Tap to select matches.' />
 					<label for='select-all'>&nbsp;</label>
-					<input type='search' id='primary-filter' name='f' size='36' placeholder='Filter' oninput='handleSearch(event)'>
-					<span id='primary-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
+					<input type='search' id='library-filter' name='f' size='36' placeholder='Filter' oninput='libraryHandleSearch(event)'>
+					<span id='library-filter-count' class='action' onclick='libraryToggleUnfiltered()' title='Number of matches.  Tap to expand.'></span>
 				</div>
 				
 				<br /><span class='caption taper'>Level:</span>
@@ -996,7 +640,7 @@
 				<label for='filter-permanent-require' class='trivia disable'><span class='taper'>Permanent</span></label>
 				<label for='filter-permanent-exclude' class='trivia require'><span class='taper'>Permanent</span></label>
 				
-				<table id='primary-table'><tr><td>Loading...</td></tr></table>
+				<table id='library-table'><tr><td>Loading...</td></tr></table>
 			</form>
 		</div>
 	</body>
