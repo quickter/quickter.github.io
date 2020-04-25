@@ -792,7 +792,7 @@
 			
 			@media print {
 				th.item-selected, td.item-selected { display:none; }
-				div.filtering, div.controls { display:none; }
+				div.filtering, div#controls { display:none; }
 				p.source { page-break-after:always; }
 			}
 			
@@ -823,6 +823,7 @@
 					<span id='primary-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
 				</div>
 				
+				<div class='filtering'>
 				<br /><span class='caption taper'>Level:</span>
 				<input id='filter-level-0' type='checkbox' checked class='filter' /><label for='filter-level-0' class='filter'>0</label>
 				<span>&bull;</span> <input id='filter-level-1' type='checkbox' checked class='filter' /><label for='filter-level-1' class='filter'>1</label>
@@ -933,6 +934,7 @@
 				<label for='filter-permanent-disable' class='trivia exclude'><span class='taper'>Permanent</span></label>
 				<label for='filter-permanent-require' class='trivia disable'><span class='taper'>Permanent</span></label>
 				<label for='filter-permanent-exclude' class='trivia require'><span class='taper'>Permanent</span></label>
+				</div>
 				
 				<table id='primary-table'><tr><td>Loading...</td></tr></table>
 			</form>

@@ -436,6 +436,11 @@
 			
 			p.explanation { font-size:80%; color:#999; }
 			
+			@media print {
+				p.explanation { display:none; }
+				form#encounter-form { display:none; }
+			}
+			
 			.nose, .reroll {
 				-webkit-touch-callout:none;
 				-webkit-user-select:none;

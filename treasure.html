@@ -388,6 +388,11 @@
 				input.treasure { background-image:linear-gradient(135deg, #EEB 0%, #FFD 70%, #FFF 100%); border-color:#642; color:#642; }
 			}
 			
+			@media print {
+				p.explanation { display:none; }
+				form#treasure-form { display:none; }
+			}
+			
 			.nose, .reroll {
 				-webkit-touch-callout:none;
 				-webkit-user-select:none;
@@ -418,6 +423,8 @@
 		<p id='treasure-list'></p>
 		<table id='treasure'></table>
 		
-		<p class='explanation'>RaW rolls from the DMG treasure hoard tables, choosing all items from the same magic item table.  The Cole method uses the same tables in a slightly different way to mix items of different rarity.</p>
+		<p class='explanation'>RaW hoard uses DMG treasure tables where all items have the same rarity.  The alternate method uses the same DMG tables with a point deduction system to mix rarity while preserving probability distribution.  Challenge rating is limited to 1, 5, 11 or 17 for either.</p>
+		<p class='explanation'>RaW party uses XGE treasure tables with a fixed number of items per rarity and the party level limited to 1, 5, 11, or 17.  The alternate method uses XGE hoards per level but rolls each hoard and uses the actual party level.</p>
+		<p class='explanation'>RaW player treasure is a random quarter of party treasure.  Alternate method rolls a quarter of the hoards for a party.</p>
 	</body>
 </html>
