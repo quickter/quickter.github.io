@@ -147,6 +147,8 @@
 			function filterPrimaryByName(pattern) {
 				var className = 'filtered'
 				var selector = 'table#primary-table tr.primary > td.name'
+				var table = _element('primary-table')
+				var text = table.primaryItemText
 				var count
 				
 				if ( !pattern ) {
@@ -154,12 +156,12 @@
 					count = 0
 				} else if ( pattern.search(/[[?*.|^${}\\]/) < 0 ) {
 					pattern = pattern.toLowerCase()
-					count = assignClassToElements(className, selector, 1, function (e) { return e.textContent.toLowerCase().indexOf(pattern) < 0 ? 1 : -1 })
+					count = assignClassToElements(className, selector, 1, function (e) { return text[e.id.slice(5)].toLowerCase().indexOf(pattern) < 0 ? 1 : -1 })
 				} else {
 					try { pattern = new RegExp(pattern, 'ius') }
 					catch (error) { return }
 					
-					count = assignClassToElements(className, selector, 1, function (e) { return e.textContent.search(pattern) < 0 ? 1 : -1 })
+					count = assignClassToElements(className, selector, 1, function (e) { return text[e.id.slice(5)].search(pattern) < 0 ? 1 : -1 })
 				}
 				
 				filterApplied(count)
@@ -249,6 +251,10 @@
 					all.indeterminate = elementsChecked.length > 0 && elementsUnchecked.length > 0
 					all.checked = elementsChecked.length > elementsUnchecked.length
 				}
+			}
+			
+			function handleToggle(key) {
+				populatePrimaryItem(key)
 			}
 			
 			function handleSearch(event) {
@@ -500,7 +506,7 @@
 				var excludeRarity = ['none', 'unknown', 'unknown (magic)']
 				var excludeSource = ['AI', 'DC', 'HftT', 'IMR', 'LLK', 'RMBRE', 'SDW', 'VGM']
 				var item, masterItem
-				var styles
+				var styles, text
 				var key
 				var masterList = treasure.item.concat(treasure.variant)
 				
@@ -532,6 +538,11 @@
 					
 					item.styles = styles.join(" ")
 					
+					text = [
+						item.name, item.caption, item.description, item.sourcename, "pg " + item.page
+					]
+					item.plainText = text.join(" ").replace(/<[^<>]+>/g, ' ').replace(/\s+/g, ' ')
+					
 					result.push(item)
 				}
 				
@@ -540,17 +551,27 @@
 				return result
 			}
 			
-			function primaryTableContent() {
+			function primaryItemContent(item) {
+				var template = "" +
+					"<p class='item-caption'>{caption}</p>" +
+					"{description}" +
+					"<p class='source'>{sourcename}<span class='page'>{page}</span></p>" +
+					"<label for='toggle-{key}' class='toggle close action'>&mdash;</label>" +
+					""
+				
+				var pattern = /\{([^ {}]+)\}/g
+				var html = template.replace(pattern, function (match, key) { return item[key] })
+				
+				return html
+			}
+			
+			function primaryTableContent(list) {
 				var rowTemplate = "<tr id='item-{key}' class='primary item {styles}'>" +
 					"<td class='selected item-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='handleSelect(\"{key}\")' /></td>" +
-					"<td class='name item-name natural' data-sort-key='{namekey}'>" +
-						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' />" +
+					"<td class='name item-name natural' id='name-{key}' data-sort-key='{namekey}'>" +
+						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' onchange='handleToggle(\"{key}\")' />" +
 						"<label for='toggle-{key}' class='toggle item-name'><a id='{key}' class='item-name'>{name}</a></label>" +
-						"<div class='toggled details'><div class='inner details'>" +
-							"<p class='item-caption'>{caption}</p>" +
-							"{description}" +
-							"<p class='source'>{sourcename}<span class='page'>{page}</span></p>" +
-							"<label for='toggle-{key}' class='toggle close action'>&mdash;</label>" +
+						"<div class='toggled details'><div id='inner-{key}' class='inner details'>" +
 						"</div></div>" +
 					"</td>" +
 					"<td class='item-type natural'>{typename}</td>" +
@@ -569,16 +590,55 @@
 				"</tr>"
 				
 				var pattern = /{([^ {}]+)}/g
-				var list = magicItemsReadyToDisplay(items)
 				var rows = list.map(function (item) { return rowTemplate.replace(pattern, function (match, key) { return item[key] }) })
 				
 				return header + rows.join("")
 			}
 			
-			function populatePrimaryTable() {
-				var table = _element('primary-table')
-				var html = primaryTableContent()
+			function populatePrimaryItem(item) {
+				var key
 				
+				if ( typeof item === 'string' ) {
+					key = item
+					item = false
+				} else {
+					key = item.key
+				}
+				
+				var element = key && _element('inner-' + key)
+				
+				if ( !element || element.childElementCount > 0 ) {
+					return
+				}
+				
+				if ( !item ) {
+					var table = _element('primary-table')
+					var list = table.primaryItemList
+					
+					item = table.primaryItemList[key]
+					
+					if ( item ) {
+						delete table.primaryItemList[key]
+					} else {
+						return
+					}
+				}
+				
+				element.innerHTML = primaryItemContent(item)
+			}
+			
+			function populatePrimaryTable(list) {
+				var table = _element('primary-table')
+				var html = primaryTableContent(list)
+				var item, searchableText = new Object(), searchableItem = new Object()
+				
+				for ( item of list ) {
+					searchableItem[item.key] = item
+					searchableText[item.key] = item.plainText
+				}
+				
+				table.primaryItemList = searchableItem
+				table.primaryItemText = searchableText
 				table.innerHTML = html
 				tableSort(table)
 			}
@@ -600,7 +660,7 @@
 				_element('primary-form').addEventListener('submit', handleSubmit)
 				window.addEventListener('hashchange', handleHashChanged)
 				
-				populatePrimaryTable()
+				populatePrimaryTable(magicItemsReadyToDisplay(items))
 				applyParameters()
 				handleHashChanged()
 			}

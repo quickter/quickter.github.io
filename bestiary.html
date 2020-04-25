@@ -147,6 +147,8 @@
 			function filterPrimaryByName(pattern) {
 				var className = 'filtered'
 				var selector = 'table#primary-table tr.primary > td.name'
+				var table = _element('primary-table')
+				var text = table.primaryItemText
 				var count
 				
 				if ( !pattern ) {
@@ -154,12 +156,12 @@
 					count = 0
 				} else if ( pattern.search(/[[?*.|^${}\\]/) < 0 ) {
 					pattern = pattern.toLowerCase()
-					count = assignClassToElements(className, selector, 1, function (e) { return e.textContent.toLowerCase().indexOf(pattern) < 0 ? 1 : -1 })
+					count = assignClassToElements(className, selector, 1, function (e) { return text[e.id.slice(5)].toLowerCase().indexOf(pattern) < 0 ? 1 : -1 })
 				} else {
 					try { pattern = new RegExp(pattern, 'ius') }
 					catch (error) { return }
 					
-					count = assignClassToElements(className, selector, 1, function (e) { return e.textContent.search(pattern) < 0 ? 1 : -1 })
+					count = assignClassToElements(className, selector, 1, function (e) { return text[e.id.slice(5)].search(pattern) < 0 ? 1 : -1 })
 				}
 				
 				filterApplied(count)
@@ -250,6 +252,8 @@
 			}
 			
 			function handleToggle(key) {
+				populatePrimaryItem(key)
+				
 				var image = _element('artwork-' + key)
 				
 				if ( image && !image.src && image.dataset.path ) {
@@ -914,7 +918,7 @@
 				var result = []
 				var lookup = new Object()
 				var lookupKeys = ['sources', 'sizes', 'monstertypes', 'alignments', 'abilities']
-				var styles
+				var styles, text
 				var excludeSource = []
 				var key, item, monster
 				var masterList = bestiary.monster
@@ -947,6 +951,15 @@
 					styles.push(item.spellcaster ? 'is-spellcaster' : 'not-spellcaster')
 					item.styles = styles.join(" ")
 					
+					text = [
+						item.name, item.sizename, item.typename, item.typetags, item.alignment,
+						"ac " + item.armorclass, "hp " + item.hitpoints, item.hitpointstags, item.speed,
+						item.skills, item.vulnerabilities, item.resistances, item.immunities,
+						item.unconditionals, item.senses, item.languages, "cr " + item.challengename, item.challengeexperience,
+						item.descriptionhtml, item.environments, item.sourcename, "pg " + item.page
+					]
+					item.plainText = text.join(" ").replace(/<[^<>]+>/g, ' ').replace(/\s+/g, ' ')
+					
 					result.push(item)
 				}
 				
@@ -955,38 +968,47 @@
 				return result
 			}
 			
-			function primaryTableContent() {
+			function primaryItemContent(item) {
 				var host = window.localStorage.getItem('quickter.bestiary.artwork.host')
+				var template = "" +
+					(host ? "<img id='artwork-{key}' data-path='{artwork}' loading='lazy' class='lazy artwork' alt=''>" : "") +
+					"<div class='monster-caption'><span class='size'>{sizename}</span> <span class='type'>{typename}{typetags}, </span><span class='alignment'>{alignment}</span></div>" +
+					"<hr class='monster-thick' />" +
+					"<div class='beside-artwork'><span class='prefix armorclass'>{armorclass}</span></div>" +
+					"<div class='beside-artwork'><span class='prefix hitpoints'>{hitpoints}</span><span class='hitpointstags'>{hitpointstags}</span></div>" +
+					"<div class='beside-artwork'><span class='prefix speed'>{speed}</span></div>" +
+					"<hr class='monster-thick' />" +
+					"<table class='abilities'><tr><th>Str</th><th>Dex</th><th>Con</th><th>Int</th><th>Wis</th><th>Cha</th></tr>" +
+					"<tr><td><span class='ability-score'>{str}</span> <span class='ability-modifier'>({strmod})</span></td><td><span class='ability-score'>{dex}</span> <span class='ability-modifier'>({dexmod})</span></td><td><span class='ability-score'>{con}</span> <span class='ability-modifier'>({conmod})</span></td><td><span class='ability-score'>{int}</span> <span class='ability-modifier'>({intmod})</span></td><td><span class='ability-score'>{wis}</span> <span class='ability-modifier'>({wismod})</span></td><td><span class='ability-score'>{cha}</span> <span class='ability-modifier'>({chamod})</span></td></tr></table>" +
+					"<hr class='monster-thick' />" +
+					"<div><span class='prefix skills'>{skills}</span></div>" +
+					"<div><span class='prefix vulnerabilities'>{vulnerabilities}</span></div>" +
+					"<div><span class='prefix resistances'>{resistances}</span></div>" +
+					"<div><span class='prefix immunities'>{immunities}</span></div>" +
+					"<div><span class='prefix unconditionals'>{unconditionals}</span></div>" +
+					"<div><span class='prefix senses'>{senses}</span></div>" +
+					"<div><span class='prefix languages'>{languages}</span></div>" +
+					"<div><span class='prefix challenge'>{challengename}</span> <span class='experience'>{challengeexperience}</span></div>" +
+					"<hr class='monster-thick' />" +
+					"{descriptionhtml}" +
+					"<p class='prefix environments'>{environments}</p>" +
+					"<p class='source'>{sourcename}<span class='page-number'>{page}</span></p>" +
+					"<label for='toggle-{key}' class='toggle close action'>&mdash;</label>" +
+					""
 				
+				var pattern = /\{([^ {}]+)\}/g
+				var html = template.replace(pattern, function (match, key) { return item[key] })
+				
+				return html
+			}
+			
+			function primaryTableContent(list) {
 				var rowTemplate = "<tr id='monster-{key}' class='primary monster {styles}'>" +
 					"<td class='selected monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='handleSelect(\"{key}\")' /></td>" +
-					"<td class='name monster-name natural' data-sort-key='{namekey}'>" +
+					"<td class='name monster-name natural' id='name-{key}' data-sort-key='{namekey}'>" +
 						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' onchange='handleToggle(\"{key}\")' />" +
 						"<label for='toggle-{key}' class='toggle'><a id='{key}' class='monster-name'>{name}</a></label>" +
-						"<div class='toggled details'><div class='inner details'>" +
-							(host ? "<img id='artwork-{key}' data-path='{artwork}' loading='lazy' class='lazy artwork' alt=''>" : "") +
-							"<div class='monster-caption'><span class='size'>{sizename}</span> <span class='type'>{typename}{typetags}, </span><span class='alignment'>{alignment}</span></div>" +
-							"<hr class='monster-thick' />" +
-							"<div class='beside-artwork'><span class='prefix armorclass'>{armorclass}</span></div>" +
-							"<div class='beside-artwork'><span class='prefix hitpoints'>{hitpoints}</span><span class='hitpointstags'>{hitpointstags}</span></div>" +
-							"<div class='beside-artwork'><span class='prefix speed'>{speed}</span></div>" +
-							"<hr class='monster-thick' />" +
-							"<table class='abilities'><tr><th>Str</th><th>Dex</th><th>Con</th><th>Int</th><th>Wis</th><th>Cha</th></tr>" +
-							"<tr><td><span class='ability-score'>{str}</span> <span class='ability-modifier'>({strmod})</span></td><td><span class='ability-score'>{dex}</span> <span class='ability-modifier'>({dexmod})</span></td><td><span class='ability-score'>{con}</span> <span class='ability-modifier'>({conmod})</span></td><td><span class='ability-score'>{int}</span> <span class='ability-modifier'>({intmod})</span></td><td><span class='ability-score'>{wis}</span> <span class='ability-modifier'>({wismod})</span></td><td><span class='ability-score'>{cha}</span> <span class='ability-modifier'>({chamod})</span></td></tr></table>" +
-							"<hr class='monster-thick' />" +
-							"<div><span class='prefix skills'>{skills}</span></div>" +
-							"<div><span class='prefix vulnerabilities'>{vulnerabilities}</span></div>" +
-							"<div><span class='prefix resistances'>{resistances}</span></div>" +
-							"<div><span class='prefix immunities'>{immunities}</span></div>" +
-							"<div><span class='prefix unconditionals'>{unconditionals}</span></div>" +
-							"<div><span class='prefix senses'>{senses}</span></div>" +
-							"<div><span class='prefix languages'>{languages}</span></div>" +
-							"<div><span class='prefix challenge'>{challengename}</span> <span class='experience'>{challengeexperience}</span></div>" +
-							"<hr class='monster-thick' />" +
-							"{descriptionhtml}" +
-							"<p class='prefix environments'>{environments}</p>" +
-							"<p class='source'>{sourcename}<span class='page-number'>{page}</span></p>" +
-							"<label for='toggle-{key}' class='toggle close action'>&mdash;</label>" +
+						"<div class='toggled details'><div id='inner-{key}' class='inner details'>" +
 						"</div></div>" +
 					"</td>" +
 					"<td class='monster-size natural monster-size-{sizekey}' data-sort-key='{sizekey}' title='Size {sizename}'>{size}</td>" +
@@ -1009,7 +1031,6 @@
 				"</tr>"
 				
 				var pattern = /\{([^ {}]+)\}/g
-				var list = monstersReadyToDisplay(bestiary)
 				var rows = list.map(function (item) { return rowTemplate.replace(pattern, function (match, key) { return item[key] }) })
 				
 				return header + rows.join("")
@@ -1039,10 +1060,50 @@
 				}
 			}
 			
-			function populatePrimaryTable() {
-				var table = _element('primary-table')
-				var html = primaryTableContent()
+			function populatePrimaryItem(item) {
+				var key
 				
+				if ( typeof item === 'string' ) {
+					key = item
+					item = false
+				} else {
+					key = item.key
+				}
+				
+				var element = key && _element('inner-' + key)
+				
+				if ( !element || element.childElementCount > 0 ) {
+					return
+				}
+				
+				if ( !item ) {
+					var table = _element('primary-table')
+					var list = table.primaryItemList
+					
+					item = table.primaryItemList[key]
+					
+					if ( item ) {
+						delete table.primaryItemList[key]
+					} else {
+						return
+					}
+				}
+				
+				element.innerHTML = primaryItemContent(item)
+			}
+			
+			function populatePrimaryTable(list) {
+				var table = _element('primary-table')
+				var html = primaryTableContent(list)
+				var item, searchableText = new Object(), searchableItem = new Object()
+				
+				for ( item of list ) {
+					searchableItem[item.key] = item
+					searchableText[item.key] = item.plainText
+				}
+				
+				table.primaryItemList = searchableItem
+				table.primaryItemText = searchableText
 				table.innerHTML = html
 				tableSort(table)
 			}
@@ -1051,7 +1112,7 @@
 				_element('primary-form').addEventListener('submit', handleSubmit)
 				window.addEventListener('hashchange', handleHashChanged)
 				
-				populatePrimaryTable()
+				populatePrimaryTable(monstersReadyToDisplay(bestiary))
 				applyParameters()
 				handleHashChanged()
 			}

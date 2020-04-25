@@ -147,6 +147,8 @@
 			function filterPrimaryByName(pattern) {
 				var className = 'filtered'
 				var selector = 'table#primary-table tr.primary > td.name'
+				var table = _element('primary-table')
+				var text = table.primaryItemText
 				var count
 				
 				if ( !pattern ) {
@@ -154,12 +156,12 @@
 					count = 0
 				} else if ( pattern.search(/[[?*.|^${}\\]/) < 0 ) {
 					pattern = pattern.toLowerCase()
-					count = assignClassToElements(className, selector, 1, function (e) { return e.textContent.toLowerCase().indexOf(pattern) < 0 ? 1 : -1 })
+					count = assignClassToElements(className, selector, 1, function (e) { return text[e.id.slice(5)].toLowerCase().indexOf(pattern) < 0 ? 1 : -1 })
 				} else {
 					try { pattern = new RegExp(pattern, 'ius') }
 					catch (error) { return }
 					
-					count = assignClassToElements(className, selector, 1, function (e) { return e.textContent.search(pattern) < 0 ? 1 : -1 })
+					count = assignClassToElements(className, selector, 1, function (e) { return text[e.id.slice(5)].search(pattern) < 0 ? 1 : -1 })
 				}
 				
 				filterApplied(count)
@@ -251,6 +253,10 @@
 				}
 			}
 			
+			function handleToggle(key) {
+				populatePrimaryItem(key)
+			}
+			
 			function handleSearch(event) {
 				var value = typeof event === 'string' ? event : event.target.value || ""
 				
@@ -330,7 +336,7 @@
 			function spellsReadyToDisplay(spells) {
 				var result = []
 				var keys = ['name', 'level', 'school', 'casting_time', 'range', 'components', 'material', 'duration', 'ritual', 'concentration', 'defense', 'attack', 'save', 'permanent', 'damage', 'damage_type', 'classes', 'desc', 'higher_level', 'book', 'page', 'circles', 'oaths', 'domains', 'patrons', 'archetype']
-				var spell, value, styles, scalar, casting
+				var spell, value, styles, text, scalar, casting
 				var s, key
 				
 				for ( s of spells ) {
@@ -441,6 +447,12 @@
 					if ( spell['damage'] === undefined ) { spell['damage'] = '' }
 					if ( spell['damage_type'] === undefined ) { spell['damage_type'] = '' }
 					
+					text = [
+						spell.name, spell.material, spell.descriptionhtml, spell.higher_level, spell.classnames,
+						spell.book, "pg " + spell.page
+					]
+					spell.plainText = text.join(" ").replace(/<[^<>]+>/g, ' ').replace(/\s+/g, ' ')
+					
 					result.push(spell)
 				}
 				
@@ -449,17 +461,27 @@
 				return result
 			}
 			
-			function primaryTableContent() {
+			function primaryItemContent(item) {
+				var template = "" +
+					"<p class='material'>{material}</p>" +
+					"{descriptionhtml}{higher_level}" +
+					"<p class='classnames'>{classnames}</p>" +
+					"<p class='source page-{book}'><span class='page'>{page}</span></p>" +
+					""
+				
+				var pattern = /\{([^ {}]+)\}/g
+				var html = template.replace(pattern, function (match, key) { return item[key] })
+				
+				return html
+			}
+			
+			function primaryTableContent(list) {
 				var rowTemplate = "<tr id='item-{key}' class='primary spell {styles}'>" +
  					"<td class='selected spell-prepared'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='handleSelect(\"{key}\")' /> </td>" +
-					"<td class='name spell-name' data-sort-key='{namekey}'>" +
-						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' />" +
+					"<td class='name spell-name' id='name-{key}' data-sort-key='{namekey}'>" +
+						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' onchange='handleToggle(\"{key}\")' />" +
 						"<label for='toggle-{key}' class='toggle spell-name'><a id='{key}' class='spell-name'>{name}</a></label>" +
-						"<div class='toggled details'><div class='inner details'>" +
-							"<p class='material'>{material}</p>" +
-							"{descriptionhtml}{higher_level}" +
-							"<p class='classnames'>{classnames}</p>" +
-							"<p class='source page-{book}'><span class='page'>{page}</span></p>" +
+						"<div class='toggled details'><div id='inner-{key}' class='inner details'>" +
 						"</div></div>" +
 					"</td>" +
 					"<td class='spell-level numeric' data-sort-key='{level}' title='Level {level}'>{level}</td>" +
@@ -487,17 +509,56 @@
 					//"<th class='spell-save sortable' data-sort-format='natural'>Save</th>" +
 				"</tr>"
 				
-				var list = spellsReadyToDisplay(spells)
 				var pattern = /{([^ }]+)}/g
 				var rows = list.map(function (item) { return rowTemplate.replace(pattern, function (match, key) { return item[key] }) })
 				
 				return header + rows.join("")
 			}
 			
-			function populatePrimaryTable() {
-				var table = _element('primary-table')
-				var html = primaryTableContent()
+			function populatePrimaryItem(item) {
+				var key
 				
+				if ( typeof item === 'string' ) {
+					key = item
+					item = false
+				} else {
+					key = item.key
+				}
+				
+				var element = key && _element('inner-' + key)
+				
+				if ( !element || element.childElementCount > 0 ) {
+					return
+				}
+				
+				if ( !item ) {
+					var table = _element('primary-table')
+					var list = table.primaryItemList
+					
+					item = table.primaryItemList[key]
+					
+					if ( item ) {
+						delete table.primaryItemList[key]
+					} else {
+						return
+					}
+				}
+				
+				element.innerHTML = primaryItemContent(item)
+			}
+			
+			function populatePrimaryTable(list) {
+				var table = _element('primary-table')
+				var html = primaryTableContent(list)
+				var item, searchableText = new Object(), searchableItem = new Object()
+				
+				for ( item of list ) {
+					searchableItem[item.key] = item
+					searchableText[item.key] = item.plainText
+				}
+				
+				table.primaryItemList = searchableItem
+				table.primaryItemText = searchableText
 				table.innerHTML = html
 				tableSort(table)
 			}
@@ -578,7 +639,7 @@
 				_element('primary-form').addEventListener('submit', handleSubmit)
 				window.addEventListener('hashchange', handleHashChanged)
 				
-				populatePrimaryTable()
+				populatePrimaryTable(spellsReadyToDisplay(spells))
 				applyParameters()
 				handleHashChanged()
 			}
@@ -791,8 +852,9 @@
 			}
 			
 			@media print {
-				th.item-selected, td.item-selected { display:none; }
+				th.spell-prepared, td.spell-prepared { display:none; }
 				div.filtering, div#controls { display:none; }
+				input.filter, span.caption { display:none; }
 				p.source { page-break-after:always; }
 			}
 			
@@ -823,7 +885,6 @@
 					<span id='primary-filter-count' class='action' onclick='filterAssignToggleChecked()' title='Number of matches.  Tap to expand.'></span>
 				</div>
 				
-				<div class='filtering'>
 				<br /><span class='caption taper'>Level:</span>
 				<input id='filter-level-0' type='checkbox' checked class='filter' /><label for='filter-level-0' class='filter'>0</label>
 				<span>&bull;</span> <input id='filter-level-1' type='checkbox' checked class='filter' /><label for='filter-level-1' class='filter'>1</label>
@@ -934,7 +995,6 @@
 				<label for='filter-permanent-disable' class='trivia exclude'><span class='taper'>Permanent</span></label>
 				<label for='filter-permanent-require' class='trivia disable'><span class='taper'>Permanent</span></label>
 				<label for='filter-permanent-exclude' class='trivia require'><span class='taper'>Permanent</span></label>
-				</div>
 				
 				<table id='primary-table'><tr><td>Loading...</td></tr></table>
 			</form>
