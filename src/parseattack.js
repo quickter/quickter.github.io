@@ -331,7 +331,7 @@ function parseAttackParameters(string, damageTypeMap) {
 		}
 	}
 	
-	return parts.map(s => parseAttackParametersElement(s, damageTypeMap))
+	return parts.map(function parse(s) { return parseAttackParametersElement(s, damageTypeMap) })
 }
 
 function parseAttackParametersRudimentaryDuel(a, b, damageTypeMap) {

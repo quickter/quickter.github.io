@@ -343,8 +343,8 @@
 						previousType = type
 						damageScalar = 1
 						
-						immune = type && e.immune && !(e.magical && mundane.includes(type)) && e.immune[type]
-						resistant = type && e.resistant && !(e.magical && mundane.includes(type)) && e.resistant[type]
+						immune = type && e.immune && !(e.magical && mundane.indexOf(type) >= 0) && e.immune[type]
+						resistant = type && e.resistant && !(e.magical && mundane.indexOf(type) >= 0) && e.resistant[type]
 						vulnerable = type && e.vulnerable && e.vulnerable[type]
 						
 						immune = (immune ? immune !== 'once' ? 2 : 1 : 0) | immuneAll
@@ -592,8 +592,8 @@
 						continue
 					}
 					
-					immune = type && !(e.magical && mundane.includes(type)) && e.immune && e.immune[type]
-					resistant = type && !(e.magical && mundane.includes(type)) && e.resistant && e.resistant[type]
+					immune = type && !(e.magical && mundane.indexOf(type) >= 0) && e.immune && e.immune[type]
+					resistant = type && !(e.magical && mundane.indexOf(type) >= 0) && e.resistant && e.resistant[type]
 					vulnerable = type && e.vulnerable && e.vulnerable[type]
 					
 					immune = (immune ? immune !== 'once' ? 2 : 1 : 0) | immuneAll

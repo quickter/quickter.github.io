@@ -216,7 +216,7 @@
 						items.push("<li>" + item + "</li>")
 					}
 				} else {
-					items = list.map(i => "<li>" + (i === '-' ? rulerHTML : i) + "</li>")
+					items = list.map(function list(i) { return "<li>" + (i === '-' ? rulerHTML : i) + "</li>" })
 				}
 				
 				if ( items.length > 0 ) {
@@ -237,9 +237,9 @@
 				
 				value = object['k']
 				if ( value ) {
-					if ( value.startsWith('i') ) { form.kind.value = 'individual' }
-					else if ( value.startsWith('play') ) { form.kind.value = 'player' }
-					else if ( value.startsWith('p') ) { form.kind.value = 'party' }
+					if ( value.indexOf('i') === 0 ) { form.kind.value = 'individual' }
+					else if ( value.indexOf('play') === 0 ) { form.kind.value = 'player' }
+					else if ( value.indexOf('p') === 0 ) { form.kind.value = 'party' }
 					else { form.kind.value = 'hoard' }
 				}
 				
@@ -267,11 +267,11 @@
 			
 			function validateTreasure() {
 				var magicTables = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'i-armor']
-				var index, keys = treasure.items.map(i => i.key)
+				var index, keys = treasure.items.map(function key(e) { return e.key })
 				var table, sum, weapon
 				
 				for ( table of treasure.hoard ) {
-					sum = table.table.reduce((s, e) => s + e.frequency, 0)
+					sum = treasureArrayFrequencySum(table.table)
 					
 					if ( sum != 100 ) {
 						console.log("Incorrect frequency sum " + sum + " on individual table CR " + table.cr)
@@ -279,7 +279,7 @@
 				}
 				
 				for ( table of treasure.individual ) {
-					sum = table.table.reduce((s, e) => s + e.frequency, 0)
+					sum = treasureArrayFrequencySum(table.table)
 					
 					if ( sum != 100 ) {
 						console.log("Incorrect frequency sum " + sum + " on hoard table CR " + table.cr)
@@ -287,7 +287,7 @@
 				}
 				
 				for ( table of magicTables ) {
-					sum = treasure.magic[table].reduce((s, e) => s + e.frequency, 0)
+					sum = treasureArrayFrequencySum(treasure.magic[table])
 					
 					if ( sum != 100 && table.length == 1 ) {
 						console.log("Incorrect frequency sum " + sum + " on magic table " + table)

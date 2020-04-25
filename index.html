@@ -1551,8 +1551,8 @@
 						previousType = type
 						damageScalar = 1
 						
-						immune = type && e.immune && !(e.magical && mundane.includes(type)) && e.immune[type]
-						resistant = type && e.resistant && !(e.magical && mundane.includes(type)) && e.resistant[type]
+						immune = type && e.immune && !(e.magical && mundane.indexOf(type) >= 0) && e.immune[type]
+						resistant = type && e.resistant && !(e.magical && mundane.indexOf(type) >= 0) && e.resistant[type]
 						vulnerable = type && e.vulnerable && e.vulnerable[type]
 						
 						immune = (immune ? immune !== 'once' ? 2 : 1 : 0) | immuneAll
@@ -2643,7 +2643,7 @@
 				}
 				
 				var index = value.indexOf('%')
-				var allowMontecarlo = where < 0 ? value.startsWith('/') && index > 0 : index > where
+				var allowMontecarlo = where < 0 ? value.indexOf('/') === 0 && index > 0 : index > where
 				var montecarlo = allowMontecarlo ? Math.min(+value.slice(index + 1) || 1000, 10000) : 0
 				
 				var parsed = parseEffectiveness(value)
@@ -3656,7 +3656,7 @@
 				for ( index = 0 ; index < count ; ++index ) {
 					key = storage.key(index)
 					
-					if ( key.startsWith(prefix) ) {
+					if ( key.indexOf(prefix) === 0 ) {
 						keys.push(key)
 					}
 				}
@@ -3671,7 +3671,7 @@
 					defaults.storageKeyToLoad = count > 0 ? keys[0] : null
 					
 					for ( index = count + 1 ; index > 0 ; --index ) {
-						if ( !keys.includes(prefix + index) ) {
+						if ( keys.indexOf(prefix + index) < 0 ) {
 							defaults.storageKeyToSave = prefix + index
 							break
 						}
@@ -3692,7 +3692,7 @@
 			// MARK: Prepare
 			
 			function prepareLookup() {
-				if ( location.protocol.startsWith('file') ) {
+				if ( location.protocol.indexOf('file') === 0 ) {
 					dnd.classes.push({
 						"key":"test",
 						"name":"Test",

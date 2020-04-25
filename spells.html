@@ -555,8 +555,8 @@
 				for ( v of values ) { _element('filter-book-' + v).checked = !(value.length > 0 && value.indexOf(v) < 0) }
 				
 				value = object['a'] || ''
-				values = 0||{'r':'ritual', 'c':'concentration', 'f':'defense', 'a':'attack', 's':'save', 'd':'damage', 'h':'higher', 'p':'permanent'}
-				for ( v in values ) { V = v.toUpperCase(); form['filter-' + values[v]].value = value.indexOf(v) < 0 ? value.indexOf(V) < 0 ? '-' : V : v }
+				values = ['r:ritual', 'c:concentration', 'f:defense', 'a:attack', 's:save', 'd:damage', 'h:higher', 'p:permanent']
+				for ( key of values ) { v = key.charAt(0); V = v.toUpperCase(); form['filter-' + key.slice(2)].value = value.indexOf(v) < 0 ? value.indexOf(V) < 0 ? '-' : V : v }
 			}
 			
 			function applyParameters() {
