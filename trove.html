@@ -8,7 +8,7 @@
 		<meta name="author" content="Cole">
 		<meta name="keywords" content="dnd,5e,dungeons,dragons,magic,items">
 		<meta name="description" content="Magic Items">
-		<script src="data/items.js"></script>
+		<script src="data/trove.js"></script>
 		<script src="src/library.js"></script>
 		<script src="src/sort.js"></script>
 		
@@ -236,7 +236,7 @@
 				libraryForm().addEventListener('submit', libraryHandleSubmit)
 				window.addEventListener('hashchange', libraryHandleHashChanged)
 				
-				populateLibrary(parseTreasureItems(items))
+				populateLibrary(parseTreasureItems(trove))
 				applyParameters()
 				libraryHandleHashChanged()
 			}

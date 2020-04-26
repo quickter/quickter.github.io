@@ -1,4 +1,4 @@
-var items = {
+var trove = {
 	"supplement":[
 		{"key":"adamantinearmor", "name":"Adamantine Armor", "category":"Armor (medium or heavy, but not hide)"},
 		{"key":"alchemyjug", "name":"Alchemy Jug", "weight":4},
