@@ -118,7 +118,7 @@
 				return item
 			}
 			
-			function parseTreasureItems(treasure) {
+			function parseTreasureItems(trove) {
 				var result = []
 				var lookup = new Object()
 				var lookupKeys = ['rarities', 'categories', 'sources']
@@ -128,13 +128,13 @@
 				var item, masterItem
 				var styles, text
 				var key
-				var masterList = treasure.item.concat(treasure.variant)
+				var masterList = trove.item.concat(trove.variant)
 				
 				for ( key of lookupKeys ) {
 					lookup[key] = new Object()
 					
-					if ( Array.isArray(treasure[key]) ) {
-						for ( item of treasure[key] ) {
+					if ( Array.isArray(trove[key]) ) {
+						for ( item of trove[key] ) {
 							lookup[key][item.key] = item
 						}
 					}
@@ -226,8 +226,8 @@
 				}
 			}
 			
-			function populateLibrary(items) {
-				var table = libraryPopulateTable(items, renderItemTable)
+			function populateLibrary(trove) {
+				var table = libraryPopulateTable(trove, renderItemTable)
 				
 				tableSort(table)
 			}

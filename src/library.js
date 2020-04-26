@@ -390,6 +390,8 @@ function libraryResolveReferences(text, object) {
 		return "<span class='property " + key + "'>" + (value || '-') + "</span>"
 	})
 	
+	text = text.replace(/\{@i ([^{}]+)\}/g, "<span class='entries italic'>$1</span> ")
+	
 	text = text.replace(/\{@([^{} ]+)\s+([^{}]+)\}/g, function (match, type, list) {
 		var part = list.split('|')
 		
@@ -417,6 +419,7 @@ function libraryResolveReferences(text, object) {
 	})
 	
 	text = text.replace(/\{@h\}/g, "<span class='entries hit italic'>Hit:</span> ")
+	text = text.replace(/\{@i ([^{}]+)\}/g, "<span class='entries italic'>$1</span> ")
 	text = text.replace(/\{@recharge\}/g, "<span class='entries recharge'></span>")
 	
 	return text
