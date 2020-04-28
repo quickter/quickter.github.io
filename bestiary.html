@@ -505,7 +505,7 @@
 					}
 				}
 				
-				result.descriptionhtml = libraryResolveReferences(array.join(""), monster)
+				result.description = libraryResolveReferences(array.join(""), monster)
 				
 				var environments = monster.environment
 				
@@ -564,7 +564,7 @@
 						"ac " + item.armorclass, "hp " + item.hitpoints, item.hitpointstags, item.speed,
 						item.skills, item.vulnerabilities, item.resistances, item.immunities,
 						item.unconditionals, item.senses, item.languages, "cr " + item.challengename, item.challengeexperience,
-						item.descriptionhtml, item.environments, item.sourcename, "pg " + item.page
+						item.description, item.environments, item.sourcename, "pg " + item.page
 					]
 					item.searchableText = text.join(" ")
 					
@@ -598,7 +598,7 @@
 					"<div><span class='prefix languages'>{languages}</span></div>" +
 					"<div><span class='prefix challenge'>{challengename}</span> <span class='experience'>{challengeexperience}</span></div>" +
 					"<hr class='monster-thick' />" +
-					"{descriptionhtml}" +
+					"{description}" +
 					"<p class='prefix environments'>{environments}</p>" +
 					"<p class='source'>{sourcename}<span class='page-number'>{page}</span></p>" +
 					"<label for='toggle-{key}' class='toggle close action'>&mdash;</label>" +

@@ -400,26 +400,30 @@ function libraryResolveReferences(text, object) {
 		case "recharge": return "<span class='entries recharge'>" + list + "</span>"
 		case "b": case "bold": return "<span class='entries bold'>" + list + "</span>"
 		case "i": case "italic": return "<span class='entries italic'>" + list + "</span>"
+		case "scaledice": case "scaledamage": return "<span class='entries " + type + "' >" + (part[2] || part[0]) + "</span>"
 		case "dice": case "damage": return "<span class='entries " + type + " italic action' onclick='libraryHandleDice(event, \"" + part[0] + "\")'>" + (part[1] || part[0]) + "<span class='rolled'></span></span>"
 		case "chance": return "<span class='entries " + type + " action' onclick='libraryHandleChance(event, \"" + part[0] + "\")'>" + (part[1] || part[0] + " percent") + "<span class='rolled'></span></span>"
 		case "link": return "<span class='entries " + type + " italic'>" + list + "</span>"
-		case "hit": return (+list < 0 ? "" : "+") + list
+		case "hit": return (list.charAt(0) === "+" || +list < 0 ? "" : "+") + list
 		case "atk": return "<span class='entries attack italic'>" + list.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</span> "
 		case "dc": return list
 		case "item": return "<a class='entries item' href='trove.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
 		case "spell": return "<a class='entries spell italic' href='spells.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
 		case "creature": return "<a class='entries creature' href='bestiary.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
 		case "condition": case "skill": case "sense": case "action": case "hazard": return "<span class='entries " + type + "'>" + part[0] + "</span>"
-		case "filter": return (part.length > 2 && part[1] === 'spells') ? "<a class='entries spell italic' href='spells.html?" + part[2] + "'>" + part[0] + "</a>" : "<span class='entries italic " + type + "'>" + part[0] + "</span>"
 		case "adventure": return "<span class='entries italic " + type + "'>" + part[0] + "</span>"
 		case "table": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
 		case "book": return "<span class='entries italic " + type + "'>" + (part[3] || part[0]) + "</span>"
-		default: return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
+		case "race": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
+		case "filter": return (part.length > 2 && part[1] === 'spells') ? "<a class='entries spell italic' href='spells.html?" + part[2] + "'>" + part[0] + "</a>" : "<span class='entries italic " + type + "'>" + part[0] + "</span>"
+		default: console.log(match); return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
 		}
 	})
 	
-	text = text.replace(/\{@h\}/g, "<span class='entries hit italic'>Hit:</span> ")
 	text = text.replace(/\{@i ([^{}]+)\}/g, "<span class='entries italic'>$1</span> ")
+	text = text.replace(/\{@note ([^{}]+)\}/g, "<span class='entries note'>$1</span> ")
+	
+	text = text.replace(/\{@h\}/g, "<span class='entries hit italic'>Hit:</span> ")
 	text = text.replace(/\{@recharge\}/g, "<span class='entries recharge'></span>")
 	
 	return text
@@ -456,7 +460,17 @@ function libraryResolveEntries(entries, begin, close, depth) {
 		result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + libraryResolveEntries(c, "", "", depth + 1) + "</td>" }).join("") + "</tr>" }).join("")
 		result += "</table>"
 	} else if ( entries.type === 'cell' && entries.roll ) {
-		result = begin + entries.roll.entry + close
+		var roll = entries.roll
+		
+		if ( roll.entry ) {
+			result = begin + roll.entry + close
+		} else if ( roll.min || roll.max ) {
+			result = begin + (roll.pad ? ("00" + roll.min).slice(-2) : roll.min) + "&mdash;" + (roll.pad ? ("00" + roll.max).slice(-2) : roll.max) + close
+		} else if ( roll.exact ) {
+			result = begin + (roll.pad ? ("00" + roll.exact).slice(-2) : roll.exact) + close
+		} else {
+			result = begin + roll + close
+		}
 	} else if ( entries.type === 'list' ) {
 		var list = entries.entries || entries.items
 		var text = list.filter(function (i) { return typeof i === 'string' })
