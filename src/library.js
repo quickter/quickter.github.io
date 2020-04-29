@@ -408,14 +408,14 @@ function libraryResolveReferences(text, object) {
 		case "atk": return "<span class='entries attack italic'>" + list.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</span> "
 		case "dc": return list
 		case "item": return "<a class='entries item' href='trove.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
-		case "spell": return "<a class='entries spell italic' href='spells.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+		case "spell": return "<a class='entries spell italic' href='spellbook.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
 		case "creature": return "<a class='entries creature' href='bestiary.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
 		case "condition": case "skill": case "sense": case "action": case "hazard": return "<span class='entries " + type + "'>" + part[0] + "</span>"
 		case "adventure": return "<span class='entries italic " + type + "'>" + part[0] + "</span>"
 		case "table": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
 		case "book": return "<span class='entries italic " + type + "'>" + (part[3] || part[0]) + "</span>"
 		case "race": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
-		case "filter": return (part.length > 2 && part[1] === 'spells') ? "<a class='entries spell italic' href='spells.html?" + part[2] + "'>" + part[0] + "</a>" : "<span class='entries italic " + type + "'>" + part[0] + "</span>"
+		case "filter": return (part.length > 2 && part[1] === 'spells') ? "<a class='entries spell italic' href='spellbook.html?" + part[2] + "'>" + part[0] + "</a>" : "<span class='entries italic " + type + "'>" + part[0] + "</span>"
 		default: console.log(match); return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
 		}
 	})

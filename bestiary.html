@@ -467,7 +467,7 @@
 								spells = spells.join(",")
 								
 								if ( item.name || item.headerEntries ) {
-									spells = "<a class='spellcasting spells' href='spells.html#" + spells + "' >" + item.name + "</a>"
+									spells = "<a class='spellcasting spells' href='spellbook.html#" + spells + "' >" + item.name + "</a>"
 									array.push(libraryResolveEntries({'name':spells, 'entries':item.headerEntries || []}, "<p class='spellcasting'>", "</p>"))
 								}
 								
