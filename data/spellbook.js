@@ -200,6 +200,10 @@ var spellbook = {
 			"defense":true
 		},
 		{
+			"name":"Awaken",
+			"willing":true
+		},
+		{
 			"name":"Banishment",
 			"permanent":true
 		},
@@ -210,6 +214,10 @@ var spellbook = {
 		{
 			"name":"Beacon of Hope",
 			"defense":true
+		},
+		{
+			"name":"Beast Bond",
+			"willing":true
 		},
 		{
 			"name":"Bestow Curse",
@@ -369,6 +377,10 @@ var spellbook = {
 			"attack":false
 		},
 		{
+			"name":"Hallow",
+			"protective":true
+		},
+		{
 			"name":"Haste",
 			"defense":true
 		},
@@ -476,6 +488,10 @@ var spellbook = {
 			"permanent":true
 		},
 		{
+			"name":"Maze",
+			"conditionInflict":["banished"]
+		},
+		{
 			"name":"Maximilian's Earthen Grasp",
 			"damage":"2d6"
 		},
@@ -519,6 +535,14 @@ var spellbook = {
 			"permanent":true
 		},
 		{
+			"name":"Planar Binding",
+			"conditionInflict":["charmed"]
+		},
+		{
+			"name":"Power Word Kill",
+			"conditionInflict":["dead"]
+		},
+		{
 			"name":"Primordial Ward",
 			"damage":false,
 			"defense":true
@@ -530,6 +554,10 @@ var spellbook = {
 		{
 			"name":"Prismatic Wall",
 			"damage":"10d6"
+		},
+		{
+			"name":"Project Image",
+			"willing":true
 		},
 		{
 			"name":"Protection from Energy",
@@ -621,6 +649,10 @@ var spellbook = {
 			"damage":false
 		},
 		{
+			"name":"Temple of the Gods",
+			"protective":true
+		},
+		{
 			"name":"Thunderclap",
 			"damageSave":"none"
 		},
@@ -631,6 +663,10 @@ var spellbook = {
 		{
 			"name":"Toll the Dead",
 			"damage":"*d12"
+		},
+		{
+			"name":"True Polymorph",
+			"conditionInflict":["polymorphed"]
 		},
 		{
 			"name":"True Strike",

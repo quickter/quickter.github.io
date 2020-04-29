@@ -20,6 +20,7 @@
 				var value, key, keys = ['name', 'level', 'source', 'page', 'school']
 				var material, components = ['v', 's', 'm']
 				var object, entry, found, order, index, title, style, array
+				var supplement
 				var styles = []
 				
 				var isConcentration = false
@@ -42,6 +43,7 @@
 				spell.sourcename = lookup.sources[spell.source].name
 				spell.schoolname = lookup.schools[spell.school].name
 				spell.ss = spell.schoolname.slice(0, spell.school === 'I' ? 3 : 2)
+				supplement = lookup.supplements[spell.key]
 				
 				index = 0
 				order = 0
@@ -251,16 +253,29 @@
 				spell.description = masterSpell.entries ? libraryResolveEntries(masterSpell.entries, "<p>", "</p>") : ''
 				spell.higher_level = masterSpell.entriesHigherLevel ? libraryResolveEntries(masterSpell.entriesHigherLevel, "<p>", "</p>") : ''
 				
+				if ( supplement ) {
+					if ( supplement.permanent === false ) {
+						isPermanent = false
+					} else if ( supplement.permanent ) {
+						isPermanent = true
+					}
+					
+					if ( supplement.defense === false ) {
+						isDefense = false
+					} else if ( supplement.defense ) {
+						isDefense = true
+					}
+				}
+				
 				value = ''
 				order = 0
-				entry = lookup.supplements[spell.key]
 				object = masterSpell.scalingLevelDice
 				
-				if ( entry && entry.damage === false ) {
+				if ( supplement && supplement.damage === false ) {
 					isDamaging = false
-				} else if ( entry && typeof entry.damage === 'string' ) {
+				} else if ( supplement && typeof supplement.damage === 'string' ) {
 					isDamaging = true
-					value = entry.damage.replace(/\s+/g, '')
+					value = supplement.damage.replace(/\s+/g, '')
 					order = value
 				} else if ( object && object.scaling && typeof object.scaling['1'] === 'string' ) {
 					array = object.scaling['1'].match(/\d*d\d+/)
@@ -313,27 +328,30 @@
 					}
 				}
 				
-				spell.damage = value
-				spell.damagekey = order
-				
-				entry = lookup.supplements[spell.key]
-				if ( entry ) {
-					if ( entry.permanent === false ) {
-						isPermanent = false
-					} else if ( entry.permanent ) {
-						isPermanent = true
-					}
+				title = ''
+				if ( !value && !isDefense && spell.rangekey > 0 && !(supplement && supplement.willing) && !(supplement && supplement.protective) ) {
+					array = supplement && supplement.conditionInflict || masterSpell.conditionInflict
 					
-					if ( entry.defense === false ) {
-						isDefense = false
-					} else if ( entry.defense ) {
-						isDefense = true
+					if ( masterSpell.savingThrow && masterSpell.savingThrow.length > 0 ) {
+						if ( (array && array.length > 0) || (!masterSpell.miscTags || masterSpell.miscTags.indexOf('SMN') < 0) ) {
+							order = 1
+							value = "&bull;"
+						}
+					} else if ( array && array.length > 0 ) {
+						if ( array.indexOf('invisible') < 0 && spell.description.indexOf(' willing ') < 0 ) {
+							order = 1
+							value = "&bull;"
+						}
+					} else {
+						order = 0
 					}
 				}
 				
-				title = ''
+				spell.damage = value
+				spell.damagekey = order
+				
 				if ( isDamaging ) {
-					value = entry && entry.damageSave
+					value = supplement && supplement.damageSave
 					
 					if ( value === false ) {
 						value = 'is-damage-always'
@@ -384,7 +402,7 @@
 				}
 				spell.damagesave = title
 				
-				value = entry && entry.attack
+				value = supplement && supplement.attack
 				
 				if ( value === false ) {
 					isAttack = false
