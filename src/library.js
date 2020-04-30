@@ -40,6 +40,12 @@ function libraryAssignClass(element, c) {
 	return result;
 }
 
+function libraryIsFilteringElement(element) {
+	if ( !libraryIsFilteringElement.isEnabled ) { return false }
+	
+	return getComputedStyle(element).getPropertyValue('display') === 'none'
+}
+
 function libraryAssignClassToElements(className, selector, ascend, rule) {
 	var element, elements = document.querySelectorAll(selector)
 	var value, climb, index = elements.length
@@ -56,6 +62,8 @@ function libraryAssignClassToElements(className, selector, ascend, rule) {
 		}
 		
 		if ( libraryAssignClass(element, className, value) > 0 || value > 0 ) {
+			count -= 1
+		} else if ( libraryIsFilteringElement(element) ) {
 			count -= 1
 		}
 	}
@@ -81,10 +89,11 @@ function libraryInflateParameters(result, string, leading, separator) {
 	return object
 }
 
-function libraryAssignCheckedToSelector(selector, checked) {
+function libraryAssignCheckedToSelector(selector, checked, ancestorDisplayed) {
 	var selectorChecked = selector + ':checked'
 	var selectorUnchecked = selector + ':not(:checked)'
 	var element, elements, index
+	var ancestor, ascend
 	
 	if ( checked ) {
 		checked = checked > 0
@@ -102,6 +111,19 @@ function libraryAssignCheckedToSelector(selector, checked) {
 	while ( index --> 0 ) {
 		element = elements[index]
 		
+		if ( ancestorDisplayed >= 0 ) {
+			ancestor = element
+			ascend = ancestorDisplayed
+			
+			while ( ancestor && ascend --> 0 ) {
+				ancestor = ancestor.parentElement
+			}
+			
+			if ( ancestor && libraryIsFilteringElement(ancestor) ) {
+				continue
+			}
+		}
+		
 		if ( element.checked !== checked ) {
 			element.checked = checked
 			
@@ -113,11 +135,11 @@ function libraryAssignCheckedToSelector(selector, checked) {
 ////////////////////////////////////////////////////////////////////////////////
 
 function libraryToggleUnfiltered(value) {
-	libraryAssignCheckedToSelector('table#library-table tr:not(.filtered) > td.name > input.toggle', value)
+	libraryAssignCheckedToSelector('table#library-table tr:not(.filtered) > td.name > input.toggle', value, 2)
 }
 
 function libraryChooseUnfiltered(value) {
-	libraryAssignCheckedToSelector('table#library-table tr:not(.filtered) > td.selected > input.selection', value)
+	libraryAssignCheckedToSelector('table#library-table tr:not(.filtered) > td.selected > input.selection', value, 2)
 }
 
 function libraryFilterByUnchosen() {

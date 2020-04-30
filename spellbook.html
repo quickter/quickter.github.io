@@ -606,6 +606,8 @@
 				var table = libraryPopulateTable(items, renderItemTable)
 				
 				tableSort(table)
+				
+				libraryIsFilteringElement.isEnabled = true
 			}
 			
 			function populatePage() {
@@ -872,7 +874,7 @@
 					<input type='checkbox' id='select-all' name='a' onclick='libraryChooseUnfiltered(checked ? 1 : -1)' title='Tap to select matches.' />
 					<label for='select-all'>&nbsp;</label>
 					<input type='search' id='library-filter' name='f' size='36' placeholder='Filter' oninput='libraryHandleSearch(event)'>
-					<span id='library-filter-count' class='action' onclick='libraryToggleUnfiltered()' title='Number of matches.  Tap to expand.'></span>
+					<span id='library-filter-count' class='action' onclick='libraryToggleUnfiltered()' title='Number of matches.  Tap to expand or collapse matches.'></span>
 				</div>
 				
 				<br /><span class='caption taper'>Level:</span>
