@@ -373,8 +373,8 @@ function libraryHandleChance(event, chance) {
 	
 	if ( !chance ) { return }
 	
-	let value = 1 + libraryRandomInteger(100)
-	let success = value <= chance
+	var value = 1 + libraryRandomInteger(100)
+	var success = value <= chance
 	
 	libraryAssignClass(element, className + '-success', success ? 1 : -1)
 	libraryAssignClass(element, className + '-failure', success ? -1 : 1)

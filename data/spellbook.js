@@ -789,124 +789,154 @@ var spellbook = {
 	],
 	"sources":[
 		{
-			"key":"DMG",
-			"name":"Dungeon Master's Guide"
-		},
-		{
 			"key":"PHB",
-			"name":"Player's Handbook"
+			"name":"Player's Handbook",
+			"nickname":"Player's Handbook"
 		},
 		{
-			"key":"AI",
-			"name":"Acquisitions Incorporated"
-		},
-		{
-			"key":"BGDIA",
-			"name":"Baldur's Gate: Descent Into Avernus"
-		},
-		{
-			"key":"CoS",
-			"name":"Curse of Strahd"
-		},
-		{
-			"key":"EGW",
-			"name":"Explorer's Guide to Wildemount"
-		},
-		{
-			"key":"ERLW",
-			"name":"Eberron: Rising from the Last War"
-		},
-		{
-			"key":"EFR",
-			"name":"Eberron: Forgotten Relics"
-		},
-		{
-			"key":"GGR",
-			"name":"Guildmaster's Guide to Ravnica"
-		},
-		{
-			"key":"GoS",
-			"name":"Ghosts of Saltmarsh"
-		},
-		{
-			"key":"HftT",
-			"name":"Hunt for the Thessalhydra"
-		},
-		{
-			"key":"HotDQ",
-			"name":"Hoard of the Dragon Queen"
-		},
-		{
-			"key":"IMR",
-			"name":"Infernal Machine Rebuild"
-		},
-		{
-			"key":"KW",
-			"name":"Krenkos' Way"
-		},
-		{
-			"key":"LLK",
-			"name":"Lost Laboratory of Kwalish"
-		},
-		{
-			"key":"LR",
-			"name":"Locathah Rising"
-		},
-		{
-			"key":"LMoP",
-			"name":"Lost Mines of Phandelver"
+			"key":"DMG",
+			"name":"Dungeon Master's Guide",
+			"nickname":"Dungeon Master's"
 		},
 		{
 			"key":"MM",
-			"name":"Monster manual"
+			"name":"Monster manual",
+			"nickname":"Monster Manual"
+		},
+		{
+			"key":"AI",
+			"name":"Acquisitions Incorporated",
+			"nickname":"Acquisitions"
+		},
+		{
+			"key":"BGDIA",
+			"name":"Baldur's Gate: Descent Into Avernus",
+			"nickname":"Avernus"
+		},
+		{
+			"key":"CoS",
+			"name":"Curse of Strahd",
+			"nickname":"Strahd"
+		},
+		{
+			"key":"EGW",
+			"name":"Explorer's Guide to Wildemount",
+			"nickname":"Wildemount"
+		},
+		{
+			"key":"ERLW",
+			"name":"Eberron: Rising from the Last War",
+			"nickname":"Eberron"
+		},
+		{
+			"key":"EFR",
+			"name":"Eberron: Forgotten Relics",
+			"nickname":"Eberron Relics"
+		},
+		{
+			"key":"GGR",
+			"name":"Guildmaster's Guide to Ravnica",
+			"nickname":"Ravnica"
+		},
+		{
+			"key":"GoS",
+			"name":"Ghosts of Saltmarsh",
+			"nickname":"Saltmarsh"
+		},
+		{
+			"key":"HftT",
+			"name":"Hunt for the Thessalhydra",
+			"nickname":"Thessalhydra"
+		},
+		{
+			"key":"HotDQ",
+			"name":"Hoard of the Dragon Queen",
+			"nickname":"Dragon Queen"
+		},
+		{
+			"key":"IMR",
+			"name":"Infernal Machine Rebuild",
+			"nickname":"Infernal Machine"
+		},
+		{
+			"key":"KW",
+			"name":"Krenkos' Way",
+			"nickname":"Krenkos"
+		},
+		{
+			"key":"LLK",
+			"name":"Lost Laboratory of Kwalish",
+			"nickname":"Lost Laboratory"
+		},
+		{
+			"key":"LR",
+			"name":"Locathah Rising",
+			"nickname":"Locathah"
+		},
+		{
+			"key":"LMoP",
+			"name":"Lost Mines of Phandelver",
+			"nickname":"Phandelver"
 		},
 		{
 			"key":"MFF",
-			"name":"Mordenkainen's Fiendish Folio"
+			"name":"Mordenkainen's Fiendish Folio",
+			"nickname":"Mordenkainen's Folio"
 		},
 		{
 			"key":"MTF",
-			"name":"Mordenkainen's Tome of Foes"
+			"name":"Mordenkainen's Tome of Foes",
+			"nickname":"Mordenkainen's Tome"
 		},
 		{
 			"key":"OotA",
-			"name":"Out of the Abyss"
+			"name":"Out of the Abyss",
+			"nickname":"Abyss"
 		},
 		{
 			"key":"PSX",
-			"name":"Plane Shift: Ixalan"
+			"name":"Plane Shift: Ixalan",
+			"nickname":"Ixalan"
 		},
 		{
 			"key":"PotA",
-			"name":"Prince of the Apocalypse"
+			"name":"Prince of the Apocalypse",
+			"nickname":"Apocalypse"
 		},
 		{
 			"key":"RoT",
-			"name":"The Rise of Tiamat"
+			"name":"The Rise of Tiamat",
+			"nickname":"Tiamat"
 		},
 		{
 			"key":"RoTOS",
-			"name":"The Rise of Tiamat"
+			"name":"The Rise of Tiamat",
+			"nickname":"Tiamat"
 		},
 		{
 			"key":"SCAG",
-			"name":"Sword Coast Adventurer's Guide"
+			"name":"Sword Coast Adventurer's Guide",
+			"nickname":"Sword Coast"
 		},
 		{
 			"key":"SKT",
-			"name":"Storm King's Thunder"
+			"name":"Storm King's Thunder",
+			"nickname":"Storm King's"
 		},
 		{
 			"key":"TTP",
-			"name":"The Tortle Package"
+			"name":"The Tortle Package",
+			"nickname":"Tortle"
 		},
 		{
 			"key":"TftYP",
-			"name":"Tales from the Yawning Portal"
+			"name":"Tales from the Yawning Portal",
+			"nickname":"Yawning Portal"
 		},
 		{
 			"key":"ToA",
-			"name":"Tomb of Annihilation"
+			"name":"Tomb of Annihilation",
+			"nickname":"Annihilation"
 		},
 		{
 			"key":"UA",
@@ -914,19 +944,23 @@ var spellbook = {
 		},
 		{
 			"key":"VGM",
-			"name":"Volo's Guide to Monsters"
+			"name":"Volo's Guide to Monsters",
+			"nickname":"Volo's"
 		},
 		{
 			"key":"WDH",
-			"name":"Waterdeep: Dragon Heist"
+			"name":"Waterdeep: Dragon Heist",
+			"nickname":"Waterdeep Heist"
 		},
 		{
 			"key":"WDMM",
-			"name":"Waterdeep: Dungeon of the Mad Mage"
+			"name":"Waterdeep: Dungeon of the Mad Mage",
+			"nickname":"Waterdeep Mage"
 		},
 		{
 			"key":"XGE",
-			"name":"Xanathar's Guide to Everything"
+			"name":"Xanathar's Guide to Everything",
+			"nickname":"Xanathar's"
 		}
 	],
 	"spell":[
