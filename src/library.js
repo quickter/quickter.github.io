@@ -298,20 +298,31 @@ function libraryHandleDice(event, dice) {
 	
 	if ( !target || !element ) { return }
 	
-	var matches = dice.toLowerCase().replace(/\s+/g, '').split(/(\b[+-]?\d*d?\d+\b)/g)
+	var matches = dice.toLowerCase().replace(/\s+/g, '').split(/(\b[+-]?\d*d?\d+\b|[×*])/g)
 	var index, count = matches && matches.length
 	var value, found, sides, roll, rolls = 0, modifiers = 0
-	var sum = 0
+	var times = 0, sum = 0
 	
 	for ( index = 1 ; index < count ; index += 2 ) {
 		value = matches[index]
 		found = value.indexOf('d')
 		
+		if ( value === '*' || value === '×' ) {
+			times = true
+			continue
+		}
+		
 		if ( found < 0 ) {
 			value = parseInt(value)
 			
 			if ( value ) {
-				sum += value
+				if ( times ) {
+					sum *= value
+					times = false
+				} else {
+					sum += value
+				}
+				
 				modifiers += 1
 			}
 		} else {
@@ -320,9 +331,17 @@ function libraryHandleDice(event, dice) {
 			
 			if ( sides > 1 ) {
 				rolls += 1
+				roll = 0
 				
 				while ( value --> 0 ) {
-					sum += 1 + libraryRandomInteger(sides)
+					roll += 1 + libraryRandomInteger(sides)
+				}
+				
+				if ( times ) {
+					sum *= roll
+					times = false
+				} else {
+					sum += roll
 				}
 			}
 		}
@@ -393,7 +412,7 @@ function libraryStripDiacriticals(string) {
 }
 
 function libraryKey(name) {
-	return libraryStripDiacriticals(name.toLowerCase()).replace(/(['‘’(){}×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
+	return libraryStripDiacriticals(name.toLowerCase()).replace(/(['‘’(){}×.,:"“”]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
 }
 
 function libraryResolveReferences(text, object) {
@@ -592,4 +611,117 @@ function libraryPopulateTable(items, renderItemTable) {
 
 function libraryForm() {
 	return libraryElement('library-form')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+function libraryRenderStyles(styles) {
+	var separator = "\n"
+	var identifier = 'library-styles'
+	var element = libraryElement(identifier)
+	
+	if ( element ) {
+		element.innerHTML += separator + styles.join(separator)
+	} else {
+		element = document.createElement('style')
+		element.id = identifier
+		element.innerHTML = styles.join(separator)
+		document.head.appendChild(element)
+	}
+}
+
+function libraryRenderHTML(position, relativeToElement, html) {
+	var element = libraryElement(relativeToElement)
+	
+	if ( position === 'inside' ) {
+		element.innerHTML = html
+	} else if ( position !== 'replace' && typeof element.insertAdjacentHTML === 'function' ) {
+		element.insertAdjacentHTML(position, html)
+	} else if ( position === 'afterbegin' ) {
+		element.innerHTML = html + element.innerHTML
+	} else if ( position === 'beforeend' ) {
+		element.innerHTML = element.innerHTML + html
+	} else {
+		var parent = element.parentElement
+		var temporary = document.createElement('DIV')
+		
+		temporary.innerHTML = html
+		
+		if ( position === 'beforebegin' || position === 'replace' ) {
+			while ( temporary.firstChild ) { parent.insertBefore(temporary.firstChild, element) }
+		} else if ( position === 'afterend' ) {
+			if ( element.nextSibling ) {
+				while ( temporary.firstChild ) { parent.insertBefore(temporary.firstChild, element.nextSibling) }
+			} else {
+				while ( temporary.firstChild ) { parent.appendChild(temporary.firstChild) }
+			}
+		}
+		
+		if ( position === 'replace' ) {
+			parent.removeChild(element)
+		}
+	}
+}
+
+function libraryRenderCaptionForFilters(label, spanClasses) {
+	return "<br class='filter' /><span class='filter caption " +spanClasses + "'>" + label + ":</span> "
+}
+
+function libraryRenderCheckboxFilters(filters, spanClasses, accumulateStyles) {
+	var templateStyles = "input#filter-{key}:not(:checked) ~ table#library-table tr.library.{style}:not(.header) { display:none; }"
+	var templateName = spanClasses ? "<span class='" + spanClasses + "'>{name}</span>" : "{name}"
+	var separator = " <span class='filter'>&bull;</span> "
+	
+	var templateContent = "" +
+		"<input id='filter-{key}' type='checkbox' checked class='filter' />" +
+		"<label for='filter-{key}' class='filter' title='{title}'>" + templateName + "</label>"
+	
+	if ( Array.isArray(accumulateStyles) ) {
+		accumulateStyles.push.apply(accumulateStyles, libraryRenderTemplateItemArray(templateStyles, filters))
+	}
+	
+	return libraryRenderTemplateItemArray(templateContent, filters).join(separator)
+}
+
+function libraryRenderRadioFilters(filters, spanClasses, accumulateStyles) {
+	var templateStyles = "input#filter-{group}-{key}:checked ~ table#library-table tr.library:not(.{style}):not(.header) { display:none; }"
+	var templateName = spanClasses ? "<span class='" + spanClasses + "'>{name}</span>" : "{name}"
+	var separator = " <span class='filter'>&bull;</span> "
+	
+	var templateContent = "" +
+		"<input id='filter-{group}-{key}' name='{group}' value='{value}' type='radio' {checked} class='filter' />" +
+		"<label for='filter-{group}-{key}' class='filter' title='{title}'>" + templateName + "</label>"
+	
+	if ( Array.isArray(accumulateStyles) ) {
+		accumulateStyles.push.apply(accumulateStyles, libraryRenderTemplateItemArray(templateStyles, filters))
+	}
+	
+	filters.unshift({
+		'group':filters[0].group, 'key':'any', 'value':'any', 'checked':'checked', 'name':"Any", 'title':"Any"
+	})
+	
+	return libraryRenderTemplateItemArray(templateContent, filters).join(separator)
+}
+
+function libraryRenderTriviaFilters(filters, spanClasses, accumulateStyles) {
+	var templateName = spanClasses ? "<span class='" + spanClasses + "'>{name}</span>" : "{name}"
+	var separator = " <span class='filter'>&bull;</span> "
+	
+	var templateStyles = "" +
+		"input#filter-{key}-require:checked ~ table#library-table tr.library:not(.{style}):not(.header) { display:none; }\n" +
+		"input#filter-{key}-exclude:checked ~ table#library-table tr.library.{style} { display:none; }"
+	
+	var templateContent = "" +
+		"<input id='filter-{key}-disable' name='filter-{key}' value='-' type='radio' checked class='filter trivia' />" +
+		"<input id='filter-{key}-require' name='filter-{key}' value='{upper}' type='radio' class='filter trivia' />" +
+		"<input id='filter-{key}-exclude' name='filter-{key}' value='{lower}' type='radio' class='filter trivia' />" +
+		"<label for='filter-{key}-disable' class='filter trivia exclude'>" + templateName + "</label>" +
+		"<label for='filter-{key}-require' class='filter trivia disable'>" + templateName + "</label>" +
+		"<label for='filter-{key}-exclude' class='filter trivia require'>" + templateName + "</label>"
+	
+	if ( Array.isArray(accumulateStyles) ) {
+		accumulateStyles.push.apply(accumulateStyles, libraryRenderTemplateItemArray(templateStyles, filters))
+	}
+	
+	return libraryRenderTemplateItemArray(templateContent, filters).join(separator)
 }

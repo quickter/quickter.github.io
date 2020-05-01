@@ -18,11 +18,23 @@
 			function parseMonster(monster, lookup) {
 				var result = new Object()
 				var key, item, index, value, array, prefix, suffix
+				var style, styles = []
+				var isLegendary = false, hasMultipleAttacks = false
 				
 				result.name = monster.name
 				result.namekey = result.name.replace(/['‘’]/g, '')
 				result.key = libraryKey(monster.name)
 				result.page = monster.page || false
+				
+				if ( monster.legendary || monster.traitTags && monster.traitTags.indexOf("Legendary Resistances") >= 0 ) {
+					isLegendary = true
+				}
+				
+				if ( monster.actionTags && monster.actionTags.indexOf("Multiattack") >= 0 ) {
+					hasMultipleAttacks = true
+				} else if ( Array.isArray(monster.action) && monster.action[0].name && monster.action[0].name.indexOf("Multiattack") === 0 ) {
+					hasMultipleAttacks = true
+				}
 				
 				var source = monster.source
 				
@@ -73,8 +85,21 @@
 				
 				if ( typeof typeTags === 'string' ) {
 					result.typetags = " (" + typeTags + ")"
+					styles.push('type-' + libraryKey(typeTags))
 				} else if ( typeTags && Array.isArray(typeTags) && typeTags.length > 0 ) {
-					result.typetags = " (" + typeTags.join(", ") + ")"
+					array = []
+					
+					for ( value of typeTags ) {
+						if ( typeof value === 'string' ) {
+							array.push(value)
+							styles.push('type-' + libraryKey(value))
+						} else if ( typeof value.tag === 'string' ) {
+							array.push(value.tag)
+							styles.push('type-' + libraryKey(value.tag))
+						}
+					}
+					
+					result.typetags = " (" + array.join(", ") + ")"
 				} else {
 					result.typetags = ""
 				}
@@ -96,6 +121,7 @@
 				}
 				
 				var alignment = monster.alignment
+				var alignmentsTagged = 0
 				
 				if ( typeof alignment === 'string' ) {
 					result.alignment = alignment
@@ -113,11 +139,11 @@
 					if ( hasNX && hasNY ) {
 						var missing = ["L", "C", "G", "E"].filter(function(a) { return alignment.indexOf(a) < 0 })[0]
 						
-						alignment.push("Non-" + lookup.alignments[missing].name)
+						array.push("Non-" + lookup.alignments[missing].name)
 					} else if ( hasNX ) {
-						alignment.push(lookup.alignments[alignment[alignment.length - 1]].name)
+						array.push(lookup.alignments[alignment[alignment.length - 1]].name)
 					} else if ( hasNY ) {
-						alignment.push(lookup.alignments[alignment[0]].name)
+						array.push(lookup.alignments[alignment[0]].name)
 					} else {
 						for ( value of alignment ) {
 							if ( typeof value === 'string' ) {
@@ -141,6 +167,34 @@
 					
 					if ( hasNX || hasNY ) {
 						array.push("Alignment")
+					}
+					
+					for ( value of alignment ) {
+						if ( typeof value === 'string' ) {
+							if ( value === 'A' ) {
+								styles.push('is-any-alignment')
+								alignmentsTagged += 1
+							} else {
+								value = value.slice(0, 1)
+								
+								if ( lookup.alignments[value] ) {
+									styles.push('is-' + lookup.alignments[value].name.toLowerCase())
+									alignmentsTagged += 1
+								}
+							}
+						} else if ( typeof value.special === 'string' ) {
+							styles.push('is-special-alignment')
+							alignmentsTagged += 1
+						} else if ( value.alignment ) {
+							for ( value of value.alignment ) {
+								value = value.slice(0, 1)
+								
+								if ( lookup.alignments[value] ) {
+									styles.push('is-' + lookup.alignments[value].name.toLowerCase())
+									alignmentsTagged += 1
+								}
+							}
+						}
 					}
 					
 					result.alignment = array.join(suffix).toLowerCase()
@@ -235,6 +289,7 @@
 						
 						if ( typeof value === 'string' || typeof value === 'number' ) {
 							array.push(prefix + value + units)
+							styles.push('has-' + key)
 						} else if ( value && value.number ) {
 							suffix = value.condition ? "" + value.condition + "" : ""
 							array.push(prefix + value.number + units + suffix)
@@ -242,6 +297,12 @@
 							if ( value.condition ) {
 								result.movement.push(value.condition)
 							}
+							
+							if ( value.condition === 'hover' ) {
+								styles.push('has-' + key + '-' + value.condition)
+							}
+							
+							styles.push('has-' + key)
 						}
 					}
 					
@@ -321,7 +382,7 @@
 				result.skills = array.join(", ")
 				
 				var keysForResistances = [
-					'vulnerable=vulnerabilities', 'resistance=resistances', 'immune=immunities',
+					'vulnerable=vulnerabilities', 'resist=resistances', 'immune=immunities',
 					'conditionImmune=unconditionals', 'senses', 'languages'
 				]
 				
@@ -356,7 +417,7 @@
 					}
 				}
 				
-				var value = monster.passive
+				value = monster.passive
 				
 				if ( typeof value === 'string' || typeof value === 'number' ) {
 					result.senses = result.senses + (result.senses.length > 0 ? ", " : "") + "passive Perception " + value
@@ -364,12 +425,65 @@
 				
 				if ( result.languages === '' ) {
 					result.languages = "―"
+					result.noLanguages = true
+					styles.push('language-none')
 				}
 				
+				var language, languages = monster.languages
+				
+				if ( typeof languages === 'string' ) {
+					languages = [languages]
+				} else if ( Array.isArray(languages) ) {
+					array = []
+					
+					for ( language of languages ) {
+						if ( language.indexOf('understands') < 0 ) {
+							language = language.replace(/ \(can.*\)$/g, '')
+							language = language.replace(/ plus .*/g, '')
+							language = language.replace(/ and (one|the) .*/g, '')
+							language = language.replace(/and (.*) but .*/g, '$1')
+							language = language.replace(/ but .*/g, '')
+							language = language.replace(/,? and /g, ', ')
+							
+							if ( language.charCodeAt(0) < 0x60 ) {
+								array.push(language)
+							} else if ( language === 'all' ) {
+								array.push('all')
+							} else if ( language.indexOf('telepathy') >= 0 ) {
+								array.push('telepathy')
+							}
+						} else {
+							language = language.replace(/,? and /g, ', ')
+							language = language.replace(/understands (.*) but .*/g, '$1')
+							language = language.replace(/understands /g, '')
+							
+							for ( language of language.split(', ') ) {
+								if ( language.charCodeAt(0) < 0x60 ) {
+									array.push(language)
+								} else if ( language === 'all' || language === 'all languages' ) {
+									array.push('all')
+								}
+							}
+						}
+					}
+					
+					languages = array
+				} else {
+					languages = []
+				}
+				
+				for ( language of languages ) {
+					styles.push('language-' + libraryKey(language))
+				}
+				
+				result.languageList = languages.join(", ")
+				
 				var challenge = monster.cr
+				var challengeInLair = false
 				
 				if ( Array.isArray(challenge) ) { challenge = challenge[0] }
-				if ( challenge && challenge['cr'] ) { challenge = challenge['cr'] }
+				if ( challenge && challenge.lair ) { challengeInLair = challenge.lair }
+				if ( challenge && challenge.cr ) { challenge = challenge.cr }
 				
 				if ( typeof challenge === 'string' && challenge.indexOf('/') >= 0 ) {
 					challenge = challenge.split('/')
@@ -388,6 +502,8 @@
 				result.challengekey = challenge === "?" ? 1000 : (8 * challenge) | 0
 				result.challengename = challenge === "?" ? "―" : challenge > 0 && challenge < 1 ? "0⅛¼⅜½⅝¾⅞".charAt(Math.round(challenge * 8)) : challenge
 				result.challengexp = challenge > 0 && challenge < 1 ? challenge * experienceForChallange[1] : experienceForChallange[challenge | 0]
+				
+				styles.push(challenge !== "?" ? challenge < 17 ? challenge < 11 ? challenge < 5 ? challenge < 1 ? 'challenge-zero' : 'challenge-easy' : 'challenge-medium' : 'challenge-hard' : 'challenge-deadly' : 'challenge-unrated')
 				
 				//if ( ignoreErrata && type === 'dragon' && challenge >= 20 ) {
 				//	var lessForDragons = [500, 5500, 11000, 17500, 25500, 0, 0, 0, 0, 0, 0]
@@ -519,6 +635,34 @@
 					result.environments = ""
 				}
 				
+				styles.push('type-' + result.typename.toLowerCase())
+				styles.push('size-' + result.sizename.toLowerCase())
+				styles.push('source-' + result.source.toLowerCase())
+				styles.push(isLegendary ? 'is-legendary' : 'not-legendary')
+				styles.push(hasMultipleAttacks ? 'has-multiple-attacks' : 'has-single-attack')
+				styles.push(monster.spellcasting ? 'is-spellcaster' : 'not-spellcaster')
+				styles.push(monster.vulnerable ? 'has-vulnerabilities' : 'no-vulnerabilities')
+				styles.push(monster.resist ? 'has-resistances' : 'no-resistances')
+				styles.push(monster.immune ? 'has-immunities' : 'no-immunities')
+				styles.push(monster.senses ? 'has-exceptional-senses' : 'has-normal-senses')
+				
+				if ( monster.traitTags ) {
+					styles.push(monster.traitTags.indexOf("Regeneration") < 0 ? 'no-regeneration' : 'has-regeneration')
+				}
+				
+				if ( monster.senseTags ) {
+					styles.push(monster.senseTags.indexOf("B") < 0 ? 'no-blindsight' : 'has-blindsight')
+					styles.push(monster.senseTags.indexOf("U") < 0 ? 'no-truesight' : 'has-truesight')
+				}
+				
+				if ( result.environments ) {
+					styles.push.apply(styles, result.environments.split(", "))
+				} else {
+					styles.push('no-environments')
+				}
+				
+				result.styles = styles.join(" ")
+				
 				return result
 			}
 			
@@ -527,7 +671,7 @@
 				var lookup = new Object()
 				var lookupKeys = ['sources', 'sizes', 'monstertypes', 'alignments', 'abilities']
 				var styles, text
-				var excludeSource = []
+				var excludeSource = ['WDH']
 				var key, item, monster
 				var masterList = bestiary.monster
 				
@@ -551,13 +695,6 @@
 					}
 					
 					item = parseMonster(monster, lookup)
-					
-					// traitTags, senseTags, actionTags, languageTags, damageTags, miscTags, conditionInflict, environment
-					styles = []
-					styles.push(item.typename.toLowerCase())
-					styles.push(item.sizename.toLowerCase())
-					styles.push(item.spellcaster ? 'is-spellcaster' : 'not-spellcaster')
-					item.styles = styles.join(" ")
 					
 					text = [
 						item.name, item.sizename, item.typename, item.typetags, item.alignment,
@@ -685,11 +822,255 @@
 				tableSort(table)
 			}
 			
+			function renderCheckboxFilters(label, filters, spanClasses, html, styles) {
+				var caption = libraryRenderCaptionForFilters(label, spanClasses || 'taper')
+				
+				html.push(caption + libraryRenderCheckboxFilters(filters, spanClasses, styles))
+			}
+			
+			function renderRadioFilters(label, filters, spanClasses, html, styles) {
+				var caption = libraryRenderCaptionForFilters(label, spanClasses)
+				
+				html.push(caption + libraryRenderRadioFilters(filters, spanClasses, styles))
+			}
+			
+			function renderTriviaFilters(label, filters, spanClasses, html, styles) {
+				var caption = libraryRenderCaptionForFilters(label, spanClasses)
+				
+				html.push(caption + libraryRenderTriviaFilters(filters, spanClasses, styles))
+			}
+			
+			function renderFiltersForRatings(items, html, styles) {
+				var filters = [
+					{'key':'challenge-unrated', 'style':'challenge-unrated', 'name':"&horbar;", 'title':'No Challenge Rating'},
+					{'key':'challenge-zero', 'style':'challenge-zero', 'name':"0&mdash;1", 'title':'Challenge Rating 0 to 1'},
+					{'key':'challenge-easy', 'style':'challenge-easy', 'name':"1&mdash;4", 'title':'Challenge Rating 2 to 4'},
+					{'key':'challenge-medium', 'style':'challenge-medium', 'name':"5&mdash;10", 'title':'Challenge Rating 5 to 10'},
+					{'key':'challenge-hard', 'style':'challenge-hard', 'name':"11&mdash;16", 'title':'Challenge Rating 11 to 16'},
+					{'key':'challenge-deadly', 'style':'challenge-deadly', 'name':"17+", 'title':'Challenge Rating 17+'},
+				]
+				
+				renderCheckboxFilters("Challenge Rating", filters, false, html, styles)
+			}
+			
+			function renderFiltersForEnvironments(items, html, styles) {
+				var item, name, list, counts = new Object()
+				var environments = []
+				var unspecified = 0
+				var key, filters = []
+				var concise
+				
+				for ( item of items ) {
+					if ( item.environments ) {
+						list = item.environments.split(", ")
+						
+						for ( name of list ) {
+							if ( !counts[name] ) {
+								environments.push(name)
+							}
+							counts[name] = 1 + (counts[name] || 0)
+						}
+					} else {
+						unspecified += 1
+					}
+				}
+				
+				environments.sort()
+				
+				for ( name of environments ) {
+					key = name.toLowerCase()
+					if ( name === "underwater" ) { name = "water" }
+					concise = name.length > 6 ? name.slice(0, 5) + "." : name
+					
+					filters.push({'group':'environment', 'key':key, 'value':key, 'style':key, 'name':concise, 'title':name})
+				}
+				
+				if ( unspecified ) {
+					key = 'unspecified'
+					
+					filters.push({'group':'environment', 'key':key, 'value':key, 'style':'no-environments', 'name':"None", 'title':"No environments"})
+				}
+				
+				if ( filters.length > 0 ) {
+					renderRadioFilters("Environment", filters, 'taper', html, styles)
+				}
+			}
+			
+			function renderFiltersForTypes(items, html, styles) {
+				var item, name, list, counts = new Object()
+				var types = []
+				var key, filters = []
+				var concise
+				
+				for ( item of items ) {
+					if ( item.typename && types.indexOf(item.typename) < 0 ) {
+						types.push(item.typename)
+					}
+				}
+				
+				types.sort()
+				
+				for ( name of types ) {
+					key = name.toLowerCase()
+					concise = name.length > 6 ? name.slice(0, 4) + "." : name
+					
+					filters.push({'group':'category', 'key':key, 'value':key, 'style':'type-' + key, 'name':concise, 'title':name})
+				}
+				
+				if ( filters.length > 0 ) {
+					renderRadioFilters("Type", filters, 'taper', html, styles)
+				}
+			}
+			
+			function renderFiltersForTypeTags(items, html, styles) {
+				var item, name, list, counts = new Object()
+				var typeTags = []
+				var key, filters = []
+				
+				for ( item of items ) {
+					if ( item.typetags ) {
+						list = item.typetags.replace(/[()]/g, '').trim().split(", ")
+						
+						for ( name of list ) {
+							if ( !counts[name] ) {
+								typeTags.push(name)
+							}
+							counts[name] = 1 + (counts[name] || 0)
+						}
+					}
+				}
+				
+				typeTags.sort()
+				
+				for ( name of typeTags ) {
+					if ( counts[name] < 6 ) { continue }
+					
+					key = libraryKey(name)
+					
+					if ( key === 'human' ) { continue }
+					if ( key === 'anyrace' ) { name = "Class" }
+					
+					filters.push({'group':'subcategory', 'key':key, 'value':key, 'style':'type-' + key, 'name':name, 'title':name})
+				}
+				
+				if ( filters.length > 0 ) {
+					renderRadioFilters("Subtype", filters, 'taper', html, styles)
+				}
+			}
+			
+			function renderFiltersForLanguages(items, html, styles) {
+				var item, name, list, counts = new Object()
+				var languages = []
+				var noLanguages = 0
+				var key, filters = []
+				
+				for ( item of items ) {
+					if ( item.languageList ) {
+						list = item.languageList.split(", ")
+						
+						for ( name of list ) {
+							if ( !counts[name] ) {
+								languages.push(name)
+							}
+							counts[name] = 1 + (counts[name] || 0)
+						}
+					} else if ( item.noLanguages ) {
+						noLanguages += 1
+					}
+				}
+				
+				if ( noLanguages ) {
+					languages.push('none')
+				}
+				
+				languages.sort()
+				
+				for ( name of languages ) {
+					if ( counts[name] < 6 ) { continue }
+					
+					key = libraryKey(name)
+					
+					filters.push({'group':'language', 'key':key, 'value':key, 'style':'language-' + key, 'name':name, 'title':name})
+				}
+				
+				if ( filters.length > 0 ) {
+					renderRadioFilters("Language", filters, 'taper', html, styles)
+				}
+			}
+			
+			function renderFiltersForSources(items, html, styles) {
+				var key, source, filters = []
+				var item, counts = new Object()
+				
+				for ( item of items ) {
+					counts[item.source] = (counts[item.source] || 0) + 1
+				}
+				
+				for ( source of bestiary.sources ) {
+					if ( !counts[source.key] ) {
+						continue
+					}
+					
+					key = source.key.toLowerCase()
+					
+					filters.push({'key':'source-' + key, 'name':source.nickname || source.key, 'style':'source-' + key, 'title':source.name.replace(/'/g, "’")})
+				}
+				
+				renderCheckboxFilters("Source", filters, 'taper', html, styles)
+			}
+			
+			function renderFiltersForAnd(items, html, styles) {
+				var filters = [
+					{'key':'unaligned', 'style':'is-unaligned', 'name':"Unaligned", 'upper':'U', 'lower':'u'},
+					{'key':'lawful', 'style':'is-lawful', 'name':"Lawful", 'upper':'L', 'lower':'l'},
+					{'key':'chaotic', 'style':'is-chaotic', 'name':"Chaotic", 'upper':'C', 'lower':'c'},
+					{'key':'neutral', 'style':'is-neutral', 'name':"Neutral", 'upper':'N', 'lower':'n'},
+					{'key':'good', 'style':'is-good', 'name':"Good", 'upper':'G', 'lower':'g'},
+					{'key':'evil', 'style':'is-evil', 'name':"Evil", 'upper':'E', 'lower':'e'},
+					
+					{'key':'caster', 'style':'is-spellcaster', 'name':"Caster", 'upper':'S', 'lower':'s'},
+					{'key':'legendary', 'style':'is-legendary', 'name':"Legendary", 'upper':'Y', 'lower':'y'},
+//					{'key':'lair', 'style':'is-lair', 'name':"Lair", 'upper':'Z', 'lower':'z'},
+					{'key':'attacks', 'style':'has-multiple-attacks', 'name':"Multiattack", 'upper':'M', 'lower':'m'},
+					{'key':'regenerating', 'style':'has-regeneration', 'name':"Regenerate", 'upper':'R', 'lower':'r'},
+//					{'key':'immunity', 'style':'has-immunities', 'name':"Immune", 'upper':'I', 'lower':'i'},
+//					{'key':'resistant', 'style':'has-resistances', 'name':"Resistant", 'upper':'R', 'lower':'r'},
+					{'key':'vulnerable', 'style':'has-vulnerabilities', 'name':"Vulnerable", 'upper':'V', 'lower':'v'},
+// 					{'key':'flying', 'style':'has-fly', 'name':"Flies", 'upper':'F', 'lower':'f'},
+// 					{'key':'swimming', 'style':'has-swim', 'name':"Swims", 'upper':'W', 'lower':'w'},
+// 					{'key':'climbing', 'style':'has-climb', 'name':"Climbs", 'upper':'C', 'lower':'c'},
+// 					{'key':'burrowing', 'style':'has-burrow', 'name':"Burrows", 'upper':'B', 'lower':'b'},
+//					{'key':'blindsight', 'style':'has-blindsight', 'name':"Blind Sight", 'upper':'B', 'lower':'b'},
+//					{'key':'truesight', 'style':'has-truesight', 'name':"True Sight", 'upper':'U', 'lower':'u'},
+				]
+				
+				renderTriviaFilters("And", filters, 'taper', html, styles)
+			}
+			
+			function populateFilters(items) {
+				var styles = []
+				var html = []
+				
+				renderFiltersForRatings(items, html, styles)
+				renderFiltersForEnvironments(items, html, styles)
+				renderFiltersForTypes(items, html, styles)
+				//renderFiltersForTypeTags(items, html, styles)
+				//renderFiltersForLanguages(items, html, styles)
+				renderFiltersForSources(items, html, styles)
+				renderFiltersForAnd(items, html, styles)
+				
+				libraryRenderStyles(styles)
+				libraryRenderHTML('beforebegin', 'library-table', html.join("\n\n"))
+			}
+			
 			function populatePage() {
 				libraryForm().addEventListener('submit', libraryHandleSubmit)
 				window.addEventListener('hashchange', libraryHandleHashChanged)
 				
-				populateLibrary(parseMonsters(bestiary))
+				var items = parseMonsters(bestiary)
+				
+				populateLibrary(items)
+				populateFilters(items)
 				applyParameters()
 				libraryHandleHashChanged()
 			}
@@ -724,8 +1105,22 @@
 			span#library-filter-count { opacity:0.5; font-size:60%; }
 			
 			input.toggle, input.filter { display:none; }
+			input.filter + label { text-transform:capitalize; }
+			input.filter:not(:checked) + label { opacity:0.5; }
 			input.toggle:not(:checked) ~ div.toggled { display:none; }
 			input.toggle:not(:checked) + label + div.toggled { display:none; }
+			.filter, .trivia { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+			
+			label.trivia.disable > span { opacity:0.5; }
+			label.trivia.exclude { position:relative; }
+			label.trivia.exclude:after { content:""; position:absolute; left:-0.125em; right:-0.125em; bottom:30%; border-top:solid #C00 1.5px; }
+			input.trivia { display:none; }
+			input.trivia:not(:checked) + input.trivia + .trivia + label.trivia + label.trivia { display:none; }
+			input.trivia:not(:checked) + label.trivia { display:none; }
+			
+			span.taper { display:inline-block; font-size:80%; }
+			span.taper:first-letter { font-size:125%; }
+			
 			
 			div.details { position:relative; white-space:normal; width:0; }
 			div.details > div.details.inner { position:relative; width:40em; max-width:70vw; line-height:1.5; padding:0.5em 1em 0 1em; margin:0.5em 0; background:#FDF4E8; border:1px solid #EEE; }
@@ -851,20 +1246,20 @@
 				table#library-table.emoji tr.library th.monster-type { padding-left:0.375em; }
 				table#library-table.emoji tr.library td.monster-type > span { display:none; }
 				table#library-table.emoji tr.library td.monster-type::after { opacity:0.75; }
-				table#library-table.emoji tr.library.aberration td.monster-type::after { content:"👽"; }
-				table#library-table.emoji tr.library.beast td.monster-type::after { content:"🐺"; }
-				table#library-table.emoji tr.library.celestial td.monster-type::after { content:"🦄"; }
-				table#library-table.emoji tr.library.construct td.monster-type::after { content:"👤"; }
-				table#library-table.emoji tr.library.dragon td.monster-type::after { content:"🐉"; }
-				table#library-table.emoji tr.library.elemental td.monster-type::after { content:"🔥"; }
-				table#library-table.emoji tr.library.fiend td.monster-type::after { content:"👺"; }
-				table#library-table.emoji tr.library.fey td.monster-type::after { content:"🧚"; }
-				table#library-table.emoji tr.library.giant td.monster-type::after { content:"🗿"; }
-				table#library-table.emoji tr.library.humanoid td.monster-type::after { content:"🧝"; }
-				table#library-table.emoji tr.library.monstrosity td.monster-type::after { content:"🦂"; }
-				table#library-table.emoji tr.library.plant td.monster-type::after { content:"🌿"; }
-				table#library-table.emoji tr.library.ooze td.monster-type::after { content:"🦠"; }
-				table#library-table.emoji tr.library.undead td.monster-type::after { content:"🧟"; }
+				table#library-table.emoji tr.library.type-aberration td.monster-type::after { content:"👽"; }
+				table#library-table.emoji tr.library.type-beast td.monster-type::after { content:"🐺"; }
+				table#library-table.emoji tr.library.type-celestial td.monster-type::after { content:"🦄"; }
+				table#library-table.emoji tr.library.type-construct td.monster-type::after { content:"👤"; }
+				table#library-table.emoji tr.library.type-dragon td.monster-type::after { content:"🐉"; }
+				table#library-table.emoji tr.library.type-elemental td.monster-type::after { content:"🔥"; }
+				table#library-table.emoji tr.library.type-fiend td.monster-type::after { content:"👺"; }
+				table#library-table.emoji tr.library.type-fey td.monster-type::after { content:"🧚"; }
+				table#library-table.emoji tr.library.type-giant td.monster-type::after { content:"🗿"; }
+				table#library-table.emoji tr.library.type-humanoid td.monster-type::after { content:"🧝"; }
+				table#library-table.emoji tr.library.type-monstrosity td.monster-type::after { content:"🦂"; }
+				table#library-table.emoji tr.library.type-plant td.monster-type::after { content:"🌿"; }
+				table#library-table.emoji tr.library.type-ooze td.monster-type::after { content:"🦠"; }
+				table#library-table.emoji tr.library.type-undead td.monster-type::after { content:"🧟"; }
 			}
 			
 			@media print {

@@ -592,6 +592,7 @@ function encounterIntegrateBestiary(encounter, bestiary) {
 					language = language.replace(/ plus .*/g, '')
 					language = language.replace(/ and (one|the) .*/g, '')
 					language = language.replace(/and (.*) but .*/g, '$1')
+					language = language.replace(/,? and /g, ', ')
 					
 					if ( language.charCodeAt(0) < 0x60 ) {
 						array.push(language)

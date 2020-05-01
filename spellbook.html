@@ -627,114 +627,22 @@
 				libraryIsFilteringElement.isEnabled = true
 			}
 			
-			function renderStyles(styles) {
-				var separator = "\n"
-				var identifier = 'library-styles'
-				var element = libraryElement(identifier)
-				
-				if ( element ) {
-					element.innerHTML += separator + styles.join(separator)
-				} else {
-					element = document.createElement('style')
-					element.id = identifier
-					element.innerHTML = styles.join(separator)
-					document.head.appendChild(element)
-				}
-			}
-			
-			function renderHTML(position, relativeToElement, html) {
-				var element = libraryElement(relativeToElement)
-				
-				if ( position === 'inside' ) {
-					element.innerHTML = html
-				} else if ( typeof element.insertAdjacentHTML === 'function' ) {
-					element.insertAdjacentHTML(position === 'replace' ? 'afterend' : position, html)
-					
-					if ( position === 'replace' ) {
-						element.parentElement.removeChild(element)
-					}
-				} else if ( position === 'afterbegin' ) {
-					element.innerHTML = html + element.innerHTML
-				} else if ( position === 'beforeend' ) {
-					element.innerHTML = element.innerHTML + html
-				} else {
-					var parent = element.parentElement
-					var temporary = document.createElement('DIV')
-					
-					temporary.innerHTML = html
-					
-					if ( position === 'beforebegin' || position === 'replace' ) {
-						while ( temporary.firstChild ) { parent.insertBefore(temporary.firstChild, element) }
-					} else if ( position === 'afterend' ) {
-						if ( element.nextSibling ) {
-							while ( temporary.firstChild ) { parent.insertBefore(temporary.firstChild, element.nextSibling) }
-						} else {
-							while ( temporary.firstChild ) { parent.appendChild(temporary.firstChild) }
-						}
-					}
-					
-					if ( position === 'replace' ) {
-						parent.removeChild(element)
-					}
-				}
-			}
-			
 			function renderCheckboxFilters(label, filters, spanClasses, html, styles) {
-				var templateStyles = "input#filter-{key}:not(:checked) ~ table#library-table tr.{style} { display:none; }"
-				var templateName = spanClasses ? "<span class='" + spanClasses + "'>{name}</span>" : "{name}"
+				var caption = libraryRenderCaptionForFilters(label, spanClasses)
 				
-				var templateContent = "" +
-					"<input id='filter-{key}' type='checkbox' checked class='filter' />" +
-					"<label for='filter-{key}' class='filter' title='{title}'>" + templateName + "</label>"
-					""
-				
-				var separator = " <span class='filter'>&bull;</span> "
-				var prefix = "<br class='filter' /><span class='filter caption " +spanClasses + "'>" + label + ":</span> "
-				
-				html.push(prefix + libraryRenderTemplateItemArray(templateContent, filters).join(separator))
-				styles.push.apply(styles, libraryRenderTemplateItemArray(templateStyles, filters))
+				html.push(caption + libraryRenderCheckboxFilters(filters, spanClasses, styles))
 			}
 			
 			function renderRadioFilters(label, filters, spanClasses, html, styles) {
-				var templateStyles = "input#filter-{group}-{key}:checked ~ table#library-table tr.spell:not(.{style}) { display:none; }"
-				var templateName = spanClasses ? "<span class='" + spanClasses + "'>{name}</span>" : "{name}"
+				var caption = libraryRenderCaptionForFilters(label, spanClasses)
 				
-				var templateContent = "" +
-					"<input id='filter-{group}-{key}' name='{group}' value='{value}' type='radio' {checked} class='filter' />" +
-					"<label for='filter-{group}-{key}' class='filter' title='{title}'>" + templateName + "</label>"
-					""
-				
-				var separator = " <span class='filter'>&bull;</span> "
-				var prefix = "<br class='filter' /><span class='filter caption " +spanClasses + "'>" + label + ":</span> "
-				
-				styles.push.apply(styles, libraryRenderTemplateItemArray(templateStyles, filters))
-				
-				filters.unshift({'group':filters[0].group, 'key':'any', 'value':'any', 'checked':'checked', 'name':"Any", 'title':"Any"})
-				
-				html.push(prefix + libraryRenderTemplateItemArray(templateContent, filters).join(separator))
+				html.push(caption + libraryRenderRadioFilters(filters, spanClasses, styles))
 			}
 			
 			function renderTriviaFilters(label, filters, spanClasses, html, styles) {
-				var templateName = spanClasses ? "<span class='" + spanClasses + "'>{name}</span>" : "{name}"
-				var templateStyles = "" +
-					"input#filter-{key}-require:checked ~ table#library-table tr.library:not(.{style}):not(.header) { display:none; }\n" +
-					"input#filter-{key}-exclude:checked ~ table#library-table tr.library.{style} { display:none; }" +
-					""
+				var caption = libraryRenderCaptionForFilters(label, spanClasses)
 				
-				var templateContent = "" +
-					"<input id='filter-{key}-disable' name='filter-{key}' value='-' type='radio' checked class='filter trivia' />" +
-					"<input id='filter-{key}-require' name='filter-{key}' value='{upper}' type='radio' class='filter trivia' />" +
-					"<input id='filter-{key}-exclude' name='filter-{key}' value='{lower}' type='radio' class='filter trivia' />" +
-					"<label for='filter-{key}-disable' class='filter trivia exclude'>" + templateName + "</label>" +
-					"<label for='filter-{key}-require' class='filter trivia disable'>" + templateName + "</label>" +
-					"<label for='filter-{key}-exclude' class='filter trivia require'>" + templateName + "</label>" +
-					""
-				
-				var separator = " <span class='filter'>&bull;</span> "
-				var prefix = "<br class='filter' /><span class='filter caption " +spanClasses + "'>" + label + ":</span> "
-				
-				html.push(prefix + libraryRenderTemplateItemArray(templateContent, filters).join(separator))
-				styles.push.apply(styles, libraryRenderTemplateItemArray(templateStyles, filters))
+				html.push(caption + libraryRenderTriviaFilters(filters, spanClasses, styles))
 			}
 			
 			function renderFiltersForLevels(items, html, styles) {
@@ -776,12 +684,13 @@
 			}
 			
 			function renderFiltersForSchools(items, html, styles) {
-				var key, school, filters = []
+				var key, name, school, filters = []
 				
 				for ( school of spellbook.schools ) {
 					key = school.key.toLowerCase()
+					name = school.name
 					
-					filters.push({'key':'school-' + key, 'name': school.name, 'style':'school-' + key, 'title':school.name})
+					filters.push({'key':'school-' + key, 'name': name, 'style':name.toLowerCase(), 'title':name})
 				}
 				
 				renderCheckboxFilters("School", filters, 'taper', html, styles)
@@ -847,8 +756,8 @@
 				renderFiltersForSources(items, html, styles)
 				renderFiltersForAnd(items, html, styles)
 				
-				renderStyles(styles)
-				renderHTML('beforebegin', 'library-table', html.join("\n\n"))
+				libraryRenderStyles(styles)
+				libraryRenderHTML('beforebegin', 'library-table', html.join("\n\n"))
 			}
 			
 			function populatePage() {
@@ -895,6 +804,7 @@
 			span#library-filter-count { opacity:0.5; font-size:60%; }
 			
 			input.toggle, input.filter { display:none; }
+			input.filter:not(:checked) + label { opacity:0.5; }
 			input.toggle:not(:checked) ~ div.toggled { display:none; }
 			input.toggle:not(:checked) + label + div.toggled { display:none; }
 			
@@ -970,11 +880,6 @@
 			tr.is-damage-in-area > td.spell-damage { font-style:oblique; }
 			tr.is-damage-shield > td.spell-damage { font-style:oblique; }
 			
-			input.toggle, input.filter { display:none; }
-			input.filter:not(:checked) + label { opacity:0.5; }
-			input.toggle:not(:checked) ~ div.toggled { display:none; }
-			input.toggle:not(:checked) + label + div.toggled { display:none; }
-			
 			td.item-type, td.item-source { font-size:80%; }
 			div.details p:not(:first-of-type) { text-indent:1em; }
 			div.details dl.entries > dt { font-weight:bold; }
@@ -1033,7 +938,7 @@
 				th.spell-prepared, td.spell-prepared { display:none; }
 				div.filtering, div#controls { display:none; }
 				div.details span.rolled { display:none; }
-				input.filter, span.caption { display:none; }
+				span.caption { display:none; }
 				p.source { page-break-after:always; }
 			}
 			

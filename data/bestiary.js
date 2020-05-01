@@ -93,12 +93,12 @@ var bestiary = {
 		{
 			"key":"MFF",
 			"name":"Mordenkainen's Fiendish Folio",
-			"nickname":"Mordenkainen's Folio"
+			"nickname":"Fiendish Folio"
 		},
 		{
 			"key":"MTF",
 			"name":"Mordenkainen's Tome of Foes",
-			"nickname":"Mordenkainen's Tome"
+			"nickname":"Tome of Foes"
 		},
 		{
 			"key":"OotA",
