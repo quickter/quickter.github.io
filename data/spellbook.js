@@ -170,12 +170,12 @@ var spellbook = {
 		{
 			"name":"Alter Self",
 			"damage":"1d6+1",
-			"damageSave":"hit"
+			"avoid":"hit"
 		},
 		{
 			"name":"Animate Objects",
 			"damage":"10d4+40",
-			"damageSave":"hit",
+			"avoid":"hit",
 			"attack":false
 		},
 		{
@@ -311,7 +311,7 @@ var spellbook = {
 		{
 			"name":"Enlarge/Reduce",
 			"damage":"±1d4",
-			"damageSave":"hit"
+			"avoid":"hit"
 		},
 		{
 			"name":"Evard's Black Tentacles",
@@ -324,7 +324,7 @@ var spellbook = {
 		{
 			"name":"Feeblemind",
 			"permanent":true,
-			"damageSave":false
+			"avoid":"none"
 		},
 		{
 			"name":"Find Steed",
@@ -386,7 +386,7 @@ var spellbook = {
 		},
 		{
 			"name":"Heat Metal",
-			"damageSave":false
+			"avoid":"none"
 		},
 		{
 			"name":"Heroes' Feast",
@@ -407,7 +407,7 @@ var spellbook = {
 		{
 			"name":"Hunger of Hadar",
 			"damage":"2d6",
-			"damageSave":"area"
+			"avoid":"area"
 		},
 		{
 			"name":"Ice Knife",
@@ -473,7 +473,7 @@ var spellbook = {
 		{
 			"name":"Magic Missile",
 			"damage":"3d4+3",
-			"damageSave":false
+			"avoid":"none"
 		},
 		{
 			"name":"Magic Stone",
@@ -507,7 +507,7 @@ var spellbook = {
 		{
 			"name":"Mental Prison",
 			"damage":"5d10",
-			"damageSave":false
+			"avoid":"none"
 		},
 		{
 			"name":"Meteor Swarm",
@@ -577,7 +577,7 @@ var spellbook = {
 		},
 		{
 			"name":"Ravenous Void",
-			"damageSave":"area"
+			"avoid":"area"
 		},
 		{
 			"name":"Reality Break",
@@ -602,7 +602,7 @@ var spellbook = {
 		{
 			"name":"Shillelagh",
 			"damage":"1d8",
-			"damageSave":"hit"
+			"avoid":"hit"
 		},
 		{
 			"name":"Shadow of Moil",
@@ -618,7 +618,7 @@ var spellbook = {
 		},
 		{
 			"name":"Spike Growth",
-			"damageSave":"area"
+			"avoid":"area"
 		},
 		{
 			"name":"Spirit Guardians",
@@ -654,7 +654,7 @@ var spellbook = {
 		},
 		{
 			"name":"Thunderclap",
-			"damageSave":"none"
+			"avoid":"all"
 		},
 		{
 			"name":"Time Stop",
@@ -881,12 +881,12 @@ var spellbook = {
 		{
 			"key":"MFF",
 			"name":"Mordenkainen's Fiendish Folio",
-			"nickname":"Mordenkainen's Folio"
+			"nickname":"Fiendish Folio"
 		},
 		{
 			"key":"MTF",
 			"name":"Mordenkainen's Tome of Foes",
-			"nickname":"Mordenkainen's Tome"
+			"nickname":"Tome of Foes"
 		},
 		{
 			"key":"OotA",

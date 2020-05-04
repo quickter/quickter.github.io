@@ -15,46 +15,47 @@
 		<script type="text/javascript">
 			'use strict';
 			
-			function parseSpell(masterSpell, lookup) {
-				var spell = new Object()
-				var value, key, keys = ['name', 'level', 'source', 'page', 'school']
-				var material, components = ['v', 's', 'm']
-				var object, entry, found, order, index, title, style, array
-				var supplement
+			function parseSpell(master, lookup) {
+				var render = new Object()
+				var filter = new Object()
 				var styles = []
+				var supplement
+				var material, components = ['v', 's', 'm']
+				var object, key, value, entry, found, order, index, title, style, array, name, concise
+				var isPermanent = master.miscTags && master.miscTags.indexOf('PRM') >= 0
+				var isHealing = master.miscTags && master.miscTags.indexOf('HL') >= 0
+				var isDefense = false, isAttack = false, isDamaging = false, isCombat = false
 				
-				var isConcentration = false
-				var isRitual = masterSpell.meta && masterSpell.meta.ritual
-				var isPermanent = masterSpell.miscTags && masterSpell.miscTags.indexOf('PRM') >= 0
-				var isDamaging = masterSpell.damageInflict && masterSpell.damageInflict.length > 0
-				var isAttack = false, isDefense = false, isCombat = false
+				render.key = libraryKey(master.name)
+				supplement = lookup.supplements[render.key]
+				filter.key = render.key
+				render.name = master.name.replace(/'/g, '’')
+				render.namekey = master.name.replace(/['‘’]/g, '')
+				filter.name = master.name
+				render.level = master.level
+				filter.level = +master.level
+				render.source = master.source
+				render.sourcename = lookup.sources[master.source].name
+				filter.sources = [render.source, render.sourcename]
+				render.page = master.page
+				filter.page = +master.page || 0
+				render.school = master.school
+				render.schoolname = lookup.schools[master.school].name
+				render.ss = render.schoolname.slice(0, render.school === 'I' ? 3 : 2)
+				filter.school = render.schoolname
 				
-				for ( key of keys ) {
-					value = masterSpell[key]
-					
-					if ( value !== undefined ) {
-						spell[key] = value
-					}
-				}
-				
-				spell.key = libraryKey(spell.name)
-				spell.namekey = spell.name.replace(/['‘’]/g, '')
-				spell.name = spell.name.replace(/'/g, '’')
-				spell.sourcename = lookup.sources[spell.source].name
-				spell.schoolname = lookup.schools[spell.school].name
-				spell.ss = spell.schoolname.slice(0, spell.school === 'I' ? 3 : 2)
-				supplement = lookup.supplements[spell.key]
 				
 				index = 0
 				order = 0
 				value = ''
 				title = ''
-				found = false
-				if ( masterSpell.components ) {
+				object = master.components
+				filter.materialsCost = 0
+				if ( object ) {
 					index = 1 << components.length
 					for ( key of components ) {
 						index >>= 1
-						if ( masterSpell.components[key] ) {
+						if ( object[key] ) {
 							value += key
 							order += index
 						}
@@ -62,34 +63,36 @@
 					
 					index = 0
 					order <<= 24
-					entry = masterSpell.components.m
+					object = object.m
 					
-					if ( typeof entry === 'string' ) {
-						title = entry
-					} else if ( entry && entry.text ) {
-						title = entry.text
+					if ( typeof object === 'string' ) {
+						title = object
+					} else if ( object && object.text ) {
+						title = object.text
 						
-						if ( entry.cost ) {
-							index = Math.ceil(entry.cost / 100)
-							order += entry.cost | 0
-							styles.push('materials-cost')
+						if ( object.cost ) {
+							filter.materialsCost = +object.cost
+							index = Math.ceil(object.cost / 100)
+							order += object.cost | 0
 						}
 						
-						if ( entry.consume ) {
+						if ( object.consume ) {
+							filter.materialsConsumed = true
 							order += 1
-							found = true
-							styles.push('materials-consumed')
 						}
 					}
 				}
-				spell.vsm = value.toUpperCase()
-				spell.vsmkey = order
-				spell.vsmname = spell.vsm + (index > 0 ? ", " + index + "gp" : "") + (found ? ", consumed" : "")
-				spell.material = title
+				render.vsm = value.toUpperCase()
+				render.vsmkey = order
+				render.vsmname = render.vsm + (index > 0 ? ", " + index + "gp" : "") + (filter.materialsConsumed ? ", consumed" : "")
+				render.material = title
+				filter.components = order >> 24
+				filter.componentsName = value
+				
 				
 				value = ''
 				order = ''
-				object = masterSpell.range
+				object = master.range
 				if ( object ) {
 					if ( object.type === 'radius' ) {
 						key = 'self'
@@ -116,19 +119,37 @@
 							value = entry.name
 						}
 					} else {
-						console.log(masterSpell.range)
+						console.log(master.range)
 						value = key
 					}
 				}
-				spell.range = value
-				spell.rangekey = order
+				render.range = value
+				render.rangekey = order
+				filter.rangeFeet = order || 0
+				filter.rangeName = value
 				
-				style = false
+				
+				filter.areaTypes = []
+				object = master.areaTags
+				if ( object ) {
+					if ( Array.isArray(object) ) {
+						for ( key of object ) {
+							entry = lookup.areas[key]
+							
+							if ( entry ) {
+								filter.areaTypes.push(entry.name)
+							}
+						}
+					}
+				}
+				
+				
 				title = ''
 				value = ''
 				order = ''
 				found = ''
-				object = masterSpell.time
+				object = master.time
+				filter.isRitual = !!(master.meta && master.meta.ritual)
 				if ( object ) {
 					if ( Array.isArray(object) ) {
 						object = object[0]
@@ -142,6 +163,7 @@
 					}
 					
 					if ( entry ) {
+						filter.castingKey = entry.key
 						order = (value || 1) * entry.order
 						title = value + " " + (value > 1 ? entry.plural : entry.name)
 						style = entry.key
@@ -152,23 +174,25 @@
 							value = value > 1 ? title : entry.name
 						}
 					} else {
-						console.log(masterSpell.time)
+						console.log(master.time)
 						value += " " + object.unit
 						title = value
 					}
 				}
-				spell.casting = value
-				spell.castingkey = order
-				spell.casting_time = title
-				spell.reaction = found
-				spell.title_ritual = isRitual ? ", Ritual " + Math.floor(order / 60 + 10) + " Minutes" : ""
-				if ( style ) { styles.push('cast-' + style) }
+				render.casting = value
+				render.castingkey = order
+				render.casting_time = title
+				render.reaction = found
+				render.title_ritual = filter.isRitual ? ", Ritual " + Math.floor(order / 60 + 10) + " Minutes" : ""
+				filter.castingSeconds = order
+				filter.castingName = value
+				
 				
 				style = false
-				title = '?'
-				value = '?'
-				order = '?'
-				object = masterSpell.duration
+				title = ''
+				value = ''
+				order = ''
+				object = master.duration
 				if ( object ) {
 					if ( Array.isArray(object) ) {
 						array = object
@@ -177,7 +201,7 @@
 						array = false
 					}
 					
-					isConcentration = object.concentration
+					filter.isConcentration = !!object.concentration
 					
 					if ( array && array.length > 1 ) {
 						key = 'special'
@@ -199,7 +223,7 @@
 					entry = lookup.times[key]
 					
 					if ( entry ) {
-						style = entry.key
+						filter.durationKey = entry.key
 						
 						if ( value ) {
 							order = value * entry.order
@@ -207,7 +231,7 @@
 							title = value
 							value = value.toLowerCase()
 							
-							if ( isConcentration ) {
+							if ( filter.isConcentration ) {
 								order -= 1
 							}
 						} else {
@@ -216,49 +240,64 @@
 							title = entry.name
 						}
 					} else {
-						console.log(masterSpell.duration)
+						console.log(master.duration)
 						value = key
 						title = value
 					}
 					
-					if ( isConcentration ) {
+					if ( filter.isConcentration ) {
 						value = "…" + value
 					}
 				}
-				spell.period = value
-				spell.duration = title
-				spell.durationkey = order
-				spell.title_concentration = isConcentration ? "Concentration, up to " : ""
-				if ( style ) { styles.push('duration-' + style) }
+				render.period = value
+				render.duration = title
+				render.durationkey = order
+				render.title_concentration = filter.isConcentration ? "Concentration, up to " : ""
+				filter.durationSeconds = order || 0
+				filter.durationName = value
 				
+				
+				filter.lists = []
+				filter.archetypes = []
 				array = []
-				style = []
-				//masterSpell.classes.fromClassListVariant
-				object = masterSpell.classes && masterSpell.classes.fromClassList
+				//master.classes.fromClassListVariant
+				object = master.classes && master.classes.fromClassList
 				if ( Array.isArray(object) ) {
 					for ( entry of object ) {
 						if ( !entry.name ) { continue }
-						if ( entry.source !== spell.source && lookup.allowSources.indexOf(entry.source) < 0 ) { continue }
+						if ( entry.source !== render.source && lookup.allowSources.indexOf(entry.source) < 0 ) { continue }
 						
 						array.push(entry.name)
-						style.push(entry.name.toLowerCase())
+						filter.lists.push(entry.name)
 					}
 				}
-				object = masterSpell.classes && masterSpell.classes.fromSubclass
+				object = master.classes && master.classes.fromSubclass
 				if ( Array.isArray(object) ) {
 					for ( entry of object ) {
 						if ( !(entry['class'] && entry['class'].name && entry['subclass'] && entry['subclass'].name) ) { continue }
-						if ( entry['subclass'].source !== spell.source && lookup.allowSources.indexOf(entry['subclass'].source) < 0 ) { continue }
+						if ( entry['subclass'].source !== render.source && lookup.allowSources.indexOf(entry['subclass'].source) < 0 ) { continue }
 						
-						array.push(entry['class'].name + ": " + entry['subclass'].name)
+						name = entry['class'].name
+						
+						if ( name.indexOf('(') < 0 && array.indexOf(name) < 0 ) {
+							array.push(name + ": " + entry['subclass'].name)
+						}
+						
+						name = libraryKey(entry['subclass'].name)
+						
+						if ( filter.archetypes.indexOf(name) < 0 ) {
+							filter.archetypes.push(name)
+						}
 					}
 				}
 				array.sort()
-				spell.classnames = array.join(", ")
-				styles.push.apply(styles, style)
+				render.classnames = array.join(", ")
+				filter.classes = filter.lists.concat(filter.archetypes)
 				
-				spell.description = masterSpell.entries ? libraryResolveEntries(masterSpell.entries, "<p>", "</p>") : ''
-				spell.higher_level = masterSpell.entriesHigherLevel ? libraryResolveEntries(masterSpell.entriesHigherLevel, "<p>", "</p>") : ''
+				
+				render.description = master.entries ? libraryResolveEntries(master.entries, "<p>", "</p>") : ''
+				render.higher_level = master.entriesHigherLevel ? libraryResolveEntries(master.entriesHigherLevel, "<p>", "</p>") : ''
+				
 				
 				if ( supplement ) {
 					if ( supplement.permanent === false ) {
@@ -272,11 +311,18 @@
 					} else if ( supplement.defense ) {
 						isDefense = true
 					}
+					
+					if ( supplement.healing === false ) {
+						isHealing = false
+					} else if ( supplement.healing ) {
+						isHealing = true
+					}
 				}
+				
 				
 				value = ''
 				order = 0
-				object = masterSpell.scalingLevelDice
+				object = master.scalingLevelDice
 				
 				if ( supplement && supplement.damage === false ) {
 					isDamaging = false
@@ -293,7 +339,7 @@
 						isDamaging = true
 					}
 				} else {
-					array = spell.description.split(/\{@damage ([^{}]+)\}/g)
+					array = render.description.split(/\{@damage ([^{}]+)\}/g)
 					
 					if ( array.length > 3 ) {
 						value = "*"
@@ -304,7 +350,7 @@
 						order = value
 						isDamaging = true
 						
-						if ( spell.description.indexOf("extra {@damage") > 0 ) {
+						if ( render.description.indexOf("extra {@damage") > 0 ) {
 							value = "+" + value
 						}
 					}
@@ -336,16 +382,16 @@
 				}
 				
 				title = ''
-				if ( !value && !isDefense && spell.rangekey > 0 && !(supplement && supplement.willing) && !(supplement && supplement.protective) ) {
-					array = supplement && supplement.conditionInflict || masterSpell.conditionInflict
+				if ( !value && !isDefense && render.rangekey > 0 && !(supplement && supplement.willing) && !(supplement && supplement.protective) ) {
+					array = supplement && supplement.conditionInflict || master.conditionInflict
 					
-					if ( masterSpell.savingThrow && masterSpell.savingThrow.length > 0 ) {
-						if ( (array && array.length > 0) || (!masterSpell.miscTags || masterSpell.miscTags.indexOf('SMN') < 0) ) {
+					if ( master.savingThrow && master.savingThrow.length > 0 ) {
+						if ( (array && array.length > 0) || (!master.miscTags || master.miscTags.indexOf('SMN') < 0) ) {
 							order = 1
 							value = "&bull;"
 						}
 					} else if ( array && array.length > 0 ) {
-						if ( array.indexOf('invisible') < 0 && spell.description.indexOf(' willing ') < 0 ) {
+						if ( array.indexOf('invisible') < 0 && render.description.indexOf(' willing ') < 0 ) {
 							order = 1
 							value = "&bull;"
 						}
@@ -358,60 +404,60 @@
 					}
 				}
 				
-				spell.damage = value
-				spell.damagekey = order
+				render.damage = value
+				render.damagekey = order
+				filter.damageDice = value.replace(/^[-+±*]|&bull;|\D+$/g, '')
+				filter.damageAverage = order
 				
+				style = false
 				if ( isDamaging ) {
-					value = supplement && supplement.damageSave
+					value = supplement && supplement.avoid
 					
-					if ( value === false ) {
-						value = 'is-damage-always'
-					} else if ( value ) {
-						switch ( value ) {
-						case 'none': value = 'is-damage-save-none'; break
-						case 'half': value = 'is-damage-save-half'; break
-						case 'area': value = 'is-damage-in-area'; break
-						case 'hit': value = 'is-damage-on-hit'; break
-						case 'shield': value = 'is-damage-shield'; break
-						}
-					} else if ( masterSpell.spellAttack && masterSpell.spellAttack.length > 0 ) {
-						value = 'is-damage-on-hit'
-					} else if ( spell.description.indexOf('n a hit') > 0 || spell.description.indexOf('an extra') > 0 || spell.description.indexOf('spell attack') > 0 ) {
-						value = 'is-damage-on-hit'
-					} else if ( spell.description.indexOf('hits you with') > 0 ) {
-						value = 'is-damage-shield'
-					} else if ( spell.description.indexOf('half as much') > 0 || spell.description.indexOf('takes half') > 0 ) {
-						value = 'is-damage-save-half'
-					} else if ( spell.description.indexOf('failed save') > 0 || spell.description.indexOf('must succeed') > 0 ) {
-						value = 'is-damage-save-none'
-					} else if ( spell.description.indexOf('starts its turn') > 0 ) {
-						value = 'is-damage-in-area'
+					if ( value ) {
+					} else if ( master.spellAttack && master.spellAttack.length > 0 ) {
+						value = 'hit'
+					} else if ( render.description.indexOf('n a hit') > 0 || render.description.indexOf('an extra') > 0 || render.description.indexOf('spell attack') > 0 ) {
+						value = 'hit'
+					} else if ( render.description.indexOf('hits you with') > 0 ) {
+						value = 'shield'
+					} else if ( render.description.indexOf('half as much') > 0 || render.description.indexOf('takes half') > 0 ) {
+						value = 'half'
+					} else if ( render.description.indexOf('failed save') > 0 || render.description.indexOf('must succeed') > 0 ) {
+						value = 'all'
+					} else if ( render.description.indexOf('starts its turn') > 0 ) {
+						value = 'area'
 					} else {
-						value = false
+						value = 'unknown'
+					}
+					
+					filter.damageAvoid = value
+					
+					if ( value === 'hit' ) {
+						isAttack = true
+					} else if ( render.description.indexOf('next time you hit') > 0 ) {
+						isAttack = true
 					}
 					
 					switch ( value ) {
-					case 'is-damage-save-none': title = "Save for no damage"; break
-					case 'is-damage-save-half': title = "Save for half damage"; break
-					case 'is-damage-in-area': title = "Damage when in area"; break
-					case 'is-damage-on-hit': title = "Damage on hit"; break
-					case 'is-damage-shield': title = "Damage when you are hit"; break
-					case 'is-damage-always': title = "No save"; break
+					case 'none': style = 'is-damage-always'; title = "No save"; break
+					case 'half': style = 'is-damage-save-half'; title = "Save for half damage"; break
+					case 'all': style = 'is-damage-save-none'; title = "Save for no damage"; break
+					case 'hit': style = 'is-damage-on-hit'; title = "Damage on hit"; break
+					case 'area': style = 'is-damage-in-area'; title = "Damage when in area"; break
+					case 'shield': style = 'is-damage-shield'; title = "Damage is retaliation"; break
+					default: style = 'is-damage-unknown'; break
 					}
 					
-					styles.push(value || 'is-damage-unknown')
-					
-					if ( value === 'is-damage-on-hit' ) {
-						isAttack = true
-					} else if ( spell.description.indexOf('next time you hit') > 0 ) {
-						isAttack = true
-					}
+					styles.push(style)
 				} else {
-					if ( masterSpell.spellAttack ) {
+					if ( master.spellAttack ) {
 						isAttack = true
 					}
+					
+					filter.damageAvoid = 'zero'
 				}
-				spell.damagesave = title
+				render.damagesave = title
+				
 				
 				value = supplement && supplement.attack
 				
@@ -425,32 +471,56 @@
 					isCombat = true
 				}
 				
-				styles.push('level-' + spell.level)
-				styles.push(spell.schoolname.toLowerCase())
-				styles.push('source-' + spell.source.toLowerCase())
-				styles.push(isRitual ? 'is-ritual' : 'not-ritual')
-				styles.push(isConcentration ? 'is-concentration' : 'not-concentration')
-				styles.push(isPermanent ? 'is-permanent' : 'not-permanent')
-				styles.push(isDamaging ? 'is-damage' : 'not-damage')
-				styles.push(isAttack ? 'is-attack' : 'not-attack')
- 				styles.push(isDefense ? 'is-defense' : 'not-defense')
- 				styles.push(isCombat ? 'is-combat' : 'not-combat')
+				filter.isHealing = isHealing
+				filter.isAttack = isAttack
+				filter.isDefense = isDefense
+				filter.isDamaging = isDamaging
+				filter.isCombat = isCombat
+				filter.isPermanent = isPermanent
+				filter.isAugmentable = !!master.entriesHigherLevel
 				
-				styles.push(masterSpell.savingThrow && masterSpell.savingThrow.length > 0 ? 'has-save' : 'not-save')
-				styles.push(masterSpell.entriesHigherLevel ? 'has-higher-level' : 'not-higher-level')
+				//	could sanitize
+				filter.savingThrows = master.savingThrow
+				filter.abilityChecks = master.opposedCheck
+				filter.damageTypes = master.damageInflict
+				filter.conditions = master.conditionInflict
 				
-				spell.styles = styles.join(' ')
-				spell.description = libraryResolveReferences(spell.description, masterSpell)
-				spell.higher_level = libraryResolveReferences(spell.higher_level, masterSpell)
 				
-				return spell
+				for ( value of filter.lists ) {
+					styles.push('class-' + value.toLowerCase())
+				}
+				
+				styles.push('level-' + render.level)
+				styles.push('school-' + render.schoolname.toLowerCase())
+				styles.push('source-' + render.source.toLowerCase())
+				if ( filter.castingKey ) { styles.push('cast-' + filter.castingKey) }
+				if ( filter.durationKey ) { styles.push('duration-' + filter.durationKey) }
+				if ( filter.isRitual ) { styles.push('is-ritual') }
+				if ( filter.isConcentration ) { styles.push('is-concentration') }
+				if ( filter.isPermanent ) { styles.push('is-permanent') }
+				if ( filter.isDefense ) { styles.push('is-defense') }
+				if ( filter.isAttack ) { styles.push('is-attack') }
+				if ( filter.isDamaging ) { styles.push('is-damage') }
+				if ( filter.isCombat ) { styles.push('is-combat') }
+				if ( filter.savingThrows ) { styles.push('has-save') }
+				if ( filter.isAugmentable ) { styles.push('has-higher-level') }
+				if ( filter.materialsCost ) { styles.push('materials-cost') }
+				if ( filter.materialsConsumed ) { styles.push('materials-consumed') }
+				
+				
+				render.styles = styles.join(' ')
+				render.description = libraryResolveReferences(render.description, master)
+				render.higher_level = libraryResolveReferences(render.higher_level, master)
+				render.filter = filter
+				
+				return render
 			}
 			
 			function parseSpells(spellbook) {
 				var result = []
 				var entry, lookup = []
 				var allowSources = ['PHB', 'XGE', 'DMG', 'EGW', 'SCAG', 'GGR', 'LLK'] // 'ERLW', 'PSA', 'Twitter', 'Stream', 'UA*'
-				var key, keys = ['sources', 'schools', 'ranges', 'times', 'components', 'supplements']
+				var key, keys = ['areas', 'sources', 'schools', 'ranges', 'times', 'components', 'supplements']
 				var masterSpell, spell, text
 				
 				for ( key of keys ) {
@@ -459,6 +529,8 @@
 					for ( entry of spellbook[key] ) {
 						if ( entry.key ) {
 							lookup[key][entry.key] = entry
+						} else if ( entry.tag ) {
+							lookup[key][entry.tag] = entry
 						} else if ( entry.name ) {
 							lookup[key][libraryKey(entry.name)] = entry
 						}
@@ -577,19 +649,19 @@
 				var form = libraryForm()
 				var key, value, values, v, V
 				
-				value = object['l'] || object['level'] || ''
-				for ( v = 0 ; v < 10 ; ++v ) { form['filter-level-' + v].checked = !(value && value.indexOf(v) < 0) }
+// 				value = object['l'] || object['level'] || ''
+// 				for ( v = 0 ; v < 10 ; ++v ) { form['filter-level-' + v].checked = !(value && value.indexOf(v) < 0) }
 				
 				value = (object['c'] || object['class'] || 'any').toLowerCase()
 				form['crass'].value = value
 				
-				value = (object['s'] || object['school'] || '').toLowerCase()
-				values = ['a', 'c', 'd', 'e', 'v', 'i', 'n', 't']
-				for ( v of values ) { form['filter-school-' + v].checked = !(value && value.indexOf(v) < 0) }
+// 				value = (object['s'] || object['school'] || '').toLowerCase()
+// 				values = ['a', 'c', 'd', 'e', 'v', 'i', 'n', 't']
+// 				for ( v of values ) { form['filter-school-' + v].checked = !(value && value.indexOf(v) < 0) }
 				
-				value = (object['t'] || object['time'] || '').toLowerCase()
-				values = ['r', 'b', 'a', 'm', 'h']
-				for ( v of values ) { form['filter-casting-' + v].checked = !(value && value.indexOf(v) < 0) }
+// 				value = (object['t'] || object['time'] || '').toLowerCase()
+// 				values = ['r', 'b', 'a', 'm', 'h']
+// 				for ( v of values ) { form['filter-casting-' + v].checked = !(value && value.indexOf(v) < 0) }
 				
 				value = (object['b'] || object['source'] || '').toLowerCase()
 				values = ['phb', 'xge', 'egw', 'llk', 'scag']
@@ -623,8 +695,6 @@
 				var table = libraryPopulateTable(items, renderItemTable)
 				
 				tableSort(table)
-				
-				libraryIsFilteringElement.isEnabled = true
 			}
 			
 			function renderCheckboxFilters(label, filters, spanClasses, html, styles) {
@@ -677,7 +747,7 @@
 				for ( name of names ) {
 					key = name.toLowerCase()
 					
-					filters.push({'group':'crass', 'key':key, 'value':key, 'style':key, 'name':name, 'title':name})
+					filters.push({'group':'crass', 'key':key, 'value':key, 'style':'class-' + key, 'name':name, 'title':name})
 				}
 				
 				renderRadioFilters("Class", filters, 'taper', html, styles)
@@ -690,7 +760,7 @@
 					key = school.key.toLowerCase()
 					name = school.name
 					
-					filters.push({'key':'school-' + key, 'name': name, 'style':name.toLowerCase(), 'title':name})
+					filters.push({'key':'school-' + key, 'name': name, 'style':'school-' + name.toLowerCase(), 'title':name})
 				}
 				
 				renderCheckboxFilters("School", filters, 'taper', html, styles)
@@ -749,15 +819,160 @@
 				var styles = []
 				var html = []
 				
-				renderFiltersForLevels(items, html, styles)
+				//renderFiltersForLevels(items, html, styles)
 				renderFiltersForClasses(items, html, styles)
-				renderFiltersForSchools(items, html, styles)
-				renderFiltersForCastingTimes(items, html, styles)
+				//renderFiltersForSchools(items, html, styles)
+				//renderFiltersForCastingTimes(items, html, styles)
 				renderFiltersForSources(items, html, styles)
-				renderFiltersForAnd(items, html, styles)
+				//renderFiltersForAnd(items, html, styles)
 				
 				libraryRenderStyles(styles)
 				libraryRenderHTML('beforebegin', 'library-table', html.join("\n\n"))
+				
+				libraryIsFilteringElement.isEnabled = true
+			}
+			
+			function transformToTime(value, position) {
+				var match = value.toLowerCase().match(/\s*(\.*)(\d*)\s*(\w*)\s*/)
+				var number = parseFloat(match[2])
+				var unit = match[3] || ''
+				var time, found = false
+				
+				if ( unit ) {
+					for ( time of spellbook.times ) {
+						if ( (time.plural || time.name).toLowerCase().indexOf(unit) === 0 ) {
+							number = number ? number * time.order : time.order
+							found = true
+							break
+						}
+					}
+				}
+				
+				if ( !found && !isNaN(number) ) {
+					number *= 60
+				}
+				
+				if ( match[1] || position < 0 ) {
+					number -= 1
+				}
+				
+				return number
+			}
+			
+			function transformToRange(value) {
+				var match = value.toLowerCase().match(/\s*(\d*)\s*(\w*)\s*/)
+				var number = parseFloat(match[1])
+				var unit = match[2] || ''
+				var range
+				
+				if ( unit ) {
+					for ( range of spellbook.ranges ) {
+						if ( (range.plural || range.name).toLowerCase().indexOf(unit) === 0 ) {
+							number = number ? number * range.order : range.order
+							break
+						}
+					}
+				}
+				
+				return number
+			}
+			
+			function transformToComponents(value) {
+				var component, components = spellbook.components
+				var index = components.length
+				var order = 0
+				
+				value = value.toLowerCase()
+				for ( component of components ) {
+					index >>= 1
+					if ( value.indexOf(component.key) >= 0 ) {
+						value += component.key
+						order += index
+					}
+				}
+				
+				return order
+			}
+			
+			function transformToCost(value) {
+				return parseFloat(value) * 100
+			}
+			
+			function transformToDamage(value, position) {
+				switch ( value ) {
+				case '0': case '!': return 0
+				case '+': case '*': return true
+				case '•': case '.': return 1
+				}
+				
+				var order = 0
+				var match = value.toLowerCase().match(/([-+±*]?)(\d*)d(\d+)([+]?)*/)
+				
+				if ( match ) {
+					order = 5 * (+match[2] || 1) * (+match[3] + 1)
+					
+					if ( position === 0 ) {
+						return [order, order + 5]
+					} else if ( !(position < 0) ) {
+						switch ( match[1] ) {
+						case '*': order += 3; break
+						case '+': order += 2; break
+						}
+						
+						switch ( match[4] ) {
+						case '+': order += 1; break
+						}
+					}
+				} else {
+					order = 10 * parseFloat(value)
+					
+					if ( position === 0 ) {
+						return [order, order + 5]
+					} else if ( !(position < 0) ) {
+						order += 1
+						
+						if ( value.charAt(0) === '+' ) {
+							order += 2
+						}
+					}
+				}
+				
+				return order
+			}
+			
+			function registerFilterColumns(spellbook) {
+				libraryFilterByKeyValuePatternsRegister([
+					{'key':'name', 'property':'key', 'transform':libraryKey},
+					{'key':'level', 'isNumber':true},
+					{'key':'school'},
+					{'key':'class', 'property':'classes'},
+					{'key':'time', 'property':'castingSeconds', 'isNumber':true, 'transform':transformToTime},
+					{'key':'range', 'property':'rangeFeet', 'isNumber':true, 'transform':transformToRange},
+					{'key':'duration', 'property':'durationSeconds', 'isNumber':true, 'transform':transformToTime},
+					{'key':'vsm', 'property':'components', 'isNumber':true, 'transform':transformToComponents},
+					{'key':'cost', 'property':'materialsCost', 'isNumber':true, 'transform':transformToCost},
+					{'key':'damage', 'property':'damageAverage', 'isNumber':true, 'transform':transformToDamage},
+					{'key':'source', 'property':'sources', 'transform':libraryKey},
+					{'key':'page', 'isNumber':true},
+					{'key':'list', 'property':'lists'},
+					{'key':'archetype', 'property':'archetypes'},
+					{'key':'save', 'property':'savingThrows'},
+					{'key':'inflict', 'property':'damageTypes'},
+					{'key':'condition', 'property':'conditions'},
+					{'key':'check', 'property':'abilityChecks'},
+					{'key':'area', 'property':'areaTypes'},
+					{'key':'avoid', 'property':'damageAvoid'},
+					{'key':'permanent', 'property':'isPermanent', 'isBoolean':true},
+					{'key':'concentration', 'property':'isConcentration', 'isBoolean':true},
+					{'key':'consume', 'property':'materialsConsumed', 'isBoolean':true},
+					{'key':'heal', 'property':'isHealing', 'isBoolean':true},
+					{'key':'ritual', 'property':'isRitual', 'isBoolean':true},
+					{'key':'augment', 'property':'isAugmentable', 'isBoolean':true},
+					{'key':'defense', 'property':'isDefense', 'isBoolean':true},
+					{'key':'attack', 'property':'isAttack', 'isBoolean':true},
+					{'key':'combat', 'property':'isCombat', 'isBoolean':true},
+					{'key':'damaging', 'property':'isDamage', 'isBoolean':true},
+				])
 			}
 			
 			function populatePage() {
@@ -767,6 +982,7 @@
 				var items = parseSpells(spellbook)
 				
 				populateLibrary(items)
+				registerFilterColumns(spellbook)
 				populateFilters(items)
 				applyParameters()
 				libraryHandleHashChanged()
@@ -795,10 +1011,20 @@
 			html { background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%); }
 			body { position:relative; box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
 			
-			div#controls { position:absolute; right:2em; top:1.5em; }
-			a#share-selection { font-size:150%; color:inherit; text-decoration:none; border-bottom:2px solid #999; }
-			
-			div#controls > button { border:solid #CCC 0.125em; border-radius:0.25em 0.25em; background:#EEE; min-width:4em; min-height:2em; }
+			div#controls {
+				position:absolute; right:2em; top:1.5em;
+				background:#F0F0F8; border-radius:1em; padding:0.25em 0.25em;
+			}
+			div#controls > .control:not(:last-child) { border-right:1px solid #CCC; }
+			div#controls > .control {
+				display:inline-block; height:1.75em; width:1em;
+				padding:0 0.75em; margin:0;
+				font-size:150%; text-align:center;
+				background:inherit; color:inherit;
+				border:none; not-border-bottom:2px solid #999;
+			}
+			div#controls > button { display:none; }
+			div#controls > a { text-decoration:none; }
 			
 			input#library-filter { font-size:100%; max-width:98%; }
 			span#library-filter-count { opacity:0.5; font-size:60%; }
@@ -958,8 +1184,9 @@
 		<div id='library-content-list'>
 			<form id='library-form'>
 				<div id='controls'>
-					<button type='reset' title='Show all spells'>↻</button>
-					<a id='share-selection' href='' title='Share selection'>⇧</a>
+					<button type='reset' id='library-reset' title='Show all spells'></button>
+					<label for='library-reset' class='control'>↻</label>
+					<a id='share-selection' class='control' href='' title='Share selection'>⇧</a>
 				</div>
 				
 				<div class='filtering'>

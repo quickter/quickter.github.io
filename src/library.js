@@ -46,6 +46,53 @@ function libraryIsFilteringElement(element) {
 	return getComputedStyle(element).getPropertyValue('display') === 'none'
 }
 
+function libraryAssignClassToElementsBySelectorRules(className, selectorRules, all) {
+	var rule, rules, index = 0
+	var element, elements, length
+	var assign, ascend, count
+	
+	for ( rule of selectorRules ) {
+		if ( typeof rule.selector !== 'string' || typeof rule.rule !== 'function' ) { continue }
+		
+		elements = document.querySelectorAll(rule.selector)
+		length = elements && elements.length
+		
+		if ( !length ) { continue }
+		if ( index < length ) { rules = []; index = length }
+		
+		rules.push({'elements':elements, 'ascend':rule.ascend || 0, 'rule':rule.rule})
+	}
+	
+	count = index
+	
+	while ( index --> 0 ) {
+		assign = all ? true : false
+		ascend = 0
+		
+		for ( rule of rules ) {
+			element = rule.elements[index]
+			ascend = rule.ascend
+			
+			if ( !rule.rule(element) !== !all ) {
+				assign = !all
+				break
+			}
+		}
+		
+		while ( ascend --> 0 ) {
+			element = element.parentElement
+		}
+		
+		if ( libraryAssignClass(element, className, assign ? 1 : -1) > 0 || assign ) {
+			count -= 1
+		} else if ( libraryIsFilteringElement(element) ) {
+			count -= 1
+		}
+	}
+	
+	return count
+}
+
 function libraryAssignClassToElements(className, selector, ascend, rule) {
 	var element, elements = document.querySelectorAll(selector)
 	var value, climb, index = elements.length
@@ -181,6 +228,296 @@ function libraryFilterByText(pattern) {
 	}
 }
 
+function libraryFilterByKeyValuePatternsMatchNumber(element, patterns) {
+	var text, value
+	var term, lower, upper
+	var epsilon = 1.0 / 16777216
+	
+	if ( typeof element === 'number' ) {
+		value = element
+	} else if ( typeof element === 'boolean' || typeof element === 'string' ) {
+		value = +element
+	} else {
+		text = element.getAttribute('data-sort-key') || element.textContent
+		value = parseFloat(text)
+	}
+	
+	if ( isNaN(value) ) {
+		return patterns.length === 1 && patterns[0] === false
+	}
+	
+	for ( term of patterns ) {
+		if ( Array.isArray(term) ) {
+			lower = parseFloat(term[0])
+			upper = parseFloat(term[1])
+		} else {
+			if ( term === true && patterns.length === 1 ) { return !!value }
+			
+			lower = parseFloat(term)
+			upper = lower + epsilon
+			lower = lower - epsilon
+		}
+		
+		if ( element === false && isNaN(lower) ) { continue }
+		
+		if ( upper < lower ) {
+			if ( !(value < upper || lower < value) ) { continue }
+		} else {
+			if ( value < lower || upper < value ) { continue }
+		}
+		
+		return true
+	}
+	
+	return false
+}
+
+function libraryFilterByKeyValuePatternsMatchText(element, patterns) {
+	var text, value
+	var term, lower, upper
+	var highUnicode = '\uD7FF'
+	var array
+	
+	if ( typeof element === 'string' ) {
+		array = [element]
+	} else if ( Array.isArray(element) ) {
+		array = element
+	} else if ( element ) {
+		array = [element.textContent || element.getAttribute('title') || '']
+	}
+	
+	if ( patterns.length === 1 && patterns[0] === false ) {
+		return array.length <= 1 && !array[0]
+	}
+	
+	for ( text of array ) {
+		value = text.trim().toLowerCase()
+		if ( !value ) { continue }
+		
+		for ( term of patterns ) {
+			if ( Array.isArray(term) ) {
+				lower = term[0]
+				upper = term[1] + highUnicode
+			} else {
+				if ( term === true && patterns.length === 1 ) { return true }
+				
+				lower = term
+				upper = lower + highUnicode
+			}
+		
+			if ( upper < lower ) {
+				if ( !(value < upper || lower < value) ) { continue }
+			} else {
+				if ( value < lower || upper < value ) { continue }
+			}
+		
+			return true
+		}
+	}
+	
+	return false
+}
+
+function libraryFilterByKeyValuePatternsMatch(entry, filter, patterns, element) {
+	var key = entry.property || entry.key
+	var value = filter && filter[key]
+	
+	if ( entry.isBoolean && !value ) {
+		value = false
+	}
+	
+	if ( !key || typeof value === 'undefined' ) {
+		return false
+	} else if ( typeof entry.match === 'function' ) {
+		return entry.match(filter, patterns)
+	} else if ( entry.isBoolean || entry.isNumber || typeof value === 'number' || typeof value === 'boolean' ) {
+		return libraryFilterByKeyValuePatternsMatchNumber(value, patterns)
+	} else if ( Array.isArray(value) || typeof value === 'string' ) {
+		return libraryFilterByKeyValuePatternsMatchText(value, patterns)
+	}
+	
+	return false
+}
+
+function libraryFilterByKeyValuePatternsParseTerm(term, transform) {
+	var pattern, array, index, value, lower, upper
+	var found, count
+	
+	pattern = term.toLowerCase().split(',')
+	array = []
+	
+	for ( value of pattern ) {
+		value = value.trim()
+		if ( !value ) { continue }
+		
+		found = value.match(/(…|\.{3}|[-–—])/)
+		index = found ? found.index : -1
+		count = found ? found[0].length : 0
+		
+		if ( index < 0 ) {
+			value = value.trim()
+			
+			if ( typeof transform === 'function' ) {
+				value = transform(value, 0)
+			} else if ( transform ) {
+				if ( transform.hasOwnProperty(value) ) { value = transform[value] }
+			} else if ( value === '!' ) {
+				value = false
+			}
+			
+			array.push(value)
+		} else if ( index === 0 && count === value.length ) {
+			array.push(true)
+		} else {
+			lower = value.slice(0, index).trim()
+			upper = value.slice(index + count).trim()
+			
+			if ( typeof transform === 'function' ) {
+				lower = transform(lower, -1)
+				upper = transform(upper, 1)
+			} else if ( transform ) {
+				if ( transform.hasOwnProperty(lower) ) { lower = transform[lower] }
+				if ( transform.hasOwnProperty(upper) ) { upper = transform[upper] }
+			}
+			
+			array.push([lower, upper])
+		}
+	}
+	
+	return array
+}
+
+function libraryFilterByKeyValuePatternsRuleForText(text, pattern) {
+	if ( typeof pattern === 'string' ) {
+		return function (e) { return text[e.id.slice(5)].toLowerCase().indexOf(pattern) < 0 }
+	} else {
+		return function (e) { return text[e.id.slice(5)].search(pattern) < 0 }
+	}
+}
+
+function libraryFilterByKeyValuePatternsRuleForEntry(entry, filters, term) {
+	var patterns = libraryFilterByKeyValuePatternsParseTerm(term, entry.transform)
+	
+	return function (e) { return !libraryFilterByKeyValuePatternsMatch(entry, filters[e.id.slice(5)], patterns, e) }
+}
+
+function libraryFilterByKeyValuePatternsRegister(array) {
+	var registry = libraryFilterByKeyValuePatterns.registry
+	if ( !registry ) {
+		registry = new Object()
+		
+		libraryFilterByKeyValuePatterns.registry = registry
+	}
+	
+	var entry, options = []
+	for ( entry of array ) {
+		if ( entry.key ) {
+			registry[entry.key] = entry
+			
+			if ( !entry.isHidden ) {
+				options.push('?' + entry.key + (entry.example ? ' ' + entry.example : entry.isBoolean ? '' : '='))
+			}
+		}
+	}
+	
+	var element = libraryElement('library-filter')
+	if ( !element || !options.length ) {
+		return
+	}
+	
+	var identifier = element.getAttribute('list')
+	if ( !identifier ) {
+		identifier = 'library-filter-data-list'
+		element.setAttribute('list', identifier)
+	}
+	
+	var list = libraryElement(identifier)
+	if ( !list ) {
+		list = document.createElement('datalist')
+		list.id = identifier
+		list.style = 'display:none;'
+		document.body.appendChild(list)
+		options.unshift('?text=')
+		options.push('?or')
+	}
+	
+	var html = '<option value="' + options.join('"><option value="') + '">'
+	libraryRenderHTML('beforeend', list, html)
+}
+
+function libraryFilterByKeyValuePatterns(value) {
+	var registry = libraryFilterByKeyValuePatterns.registry
+	if ( !registry ) { return false }
+	
+	var className = 'filtered'
+	var table = libraryElement('library-table')
+	var text = table.libraryItemText
+	var filters = table.libraryItemFilters
+	if ( !filters ) { return false }
+	
+	var rules = []
+	var term, terms = value.split('?')
+	if ( terms.length < 2 || terms[0] !== '' ) { return false }
+	
+	var index, key, pattern
+	var selector, rule, ascend
+	var count
+	var all = false
+	
+	for ( term of terms ) {
+		index = term.search(/[ :=^]/)
+		
+		if ( index < 0 ) {
+			key = term
+			pattern = ''
+		} else {
+			key = term.slice(0, index)
+			pattern = term.slice(index + 1).trim()
+		}
+		
+		key = key.trim().toLowerCase()
+		
+		if ( key === 'or' ) { all = true; continue }
+		if ( pattern === '' ) { pattern = '…' }
+		if ( !key || !pattern ) { continue }
+		
+		if ( key === 'text' && text ) {
+			selector = 'table#library-table tr.library > td.name'
+			ascend = 1
+			
+			if ( term.search(/[[?*.|^${}\\]/) < 0 ) {
+				pattern = pattern.toLowerCase()
+			} else {
+				try { pattern = new RegExp(pattern, 'ius') }
+				catch (error) { continue }
+			}
+			
+			rule = libraryFilterByKeyValuePatternsRuleForText(text, pattern)
+		} else if ( registry[key] ) {
+			selector = 'table#library-table tr.library:not(.header)'
+			ascend = 0
+			
+			rule = libraryFilterByKeyValuePatternsRuleForEntry(registry[key], filters, pattern)
+		} else {
+			continue
+		}
+		
+		rules.push({'selector':selector, 'ascend':ascend, 'rule':rule})
+	}
+	
+	if ( rules.length > 0 ) {
+		count = libraryAssignClassToElementsBySelectorRules(className, rules, all)
+		
+		libraryFilterWasChanged(count)
+		
+		if ( count > 0 && count < 4 ) {
+			libraryToggleUnfiltered(1)
+		}
+	}
+	
+	return rules.length > 0
+}
+
 function libraryFilterByKeys(keys) {
 	var form = libraryElement('library-form')
 	var recognized = []
@@ -211,7 +548,7 @@ function libraryFilterBySearch(value) {
 		libraryFilterByUnchosen()
 	} else if ( value === '/' ) {
 		libraryFilterByUnopened()
-	} else {
+	} else if ( !libraryFilterByKeyValuePatterns(value) ) {
 		libraryFilterByText(value)
 	}
 }
@@ -456,8 +793,13 @@ function libraryResolveReferences(text, object) {
 		case "table": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
 		case "book": return "<span class='entries italic " + type + "'>" + (part[3] || part[0]) + "</span>"
 		case "race": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
-		case "filter": return (part.length > 2 && part[1] === 'spells') ? "<a class='entries spell italic' href='spellbook.html?" + part[2] + "'>" + part[0] + "</a>" : "<span class='entries italic " + type + "'>" + part[0] + "</span>"
-		default: console.log(match); return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
+		case "filter":
+			switch ( part[1] ) {
+			case 'spells': return "<a class='entries spell italic' href='spellbook.html?" + part.slice(2).join('&') + "'>" + part[0] + "</a>"
+			case 'bestiary': return "<a class='entries spell italic' href='bestiary.html?" + part.slice(2).join('&').replace('tag=', 'kind=').replace('challenge rating=', 'cr=').replace(/miscellaneous=!([^&]+)/, '$1=0').replace(/miscellaneous=([^&]+)/i, '$1=1').replace(/=\[&?([^\];]+);&?([^\]]+)\]/, '=$1...$2') + "'>" + part[0] + "</a>"
+			default: return "<span class='entries italic filter " + (part[1] || '') + "'>" + part[0] + "</span>"
+			}
+		default: return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
 		}
 	})
 	
@@ -595,15 +937,20 @@ function libraryPopulateItem(item, renderItem) {
 function libraryPopulateTable(items, renderItemTable) {
 	var table = libraryElement('library-table')
 	var html = renderItemTable(items)
-	var item, searchableText = new Object(), searchableItem = new Object()
+	var item, searchableText = new Object(), searchableItem = new Object(), filterableItem = new Object()
 	
 	for ( item of items ) {
 		searchableItem[item.key] = item
 		searchableText[item.key] = item.searchableText.replace(/<[^<>]+>/g, ' ').replace(/\s+/g, ' ')
+		
+		if ( item.filter ) {
+			filterableItem[item.key] = item.filter
+		}
 	}
 	
 	table.libraryItemList = searchableItem
 	table.libraryItemText = searchableText
+	table.libraryItemFilters = filterableItem
 	table.innerHTML = html
 	
 	return table

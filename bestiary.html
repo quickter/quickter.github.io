@@ -15,33 +15,27 @@
 		<script type="text/javascript">
 			'use strict';
 			
-			function parseMonster(monster, lookup) {
-				var result = new Object()
-				var key, item, index, value, array, prefix, suffix
+			function parseMonster(master, lookup) {
+				var render = new Object()
+				var filter = new Object()
+				var key, item, index, value, array, prefix, suffix, name, tag
 				var style, styles = []
-				var isLegendary = false, hasMultipleAttacks = false
 				
-				result.name = monster.name
-				result.namekey = result.name.replace(/['‘’]/g, '')
-				result.key = libraryKey(monster.name)
-				result.page = monster.page || false
+				render.key = libraryKey(master.name)
+				filter.key = render.key
+				render.name = master.name.replace(/'/g, "’")
+				render.namekey = master.name.replace(/['‘’]/g, '')
+				filter.name = master.name
+				render.page = master.page || false
+				filter.page = master.page || 0
 				
-				if ( monster.legendary || monster.traitTags && monster.traitTags.indexOf("Legendary Resistances") >= 0 ) {
-					isLegendary = true
-				}
-				
-				if ( monster.actionTags && monster.actionTags.indexOf("Multiattack") >= 0 ) {
-					hasMultipleAttacks = true
-				} else if ( Array.isArray(monster.action) && monster.action[0].name && monster.action[0].name.indexOf("Multiattack") === 0 ) {
-					hasMultipleAttacks = true
-				}
-				
-				var source = monster.source
+				////////// Source
+				var source = master.source
 				
 				if ( typeof source === 'string' ) {
-					result.artwork = "img/" + encodeURIComponent(source) + "/" + encodeURIComponent(libraryStripDiacriticals(monster.name)).replace(/'/g, "%27") + ".png"
+					render.artwork = "img/" + encodeURIComponent(source) + "/" + encodeURIComponent(libraryStripDiacriticals(master.name)).replace(/'/g, "%27") + ".png"
 				} else {
-					result.artwork = ""
+					render.artwork = ""
 				}
 				
 				if ( typeof source === 'string' && source.indexOf('UA') === 0 ) { source = 'UA' }
@@ -49,21 +43,28 @@
 				value = lookup.sources[source]
 				
 				if ( value ) {
-					result.source = value.key
-					result.sourcename = value.name
+					render.source = value.key
+					render.sourcename = value.name
+					filter.sources = [value.key, libraryKey(value.name)]
 				} else {
-					result.source = source
-					result.sourcename = source
+					render.source = source
+					render.sourcename = source
+					filter.sources = [source]
 				}
 				
-				result.sourcename = result.sourcename.replace(/'/g, "’")
+				render.sourcename = render.sourcename.replace(/'/g, "’")
 				
-				var typeTags, type = monster.type
+				////////// Type
+				var typeTags, type = master.type
 				
 				if ( typeof type === 'string' ) {
 					typeTags = false
 					type = type
 				} else if ( type && type.type ) {
+					if ( type.swarmSize ) {
+						filter.isSwarm = true
+					}
+					
 					typeTags = type.tags
 					type = type.type
 				} else {
@@ -74,57 +75,182 @@
 				if ( lookup.monstertypes[type] ) {
 					value = lookup.monstertypes[type]
 					
-					result.type = value.key
-					result.typename = value.name.toLowerCase()
-					result.typeconcise = value.abbreviation
+					render.type = value.key
+					render.typename = value.name.toLowerCase()
+					render.typeconcise = value.abbreviation
 				} else {
-					result.type = type
-					result.typename = type.toLowerCase()
-					result.typeconcise = "?"
+					render.type = type
+					render.typename = type.toLowerCase()
+					render.typeconcise = "?"
 				}
 				
+				filter.type = render.typename
+				filter.typeTags = []
+				
 				if ( typeof typeTags === 'string' ) {
-					result.typetags = " (" + typeTags + ")"
-					styles.push('type-' + libraryKey(typeTags))
+					render.typetags = " (" + typeTags + ")"
+					filter.typeTags.push(libraryKey(typeTags))
 				} else if ( typeTags && Array.isArray(typeTags) && typeTags.length > 0 ) {
 					array = []
 					
 					for ( value of typeTags ) {
 						if ( typeof value === 'string' ) {
 							array.push(value)
-							styles.push('type-' + libraryKey(value))
+							filter.typeTags.push(libraryKey(value))
 						} else if ( typeof value.tag === 'string' ) {
 							array.push(value.tag)
-							styles.push('type-' + libraryKey(value.tag))
+							filter.typeTags.push(libraryKey(value.tag))
 						}
 					}
 					
-					result.typetags = " (" + array.join(", ") + ")"
+					render.typetags = " (" + array.join(", ") + ")"
 				} else {
-					result.typetags = ""
+					render.typetags = ""
 				}
 				
-				var size = monster.size
+				////////// Size
+				var size = master.size
 				
 				if ( typeof size === 'string' && lookup.sizes[size] ) {
 					size = lookup.sizes[size]
 					
-					result.size = size.key
-					result.sizekey = size.order
-					result.sizename = size.name
-					result.sizeconcise = size.key
+					render.size = size.key
+					render.sizekey = size.order
+					render.sizename = size.name
+					render.sizeconcise = size.key
 				} else {
-					result.size = size
-					result.sizekey = -1
-					result.sizename = size || "?"
-					result.sizeconcise = size || "?"
+					render.size = size
+					render.sizekey = -1
+					render.sizename = size || "?"
+					render.sizeconcise = size || "?"
 				}
 				
-				var alignment = monster.alignment
+				filter.size = render.sizekey
+				filter.sizeName = render.sizename
+				
+				////////// Armor Class
+				var armorclass = master.ac
+				
+				if ( typeof armorclass === 'string' || typeof armorclass === 'number' ) {
+					render.ac = +armorclass
+					render.armorclass = armorclass
+				} else if ( armorclass ) {
+					render.ac = 0
+					array = []
+					
+					if ( !Array.isArray(armorclass) ) {
+						armorclass = [armorclass]
+					}
+					
+					for ( value of armorclass ) {
+						if ( typeof value === 'string' || typeof value === 'number' ) {
+							render.ac = +value
+							array.push(value)
+							continue
+						}
+						
+						prefix = ""
+						suffix = ""
+						
+						if ( typeof value.condition === 'string' ) {
+							suffix = " " + value.condition
+						}
+						
+						if ( typeof value.from === 'string' ) {
+							prefix = " (" + value + ")"
+						} else if ( Array.isArray(value.from) ) {
+							prefix = " (" + value.from.join(", ") + ")"
+						}
+						
+						if ( !render.ac || !value.condition ) {
+							render.ac = value.ac
+						}
+						
+						array.push(value.ac + prefix + suffix)
+					}
+					
+					render.armorclass = libraryResolveReferences(array.join(", "), master)
+				} else {
+					render.ac = "?"
+					render.armorclass = armorclass
+				}
+				
+				filter.armorclass = +render.ac || 0
+				
+				////////// Hit Points
+				var hitpoints = master.hp
+				
+				if ( typeof hitpoints === 'string' || typeof hitpoints === 'number' ) {
+					render.hp = +hitpoints
+					render.hitpoints = hitpoints
+					render.hitpointstags = ""
+				} else if ( hitpoints.average ) {
+					render.hp = +hitpoints.average
+					render.hitpoints = hitpoints.average
+					
+					if ( hitpoints.formula ) {
+						render.hitpointstags = libraryResolveReferences(" ({@dice " + hitpoints.formula + "})")
+					} else {
+						render.hitpointstags = ""
+					}
+				} else if ( hitpoints.special ) {
+					render.hp = "*"
+					render.hitpoints = hitpoints.special
+					render.hitpointstags = ""
+				} else {
+					render.hp = 0
+					render.hitpoints = hitpoints
+					render.hitpointstags = ""
+				}
+				
+				filter.hitpoints = render.hp === "*" ? -1 : +render.hp
+				
+				////////// Challenge
+				var challenge = master.cr
+				var challengeInLair = false
+				
+				if ( Array.isArray(challenge) ) { challenge = challenge[0] }
+				if ( challenge && challenge.lair ) { challengeInLair = challenge.lair }
+				if ( challenge && challenge.cr ) { challenge = challenge.cr }
+				
+				if ( typeof challenge === 'string' && challenge.indexOf('/') >= 0 ) {
+					challenge = challenge.split('/')
+					challenge = challenge[0] / challenge[1]
+				} else if ( isNaN(+challenge) ) {
+					challenge = "?"
+				}
+				
+				var experienceForChallange = [
+					10, 200, 450, 700, 1100, 1800, 2300, 2900, 3900, 5000, 5900,
+					7200, 8400, 10000, 11500, 13000, 15000, 18000, 20000, 22000, 25000,
+					33000, 41000, 50000, 62000, 75000, 90000, 105000, 120000, 135000, 155000
+				]
+				
+				render.challenge = challenge
+				render.challengekey = challenge === "?" ? 1000 : (8 * challenge) | 0
+				render.challengename = challenge === "?" ? "―" : challenge > 0 && challenge < 1 ? "0⅛¼⅜½⅝¾⅞".charAt(Math.round(challenge * 8)) : challenge
+				render.challengexp = challenge > 0 && challenge < 1 ? challenge * experienceForChallange[1] : experienceForChallange[challenge | 0]
+				
+				//if ( ignoreErrata && type === 'dragon' && challenge >= 20 ) {
+				//	var lessForDragons = [500, 5500, 11000, 17500, 25500, 0, 0, 0, 0, 0, 0]
+				//	render.challengexp -= lessForDragons[challenge - 20]
+				//}
+				
+				if ( challenge !== "?" ) {
+					filter.challenge = (8 * challenge) | 0
+					filter.experience = +render.challengexp
+				}
+				
+				render.challengeexperience = challenge !== "?" ? "(" + render.challengexp + " XP)" : ""
+				
+				////////// Alignment
+				var alignment = master.alignment
 				var alignmentsTagged = 0
+				filter.alignment = []
 				
 				if ( typeof alignment === 'string' ) {
-					result.alignment = alignment
+					render.alignment = alignment
+					filter.alignment.push.apply(filter.alignment, alignment.split(" "))
 				} else if ( Array.isArray(alignment) ) {
 					suffix = " "
 					array = []
@@ -172,113 +298,48 @@
 					for ( value of alignment ) {
 						if ( typeof value === 'string' ) {
 							if ( value === 'A' ) {
-								styles.push('is-any-alignment')
+								filter.alignment.push('any')
 								alignmentsTagged += 1
 							} else {
 								value = value.slice(0, 1)
 								
 								if ( lookup.alignments[value] ) {
-									styles.push('is-' + lookup.alignments[value].name.toLowerCase())
+									filter.alignment.push(lookup.alignments[value].name)
 									alignmentsTagged += 1
 								}
 							}
 						} else if ( typeof value.special === 'string' ) {
-							styles.push('is-special-alignment')
+							filter.alignment.push('special')
 							alignmentsTagged += 1
 						} else if ( value.alignment ) {
 							for ( value of value.alignment ) {
 								value = value.slice(0, 1)
 								
 								if ( lookup.alignments[value] ) {
-									styles.push('is-' + lookup.alignments[value].name.toLowerCase())
+									filter.alignment.push(lookup.alignments[value].name)
 									alignmentsTagged += 1
 								}
 							}
 						}
 					}
 					
-					result.alignment = array.join(suffix).toLowerCase()
+					render.alignment = array.join(suffix).toLowerCase()
 				} else {
-					result.alignment = "Unknown"
+					render.alignment = "Unknown"
+					filter.alignment.push('unknown')
 				}
 				
-				var armorclass = monster.ac
-				
-				if ( typeof armorclass === 'string' || typeof armorclass === 'number' ) {
-					result.ac = +armorclass
-					result.armorclass = armorclass
-				} else if ( armorclass ) {
-					result.ac = 0
-					array = []
-					
-					if ( !Array.isArray(armorclass) ) {
-						armorclass = [armorclass]
-					}
-					
-					for ( value of armorclass ) {
-						if ( typeof value === 'string' || typeof value === 'number' ) {
-							result.ac = +value
-							array.push(value)
-							continue
-						}
-						
-						prefix = ""
-						suffix = ""
-						
-						if ( typeof value.condition === 'string' ) {
-							suffix = " " + value.condition
-						}
-						
-						if ( typeof value.from === 'string' ) {
-							prefix = " (" + value + ")"
-						} else if ( Array.isArray(value.from) ) {
-							prefix = " (" + value.from.join(", ") + ")"
-						}
-						
-						if ( !result.ac || !value.condition ) {
-							result.ac = value.ac
-						}
-						
-						array.push(value.ac + prefix + suffix)
-					}
-					
-					result.armorclass = libraryResolveReferences(array.join(", "), monster)
-				} else {
-					result.ac = "?"
-					result.armorclass = armorclass
-				}
-				
-				var hitpoints = monster.hp
-				
-				if ( typeof hitpoints === 'string' || typeof hitpoints === 'number' ) {
-					result.hp = +hitpoints
-					result.hitpoints = hitpoints
-					result.hitpointstags = ""
-				} else if ( hitpoints.average ) {
-					result.hp = +hitpoints.average
-					result.hitpoints = hitpoints.average
-					
-					if ( hitpoints.formula ) {
-						result.hitpointstags = libraryResolveReferences(" ({@dice " + hitpoints.formula + "})")
-					} else {
-						result.hitpointstags = ""
-					}
-				} else if ( hitpoints.special ) {
-					result.hp = "*"
-					result.hitpoints = hitpoints.special
-					result.hitpointstags = ""
-				} else {
-					result.hp = 0
-					result.hitpoints = hitpoints
-					result.hitpointstags = ""
-				}
-				
-				var speed = monster.speed
+				////////// Speed
+				var speed = master.speed
 				var units = " ft."
-				result.movement = []
+				filter.movement = []
+				filter.speed = 0
 				
 				if ( typeof speed === 'string' || typeof speed === 'number' ) {
-					result.speed = speed + units
+					render.speed = speed + units
+					filter.walk = +speed || 0
+					filter.movement.push('walk')
+					filter.speed = Math.max(filter.speed, filter.walk)
 				} else if ( speed ) {
 					var keysForSpeed = ['walk', 'burrow', 'climb', 'fly', 'swim']
 					array = []
@@ -289,84 +350,96 @@
 						
 						if ( typeof value === 'string' || typeof value === 'number' ) {
 							array.push(prefix + value + units)
-							styles.push('has-' + key)
+							filter[key] = +value || 0
+							filter.movement.push(key)
+							filter.speed = Math.max(filter.speed, filter[key])
 						} else if ( value && value.number ) {
-							suffix = value.condition ? "" + value.condition + "" : ""
+							suffix = value.condition ? (value.condition.charAt(0) === " " ? "" : " ") + value.condition + "" : ""
 							array.push(prefix + value.number + units + suffix)
+							filter[key] = +value.number || 0
+							filter.movement.push(key)
+							filter.speed = Math.max(filter.speed, filter[key])
 							
-							if ( value.condition ) {
-								result.movement.push(value.condition)
+							if ( value.condition === '(hover)' ) {
+								filter.movement.push('hover')
 							}
-							
-							if ( value.condition === 'hover' ) {
-								styles.push('has-' + key + '-' + value.condition)
-							}
-							
-							styles.push('has-' + key)
 						}
 					}
 					
-					result.speed = array.join(", ")
+					render.speed = array.join(", ")
 				} else {
-					result.speed = "?"
+					render.speed = "?"
 				}
 				
-				var keysForAttributes = ['str=Str', 'dex=Dex', 'con=Con', 'int=Int', 'wis=Wis', 'cha=Cha']
-				suffix = "mod"
+				////////// Attributes
+				var keysForAttributes = ['str=Strength', 'dex=Dexterity', 'con=Constitution', 'int=Intelligence', 'wis=Wisdom', 'cha=Charisma']
+				suffix = "modifier"
 				
 				for ( key of keysForAttributes ) {
 					index = key.indexOf('=')
 					
 					if ( index < 0 ) {
-						prefix = key
+						name = key
 					} else {
-						prefix = key.slice(index + 1)
+						name = key.slice(index + 1)
 						key = key.slice(0, index)
 					}
 					
-					value = monster[key]
+					value = master[key]
+					key = name.toLowerCase()
+					prefix = name.slice(0, 3)
 					
 					if ( typeof value === 'string' || typeof value === 'number' ) {
-						result[key] = value
-						result[key + suffix] = (value < 10 ? "" : "+") + (Math.floor(value / 2) - 5)
+						render[key] = value
+						render[key + suffix] = (value < 10 ? "" : "+") + (Math.floor(value / 2) - 5)
+						filter[key] = +value || 0
 					} else {
-						result[key] = ""
-						result[key + suffix] = 0
+						render[key] = ""
+						render[key + suffix] = 0
 					}
 				}
 				
-				var save = monster.save
+				////////// Saves
+				var save = master.save
 				array = []
+				filter.saves = []
+				suffix = "Save"
 				
 				if ( save ) {
 					for ( key of keysForAttributes ) {
 						index = key.indexOf('=')
 						
 						if ( index < 0 ) {
-							prefix = key
+							name = key
 						} else {
-							prefix = key.slice(index + 1)
+							name = key.slice(index + 1)
 							key = key.slice(0, index)
 						}
 						
 						value = save[key]
+						key = name.toLowerCase()
+						prefix = name.slice(0, 3)
 						
 						if ( typeof value === 'string' || typeof value === 'number' ) {
 							array.push(prefix + " " + value)
+							filter[key + suffix] = +value || 0
+							filter.saves.push(name)
 						}
 					}
 				}
 				
-				result.savingthrows = array.join(", ")
+				render.savingthrows = array.join(", ")
 				
+				////////// Skills
 				var keysForSkill = [
 					'Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception',
 					'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine',
 					'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion',
 					'Sleight of Hand', 'Stealth', 'Survival'
 				]
-				var skill = monster.skill
+				var skill = master.skill
 				array = []
+				filter.skills = []
 				
 				if ( skill ) {
 					for ( key of keysForSkill ) {
@@ -374,13 +447,15 @@
 						
 						if ( typeof value === 'string' || typeof value === 'number' ) {
 							array.push(key + libraryResolveReferences(" {@dice d20" + value + "|" + value + "}"))
+							filter.skills.push(key)
 						}
 					}
 				}
 				
 				array.sort()
-				result.skills = array.join(", ")
+				render.skills = array.join(", ")
 				
+				////////// Resistances
 				var keysForResistances = [
 					'vulnerable=vulnerabilities', 'resist=resistances', 'immune=immunities',
 					'conditionImmune=unconditionals', 'senses', 'languages'
@@ -396,43 +471,47 @@
 						key = key.slice(0, index)
 					}
 					
-					value = monster[key]
+					filter[prefix] = []
+					value = master[key]
 					
 					if ( typeof value === 'string' ) {
-						result[prefix] = value
+						render[prefix] = value
+						filter[prefix].push(value)
 					} else if ( Array.isArray(value) ) {
 						array = []
 						
 						for ( item of value ) {
 							if ( typeof item === 'string' ) {
 								array.push(item)
+								filter[prefix].push(item)
 							} else if ( item[key] && Array.isArray(item[key]) ) {
 								array.push(item[key].join(", ") + (item.note ? " " + item.note : ""))
+								filter[prefix].push.apply(filter[prefix], item[key])
 							}
 						}
 						
-						result[prefix] = array.join(", ")
+						render[prefix] = array.join(", ")
 					} else {
-						result[prefix] = ""
+						render[prefix] = ""
 					}
 				}
 				
-				value = monster.passive
+				value = master.passive
 				
 				if ( typeof value === 'string' || typeof value === 'number' ) {
-					result.senses = result.senses + (result.senses.length > 0 ? ", " : "") + "passive Perception " + value
+					render.senses = render.senses + (render.senses.length > 0 ? ", " : "") + "passive Perception " + value
+					filter.passivePerception = +value || 0
 				}
 				
-				if ( result.languages === '' ) {
-					result.languages = "―"
-					result.noLanguages = true
-					styles.push('language-none')
+				////////// Languages
+				if ( render.languages === '' ) {
+					render.languages = "―"
 				}
 				
-				var language, languages = monster.languages
+				var language, languages = master.languages
 				
 				if ( typeof languages === 'string' ) {
-					languages = [languages]
+					languages = languages.split(',')
 				} else if ( Array.isArray(languages) ) {
 					array = []
 					
@@ -467,59 +546,72 @@
 						}
 					}
 					
+					if ( languages.length && !array.length ) {
+						array.push('some')
+					}
+					
 					languages = array
 				} else {
 					languages = []
 				}
 				
-				for ( language of languages ) {
-					styles.push('language-' + libraryKey(language))
+				filter.languages = languages.map(libraryKey)
+				
+				if ( !languages.length ) { languages.push('none') }
+				render.languageList = languages.join(", ")
+				
+				////////// Environments
+				var environments = master.environment
+				
+				if ( typeof environments === 'string' ) {
+					render.environments = libraryResolveReferences(environments, master)
+					filter.environments = environments.split(',')
+				} else if ( Array.isArray(environments) ) {
+					array = [].concat(environments)
+					array.sort()
+					render.environments = array.join(", ")
+					filter.environments = array
+				} else {
+					render.environments = ""
+					filter.environments = []
 				}
 				
-				result.languageList = languages.join(", ")
+				////////// Tags
+				filter.isFamiliar = !!master.familiar
+				filter.isLegendary = !!(master.legendary || master.traitTags && master.traitTags.indexOf("Legendary Resistances") >= 0)
 				
-				var challenge = monster.cr
-				var challengeInLair = false
-				
-				if ( Array.isArray(challenge) ) { challenge = challenge[0] }
-				if ( challenge && challenge.lair ) { challengeInLair = challenge.lair }
-				if ( challenge && challenge.cr ) { challenge = challenge.cr }
-				
-				if ( typeof challenge === 'string' && challenge.indexOf('/') >= 0 ) {
-					challenge = challenge.split('/')
-					challenge = challenge[0] / challenge[1]
-				} else if ( isNaN(+challenge) ) {
-					challenge = "?"
+				if ( master.actionTags && master.actionTags.indexOf("Multiattack") >= 0 ) {
+					filter.hasMultipleAttacks = true
+				} else if ( Array.isArray(master.action) && master.action[0].name && master.action[0].name.indexOf("Multiattack") === 0 ) {
+					filter.hasMultipleAttacks = true
 				}
 				
-				var experienceForChallange = [
-					10, 200, 450, 700, 1100, 1800, 2300, 2900, 3900, 5000, 5900,
-					7200, 8400, 10000, 11500, 13000, 15000, 18000, 20000, 22000, 25000,
-					33000, 41000, 50000, 62000, 75000, 90000, 105000, 120000, 135000, 155000
-				]
+				filter.actions = []
+				if ( Array.isArray(master.actionTags) ) {
+					filter.actions.push.apply(filter.actions, master.actionsTags)
+				}
 				
-				result.challenge = challenge
-				result.challengekey = challenge === "?" ? 1000 : (8 * challenge) | 0
-				result.challengename = challenge === "?" ? "―" : challenge > 0 && challenge < 1 ? "0⅛¼⅜½⅝¾⅞".charAt(Math.round(challenge * 8)) : challenge
-				result.challengexp = challenge > 0 && challenge < 1 ? challenge * experienceForChallange[1] : experienceForChallange[challenge | 0]
+				filter.traits = []
+				if ( Array.isArray(master.traitTags) ) {
+					filter.traits.push.apply(filter.traits, master.traitTags)
+				}
 				
-				styles.push(challenge !== "?" ? challenge < 17 ? challenge < 11 ? challenge < 5 ? challenge < 1 ? 'challenge-zero' : 'challenge-easy' : 'challenge-medium' : 'challenge-hard' : 'challenge-deadly' : 'challenge-unrated')
+				filter.sights = []
+				if ( Array.isArray(master.senseTags) ) {
+					for ( value of master.senseTags ) {
+						filter.sights.push({'B':'blind', 'U':'true', 'D':'dark', 'SD':'dark', 'T':'tremor'}[value] || value)
+					}
+				}
 				
-				//if ( ignoreErrata && type === 'dragon' && challenge >= 20 ) {
-				//	var lessForDragons = [500, 5500, 11000, 17500, 25500, 0, 0, 0, 0, 0, 0]
-				//	result.challengexp -= lessForDragons[challenge - 20]
-				//}
-				
-				result.challengeexperience = "(" + result.challengexp + " XP)"
-				
+				////////// Description
 				var cardinality = ["th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"]
 				var legendary = "The {=name} can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The {=name} regains spent legendary actions at the start of its turn."
 				var keysForText = ['trait', 'action=Actions', 'reaction=Reactions', 'legendary=Legendary Actions', 'variant=Variant']
-				var spellcasting = monster.spellcasting
+				var spellcasting = master.spellcasting
 				var spells
 				array = []
 				
-				result.spellcastingability = false
+				filter.spellcastingAbility = false
 				
 				for ( key of keysForText ) {
 					index = key.indexOf('=')
@@ -531,7 +623,7 @@
 						key = key.slice(0, index)
 					}
 					
-					value = monster[key]
+					value = master[key]
 					
 					if ( !value && key === 'trait' && spellcasting ) {
 						value = []
@@ -554,7 +646,7 @@
 							}
 							
 							for ( item of spellcasting ) {
-								result.spellcastingability = item.ability || false
+								filter.spellcastingAbility = item.ability || false
 								spells = []
 								
 								if ( Array.isArray(item.will) ) {
@@ -621,49 +713,22 @@
 					}
 				}
 				
-				result.description = libraryResolveReferences(array.join(""), monster)
+				render.description = array.join("")
 				
-				var environments = monster.environment
+				////////// Styles
+				styles.push('type-' + render.typename.toLowerCase())
+				styles.push('size-' + render.sizename.toLowerCase())
+				styles.push('source-' + render.source.toLowerCase())
+				if ( filter.typeTags.indexOf("anyrace") >= 0 ) { styles.push('is-any-race') }
 				
-				if ( typeof environments === 'string' ) {
-					result.environments = libraryResolveReferences(environments, monster)
-				} else if ( Array.isArray(environments) ) {
-					array = [].concat(environments)
-					array.sort()
-					result.environments = array.join(", ")
-				} else {
-					result.environments = ""
-				}
+				if ( filter.environments.length === 0 ) { styles.push('environment-none') }
+				for ( value of filter.environments ) { styles.push('environment-' + value) }
 				
-				styles.push('type-' + result.typename.toLowerCase())
-				styles.push('size-' + result.sizename.toLowerCase())
-				styles.push('source-' + result.source.toLowerCase())
-				styles.push(isLegendary ? 'is-legendary' : 'not-legendary')
-				styles.push(hasMultipleAttacks ? 'has-multiple-attacks' : 'has-single-attack')
-				styles.push(monster.spellcasting ? 'is-spellcaster' : 'not-spellcaster')
-				styles.push(monster.vulnerable ? 'has-vulnerabilities' : 'no-vulnerabilities')
-				styles.push(monster.resist ? 'has-resistances' : 'no-resistances')
-				styles.push(monster.immune ? 'has-immunities' : 'no-immunities')
-				styles.push(monster.senses ? 'has-exceptional-senses' : 'has-normal-senses')
+				render.styles = styles.join(' ')
+				render.description = libraryResolveReferences(render.description, master)
+				render.filter = filter
 				
-				if ( monster.traitTags ) {
-					styles.push(monster.traitTags.indexOf("Regeneration") < 0 ? 'no-regeneration' : 'has-regeneration')
-				}
-				
-				if ( monster.senseTags ) {
-					styles.push(monster.senseTags.indexOf("B") < 0 ? 'no-blindsight' : 'has-blindsight')
-					styles.push(monster.senseTags.indexOf("U") < 0 ? 'no-truesight' : 'has-truesight')
-				}
-				
-				if ( result.environments ) {
-					styles.push.apply(styles, result.environments.split(", "))
-				} else {
-					styles.push('no-environments')
-				}
-				
-				result.styles = styles.join(" ")
-				
-				return result
+				return render
 			}
 			
 			function parseMonsters(bestiary) {
@@ -723,9 +788,16 @@
 					"<div class='beside-artwork'><span class='prefix hitpoints'>{hitpoints}</span><span class='hitpointstags'>{hitpointstags}</span></div>" +
 					"<div class='beside-artwork'><span class='prefix speed'>{speed}</span></div>" +
 					"<hr class='monster-thick' />" +
-					"<table class='abilities'><tr><th>Str</th><th>Dex</th><th>Con</th><th>Int</th><th>Wis</th><th>Cha</th></tr>" +
-					"<tr><td><span class='ability-score'>{str}</span> <span class='ability-modifier'>({strmod})</span></td><td><span class='ability-score'>{dex}</span> <span class='ability-modifier'>({dexmod})</span></td><td><span class='ability-score'>{con}</span> <span class='ability-modifier'>({conmod})</span></td><td><span class='ability-score'>{int}</span> <span class='ability-modifier'>({intmod})</span></td><td><span class='ability-score'>{wis}</span> <span class='ability-modifier'>({wismod})</span></td><td><span class='ability-score'>{cha}</span> <span class='ability-modifier'>({chamod})</span></td></tr></table>" +
+					"<table class='abilities'><tr><th>Str</th><th>Dex</th><th>Con</th><th>Int</th><th>Wis</th><th>Cha</th></tr><tr>" +
+						"<td><span class='ability-score'>{strength}</span> <span class='ability-modifier'>({strengthmodifier})</span></td>" +
+						"<td><span class='ability-score'>{dexterity}</span> <span class='ability-modifier'>({dexteritymodifier})</span></td>" +
+						"<td><span class='ability-score'>{constitution}</span> <span class='ability-modifier'>({constitutionmodifier})</span></td>" +
+						"<td><span class='ability-score'>{intelligence}</span> <span class='ability-modifier'>({intelligencemodifier})</span></td>" +
+						"<td><span class='ability-score'>{wisdom}</span> <span class='ability-modifier'>({wisdommodifier})</span></td>" +
+						"<td><span class='ability-score'>{charisma}</span> <span class='ability-modifier'>({charismamodifier})</span></td>" +
+					"</tr></table>" +
 					"<hr class='monster-thick' />" +
+					"<div><span class='prefix saves'>{savingthrows}</span></div>" +
 					"<div><span class='prefix skills'>{skills}</span></div>" +
 					"<div><span class='prefix vulnerabilities'>{vulnerabilities}</span></div>" +
 					"<div><span class='prefix resistances'>{resistances}</span></div>" +
@@ -745,7 +817,7 @@
 			}
 			
 			function renderItemTable(list) {
-				var rowTemplate = "<tr id='monster-{key}' class='library monster {styles}'>" +
+				var rowTemplate = "<tr id='item-{key}' class='library monster {styles}'>" +
 					"<td class='selected monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='libraryHandleSelect(\"{key}\")' /></td>" +
 					"<td class='name monster-name natural' id='name-{key}' data-sort-key='{namekey}'>" +
 						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' onchange='handleToggle(\"{key}\")' />" +
@@ -879,16 +951,19 @@
 				
 				for ( name of environments ) {
 					key = name.toLowerCase()
-					if ( name === "underwater" ) { name = "water" }
-					concise = name.length > 6 ? name.slice(0, 5) + "." : name
+					if ( name === "underwater" ) {
+						concise = "water"
+					} else {
+						concise = name.length > 6 ? name.slice(0, 5) + "." : name
+					}
 					
-					filters.push({'group':'environment', 'key':key, 'value':key, 'style':key, 'name':concise, 'title':name})
+					filters.push({'group':'environment', 'key':key, 'value':key, 'style':'environment-' + key, 'name':concise, 'title':name})
 				}
 				
 				if ( unspecified ) {
 					key = 'unspecified'
 					
-					filters.push({'group':'environment', 'key':key, 'value':key, 'style':'no-environments', 'name':"None", 'title':"No environments"})
+					filters.push({'group':'environment', 'key':key, 'value':key, 'style':'environment-none', 'name':"None", 'title':"No environments"})
 				}
 				
 				if ( filters.length > 0 ) {
@@ -950,7 +1025,7 @@
 					if ( key === 'human' ) { continue }
 					if ( key === 'anyrace' ) { name = "Class" }
 					
-					filters.push({'group':'subcategory', 'key':key, 'value':key, 'style':'type-' + key, 'name':name, 'title':name})
+					filters.push({'group':'subcategory', 'key':key, 'value':key, 'style':'typetag-' + key, 'name':name, 'title':name})
 				}
 				
 				if ( filters.length > 0 ) {
@@ -1029,6 +1104,7 @@
 					{'key':'evil', 'style':'is-evil', 'name':"Evil", 'upper':'E', 'lower':'e'},
 					
 					{'key':'caster', 'style':'is-spellcaster', 'name':"Caster", 'upper':'S', 'lower':'s'},
+					{'key':'familiar', 'style':'is-familiar', 'name':"Familiar", 'upper':'F', 'lower':'f'},
 					{'key':'legendary', 'style':'is-legendary', 'name':"Legendary", 'upper':'Y', 'lower':'y'},
 //					{'key':'lair', 'style':'is-lair', 'name':"Lair", 'upper':'Z', 'lower':'z'},
 					{'key':'attacks', 'style':'has-multiple-attacks', 'name':"Multiattack", 'upper':'M', 'lower':'m'},
@@ -1051,16 +1127,89 @@
 				var styles = []
 				var html = []
 				
-				renderFiltersForRatings(items, html, styles)
+				//renderFiltersForRatings(items, html, styles)
 				renderFiltersForEnvironments(items, html, styles)
-				renderFiltersForTypes(items, html, styles)
+				//renderFiltersForTypes(items, html, styles)
 				//renderFiltersForTypeTags(items, html, styles)
 				//renderFiltersForLanguages(items, html, styles)
 				renderFiltersForSources(items, html, styles)
-				renderFiltersForAnd(items, html, styles)
+				//renderFiltersForAnd(items, html, styles)
 				
 				libraryRenderStyles(styles)
 				libraryRenderHTML('beforebegin', 'library-table', html.join("\n\n"))
+				
+				libraryIsFilteringElement.isEnabled = true
+			}
+			
+			function transformToSize(value) {
+				var size, number = parseFloat(value)
+				
+				if ( isNaN(number) ) {
+					for ( size of bestiary.sizes ) {
+						if ( size.name.toLowerCase().indexOf(value) === 0 ) {
+							number = size.order
+							break
+						}
+					}
+				}
+				
+				return number
+			}
+			
+			function transformToChallenge(value) {
+				var index = "0⅛¼⅜½⅝¾⅞".indexOf(value)
+				
+				if ( index > 0 ) {
+					return index
+				}
+				
+				index = value.indexOf("/")
+				
+				if ( index > 0 ) {
+					return 8 * +value.slice(0, index) / +value.slice(index + 1)
+				}
+				
+				return 8 * parseFloat(value)
+			}
+			
+			function registerFilterColumns(bestiary) {
+				libraryFilterByKeyValuePatternsRegister([
+					{'key':'name', 'property':'key', 'transform':libraryKey},
+					{'key':'environment', 'property':'environments', 'transform':{'none':false, '!':false}},
+					{'key':'size', 'isNumber':true, 'transform':transformToSize},
+					{'key':'ac', 'property':'armorclass', 'isNumber':true},
+					{'key':'hp', 'property':'hitpoints', 'isNumber':true},
+					{'key':'cr', 'property':'challenge', 'isNumber':true, 'transform':transformToChallenge},
+					{'key':'xp', 'property':'experience', 'isNumber':true},
+					{'key':'type'},
+					{'key':'kind', 'property':'typeTags'},
+					{'key':'alignment'},
+					{'key':'language', 'property':'languages', 'transform':{'none':false, '!':false}},
+					{'key':'source', 'property':'sources', 'transform':libraryKey},
+					{'key':'page', 'isNumber':true},
+					{'key':'move', 'property':'movement'},
+					{'key':'speed', 'isNumber':true},
+					{'key':'swarm', 'property':'isSwarm', 'isBoolean':true, 'isHidden':true},
+					{'key':'familiar', 'property':'isFamiliar', 'isBoolean':true},
+					{'key':'legend', 'property':'isLegendary', 'isBoolean':true},
+					{'key':'passive', 'property':'passivePerception', 'isNumber':true},
+					{'key':'ignore', 'property':'unconditionals'},
+					{'key':'immune', 'property':'immunities'},
+					{'key':'resist', 'property':'resistances'},
+					{'key':'vulnerable', 'property':'vulnerabilities'},
+					{'key':'save', 'property':'saves'},
+					{'key':'sight', 'property':'sights'},
+					{'key':'skill', 'property':'skills'},
+					{'key':'trait', 'property':'traits'},
+					{'key':'action', 'property':'actions'},
+					{'key':'caster', 'property':'spellcastingAbility'},
+					{'key':'strength', 'property':'strength', 'isNumber':true},
+					{'key':'dexterity', 'property':'dexterity', 'isNumber':true},
+					{'key':'constitution', 'property':'constitution', 'isNumber':true},
+					{'key':'intelligence', 'property':'intelligence', 'isNumber':true},
+					{'key':'wisdom', 'property':'wisdom', 'isNumber':true},
+					{'key':'charisma', 'property':'charisma', 'isNumber':true},
+				])
 			}
 			
 			function populatePage() {
@@ -1070,6 +1219,7 @@
 				var items = parseMonsters(bestiary)
 				
 				populateLibrary(items)
+				registerFilterColumns(bestiary)
 				populateFilters(items)
 				applyParameters()
 				libraryHandleHashChanged()
@@ -1098,8 +1248,20 @@
 			html { background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%); }
 			body { position:relative; box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
 			
-			div#controls { position:absolute; right:2em; top:1.5em; }
-			a#share-selection { font-size:150%; color:inherit; text-decoration:none; border-bottom:2px solid #999; }
+			div#controls {
+				position:absolute; right:2em; top:1.5em;
+				background:#F0F0F8; border-radius:1em; padding:0.25em 0.25em;
+			}
+			div#controls > .control:not(:last-child) { border-right:1px solid #CCC; }
+			div#controls > .control {
+				display:inline-block; height:1.75em; width:1em;
+				padding:0 0.75em; margin:0;
+				font-size:150%; text-align:center;
+				background:inherit; color:inherit;
+				border:none; not-border-bottom:2px solid #999;
+			}
+			div#controls > button { display:none; }
+			div#controls > a { text-decoration:none; }
 			
 			input#library-filter { font-size:100%; max-width:98%; }
 			span#library-filter-count { opacity:0.5; font-size:60%; }
@@ -1196,6 +1358,7 @@
 			span.prefix.armorclass:not(:empty)::before { content:"Armor Class "; }
 			span.prefix.hitpoints:not(:empty)::before { content:"Hit Points "; }
 			span.prefix.speed:not(:empty)::before { content:"Speed "; }
+			span.prefix.saves:not(:empty)::before { content:"Saving Throws "; }
 			span.prefix.skills:not(:empty)::before { content:"Skills "; }
 			span.prefix.vulnerabilities:not(:empty)::before { content:"Damage Vulnerabilities "; }
 			span.prefix.resistances:not(:empty)::before { content:"Damage Resistances "; }
@@ -1285,7 +1448,9 @@
 		<div id='library-content-list'>
 			<form id='library-form'>
 				<div id='controls'>
-					<a id='share-selection' href='' title='Share selection'>⇧</a>
+					<button type='reset' id='library-reset' title='Show all spells'></button>
+					<label for='library-reset' class='control'>↻</label>
+					<a id='share-selection' class='control' href='' title='Share selection'>⇧</a>
 				</div>
 				<div class='filtering'>
 					<input type='checkbox' id='select-all' name='a' onclick='libraryChooseUnfiltered(checked ? 1 : -1)' title='Tap to select matches.' />
