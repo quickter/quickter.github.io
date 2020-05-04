@@ -1455,7 +1455,7 @@
 				<div class='filtering'>
 					<input type='checkbox' id='select-all' name='a' onclick='libraryChooseUnfiltered(checked ? 1 : -1)' title='Tap to select matches.' />
 					<label for='select-all'>&nbsp;</label>
-					<input type='search' id='library-filter' name='f' size='36' placeholder='Filter' oninput='libraryHandleSearch(event)'>
+					<input type='search' id='library-filter' name='f' autocomplete='off' size='36' placeholder='Filter' oninput='libraryHandleSearch(event)'>
 					<span id='library-filter-count' class='action' onclick='libraryToggleUnfiltered()' title='Number of matches.  Tap to expand.'></span>
 				</div>
 				<table id='library-table' class='emoji'><tr><td>Loading...</td></tr></table>

@@ -455,37 +455,28 @@ function libraryFilterByKeyValuePatterns(value) {
 	var filters = table.libraryItemFilters
 	if ( !filters ) { return false }
 	
-	var rules = []
-	var term, terms = value.split('?')
-	if ( terms.length < 2 || terms[0] !== '' ) { return false }
+	var matches = value.split(/\s*\?(\w+)[:=^]?\s*/g)
+	if ( matches.length < 2 || matches[0] !== '' ) { return false }
 	
+	var rules = []
 	var index, key, pattern
 	var selector, rule, ascend
 	var count
 	var all = false
 	
-	for ( term of terms ) {
-		index = term.search(/[ :=^]/)
-		
-		if ( index < 0 ) {
-			key = term
-			pattern = ''
-		} else {
-			key = term.slice(0, index)
-			pattern = term.slice(index + 1).trim()
-		}
-		
+	for ( index = 1 ; index < matches.length ; index += 2 ) {
+		key = matches[index]
+		pattern = matches[index + 1]
 		key = key.trim().toLowerCase()
 		
 		if ( key === 'or' ) { all = true; continue }
 		if ( pattern === '' ) { pattern = '…' }
-		if ( !key || !pattern ) { continue }
 		
 		if ( key === 'text' && text ) {
 			selector = 'table#library-table tr.library > td.name'
 			ascend = 1
 			
-			if ( term.search(/[[?*.|^${}\\]/) < 0 ) {
+			if ( pattern.search(/[[?*.|^${}\\]/) < 0 ) {
 				pattern = pattern.toLowerCase()
 			} else {
 				try { pattern = new RegExp(pattern, 'ius') }
@@ -941,10 +932,15 @@ function libraryPopulateTable(items, renderItemTable) {
 	
 	for ( item of items ) {
 		searchableItem[item.key] = item
-		searchableText[item.key] = item.searchableText.replace(/<[^<>]+>/g, ' ').replace(/\s+/g, ' ')
+		
+		if ( item.searchableText ) {
+			searchableText[item.key] = item.searchableText.replace(/<[^<>]+>/g, ' ').replace(/\s+/g, ' ')
+			delete item.searchableText
+		}
 		
 		if ( item.filter ) {
 			filterableItem[item.key] = item.filter
+			delete item.filter
 		}
 	}
 	
