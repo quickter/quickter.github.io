@@ -940,7 +940,7 @@
 				return order
 			}
 			
-			function registerFilterColumns(spellbook) {
+			function registerFilters(spellbook) {
 				libraryFilterByKeyValuePatternsRegister([
 					{'key':'name', 'property':'key', 'transform':libraryKey},
 					{'key':'level', 'isNumber':true},
@@ -982,7 +982,7 @@
 				var items = parseSpells(spellbook)
 				
 				populateLibrary(items)
-				registerFilterColumns(spellbook)
+				registerFilters(spellbook)
 				populateFilters(items)
 				applyParameters()
 				libraryHandleHashChanged()

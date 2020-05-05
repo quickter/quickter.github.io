@@ -1172,7 +1172,7 @@
 				return 8 * parseFloat(value)
 			}
 			
-			function registerFilterColumns(bestiary) {
+			function registerFilters(bestiary) {
 				libraryFilterByKeyValuePatternsRegister([
 					{'key':'name', 'property':'key', 'transform':libraryKey},
 					{'key':'environment', 'property':'environments', 'transform':{'none':false, '!':false}},
@@ -1219,7 +1219,7 @@
 				var items = parseMonsters(bestiary)
 				
 				populateLibrary(items)
-				registerFilterColumns(bestiary)
+				registerFilters(bestiary)
 				populateFilters(items)
 				applyParameters()
 				libraryHandleHashChanged()

@@ -15,18 +15,16 @@
 		<script type="text/javascript">
 			'use strict';
 			
-			function parseTreasureItem(masterItem, lookup) {
-				var rarity, category, source
-				var styles, attunement, isMajor
-				var attuneAbbreviation = ["◦", "⚪︎", "•", "⚫︎"]
-				var attuneName = ["Minor", "Major", "Minor, Attune", "Major, Attune"]
-				var key, keys = ['rarity', 'tier', 'source', 'page', 'weight', 'value', 'srd', 'sentient', 'curse']
-				var item, type, require, requires, entries
+			function parseTroveItem(master, lookup) {
+				var render = new Object()
+				var filter = new Object()
+				var styles = []
+				var value
 				
-				type = masterItem['type']
-				
+				var type = master.type
+				var require, requires
 				if ( type === 'GV' ) {
-					requires = masterItem.requires
+					requires = master.requires
 					
 					if ( Array.isArray(requires) ) {
 						for ( require of requires ) {
@@ -39,83 +37,162 @@
 					}
 				}
 				
-				item = new Object()
-				item.name = masterItem.name
-				item.type = type
-				item.key = libraryKey(item.name)
-				entries = masterItem['entries']
+				render.key = libraryKey(master.name)
+				filter.key = render.key
+				render.name = master.name
+				render.namekey = master.name.replace(/['‘’]/g, '')
+				filter.name = master.name
+				render.page = master.page || ''
+				filter.page = master.page || 0
 				
-				if ( masterItem.inherits ) {
-					masterItem = masterItem.inherits
+				var entries = master.entries
+				if ( master.inherits ) {
+					master = master.inherits
 					
-					if ( !entries ) { entries = masterItem['entries'] }
+					if ( !entries ) { entries = master.entries }
 				}
 				
-				for ( key of keys ) {
-					if ( masterItem[key] !== undefined ) {
-						item[key] = masterItem[key]
-					}
-				}
-				
-				if ( item['type'] === undefined ) {
-					if ( masterItem['staff'] ) {
-						item.type = 'ST'
-					} else if ( masterItem['armor'] ) {
-						item.type = 'AA'
-					} else if ( masterItem['weapon'] || masterItem['sword'] || masterItem['axe'] ) {
-						item.type = 'M'
-					} else if ( masterItem['focus'] ) {
-						item.type = 'SCF'
-					} else if ( masterItem['poison'] ) {
-						item.type = 'PS'
-					} else if ( masterItem['wondrous'] || masterItem['reqAttune'] || masterItem['tier'] ) {
-						item.type = 'W'
+				if ( typeof type === 'undefined' ) {
+					if ( master.staff ) {
+						type = 'ST'
+					} else if ( master.armor ) {
+						type = 'AA'
+					} else if ( master.weapon || master.sword || master.axe ) {
+						type = 'M'
+					} else if ( master.focus ) {
+						type = 'SCF'
+					} else if ( master.poison ) {
+						type = 'PS'
+					} else if ( master.wondrous || master.reqAttune || master.tier ) {
+						type = 'W'
 					} else {
-						item.type = '?'
+						type = '?'
 					}
 				}
 				
-				if ( item.source && item.source.indexOf('UA') === 0 ) { item.source = 'UA' }
+				render.type = type
 				
-				styles = []
-				category = lookup.categories[item.type]
-				rarity = lookup.rarities[item.rarity]
-				source = lookup.sources[item.source]
+				var sourceKey = master.source
+				if ( sourceKey && sourceKey.indexOf('UA') === 0 ) { sourceKey = 'UA' }
+				render.source = sourceKey
 				
-				if ( !masterItem['reqAttune'] ) {
+				var attunement
+				if ( !master.reqAttune ) {
 					attunement = ''
-				} else if ( typeof masterItem['reqAttune'] === 'string' ) {
-					attunement = " (requires attunement " + masterItem['reqAttune'] + ")"
+				} else if ( typeof master.reqAttune === 'string' ) {
+					attunement = " (requires attunement " + master.reqAttune + ")"
 				} else {
 					attunement = " (requires attunement)"
 				}
+				render.attunement = attunement
+				filter.attune = attunement !== ''
 				
-				if ( item.tier ) {
-					isMajor = item.tier === 'major'
+				var category = lookup.categories[type]
+				var rarity = lookup.rarities[master.rarity]
+				var source = lookup.sources[sourceKey]
+				
+				if ( source ) {
+					render.sourcename = source.name || sourceKey
+					filter.source = [sourceKey, source.name]
+				} else {
+					render.sourcename = sourceKey || '?'
+					filter.source = [sourceKey]
+				}
+				
+				if ( category ) {
+					render.typename = category.name || type
+					filter.type = category.caption || category.name || ''
+				} else {
+					render.typename = type || '?'
+					filter.type = type || ''
+				}
+				
+				if ( rarity ) {
+					render.rarity = rarity.key
+					render.raritytag = rarity.tag || rarity.key
+					render.raritykey = rarity.order || 0
+					render.rarityname = rarity.name || render.rarity
+					filter.rarity = rarity.order || 0
+					filter.rarityName = rarity.name || ''
+				} else {
+					render.rarity = master.rarity || '?'
+					render.rarity = master.rarity || false
+					render.raritykey = 0
+					render.rarityname = render.rarity
+					filter.rarity = 0
+					filter.rarityName = master.rarity || ''
+				}
+				render.raritysuffix = master.sentient ? ", Sentient" : ''
+				render.rarityabbreviation = render.rarityname.slice(0, 1)
+				
+				var isMajor
+				if ( master.tier ) {
+					isMajor = master.tier === 'major'
 				} else if ( category && category.tier ) {
-					isMajor = category.tier === 'major' && rarity.value > 1
+					isMajor = category.tier === 'major' && rarity && rarity.value > 1
 				} else {
 					isMajor = rarity && rarity.value > 2
 				}
 				
-				item['page'] = item['page'] || ''
-				item['attunekey'] = (attunement ? 2 : 0) + (isMajor ? 1 : 0)
-				item['attune'] = attuneAbbreviation[item.attunekey]
-				item['attunename'] = attuneName[item.attunekey]
-				item['description'] = libraryResolveReferences(libraryResolveEntries(entries, "<p>", "</p>"), masterItem)
-				item['namekey'] = item.name.replace(/['‘’]/g, '')
-				item['raritytag'] = rarity && rarity.tag || item.rarity || false
-				item['raritykey'] = rarity && rarity.order || 0
-				item['rarityname'] = rarity && rarity.name || item.rarity || '?'
-				item['rarityabbreviation'] = item.rarityname.slice(0, 1)
-				item['sourcename'] = source && source.name || item.source || '?'
-				item['typename'] = category && category.name || item.type
-				item['caption'] = (category && category.caption || item.typename) + ", " + item.rarityname + attunement + " " + (item.tier || "")
+				render.tier = master.tier || ''
+				filter.tier = isMajor ? 'major' : render.tier
+				filter.isMajor = isMajor
 				
-				item.sourcename = item.sourcename.replace(/'/g, "’")
-				item.attunename = item.attunename.replace(/'/g, "’")
+				var attuneAbbreviation = ["◦", "⚪︎", "•", "⚫︎"]
+				var attuneName = ["Minor", "Major", "Minor, Attune", "Major, Attune"]
+				render.attunekey = (attunement ? 2 : 0) + (isMajor ? 1 : 0)
+				render.attune = attuneAbbreviation[render.attunekey]
+				render.attunename = attuneName[render.attunekey]
 				
-				return item
+				render.weight = master.weight || ''
+				render.cost = master.value || ''
+				
+				filter.weight = master.weight || false
+				filter.value = master.value || false
+				filter.charges = master.charges || false
+				filter.recharges = master.recharge || false
+				filter.srd = !!master.srd
+				filter.sentient = !!master.sentient
+				filter.cursed = !!master.curse
+				filter.bonusToWeapon = +master.bonusWeapon || 0
+				filter.bonusToArmor = +master.bonusAc || 0
+				filter.bonusToSaves = +master.bonusSavingThrow || 0
+				filter.bonusToSpells = +master.bonusSpellAttack || 0
+				
+				if ( Array.isArray(master.attachedSpells) ) {
+					filter.spells = master.attachedSpells.map(libraryKey)
+				} else {
+					filter.spells = []
+				}
+				
+				filter.hoards = []
+				if ( Array.isArray(master.lootTables) ) {
+					for ( value of master.lootTables ) {
+						filter.hoards.push(value.slice(-1))
+					}
+				} else if ( rarity && rarity.value > 0 && rarity.value < 6 ) {
+					if ( isMajor ) {
+						filter.hoards.push("XFGHI".charAt(rarity.value - 1))
+					} else {
+						filter.hoards.push("ABCDE".charAt(rarity.value - 1))
+					}
+				}
+				
+				if ( render.tier ) { styles.push(render.tier) }
+				if ( render.raritytag ) { styles.push(render.raritytag) }
+				if ( render.attunekey & 2 ) { styles.push('is-attune') }
+				if ( isMajor ) { styles.push('is-major') }
+				if ( master.curse ) { styles.push('is-cursed') }
+				if ( master.sentient ) { styles.push('is-sentient') }
+				
+				render.caption = (category && category.caption || render.typename) + ", " + render.rarityname + attunement + " " + (render.tier || "")
+				render.description = libraryResolveReferences(libraryResolveEntries(entries, "<p>", "</p>"), master)
+				render.sourcename = render.sourcename.replace(/'/g, "’")
+				
+				render.styles = styles.join(" ")
+				render.filter = filter
+				
+				return render
 			}
 			
 			function parseTreasureItems(trove) {
@@ -146,17 +223,7 @@
 					if ( excludeRarity.indexOf((masterItem.inherits || masterItem).rarity) >= 0 ) { continue }
 					if ( excludeSource.indexOf((masterItem.inherits || masterItem).source) >= 0 ) { continue }
 					
-					item = parseTreasureItem(masterItem, lookup)
-					styles = []
-					
-					if ( item.tier ) { styles.push(item.tier) }
-					if ( item.raritytag ) { styles.push(item.raritytag) }
-					styles.push(item.attunekey & 2 ? 'is-attune' : 'not-attune')
-					styles.push(item.attunekey & 1 ? 'is-major' : 'not-major')
-					styles.push(item.curse ? 'is-curse' : 'not-curse')
-					styles.push(item.sentient ? 'is-sentient' : 'not-sentient')
-					
-					item.styles = styles.join(" ")
+					item = parseTroveItem(masterItem, lookup)
 					
 					text = [
 						item.name, item.caption, item.description, item.sourcename, "pg " + item.page
@@ -192,7 +259,7 @@
 						"</div></div>" +
 					"</td>" +
 					"<td class='item-type natural'>{typename}</td>" +
-					"<td class='item-rarity center' title='{rarityname}' data-sort-key='{raritykey}'>{rarityabbreviation}</td>" +
+					"<td class='item-rarity center' title='{rarityname}{raritysuffix}' data-sort-key='{raritykey}'>{rarityabbreviation}</td>" +
 					"<td class='item-attune center' title='{attunename}' data-sort-key='{attunekey}'>{attune}</td>" +
 					"<td class='item-source natural' title='{sourcename}'>{source}</td>" +
 				"</tr>"
@@ -232,11 +299,39 @@
 				tableSort(table)
 			}
 			
+			function transformToCost(value) {
+				return parseFloat(value) * 100
+			}
+			
+			function registerFilters(trove) {
+				libraryFilterByKeyValuePatternsRegister([
+					{'key':'name', 'property':'key', 'transform':libraryKey},
+					{'key':'type'},
+					//{'key':'rarity', 'isNumber':true, 'transform':transformToRarity},
+					{'key':'rarity', 'property':'rarityName'},
+					{'key':'tier'},
+					{'key':'attune', 'isBoolean':true},
+					{'key':'save', 'property':'bonusToSaves', 'isNumber':true},
+					{'key':'ac', 'property':'bonusToArmor', 'isNumber':true},
+					{'key':'weapon', 'property':'bonusToWeapon', 'isNumber':true},
+					{'key':'hit', 'property':'bonusToSpells', 'isNumber':true},
+					{'key':'charges', 'isNumber':true},
+					{'key':'spell', 'property':'spells', 'transform':libraryKey},
+					{'key':'hoard', 'property':'hoards'},
+					{'key':'major', 'property':'isMajor', 'isBoolean':true},
+					{'key':'source', 'property':'sources', 'transform':libraryKey},
+					{'key':'page', 'isNumber':true},
+					{'key':'cost', 'isNumber':true, 'transform':transformToCost},
+					{'key':'weight', 'isNumber':true},
+				])
+			}
+			
 			function populatePage() {
 				libraryForm().addEventListener('submit', libraryHandleSubmit)
 				window.addEventListener('hashchange', libraryHandleHashChanged)
 				
 				populateLibrary(parseTreasureItems(trove))
+				registerFilters(trove)
 				applyParameters()
 				libraryHandleHashChanged()
 			}
@@ -325,7 +420,7 @@
 			dl.compact > dt, dl.compact > dd { }
 			
 			@media screen {
-				tr.is-curse > td.item-attune { color:#900; }
+				tr.is-cursed > td.item-attune { color:#900; }
 				tr.is-sentient > td.item-rarity { color:#00C; }
 				div.details table.entries tr.rolled { background:#DEF; }
 				div.details span.entries.action { text-decoration:underline; text-decoration-color:#CCC; }
@@ -399,7 +494,7 @@
 				<div class='filtering'>
 					<input type='checkbox' id='select-all' name='a' onclick='libraryChooseUnfiltered(checked ? 1 : -1)' title='Tap to select matches.' />
 					<label for='select-all'>&nbsp;</label>
-					<input type='search' id='library-filter' name='f' size='36' placeholder='Filter' oninput='libraryHandleSearch(event)'>
+					<input type='search' id='library-filter' name='f' autocomplete='off' size='36' placeholder='Filter' oninput='libraryHandleSearch(event)'>
 					<span id='library-filter-count' class='action' onclick='libraryToggleUnfiltered()' title='Number of matches.  Tap to expand.'></span>
 				</div>
 				<table id='library-table'><tr><td>Loading...</td></tr></table>

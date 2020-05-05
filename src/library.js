@@ -928,10 +928,10 @@ function libraryPopulateItem(item, renderItem) {
 function libraryPopulateTable(items, renderItemTable) {
 	var table = libraryElement('library-table')
 	var html = renderItemTable(items)
-	var item, searchableText = new Object(), searchableItem = new Object(), filterableItem = new Object()
+	var item, searchableText = new Object(), renderableItem = new Object(), filterableItem = new Object()
 	
 	for ( item of items ) {
-		searchableItem[item.key] = item
+		renderableItem[item.key] = item
 		
 		if ( item.searchableText ) {
 			searchableText[item.key] = item.searchableText.replace(/<[^<>]+>/g, ' ').replace(/\s+/g, ' ')
@@ -944,7 +944,7 @@ function libraryPopulateTable(items, renderItemTable) {
 		}
 	}
 	
-	table.libraryItemList = searchableItem
+	table.libraryItemList = renderableItem
 	table.libraryItemText = searchableText
 	table.libraryItemFilters = filterableItem
 	table.innerHTML = html
