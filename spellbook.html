@@ -22,6 +22,7 @@
 				var supplement
 				var material, components = ['v', 's', 'm']
 				var object, key, value, entry, found, order, index, title, style, array, name, concise
+				var isSight = master.miscTags && master.miscTags.indexOf('SGT') >= 0
 				var isPermanent = master.miscTags && master.miscTags.indexOf('PRM') >= 0
 				var isHealing = master.miscTags && master.miscTags.indexOf('HL') >= 0
 				var isDefense = false, isAttack = false, isDamaging = false, isCombat = false
@@ -33,6 +34,7 @@
 				render.namekey = master.name.replace(/['‘’]/g, '')
 				filter.name = master.name
 				render.level = master.level
+				render.levelsuffix = master.entriesHigherLevel ? " or higher" : ''
 				filter.level = +master.level
 				render.source = master.source
 				render.sourcename = lookup.sources[master.source].name
@@ -317,6 +319,12 @@
 					} else if ( supplement.healing ) {
 						isHealing = true
 					}
+					
+					if ( supplement.sight === false ) {
+						isSight = false
+					} else if ( supplement.sight ) {
+						isSight = true
+					}
 				}
 				
 				
@@ -405,7 +413,7 @@
 				}
 				
 				render.damage = value
-				render.damagekey = order
+				render.damagekey = order || (isHealing ? 0.1 : 0)
 				filter.damageDice = value.replace(/^[-+±*]|&bull;|\D+$/g, '')
 				filter.damageAverage = order
 				
@@ -467,11 +475,12 @@
 					isAttack = true
 				}
 				
-				if ( isDamaging || isAttack || isDefense ) {
+				if ( isDamaging || isAttack || isDefense || (isHealing && filter.castingSeconds < 10) ) {
 					isCombat = true
 				}
 				
 				filter.isHealing = isHealing
+				filter.isSight = isSight
 				filter.isAttack = isAttack
 				filter.isDefense = isDefense
 				filter.isDamaging = isDamaging
@@ -495,7 +504,9 @@
 				styles.push('source-' + render.source.toLowerCase())
 				if ( filter.castingKey ) { styles.push('cast-' + filter.castingKey) }
 				if ( filter.durationKey ) { styles.push('duration-' + filter.durationKey) }
+				if ( filter.isSight ) { styles.push('is-sight') }
 				if ( filter.isRitual ) { styles.push('is-ritual') }
+				if ( filter.isHealing ) { styles.push('is-healing') }
 				if ( filter.isConcentration ) { styles.push('is-concentration') }
 				if ( filter.isPermanent ) { styles.push('is-permanent') }
 				if ( filter.isDefense ) { styles.push('is-defense') }
@@ -587,7 +598,7 @@
 						"<div class='toggled details'><div id='inner-{key}' class='inner details'>" +
 						"</div></div>" +
 					"</td>" +
-					"<td class='spell-level numeric' data-sort-key='{level}' title='Level {level}'>{level}</td>" +
+					"<td class='spell-level numeric' data-sort-key='{level}' title='Level {level}{levelsuffix}'>{level}</td>" +
 					"<td class='spell-school' data-sort-key='{ss}' title='{schoolname}'>{ss}</td>" +
 					"<td class='spell-casting' data-sort-key='{castingkey}' title='Casting Time {casting_time}{title_ritual}'>{casting}</td>" +
 					"<td class='spell-range numeric' data-sort-key='{rangekey}' title='Range {range}'>{range}</td>" +
@@ -624,7 +635,7 @@
 				
 				if ( !value ) {
 					value = location.search || ''
-					value = value.replace(/&/g, '?')
+					value = value.replace(/&/g, ' ?')
 					value = decodeURIComponent(value)
 				}
 				
@@ -691,15 +702,14 @@
 			
 			function transformToComponents(value) {
 				var component, components = spellbook.components
-				var index = components.length
-				var order = 0
+				var index = 1 << components.length
+				var order = parseInt(value) || 0
 				
 				value = value.toLowerCase()
 				for ( component of components ) {
 					index >>= 1
 					if ( value.indexOf(component.key) >= 0 ) {
-						value += component.key
-						order += index
+ 						order += index
 					}
 				}
 				
@@ -777,6 +787,7 @@
 					{'key':'permanent', 'property':'isPermanent', 'isBoolean':true},
 					{'key':'concentration', 'property':'isConcentration', 'isBoolean':true},
 					{'key':'consume', 'property':'materialsConsumed', 'isBoolean':true},
+					{'key':'sight', 'property':'isSight', 'isBoolean':true},
 					{'key':'heal', 'property':'isHealing', 'isBoolean':true},
 					{'key':'ritual', 'property':'isRitual', 'isBoolean':true},
 					{'key':'augment', 'property':'isAugmentable', 'isBoolean':true},
@@ -970,6 +981,8 @@
 				tr.materials-consumed > td.spell-components { color:#600; }
 				tr.is-damage-save-none > td.spell-damage { background:#F8F8F8; border-radius:0.5em; border:solid white 1px; }
 				tr.is-damage-always > td.spell-damage { color:#36C; }
+				tr.is-healing > td.spell-damage { color:#C33; }
+				tr.is-healing > td.spell-damage:empty::before { content:"♥︎"; }
 			}
 			
 			@media print {

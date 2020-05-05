@@ -612,6 +612,8 @@
 				array = []
 				
 				filter.spellcastingAbility = false
+				filter.hasReactions = !!master.reactions
+				filter.hasVariants = !!master.variant
 				
 				for ( key of keysForText ) {
 					index = key.indexOf('=')
@@ -885,7 +887,7 @@
 				
 				if ( !value ) {
 					value = location.search || ''
-					value = value.replace(/&/g, '?')
+					value = value.replace(/&/g, ' ?')
 					value = decodeURIComponent(value)
 				}
 				
@@ -962,6 +964,8 @@
 					{'key':'skill', 'property':'skills'},
 					{'key':'trait', 'property':'traits'},
 					{'key':'action', 'property':'actions'},
+					{'key':'variant', 'property':'hasVariants', 'isBoolean':true},
+					{'key':'reaction', 'property':'hasReactions', 'isBoolean':true},
 					{'key':'caster', 'property':'spellcastingAbility'},
 					{'key':'strength', 'property':'strength', 'isNumber':true},
 					{'key':'dexterity', 'property':'dexterity', 'isNumber':true},

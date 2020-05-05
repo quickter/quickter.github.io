@@ -965,6 +965,7 @@ function libraryPopulateTable(items, renderItemTable) {
 }
 
 function libraryFormReset() {
+	libraryAssignCheckedToSelector('table#library-table tr.library > td.selected > input.selection', -1, -1)
 	libraryFilterByText(false)
 	libraryToggleUnfiltered(-1)
 }
