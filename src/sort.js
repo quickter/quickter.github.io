@@ -172,6 +172,16 @@ function tableSort(tableColumn) {
 		for ( index = 0 ; index < count ; ++index ) {
 			sorted[index] = count - index - 1;
 		}
+	} else if ( 'shuffle' === format ) {
+		for ( index = 0 ; index < count ; ++index ) {
+			sorted[index] = (index + 1) * 65537 % count
+		}
+		while ( index --> 1 ) {
+			value = Math.floor(Math.random() * index)
+			prior = sorted[value]
+			sorted[value] = sorted[index]
+			sorted[index] = prior
+		}
 	} else {
 		if ( '-' === format.charAt(0) ) {
 			format = format.substring(1)

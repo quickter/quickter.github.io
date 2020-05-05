@@ -470,6 +470,7 @@ function libraryFilterByKeyValuePatterns(value) {
 		key = key.trim().toLowerCase()
 		
 		if ( key === 'or' ) { all = true; continue }
+		if ( key === 'shuffle' ) { tableSort(table.rows[0].cells[0], key); continue }
 		if ( pattern === '' ) { pattern = '…' }
 		
 		if ( key === 'text' && text ) {
