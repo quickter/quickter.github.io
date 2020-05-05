@@ -53,6 +53,7 @@
 				title = ''
 				object = master.components
 				filter.materialsCost = 0
+				filter.materialsConsumed = false
 				if ( object ) {
 					index = 1 << components.length
 					for ( key of components ) {
@@ -479,13 +480,13 @@
 					isCombat = true
 				}
 				
-				filter.isHealing = isHealing
-				filter.isSight = isSight
+				filter.isHealing = !!isHealing
+				filter.isSight = !!isSight
 				filter.isAttack = isAttack
 				filter.isDefense = isDefense
 				filter.isDamaging = isDamaging
 				filter.isCombat = isCombat
-				filter.isPermanent = isPermanent
+				filter.isPermanent = !!isPermanent
 				filter.isAugmentable = !!master.entriesHigherLevel
 				
 				//	could sanitize
@@ -530,7 +531,7 @@
 			function parseSpells(spellbook) {
 				var result = []
 				var entry, lookup = []
-				var allowSources = ['PHB', 'XGE', 'DMG', 'EGW', 'SCAG', 'GGR', 'LLK'] // 'ERLW', 'PSA', 'Twitter', 'Stream', 'UA*'
+				var allowSources = ['PHB', 'XGE', 'DMG', 'ERLW', 'EGW', 'SCAG', 'GGR', 'LLK'] // 'PSA', 'Twitter', 'Stream', 'UA*'
 				var key, keys = ['areas', 'sources', 'schools', 'ranges', 'times', 'components', 'supplements']
 				var masterSpell, spell, text
 				
@@ -762,18 +763,18 @@
 				return order
 			}
 			
-			function registerFilters(spellbook) {
+			function registerFilters(spellbook, items) {
 				libraryFilterByKeyValuePatternsRegister([
 					{'key':'name', 'property':'key', 'transform':libraryKey},
 					{'key':'level', 'isNumber':true},
 					{'key':'school'},
 					{'key':'class', 'property':'classes'},
-					{'key':'time', 'property':'castingSeconds', 'isNumber':true, 'transform':transformToTime},
-					{'key':'range', 'property':'rangeFeet', 'isNumber':true, 'transform':transformToRange},
-					{'key':'duration', 'property':'durationSeconds', 'isNumber':true, 'transform':transformToTime},
-					{'key':'vsm', 'property':'components', 'isNumber':true, 'transform':transformToComponents},
-					{'key':'cost', 'property':'materialsCost', 'isNumber':true, 'transform':transformToCost},
-					{'key':'damage', 'property':'damageAverage', 'isNumber':true, 'transform':transformToDamage},
+					{'key':'time', 'property':'castingSeconds', 'isNumber':true, 'transform':transformToTime, 'extent':'r...24h'},
+					{'key':'range', 'property':'rangeFeet', 'isNumber':true, 'transform':transformToRange, 'extent':'self...unlimited'},
+					{'key':'duration', 'property':'durationSeconds', 'isNumber':true, 'transform':transformToTime, 'extent':'instant...dispel'},
+					{'key':'vsm', 'property':'components', 'isNumber':true, 'transform':transformToComponents, 'extent':'m...vsm'},
+					{'key':'cost', 'property':'materialsCost', 'isNumber':true, 'transform':transformToCost, 'extent':'0...25000'},
+					{'key':'damage', 'property':'damageAverage', 'isNumber':true, 'transform':transformToDamage, 'extent':'0...40d6'},
 					{'key':'source', 'property':'sources', 'transform':libraryKey},
 					{'key':'page', 'isNumber':true},
 					{'key':'list', 'property':'lists'},
@@ -794,7 +795,7 @@
 					{'key':'defense', 'property':'isDefense', 'isBoolean':true},
 					{'key':'attack', 'property':'isAttack', 'isBoolean':true},
 					{'key':'combat', 'property':'isCombat', 'isBoolean':true},
-					{'key':'damaging', 'property':'isDamage', 'isBoolean':true},
+					{'key':'damaging', 'property':'isDamaging', 'isBoolean':true},
 				])
 			}
 			
@@ -803,9 +804,10 @@
 				window.addEventListener('hashchange', libraryHandleHashChanged)
 				
 				var items = parseSpells(spellbook)
+				//console.log(libraryItemExtents(items, 'filter'))
 				
+				registerFilters(spellbook, items)
 				populateLibrary(items)
-				registerFilters(spellbook)
 				applyParameters()
 				libraryHandleHashChanged()
 			}

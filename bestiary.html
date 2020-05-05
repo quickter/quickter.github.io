@@ -938,10 +938,10 @@
 				libraryFilterByKeyValuePatternsRegister([
 					{'key':'name', 'property':'key', 'transform':libraryKey},
 					{'key':'environment', 'property':'environments', 'transform':{'none':false, '!':false}},
-					{'key':'size', 'isNumber':true, 'transform':transformToSize},
+					{'key':'size', 'isNumber':true, 'transform':transformToSize, 'extent':'tiny...gargantuan'},
 					{'key':'ac', 'property':'armorclass', 'isNumber':true},
 					{'key':'hp', 'property':'hitpoints', 'isNumber':true},
-					{'key':'cr', 'property':'challenge', 'isNumber':true, 'transform':transformToChallenge},
+					{'key':'cr', 'property':'challenge', 'isNumber':true, 'transform':transformToChallenge, 'extent':'0...30'},
 					{'key':'xp', 'property':'experience', 'isNumber':true},
 					{'key':'type'},
 					{'key':'kind', 'property':'typeTags'},
@@ -981,6 +981,7 @@
 				window.addEventListener('hashchange', libraryHandleHashChanged)
 				
 				var items = parseMonsters(bestiary)
+				//console.log(libraryItemExtents(items, 'filter'))
 				
 				populateLibrary(items)
 				registerFilters(bestiary)

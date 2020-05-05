@@ -434,8 +434,8 @@ function libraryFilterByKeyValuePatternsRegister(array) {
 	var list = libraryElement(identifier)
 	if ( !list ) {
 		list = document.createElement('datalist')
-		list.id = identifier
-		list.style = 'display:none;'
+		list.setAttribute('id', identifier)
+		list.setAttribute('style', 'display:none;')
 		document.body.appendChild(list)
 		options.unshift('?text=')
 		options.push('?or')
@@ -516,6 +516,51 @@ function libraryFilterByKeyValuePatterns(value) {
 	}
 	
 	return rules.length > 0
+}
+
+function libraryItemExtents(items, property) {
+	var result = new Object()
+	var item, key, keys, value, entry
+	
+	for ( item of items ) {
+		if ( property && item[property] ) {
+			item = item[property]
+		}
+		
+		keys = Object.keys(item)
+		
+		for ( key of keys ) {
+			value = item[key]
+			
+			if ( !result[key] ) {
+				result[key] = []
+			}
+			
+			if ( typeof value === 'undefined' ) {
+				if ( result[key][0] !== null ) {
+					result[key].unshift(null)
+				}
+			} else if ( Array.isArray(value) ) {
+				if ( value.length > 0 ) {
+					for ( entry of value ) {
+						if ( result[key].indexOf(entry) < 0 ) {
+							result[key].push(entry)
+						}
+					}
+				} else {
+					if ( result[key][0] !== '' ) {
+						result[key].unshift('')
+					}
+				}
+			} else {
+				if ( result[key].indexOf(value) < 0 ) {
+					result[key].push(value)
+				}
+			}
+		}
+	}
+	
+	return result
 }
 
 function libraryFilterByKeys(keys) {
@@ -985,7 +1030,7 @@ function libraryRenderStyles(styles) {
 		element.innerHTML += separator + styles.join(separator)
 	} else {
 		element = document.createElement('style')
-		element.id = identifier
+		element.setAttribute('id', identifier)
 		element.innerHTML = styles.join(separator)
 		document.head.appendChild(element)
 	}

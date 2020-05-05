@@ -313,7 +313,7 @@
 				libraryFilterByKeyValuePatternsRegister([
 					{'key':'name', 'property':'key', 'transform':libraryKey},
 					{'key':'type'},
-					//{'key':'rarity', 'isNumber':true, 'transform':transformToRarity},
+					//{'key':'rarity', 'isNumber':true, 'transform':transformToRarity, 'extent':'common...artifact'},
 					{'key':'rarity', 'property':'rarityName'},
 					{'key':'tier'},
 					{'key':'attune', 'isBoolean':true},
@@ -327,7 +327,7 @@
 					{'key':'major', 'property':'isMajor', 'isBoolean':true},
 					{'key':'source', 'property':'sources', 'transform':libraryKey},
 					{'key':'page', 'isNumber':true},
-					{'key':'cost', 'isNumber':true, 'transform':transformToCost},
+					{'key':'cost', 'isNumber':true, 'transform':transformToCost, 'extent':'0...'},
 					{'key':'weight', 'isNumber':true},
 				])
 			}
@@ -336,7 +336,10 @@
 				libraryForm().addEventListener('submit', libraryHandleSubmit)
 				window.addEventListener('hashchange', libraryHandleHashChanged)
 				
-				populateLibrary(parseTreasureItems(trove))
+				var items = parseTreasureItems(trove)
+				//console.log(libraryItemExtents(items, 'filter'))
+				
+				populateLibrary(items)
 				registerFilters(trove)
 				applyParameters()
 				libraryHandleHashChanged()
