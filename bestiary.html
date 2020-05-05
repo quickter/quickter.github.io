@@ -865,18 +865,12 @@
 			}
 			
 			function applyParameters() {
-				var form = libraryForm()
 				var object = libraryInflateParameters(null, location.search, '?', '&')
+				var form = libraryForm()
 				var key, value
 				
-				value = object['f']
-				if ( value ) {
-					form.f.value = value
-					
-					setTimeout(filterPrimaryByName, 0, value)
-				}
-				
 				value = object['artwork']
+				
 				if ( value ) {
 					key = 'quickter.bestiary.artwork.host'
 					
@@ -886,259 +880,25 @@
 						window.localStorage.removeItem(key)
 					}
 				}
+				
+				value = object['f']
+				
+				if ( !value ) {
+					value = location.search || ''
+					value = value.replace(/&/g, '?')
+					value = decodeURIComponent(value)
+				}
+				
+				if ( value ) {
+					form.f.value = value
+					setTimeout(libraryFilterBySearch, 0, value)
+				}
 			}
 			
 			function populateLibrary(items) {
 				var table = libraryPopulateTable(items, renderItemTable)
 				
 				tableSort(table)
-			}
-			
-			function renderCheckboxFilters(label, filters, spanClasses, html, styles) {
-				var caption = libraryRenderCaptionForFilters(label, spanClasses || 'taper')
-				
-				html.push(caption + libraryRenderCheckboxFilters(filters, spanClasses, styles))
-			}
-			
-			function renderRadioFilters(label, filters, spanClasses, html, styles) {
-				var caption = libraryRenderCaptionForFilters(label, spanClasses)
-				
-				html.push(caption + libraryRenderRadioFilters(filters, spanClasses, styles))
-			}
-			
-			function renderTriviaFilters(label, filters, spanClasses, html, styles) {
-				var caption = libraryRenderCaptionForFilters(label, spanClasses)
-				
-				html.push(caption + libraryRenderTriviaFilters(filters, spanClasses, styles))
-			}
-			
-			function renderFiltersForRatings(items, html, styles) {
-				var filters = [
-					{'key':'challenge-unrated', 'style':'challenge-unrated', 'name':"&horbar;", 'title':'No Challenge Rating'},
-					{'key':'challenge-zero', 'style':'challenge-zero', 'name':"0&mdash;1", 'title':'Challenge Rating 0 to 1'},
-					{'key':'challenge-easy', 'style':'challenge-easy', 'name':"1&mdash;4", 'title':'Challenge Rating 2 to 4'},
-					{'key':'challenge-medium', 'style':'challenge-medium', 'name':"5&mdash;10", 'title':'Challenge Rating 5 to 10'},
-					{'key':'challenge-hard', 'style':'challenge-hard', 'name':"11&mdash;16", 'title':'Challenge Rating 11 to 16'},
-					{'key':'challenge-deadly', 'style':'challenge-deadly', 'name':"17+", 'title':'Challenge Rating 17+'},
-				]
-				
-				renderCheckboxFilters("Challenge Rating", filters, false, html, styles)
-			}
-			
-			function renderFiltersForEnvironments(items, html, styles) {
-				var item, name, list, counts = new Object()
-				var environments = []
-				var unspecified = 0
-				var key, filters = []
-				var concise
-				
-				for ( item of items ) {
-					if ( item.environments ) {
-						list = item.environments.split(", ")
-						
-						for ( name of list ) {
-							if ( !counts[name] ) {
-								environments.push(name)
-							}
-							counts[name] = 1 + (counts[name] || 0)
-						}
-					} else {
-						unspecified += 1
-					}
-				}
-				
-				environments.sort()
-				
-				for ( name of environments ) {
-					key = name.toLowerCase()
-					if ( name === "underwater" ) {
-						concise = "water"
-					} else {
-						concise = name.length > 6 ? name.slice(0, 5) + "." : name
-					}
-					
-					filters.push({'group':'environment', 'key':key, 'value':key, 'style':'environment-' + key, 'name':concise, 'title':name})
-				}
-				
-				if ( unspecified ) {
-					key = 'unspecified'
-					
-					filters.push({'group':'environment', 'key':key, 'value':key, 'style':'environment-none', 'name':"None", 'title':"No environments"})
-				}
-				
-				if ( filters.length > 0 ) {
-					renderRadioFilters("Environment", filters, 'taper', html, styles)
-				}
-			}
-			
-			function renderFiltersForTypes(items, html, styles) {
-				var item, name, list, counts = new Object()
-				var types = []
-				var key, filters = []
-				var concise
-				
-				for ( item of items ) {
-					if ( item.typename && types.indexOf(item.typename) < 0 ) {
-						types.push(item.typename)
-					}
-				}
-				
-				types.sort()
-				
-				for ( name of types ) {
-					key = name.toLowerCase()
-					concise = name.length > 6 ? name.slice(0, 4) + "." : name
-					
-					filters.push({'group':'category', 'key':key, 'value':key, 'style':'type-' + key, 'name':concise, 'title':name})
-				}
-				
-				if ( filters.length > 0 ) {
-					renderRadioFilters("Type", filters, 'taper', html, styles)
-				}
-			}
-			
-			function renderFiltersForTypeTags(items, html, styles) {
-				var item, name, list, counts = new Object()
-				var typeTags = []
-				var key, filters = []
-				
-				for ( item of items ) {
-					if ( item.typetags ) {
-						list = item.typetags.replace(/[()]/g, '').trim().split(", ")
-						
-						for ( name of list ) {
-							if ( !counts[name] ) {
-								typeTags.push(name)
-							}
-							counts[name] = 1 + (counts[name] || 0)
-						}
-					}
-				}
-				
-				typeTags.sort()
-				
-				for ( name of typeTags ) {
-					if ( counts[name] < 6 ) { continue }
-					
-					key = libraryKey(name)
-					
-					if ( key === 'human' ) { continue }
-					if ( key === 'anyrace' ) { name = "Class" }
-					
-					filters.push({'group':'subcategory', 'key':key, 'value':key, 'style':'typetag-' + key, 'name':name, 'title':name})
-				}
-				
-				if ( filters.length > 0 ) {
-					renderRadioFilters("Subtype", filters, 'taper', html, styles)
-				}
-			}
-			
-			function renderFiltersForLanguages(items, html, styles) {
-				var item, name, list, counts = new Object()
-				var languages = []
-				var noLanguages = 0
-				var key, filters = []
-				
-				for ( item of items ) {
-					if ( item.languageList ) {
-						list = item.languageList.split(", ")
-						
-						for ( name of list ) {
-							if ( !counts[name] ) {
-								languages.push(name)
-							}
-							counts[name] = 1 + (counts[name] || 0)
-						}
-					} else if ( item.noLanguages ) {
-						noLanguages += 1
-					}
-				}
-				
-				if ( noLanguages ) {
-					languages.push('none')
-				}
-				
-				languages.sort()
-				
-				for ( name of languages ) {
-					if ( counts[name] < 6 ) { continue }
-					
-					key = libraryKey(name)
-					
-					filters.push({'group':'language', 'key':key, 'value':key, 'style':'language-' + key, 'name':name, 'title':name})
-				}
-				
-				if ( filters.length > 0 ) {
-					renderRadioFilters("Language", filters, 'taper', html, styles)
-				}
-			}
-			
-			function renderFiltersForSources(items, html, styles) {
-				var key, source, filters = []
-				var item, counts = new Object()
-				
-				for ( item of items ) {
-					counts[item.source] = (counts[item.source] || 0) + 1
-				}
-				
-				for ( source of bestiary.sources ) {
-					if ( !counts[source.key] ) {
-						continue
-					}
-					
-					key = source.key.toLowerCase()
-					
-					filters.push({'key':'source-' + key, 'name':source.nickname || source.key, 'style':'source-' + key, 'title':source.name.replace(/'/g, "’")})
-				}
-				
-				renderCheckboxFilters("Source", filters, 'taper', html, styles)
-			}
-			
-			function renderFiltersForAnd(items, html, styles) {
-				var filters = [
-					{'key':'unaligned', 'style':'is-unaligned', 'name':"Unaligned", 'upper':'U', 'lower':'u'},
-					{'key':'lawful', 'style':'is-lawful', 'name':"Lawful", 'upper':'L', 'lower':'l'},
-					{'key':'chaotic', 'style':'is-chaotic', 'name':"Chaotic", 'upper':'C', 'lower':'c'},
-					{'key':'neutral', 'style':'is-neutral', 'name':"Neutral", 'upper':'N', 'lower':'n'},
-					{'key':'good', 'style':'is-good', 'name':"Good", 'upper':'G', 'lower':'g'},
-					{'key':'evil', 'style':'is-evil', 'name':"Evil", 'upper':'E', 'lower':'e'},
-					
-					{'key':'caster', 'style':'is-spellcaster', 'name':"Caster", 'upper':'S', 'lower':'s'},
-					{'key':'familiar', 'style':'is-familiar', 'name':"Familiar", 'upper':'F', 'lower':'f'},
-					{'key':'legendary', 'style':'is-legendary', 'name':"Legendary", 'upper':'Y', 'lower':'y'},
-//					{'key':'lair', 'style':'is-lair', 'name':"Lair", 'upper':'Z', 'lower':'z'},
-					{'key':'attacks', 'style':'has-multiple-attacks', 'name':"Multiattack", 'upper':'M', 'lower':'m'},
-					{'key':'regenerating', 'style':'has-regeneration', 'name':"Regenerate", 'upper':'R', 'lower':'r'},
-//					{'key':'immunity', 'style':'has-immunities', 'name':"Immune", 'upper':'I', 'lower':'i'},
-//					{'key':'resistant', 'style':'has-resistances', 'name':"Resistant", 'upper':'R', 'lower':'r'},
-					{'key':'vulnerable', 'style':'has-vulnerabilities', 'name':"Vulnerable", 'upper':'V', 'lower':'v'},
-// 					{'key':'flying', 'style':'has-fly', 'name':"Flies", 'upper':'F', 'lower':'f'},
-// 					{'key':'swimming', 'style':'has-swim', 'name':"Swims", 'upper':'W', 'lower':'w'},
-// 					{'key':'climbing', 'style':'has-climb', 'name':"Climbs", 'upper':'C', 'lower':'c'},
-// 					{'key':'burrowing', 'style':'has-burrow', 'name':"Burrows", 'upper':'B', 'lower':'b'},
-//					{'key':'blindsight', 'style':'has-blindsight', 'name':"Blind Sight", 'upper':'B', 'lower':'b'},
-//					{'key':'truesight', 'style':'has-truesight', 'name':"True Sight", 'upper':'U', 'lower':'u'},
-				]
-				
-				renderTriviaFilters("And", filters, 'taper', html, styles)
-			}
-			
-			function populateFilters(items) {
-				var styles = []
-				var html = []
-				
-				//renderFiltersForRatings(items, html, styles)
-				renderFiltersForEnvironments(items, html, styles)
-				//renderFiltersForTypes(items, html, styles)
-				//renderFiltersForTypeTags(items, html, styles)
-				//renderFiltersForLanguages(items, html, styles)
-				renderFiltersForSources(items, html, styles)
-				//renderFiltersForAnd(items, html, styles)
-				
-				libraryRenderStyles(styles)
-				libraryRenderHTML('beforebegin', 'library-table', html.join("\n\n"))
-				
-				libraryIsFilteringElement.isEnabled = true
 			}
 			
 			function transformToSize(value) {
@@ -1220,7 +980,6 @@
 				
 				populateLibrary(items)
 				registerFilters(bestiary)
-				populateFilters(items)
 				applyParameters()
 				libraryHandleHashChanged()
 			}
@@ -1260,6 +1019,7 @@
 				background:inherit; color:inherit;
 				border:none; not-border-bottom:2px solid #999;
 			}
+			div#controls > label { cursor:pointer; }
 			div#controls > button { display:none; }
 			div#controls > a { text-decoration:none; }
 			
@@ -1452,12 +1212,14 @@
 					<label for='library-reset' class='control'>↻</label>
 					<a id='share-selection' class='control' href='' title='Share selection'>⇧</a>
 				</div>
+				
 				<div class='filtering'>
 					<input type='checkbox' id='select-all' name='a' onclick='libraryChooseUnfiltered(checked ? 1 : -1)' title='Tap to select matches.' />
 					<label for='select-all'>&nbsp;</label>
 					<input type='search' id='library-filter' name='f' autocomplete='off' size='36' placeholder='Filter' oninput='libraryHandleSearch(event)'>
 					<span id='library-filter-count' class='action' onclick='libraryToggleUnfiltered()' title='Number of matches.  Tap to expand.'></span>
 				</div>
+				
 				<table id='library-table' class='emoji'><tr><td>Loading...</td></tr></table>
 			</form>
 		</div>

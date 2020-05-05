@@ -281,15 +281,21 @@
 			}
 			
 			function applyParameters() {
-				var form = libraryForm()
 				var object = libraryInflateParameters(null, location.search, '?', '&')
+				var form = libraryForm()
 				var key, value
 				
 				value = object['f']
+				
+				if ( !value ) {
+					value = location.search || ''
+					value = value.replace(/&/g, '?')
+					value = decodeURIComponent(value)
+				}
+				
 				if ( value ) {
 					form.f.value = value
-					
-					setTimeout(filterPrimaryByName, 0, value)
+					setTimeout(libraryFilterBySearch, 0, value)
 				}
 			}
 			
@@ -359,8 +365,21 @@
 			html { background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%); }
 			body { position:relative; box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
 			
-			div#controls { position:absolute; right:2em; top:1.5em; }
-			a#share-selection { font-size:150%; color:inherit; text-decoration:none; border-bottom:2px solid #999; }
+			div#controls {
+				position:absolute; right:2em; top:1.5em;
+				background:#F0F0F8; border-radius:1em; padding:0.25em 0.25em;
+			}
+			div#controls > .control:not(:last-child) { border-right:1px solid #CCC; }
+			div#controls > .control {
+				display:inline-block; height:1.75em; width:1em;
+				padding:0 0.75em; margin:0;
+				font-size:150%; text-align:center;
+				background:inherit; color:inherit;
+				border:none; not-border-bottom:2px solid #999;
+			}
+			div#controls > label { cursor:pointer; }
+			div#controls > button { display:none; }
+			div#controls > a { text-decoration:none; }
 			
 			input#library-filter { font-size:100%; max-width:98%; }
 			span#library-filter-count { opacity:0.5; font-size:60%; }
@@ -489,14 +508,18 @@
 		<div id='library-content-list'>
 			<form id='library-form'>
 				<div id='controls'>
-					<a id='share-selection' href='' title='Share selection'>⇧</a>
+					<button type='reset' id='library-reset' title='Show all spells'></button>
+					<label for='library-reset' class='control'>↻</label>
+					<a id='share-selection' class='control' href='' title='Share selection'>⇧</a>
 				</div>
+				
 				<div class='filtering'>
 					<input type='checkbox' id='select-all' name='a' onclick='libraryChooseUnfiltered(checked ? 1 : -1)' title='Tap to select matches.' />
 					<label for='select-all'>&nbsp;</label>
 					<input type='search' id='library-filter' name='f' autocomplete='off' size='36' placeholder='Filter' oninput='libraryHandleSearch(event)'>
 					<span id='library-filter-count' class='action' onclick='libraryToggleUnfiltered()' title='Number of matches.  Tap to expand.'></span>
 				</div>
+				
 				<table id='library-table'><tr><td>Loading...</td></tr></table>
 			</form>
 		</div>

@@ -455,7 +455,7 @@ function libraryFilterByKeyValuePatterns(value) {
 	var filters = table.libraryItemFilters
 	if ( !filters ) { return false }
 	
-	var matches = value.split(/\s*\?(\w+)[:=^]?\s*/g)
+	var matches = value.split(/\s*[?](\w+)[:=^]?\s*/g)
 	if ( matches.length < 2 || matches[0] !== '' ) { return false }
 	
 	var rules = []
@@ -469,8 +469,16 @@ function libraryFilterByKeyValuePatterns(value) {
 		pattern = matches[index + 1]
 		key = key.trim().toLowerCase()
 		
-		if ( key === 'or' ) { all = true; continue }
-		if ( key === 'shuffle' ) { tableSort(table.rows[0].cells[0], key); continue }
+		if ( key === 'or' ) {
+			all = true
+			continue
+		}
+		
+		if ( key === 'shuffle' && typeof window['tableSort'] === 'function' ) {
+			tableSort(table.rows[0].cells[0], key)
+			continue
+		}
+		
 		if ( pattern === '' ) { pattern = '…' }
 		
 		if ( key === 'text' && text ) {
@@ -787,9 +795,10 @@ function libraryResolveReferences(text, object) {
 		case "race": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
 		case "filter":
 			switch ( part[1] ) {
-			case 'spells': return "<a class='entries spell italic' href='spellbook.html?" + part.slice(2).join('&') + "'>" + part[0] + "</a>"
-			case 'bestiary': return "<a class='entries spell italic' href='bestiary.html?" + part.slice(2).join('&').replace('tag=', 'kind=').replace('challenge rating=', 'cr=').replace(/miscellaneous=!([^&]+)/, '$1=0').replace(/miscellaneous=([^&]+)/i, '$1=1').replace(/=\[&?([^\];]+);&?([^\]]+)\]/, '=$1...$2') + "'>" + part[0] + "</a>"
-			default: return "<span class='entries italic filter " + (part[1] || '') + "'>" + part[0] + "</span>"
+			case 'items': return "<a class='entries filter item italic' href='trove.html?" + part.slice(2).join('&') + "'>" + part[0] + "</a>"
+			case 'spells': return "<a class='entries filter spell italic' href='spellbook.html?" + part.slice(2).join('&') + "'>" + part[0] + "</a>"
+			case 'bestiary': return "<a class='entries filter creature italic' href='bestiary.html?" + part.slice(2).join('&').replace('tag=', 'kind=').replace('challenge rating=', 'cr=').replace(/miscellaneous=!([^&]+)/, '$1=0').replace(/miscellaneous=([^&]+)/i, '$1=1').replace(/=\[&?([^\];]+);&?([^\]]+)\]/, '=$1...$2') + "'>" + part[0] + "</a>"
+			default: return "<span class='entries filter italic " + (part[1] || '') + "'>" + part[0] + "</span>"
 			}
 		default: return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
 		}
@@ -935,7 +944,7 @@ function libraryPopulateTable(items, renderItemTable) {
 		renderableItem[item.key] = item
 		
 		if ( item.searchableText ) {
-			searchableText[item.key] = item.searchableText.replace(/<[^<>]+>/g, ' ').replace(/\s+/g, ' ')
+			searchableText[item.key] = item.searchableText.replace(/<[^<>]+>|&\w+;/g, ' ').replace(/\s+/g, ' ')
 			delete item.searchableText
 		}
 		
@@ -950,7 +959,14 @@ function libraryPopulateTable(items, renderItemTable) {
 	table.libraryItemFilters = filterableItem
 	table.innerHTML = html
 	
+	libraryForm().addEventListener('reset', libraryFormReset)
+	
 	return table
+}
+
+function libraryFormReset() {
+	libraryFilterByText(false)
+	libraryToggleUnfiltered(-1)
 }
 
 function libraryForm() {

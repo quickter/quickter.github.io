@@ -615,76 +615,23 @@
 				return header + libraryRenderTemplateItemArray(rowTemplate, list).join("")
 			}
 			
-// 			function deflateParameters() {
-// 				var separator = '.'
-// 				var filters = []
-// 				var form = _element('spells-form')
-// 				
-// 				var levels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].filter(v => _element('filter-level-' + v).checked)
-// 				if ( levels.length > 0 && levels.length < 10 ) { filters.push('l=' + levels.join('')) }
-// 				
-// 				var crass = form.crass.value
-// 				if ( crass && crass != 'any' ) { filters.push('c=' + crass) }
-// 				
-// 				var schools = ['a', 'c', 'd', 'e', 'v', 'i', 'n', 't'].filter(v => _element('filter-school-' + v).checked)
-// 				if ( schools.length > 0 && schools.length < 8 ) { filters.push('s=' + schools.join('')) }
-// 				
-// 				var times = ['r', 'b', 'a', 'm', 'h'].filter(v => _element('filter-casting-' + v).checked)
-// 				if ( times.length > 0 && times.length < 5 ) { filters.push('t=' + times.join('')) }
-// 				
-// 				var books = ['ph', 'xg', 'ee', 'sc', 'rt'].filter(v => _element('filter-book-' + v).checked)
-// 				if ( books.length > 0 && books.length < 5 ) { filters.push('b=' + books.join('.')) }
-// 				
-// 				var and = ['ritual', 'concentration', 'defense', 'attack', 'save', 'damage', 'higher', 'permanent']
-// 				var flags = and.map(v => form['filter-' + v].value).join('').replace(/-/g, '')
-// 				if ( flags != '' ) { filters.push('a=' + flags) }
-// 				
-// 				var spells = form.everySpell.filter(key => form[key].checked).sort()
-// 				if ( spells.length > 0 ) { filters.push('p=' + spells.join('.')) }
-// 				
-// 				return filters
-// 			}
-			
-			function applyFilters(form, object) {
-				var form = libraryForm()
-				var key, value, values, v, V
-				
-// 				value = object['l'] || object['level'] || ''
-// 				for ( v = 0 ; v < 10 ; ++v ) { form['filter-level-' + v].checked = !(value && value.indexOf(v) < 0) }
-				
-				value = (object['c'] || object['class'] || 'any').toLowerCase()
-				form['crass'].value = value
-				
-// 				value = (object['s'] || object['school'] || '').toLowerCase()
-// 				values = ['a', 'c', 'd', 'e', 'v', 'i', 'n', 't']
-// 				for ( v of values ) { form['filter-school-' + v].checked = !(value && value.indexOf(v) < 0) }
-				
-// 				value = (object['t'] || object['time'] || '').toLowerCase()
-// 				values = ['r', 'b', 'a', 'm', 'h']
-// 				for ( v of values ) { form['filter-casting-' + v].checked = !(value && value.indexOf(v) < 0) }
-				
-				value = (object['b'] || object['source'] || '').toLowerCase()
-				values = ['phb', 'xge', 'egw', 'llk', 'scag']
-				for ( v of values ) { form['filter-book-' + v].checked = !(value.length > 0 && value.indexOf(v) < 0) }
-				
-// 				value = object['a'] || ''
-// 				values = ['r:ritual', 'c:concentration', 'f:defense', 'a:attack', 's:save', 'd:damage', 'x:combat', 'h:higher', 'p:permanent']
-// 				for ( key of values ) { v = key.charAt(0); V = v.toUpperCase(); form['filter-' + key.slice(2)].value = value.indexOf(v) < 0 ? value.indexOf(V) < 0 ? '-' : V : v }
-			}
-			
 			function applyParameters() {
-				var form = libraryForm()
 				var object = libraryInflateParameters(null, location.search, '?', '&')
+				var form = libraryForm()
 				var key, value
 				
 				value = object['f']
-				if ( value ) {
-					form.f.value = value
-					
-					setTimeout(filterPrimaryByName, 0, value)
+				
+				if ( !value ) {
+					value = location.search || ''
+					value = value.replace(/&/g, '?')
+					value = decodeURIComponent(value)
 				}
 				
-				applyFilters(form, object)
+				if ( value ) {
+					form.f.value = value
+					setTimeout(libraryFilterBySearch, 0, value)
+				}
 			}
 			
 			function handleToggle(key) {
@@ -695,141 +642,6 @@
 				var table = libraryPopulateTable(items, renderItemTable)
 				
 				tableSort(table)
-			}
-			
-			function renderCheckboxFilters(label, filters, spanClasses, html, styles) {
-				var caption = libraryRenderCaptionForFilters(label, spanClasses)
-				
-				html.push(caption + libraryRenderCheckboxFilters(filters, spanClasses, styles))
-			}
-			
-			function renderRadioFilters(label, filters, spanClasses, html, styles) {
-				var caption = libraryRenderCaptionForFilters(label, spanClasses)
-				
-				html.push(caption + libraryRenderRadioFilters(filters, spanClasses, styles))
-			}
-			
-			function renderTriviaFilters(label, filters, spanClasses, html, styles) {
-				var caption = libraryRenderCaptionForFilters(label, spanClasses)
-				
-				html.push(caption + libraryRenderTriviaFilters(filters, spanClasses, styles))
-			}
-			
-			function renderFiltersForLevels(items, html, styles) {
-				var level, filters = []
-				
-				for ( level = 0 ; level < 10 ; ++level ) {
-					filters.push({'key':'level-' + level, 'name': level, 'style':'level-' + level, 'title':"Level " + level})
-				}
-				
-				renderCheckboxFilters("Level", filters, 'taper', html, styles)
-			}
-			
-			function renderFiltersForClasses(items, html, styles) {
-				var spell, name, list, names = [], counts = new Object()
-				var key, filters = []
-				
-				for ( spell of items ) {
-					list = spell.classnames.split(", ")
-					
-					for ( name of list ) {
-						if ( name.indexOf(":") < 0 ) {
-							if ( !counts[name] ) {
-								names.push(name)
-								counts[name] = 1
-							}
-						}
-					}
-				}
-				
-				names.sort()
-				
-				for ( name of names ) {
-					key = name.toLowerCase()
-					
-					filters.push({'group':'crass', 'key':key, 'value':key, 'style':'class-' + key, 'name':name, 'title':name})
-				}
-				
-				renderRadioFilters("Class", filters, 'taper', html, styles)
-			}
-			
-			function renderFiltersForSchools(items, html, styles) {
-				var key, name, school, filters = []
-				
-				for ( school of spellbook.schools ) {
-					key = school.key.toLowerCase()
-					name = school.name
-					
-					filters.push({'key':'school-' + key, 'name': name, 'style':'school-' + name.toLowerCase(), 'title':name})
-				}
-				
-				renderCheckboxFilters("School", filters, 'taper', html, styles)
-			}
-			
-			function renderFiltersForCastingTimes(items, html, styles) {
-				var filters = [
-					{'key':'casting-r', 'name':'Reaction', 'style':'cast-reaction', 'title':'Reaction'},
-					{'key':'casting-b', 'name':'Bonus', 'style':'cast-bonus', 'title':'Bonus Action'},
-					{'key':'casting-a', 'name':'Action', 'style':'cast-action', 'title':'Action'},
-					{'key':'casting-m', 'name':'Minutes', 'style':'cast-minutes', 'title':'Minutes'},
-					{'key':'casting-h', 'name':'Hours', 'style':'cast-hours', 'title':'Hours'}
-				]
-				
-				renderCheckboxFilters("Casting Time", filters, 'taper', html, styles)
-			}
-			
-			function renderFiltersForSources(items, html, styles) {
-				var key, source, filters = []
-				var spell, counts = new Object()
-				
-				for ( spell of items ) {
-					counts[spell.source] = (counts[spell.source] || 0) + 1
-				}
-				
-				for ( source of spellbook.sources ) {
-					if ( !counts[source.key] ) {
-						continue
-					}
-					
-					key = source.key.toLowerCase()
-					
-					filters.push({'key':'book-' + key, 'name': source.nickname || source.key, 'style':'source-' + key, 'title':source.name.replace(/'/g, "’")})
-				}
-				
-				renderCheckboxFilters("Source", filters, 'taper', html, styles)
-			}
-			
-			function renderFiltersForAnd(items, html, styles) {
-				var filters = [
-					{'key':'ritual', 'style':'is-ritual', 'name':"Ritual", 'upper':'R', 'lower':'r'},
-					{'key':'concentration', 'style':'is-concentration', 'name':"Concentration", 'upper':'C', 'lower':'c'},
-					{'key':'defense', 'style':'is-defense', 'name':"Defense", 'upper':'F', 'lower':'f'},
-					{'key':'attack', 'style':'is-attack', 'name':"Attack", 'upper':'A', 'lower':'a'},
-					{'key':'save', 'style':'has-save', 'name':"Save", 'upper':'S', 'lower':'s'},
-					{'key':'damage', 'style':'is-damage', 'name':"Damage", 'upper':'D', 'lower':'d'},
-					{'key':'combat', 'style':'is-combat', 'name':"Combat", 'upper':'X', 'lower':'x'},
-					{'key':'higher', 'style':'has-higher-level', 'name':"Higher", 'upper':'H', 'lower':'h'},
-					{'key':'permanent', 'style':'is-permanent', 'name':"Permanent", 'upper':'P', 'lower':'p'},
-				]
-				
-				renderTriviaFilters("And", filters, 'taper', html, styles)
-			}
-			
-			function populateFilters(items) {
-				var styles = []
-				var html = []
-				
-				//renderFiltersForLevels(items, html, styles)
-				renderFiltersForClasses(items, html, styles)
-				//renderFiltersForSchools(items, html, styles)
-				//renderFiltersForCastingTimes(items, html, styles)
-				renderFiltersForSources(items, html, styles)
-				//renderFiltersForAnd(items, html, styles)
-				
-				libraryRenderStyles(styles)
-				libraryRenderHTML('beforebegin', 'library-table', html.join("\n\n"))
-				
-				libraryIsFilteringElement.isEnabled = true
 			}
 			
 			function transformToTime(value, position) {
@@ -983,7 +795,6 @@
 				
 				populateLibrary(items)
 				registerFilters(spellbook)
-				populateFilters(items)
 				applyParameters()
 				libraryHandleHashChanged()
 			}
@@ -1023,6 +834,7 @@
 				background:inherit; color:inherit;
 				border:none; not-border-bottom:2px solid #999;
 			}
+			div#controls > label { cursor:pointer; }
 			div#controls > button { display:none; }
 			div#controls > a { text-decoration:none; }
 			
