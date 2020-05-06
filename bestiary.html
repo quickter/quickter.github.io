@@ -726,6 +726,11 @@
 				if ( filter.environments.length === 0 ) { styles.push('environment-none') }
 				for ( value of filter.environments ) { styles.push('environment-' + value) }
 				
+				filter.miscellaneous = []
+				if ( filter.isSwarm ) { filter.miscellaneous.push('swarm') }
+				if ( filter.isFamiliar ) { filter.miscellaneous.push('familiar') }
+				if ( filter.isLegendary ) { filter.miscellaneous.push('legendary') }
+				
 				render.styles = styles.join(' ')
 				render.description = libraryResolveReferences(render.description, master)
 				render.filter = filter
@@ -967,6 +972,7 @@
 					{'key':'variant', 'property':'hasVariants', 'isBoolean':true},
 					{'key':'reaction', 'property':'hasReactions', 'isBoolean':true},
 					{'key':'caster', 'property':'spellcastingAbility'},
+					{'key':'miscellaneous', 'isHidden':true},
 					{'key':'strength', 'aliases':['str'], 'property':'strength', 'isNumber':true},
 					{'key':'dexterity', 'aliases':['dex'], 'property':'dexterity', 'isNumber':true},
 					{'key':'constitution', 'aliases':['con'], 'property':'constitution', 'isNumber':true},

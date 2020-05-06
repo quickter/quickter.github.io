@@ -844,7 +844,7 @@ function libraryResolveReferences(text, object) {
 			switch ( part[1] ) {
 			case 'items': return "<a class='entries filter item italic' href='trove.html?" + part.slice(2).join('&') + "'>" + part[0] + "</a>"
 			case 'spells': return "<a class='entries filter spell italic' href='spellbook.html?" + part.slice(2).join('&') + "'>" + part[0] + "</a>"
-			case 'bestiary': return "<a class='entries filter creature italic' href='bestiary.html?" + part.slice(2).join('&').replace('challenge rating=', 'cr=').replace(/miscellaneous=!([^&]+)/, '$1=0').replace(/miscellaneous=([^&]+)/i, '$1=1').replace(/=\[&?([^\];]+);&?([^\]]+)\]/, '=$1...$2') + "'>" + part[0] + "</a>"
+			case 'bestiary': return "<a class='entries filter creature italic' href='bestiary.html?" + part.slice(2).join('&').replace('challenge rating=', 'cr=').replace(/=\[&?([^\];]+);&?([^\]]+)\]/, '=$1...$2') + "'>" + part[0] + "</a>"
 			default: return "<span class='entries filter italic " + (part[1] || '') + "'>" + part[0] + "</span>"
 			}
 		default: return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
