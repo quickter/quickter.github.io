@@ -311,23 +311,23 @@
 			
 			function registerFilters(trove) {
 				libraryFilterByKeyValuePatternsRegister([
-					{'key':'name', 'property':'key', 'transform':libraryKey},
-					{'key':'type'},
+					{'key':'name', 'aliases':['n', 'nm'], 'property':'key', 'transform':libraryKey},
+					{'key':'type', 'aliases':['t']},
 					//{'key':'rarity', 'isNumber':true, 'transform':transformToRarity, 'extent':'common...artifact'},
-					{'key':'rarity', 'property':'rarityName'},
+					{'key':'rarity', 'aliases':['r'], 'property':'rarityName'},
 					{'key':'tier'},
-					{'key':'attune', 'isBoolean':true},
-					{'key':'save', 'property':'bonusToSaves', 'isNumber':true},
+					{'key':'attune', 'aliases':['a'], 'isBoolean':true},
+					{'key':'save', 'aliases':['s', 'sv'], 'property':'bonusToSaves', 'isNumber':true},
 					{'key':'ac', 'property':'bonusToArmor', 'isNumber':true},
-					{'key':'weapon', 'property':'bonusToWeapon', 'isNumber':true},
+					{'key':'weapon', 'aliases':['bonus'], 'property':'bonusToWeapon', 'isNumber':true},
 					{'key':'hit', 'property':'bonusToSpells', 'isNumber':true},
 					{'key':'charges', 'isNumber':true},
 					{'key':'spell', 'property':'spells', 'transform':libraryKey},
-					{'key':'hoard', 'property':'hoards'},
+					{'key':'hoard', 'aliases':['table'], 'property':'hoards'},
 					{'key':'major', 'property':'isMajor', 'isBoolean':true},
-					{'key':'source', 'property':'sources', 'transform':libraryKey},
-					{'key':'page', 'isNumber':true},
-					{'key':'cost', 'isNumber':true, 'transform':transformToCost, 'extent':'0...'},
+					{'key':'source', 'aliases':['src'], 'property':'sources', 'transform':libraryKey},
+					{'key':'page', 'aliases':['pg'], 'isNumber':true},
+					{'key':'cost', 'aliases':['gp'], 'isNumber':true, 'transform':transformToCost, 'extent':'0...'},
 					{'key':'weight', 'isNumber':true},
 				])
 			}

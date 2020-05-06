@@ -46,53 +46,6 @@ function libraryIsFilteringElement(element) {
 	return getComputedStyle(element).getPropertyValue('display') === 'none'
 }
 
-function libraryAssignClassToElementsBySelectorRules(className, selectorRules, all) {
-	var rule, rules, index = 0
-	var element, elements, length
-	var assign, ascend, count
-	
-	for ( rule of selectorRules ) {
-		if ( typeof rule.selector !== 'string' || typeof rule.rule !== 'function' ) { continue }
-		
-		elements = document.querySelectorAll(rule.selector)
-		length = elements && elements.length
-		
-		if ( !length ) { continue }
-		if ( index < length ) { rules = []; index = length }
-		
-		rules.push({'elements':elements, 'ascend':rule.ascend || 0, 'rule':rule.rule})
-	}
-	
-	count = index
-	
-	while ( index --> 0 ) {
-		assign = all ? true : false
-		ascend = 0
-		
-		for ( rule of rules ) {
-			element = rule.elements[index]
-			ascend = rule.ascend
-			
-			if ( !rule.rule(element) !== !all ) {
-				assign = !all
-				break
-			}
-		}
-		
-		while ( ascend --> 0 ) {
-			element = element.parentElement
-		}
-		
-		if ( libraryAssignClass(element, className, assign ? 1 : -1) > 0 || assign ) {
-			count -= 1
-		} else if ( libraryIsFilteringElement(element) ) {
-			count -= 1
-		}
-	}
-	
-	return count
-}
-
 function libraryAssignClassToElements(className, selector, ascend, rule) {
 	var element, elements = document.querySelectorAll(selector)
 	var value, climb, index = elements.length
@@ -203,24 +156,41 @@ function libraryFilterByUnopened() {
 
 function libraryFilterByText(pattern) {
 	var className = 'filtered'
-	var selector = 'table#library-table tr.library > td.name'
 	var table = libraryElement('library-table')
 	var text = table.libraryItemText
-	var count
+	var key, index, count
+	var row, rows = table.rows
+	var assign, filtered = 0
 	
 	if ( !pattern ) {
-		count = libraryAssignClassToElements(className, selector, 1, function (e) { return -1 })
-		count = 0
+		pattern = false
 	} else if ( pattern.search(/[[?*.|^${}\\]/) < 0 ) {
 		pattern = pattern.toLowerCase()
-		count = libraryAssignClassToElements(className, selector, 1, function (e) { return text[e.id.slice(5)].toLowerCase().indexOf(pattern) < 0 ? 1 : -1 })
 	} else {
 		try { pattern = new RegExp(pattern, 'ius') }
 		catch (error) { return }
-		
-		count = libraryAssignClassToElements(className, selector, 1, function (e) { return text[e.id.slice(5)].search(pattern) < 0 ? 1 : -1 })
 	}
 	
+	for ( index = 1, count = rows.length ; index < count ; ++index ) {
+		row = rows[index]
+		key = row.id.slice(5)
+		
+		if ( pattern === false ) {
+			assign = pattern
+		} else if ( typeof pattern === 'string' ) {
+			assign = text[key].toLowerCase().indexOf(pattern) < 0
+		} else {
+			assign = text[key].search(pattern) < 0
+		}
+		
+		libraryAssignClass(row, className, assign ? 1 : -1)
+		
+		if ( assign || libraryIsFilteringElement(row) ) {
+			filtered += 1
+		}
+	}
+	
+	count -= filtered + 1
 	libraryFilterWasChanged(count)
 	
 	if ( count > 0 && count < 4 ) {
@@ -235,11 +205,10 @@ function libraryFilterByKeyValuePatternsMatchNumber(element, patterns) {
 	
 	if ( typeof element === 'number' ) {
 		value = element
-	} else if ( typeof element === 'boolean' || typeof element === 'string' ) {
+	} else if ( typeof element === 'boolean' ) {
 		value = +element
 	} else {
-		text = element.getAttribute('data-sort-key') || element.textContent
-		value = parseFloat(text)
+		value = parseFloat(element)
 	}
 	
 	if ( isNaN(value) ) {
@@ -282,8 +251,8 @@ function libraryFilterByKeyValuePatternsMatchText(element, patterns) {
 		array = [element]
 	} else if ( Array.isArray(element) ) {
 		array = element
-	} else if ( element ) {
-		array = [element.textContent || element.getAttribute('title') || '']
+	} else {
+		array = ['' + element]
 	}
 	
 	if ( patterns.length === 1 && patterns[0] === false ) {
@@ -321,22 +290,23 @@ function libraryFilterByKeyValuePatternsMatchText(element, patterns) {
 function libraryFilterByKeyValuePatternsMatch(entry, filter, patterns, element) {
 	var key = entry.property || entry.key
 	var value = filter && filter[key]
+	var matches = false
 	
 	if ( entry.isBoolean && !value ) {
 		value = false
 	}
 	
 	if ( !key || typeof value === 'undefined' ) {
-		return false
+		matches = false
 	} else if ( typeof entry.match === 'function' ) {
-		return entry.match(filter, patterns)
+		matches = entry.match(filter, patterns)
 	} else if ( entry.isBoolean || entry.isNumber || typeof value === 'number' || typeof value === 'boolean' ) {
-		return libraryFilterByKeyValuePatternsMatchNumber(value, patterns)
+		matches = libraryFilterByKeyValuePatternsMatchNumber(value, patterns)
 	} else if ( Array.isArray(value) || typeof value === 'string' ) {
-		return libraryFilterByKeyValuePatternsMatchText(value, patterns)
+		matches = libraryFilterByKeyValuePatternsMatchText(value, patterns)
 	}
 	
-	return false
+	return matches
 }
 
 function libraryFilterByKeyValuePatternsParseTerm(term, transform) {
@@ -387,20 +357,6 @@ function libraryFilterByKeyValuePatternsParseTerm(term, transform) {
 	return array
 }
 
-function libraryFilterByKeyValuePatternsRuleForText(text, pattern) {
-	if ( typeof pattern === 'string' ) {
-		return function (e) { return text[e.id.slice(5)].toLowerCase().indexOf(pattern) < 0 }
-	} else {
-		return function (e) { return text[e.id.slice(5)].search(pattern) < 0 }
-	}
-}
-
-function libraryFilterByKeyValuePatternsRuleForEntry(entry, filters, term) {
-	var patterns = libraryFilterByKeyValuePatternsParseTerm(term, entry.transform)
-	
-	return function (e) { return !libraryFilterByKeyValuePatternsMatch(entry, filters[e.id.slice(5)], patterns, e) }
-}
-
 function libraryFilterByKeyValuePatternsRegister(array) {
 	var registry = libraryFilterByKeyValuePatterns.registry
 	if ( !registry ) {
@@ -409,10 +365,16 @@ function libraryFilterByKeyValuePatternsRegister(array) {
 		libraryFilterByKeyValuePatterns.registry = registry
 	}
 	
-	var entry, options = []
+	var entry, alias, options = []
 	for ( entry of array ) {
 		if ( entry.key ) {
 			registry[entry.key] = entry
+			
+			if ( Array.isArray(entry.aliases) ) {
+				for ( alias of entry.aliases ) {
+					registry[alias] = entry
+				}
+			}
 			
 			if ( !entry.isHidden ) {
 				options.push('?' + entry.key + (entry.example ? ' ' + entry.example : entry.isBoolean ? '' : '='))
@@ -458,13 +420,15 @@ function libraryFilterByKeyValuePatterns(value) {
 	var matches = value.split(/\s*[?](\w+)[:=^]?\s*/g)
 	if ( matches.length < 2 || matches[0] !== '' ) { return false }
 	
-	var rules = []
-	var index, key, pattern
-	var selector, rule, ascend
-	var count
+	var patterns = []
+	var index, key, pattern, negate
+	var count = matches.length
 	var all = false
 	
-	for ( index = 1 ; index < matches.length ; index += 2 ) {
+	var row, rows = table.rows
+	var assign, mismatch, filtered = 0
+	
+	for ( index = 1 ; index < count ; index += 2 ) {
 		key = matches[index]
 		pattern = matches[index + 1]
 		key = key.trim().toLowerCase()
@@ -475,47 +439,85 @@ function libraryFilterByKeyValuePatterns(value) {
 		}
 		
 		if ( key === 'shuffle' && typeof window['tableSort'] === 'function' ) {
-			tableSort(table.rows[0].cells[0], key)
+			tableSort(table.rows[0].cells[0], 'shuffle')
 			continue
 		}
 		
-		if ( pattern === '' ) { pattern = '…' }
+		negate = pattern.charAt(0) === '!'
+		
+		if ( negate ) {
+			pattern = pattern.slice(1)
+		}
 		
 		if ( key === 'text' && text ) {
-			selector = 'table#library-table tr.library > td.name'
-			ascend = 1
-			
-			if ( pattern.search(/[[?*.|^${}\\]/) < 0 ) {
+			if ( !negate && pattern.search(/[[?*.|^${}\\]/) < 0 ) {
 				pattern = pattern.toLowerCase()
 			} else {
 				try { pattern = new RegExp(pattern, 'ius') }
 				catch (error) { continue }
+				
+				pattern.negate = negate
 			}
 			
-			rule = libraryFilterByKeyValuePatternsRuleForText(text, pattern)
+			patterns.push(pattern)
 		} else if ( registry[key] ) {
-			selector = 'table#library-table tr.library:not(.header)'
-			ascend = 0
+			if ( pattern === '' ) {
+				pattern = '…'
+			}
 			
-			rule = libraryFilterByKeyValuePatternsRuleForEntry(registry[key], filters, pattern)
+			patterns.push({
+				'entry':registry[key],
+				'negate':negate,
+				'patterns':libraryFilterByKeyValuePatternsParseTerm(pattern, registry[key].transform)
+			})
 		} else {
 			continue
 		}
-		
-		rules.push({'selector':selector, 'ascend':ascend, 'rule':rule})
 	}
 	
-	if ( rules.length > 0 ) {
-		count = libraryAssignClassToElementsBySelectorRules(className, rules, all)
+	if ( !patterns.length ) {
+		return false
+	}
+	
+	for ( index = 1, count = rows.length ; index < count ; ++index ) {
+		assign = all
+		row = rows[index]
+		key = row.id.slice(5)
 		
-		libraryFilterWasChanged(count)
+		for ( pattern of patterns ) {
+			if ( pattern.patterns ) {
+				mismatch = !libraryFilterByKeyValuePatternsMatch(pattern.entry, filters[key], pattern.patterns, row)
+			} else if ( typeof pattern === 'string' ) {
+				mismatch = text[key].toLowerCase().indexOf(pattern) < 0
+			} else {
+				mismatch = text[key].search(pattern) < 0
+			}
+			
+			if ( pattern.negate ) {
+				mismatch = !mismatch
+			}
+			
+			if ( !mismatch === all ) {
+				assign = !all
+				break
+			}
+		}
 		
-		if ( count > 0 && count < 4 ) {
-			libraryToggleUnfiltered(1)
+		libraryAssignClass(row, className, assign ? 1 : -1)
+		
+		if ( assign || libraryIsFilteringElement(row) ) {
+			filtered += 1
 		}
 	}
 	
-	return rules.length > 0
+	count -= filtered + 1
+	libraryFilterWasChanged(count)
+	
+	if ( count > 0 && count < 4 ) {
+		libraryToggleUnfiltered(1)
+	}
+	
+	return patterns.length > 0
 }
 
 function libraryItemExtents(items, property) {
@@ -842,7 +844,7 @@ function libraryResolveReferences(text, object) {
 			switch ( part[1] ) {
 			case 'items': return "<a class='entries filter item italic' href='trove.html?" + part.slice(2).join('&') + "'>" + part[0] + "</a>"
 			case 'spells': return "<a class='entries filter spell italic' href='spellbook.html?" + part.slice(2).join('&') + "'>" + part[0] + "</a>"
-			case 'bestiary': return "<a class='entries filter creature italic' href='bestiary.html?" + part.slice(2).join('&').replace('tag=', 'kind=').replace('challenge rating=', 'cr=').replace(/miscellaneous=!([^&]+)/, '$1=0').replace(/miscellaneous=([^&]+)/i, '$1=1').replace(/=\[&?([^\];]+);&?([^\]]+)\]/, '=$1...$2') + "'>" + part[0] + "</a>"
+			case 'bestiary': return "<a class='entries filter creature italic' href='bestiary.html?" + part.slice(2).join('&').replace('challenge rating=', 'cr=').replace(/miscellaneous=!([^&]+)/, '$1=0').replace(/miscellaneous=([^&]+)/i, '$1=1').replace(/=\[&?([^\];]+);&?([^\]]+)\]/, '=$1...$2') + "'>" + part[0] + "</a>"
 			default: return "<span class='entries filter italic " + (part[1] || '') + "'>" + part[0] + "</span>"
 			}
 		default: return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
