@@ -303,6 +303,34 @@
 				return html
 			}
 			
+			function characterLevelsFromString(value) {
+				var result = []
+				var multipliers = "*x×✕"
+				var matches = value.split(/(\D*)/g)
+				var index, count = matches.length
+				var level, times
+				
+				for ( index = 0 ; index < count ; index += 2 ) {
+					level = +matches[index]
+					times = result.length > 0 ? matches[index - 1].trim() : ''
+					
+					if ( !level ) {
+						continue
+					} else if ( !times || multipliers.indexOf(times) < 0 ) {
+						result.push(level)
+					} else {
+						times = level
+						level = result[result.length - 1]
+						
+						while ( times --> 1 ) {
+							result.push(level)
+						}
+					}
+				}
+				
+				return result
+			}
+			
 			function handleOptionChanged(event) {
 				var encounter = window.encounter
 				var form = _element('encounter-form')
@@ -311,7 +339,7 @@
 				var environments = form.environment.value
 				var composition = form.composition.value
 				
-				characterLevels = characterLevels ? characterLevels.split(/\D+/) : ['1']
+				characterLevels = characterLevelsFromString(characterLevels)
 				
 				if ( difficulties === 'day' ) {
 					var limits = encounterExperiencePerDifficulty(encounter, characterLevels)
@@ -347,7 +375,7 @@
 				
 				value = object['l'] || object['character'] || object['level'] || ''
 				if ( value ) { form.level.value = value }
-				else { form.level.value = "1, 1, 1, 1" }
+				else { form.level.value = "1x4" }
 				
 				value = object['d'] || object['difficulty'] || ''
 				if ( value && value !== true && encounter.difficulties.indexOf(value) >= 0 ) { form.difficulty.value = value }
@@ -456,7 +484,7 @@
 		
 		<form id='encounter-form' onsubmit="handleSubmit(); return false">
 		
-		<div class='options'><span>Character Levels</span><input type='text' id='level' name='level' placeholder='3, 3, 4, 4' /></div>
+		<div class='options'><span>Character Levels</span><input type='text' id='level' name='level' placeholder='3x2, 4x2' /></div>
 		<div class='options'><span>Difficulty</span><select id='difficulty' name='difficulty' onchange='handleOptionChanged()'></select></div>
 		<div class='options'><span>Environment</span><select id='environment' name='environment' onchange='handleOptionChanged()'></select></div>
 		<div class='options'><span>Composition</span><select id='composition' name='composition' onchange='handleOptionChanged()'></select></div>
