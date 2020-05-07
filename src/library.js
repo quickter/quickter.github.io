@@ -357,7 +357,7 @@ function libraryFilterByKeyValuePatternsParseTerm(term, transform) {
 	return array
 }
 
-function libraryFilterByKeyValuePatternsRegister(array) {
+function libraryFilterByKeyValuePatternsRegister(array, itemExtents) {
 	var registry = libraryFilterByKeyValuePatterns.registry
 	if ( !registry ) {
 		registry = new Object()
@@ -382,29 +382,66 @@ function libraryFilterByKeyValuePatternsRegister(array) {
 		}
 	}
 	
-	var element = libraryElement('library-filter')
-	if ( !element || !options.length ) {
-		return
+	if ( itemExtents ) {
+		var select = libraryRenderFilterOptionsFromExtents(array, itemExtents)
+		
+		libraryRenderHTML('afterend', 'library-filter-count', select)
+	}
+}
+
+function libraryFilterByKeyValuePatternsMerge(value, merge) {
+	if ( !merge ) { return value }
+	
+	var result = []
+	var separator = ' '
+	var valueMatches = value.split(/\s*[?](\w+)[:=^]?\s*/g)
+	var mergeMatches = merge.split(/\s*[?](\w+)[:=^]?\s*/g)
+	var index, count, value
+	var pattern, key, keys = []
+	var merged = new Object()
+	
+	for ( index = 1, count = mergeMatches.length ; index < count ; index += 2 ) {
+		key = mergeMatches[index]
+		pattern = mergeMatches[index + 1]
+		key = key.trim().toLowerCase()
+		
+		if ( keys.indexOf(key) < 0 ) {
+			keys.push(key)
+		}
+		
+		merged[key] = pattern
 	}
 	
-	var identifier = element.getAttribute('list')
-	if ( !identifier ) {
-		identifier = 'library-filter-data-list'
-		element.setAttribute('list', identifier)
+	if ( valueMatches[0] ) {
+		result.push('text' + separator + valueMatches[0])
 	}
 	
-	var list = libraryElement(identifier)
-	if ( !list ) {
-		list = document.createElement('datalist')
-		list.setAttribute('id', identifier)
-		list.setAttribute('style', 'display:none;')
-		document.body.appendChild(list)
-		options.unshift('?text=')
-		options.push('?or')
+	for ( index = 1, count = valueMatches.length ; index < count ; index += 2 ) {
+		key = valueMatches[index]
+		pattern = valueMatches[index + 1]
+		key = key.trim().toLowerCase()
+		value = merged[key]
+		
+		if ( typeof value === 'string' ) {
+			if ( value === '!' || value === '' ) {
+				value
+			} else {
+				value = pattern + ',' + value
+			}
+			
+			result.push(key + separator + value)
+			keys.splice(keys.indexOf(key), 1)
+			delete merged[key]
+		} else {
+			result.push(key + separator + pattern)
+		}
 	}
 	
-	var html = '<option value="' + options.join('"><option value="') + '">'
-	libraryRenderHTML('beforeend', list, html)
+	for ( key of keys ) {
+		result.push(key + separator + merged[key])
+	}
+	
+	return '?' + result.join(' ?')
 }
 
 function libraryFilterByKeyValuePatterns(value) {
@@ -523,6 +560,7 @@ function libraryFilterByKeyValuePatterns(value) {
 function libraryItemExtents(items, property) {
 	var result = new Object()
 	var item, key, keys, value, entry
+	var none = '!'
 	
 	for ( item of items ) {
 		if ( property && item[property] ) {
@@ -539,8 +577,8 @@ function libraryItemExtents(items, property) {
 			}
 			
 			if ( typeof value === 'undefined' ) {
-				if ( result[key][0] !== null ) {
-					result[key].unshift(null)
+				if ( result[key][0] !== none ) {
+					result[key].unshift(none)
 				}
 			} else if ( Array.isArray(value) ) {
 				if ( value.length > 0 ) {
@@ -550,8 +588,8 @@ function libraryItemExtents(items, property) {
 						}
 					}
 				} else {
-					if ( result[key][0] !== '' ) {
-						result[key].unshift('')
+					if ( result[key][0] !== none ) {
+						result[key].unshift(none)
 					}
 				}
 			} else {
@@ -783,6 +821,21 @@ function libraryHandleChance(event, chance) {
 	libraryAssignClass(element, className + '-failure', success ? -1 : 1)
 	
 	element.textContent = " (" + value + ")"
+}
+
+function libraryHandleFilterOption(event) {
+	var select = event.target
+	var index = select ? select.selectedIndex : -1
+	var option = index < 0 ? false : select.options[index]
+	var filter = libraryElement('library-filter')
+	
+	if ( option && option.value ) {
+		filter.value = libraryFilterByKeyValuePatternsMerge(filter.value, option.value)
+		libraryFilterBySearch(filter.value)
+	}
+	
+	select.selectedIndex = 0
+	select.blur()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1132,4 +1185,91 @@ function libraryRenderTriviaFilters(filters, spanClasses, accumulateStyles) {
 	}
 	
 	return libraryRenderTemplateItemArray(templateContent, filters).join(separator)
+}
+function libraryRenderFilterOptionsFromExtents(filters, itemExtents) {
+	var filter, key, name, value, entry, label, end
+	var extents = new Object()
+	var group, options = []
+	var none = '!', any = '…'
+	
+	for ( filter of filters ) {
+		if ( filter.extents ) {
+			extents[filter.key] = filter.extents
+			continue
+		}
+		
+		if ( filter.extentsProperty ) {
+			key = filter.extentsProperty
+		} else if ( filter.transform ) {
+			continue
+		} else {
+			key = filter.property || filter.key
+		}
+		
+		if ( itemExtents[key] ) {
+			extents[filter.key] = itemExtents[key]
+		}
+	}
+	
+	options.push('<option selected disabled value="">More Filters</option>')
+	
+	for ( filter of filters ) {
+		if ( filter.isHidden ) { continue }
+		
+		value = extents[filter.key]
+		name = filter.label || filter.key
+		options.push('<optgroup label="' + name + '">')
+		
+		if ( typeof value === 'string' || typeof value === 'number' ) {
+			options.push('<option value="' + ('?' + filter.key + '=' + value) + '">' + value + '</option>')
+		} else if ( Array.isArray(value) ) {
+			if ( filter.isNumber ) {
+				if ( typeof filter.transform === 'function' ) {
+					value.sort(function (a, b) { return filter.transform(a) - filter.transform(b) })
+				} else {
+					value.sort(function (a, b) { return a - b })
+				}
+			} else if ( filter.isBoolean ) {
+					value.sort(function (a, b) { return b - a })
+			} else {
+				value.sort()
+			}
+			
+			if ( filter.isNumber && value.length > 5 ) {
+				end = value.slice(-3)
+				options.push('<option value="' + ('?' + filter.key + '=' + value[0]) + '">' + value[0] + '</option>')
+				options.push('<option value="' + ('?' + filter.key + '=' + value[1]) + '">' + value[1] + '</option>')
+				options.push('<option value="' + ('?' + filter.key + '=' + value[2] + '…' + end[0]) + '">' + value[2] + ' … ' + end[0] + '</option>')
+				options.push('<option value="' + ('?' + filter.key + '=' + end[1]) + '">' + end[1] + '</option>')
+				options.push('<option value="' + ('?' + filter.key + '=' + end[2]) + '">' + end[2] + '</option>')
+			} else {
+				for ( entry of value ) {
+					if ( typeof entry === 'boolean' ) {
+						label = entry ? 'yes' : 'no'
+						entry = entry ? true : none
+					} else if ( entry === none ) {
+						label = 'none'
+					} else if ( entry === any ) {
+						label = 'any'
+						entry = ''
+					} else {
+						label = entry
+					}
+					
+					options.push('<option value="' + ('?' + filter.key + (entry === true ? '' : '=' + entry)) + '">' + label + '</option>')
+				}
+			}
+		} else {
+			options.push('<option value="' + ('?' + filter.key + '=' + any) + '">any</option>')
+		}
+		
+		options.push('</optgroup>')
+	}
+	
+	options.push('<optgroup label="Special">')
+	options.push('<option value="?or">or</option>')
+	options.push('<option value="?shuffle">shuffle</option>')
+	options.push('</optgroup>')
+	
+	return "<select id='library-filter-options' oninput='libraryHandleFilterOption(event)'>" + options.join(" ") + "</select>"
 }

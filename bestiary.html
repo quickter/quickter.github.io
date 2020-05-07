@@ -57,6 +57,7 @@
 				////////// Type
 				var typeTags, type = master.type
 				
+				filter.isSwarm = false
 				if ( typeof type === 'string' ) {
 					typeTags = false
 					type = type
@@ -203,7 +204,7 @@
 					render.hitpointstags = ""
 				}
 				
-				filter.hitpoints = render.hp === "*" ? -1 : +render.hp
+				if ( render.hp !== '*' ) { filter.hitpoints = +render.hp }
 				
 				////////// Challenge
 				var challenge = master.cr
@@ -524,12 +525,14 @@
 							language = language.replace(/ but .*/g, '')
 							language = language.replace(/,? and /g, ', ')
 							
-							if ( language.charCodeAt(0) < 0x60 ) {
-								array.push(language)
-							} else if ( language === 'all' ) {
-								array.push('all')
-							} else if ( language.indexOf('telepathy') >= 0 ) {
-								array.push('telepathy')
+							for ( language of language.split(', ') ) {
+								if ( language.charCodeAt(0) < 0x60 ) {
+									array.push(language)
+								} else if ( language === 'all' ) {
+									array.push('all')
+								} else if ( language.indexOf('telepathy') >= 0 ) {
+									array.push('telepathy')
+								}
 							}
 						} else {
 							language = language.replace(/,? and /g, ', ')
@@ -588,7 +591,7 @@
 				
 				filter.actions = []
 				if ( Array.isArray(master.actionTags) ) {
-					filter.actions.push.apply(filter.actions, master.actionsTags)
+					filter.actions.push.apply(filter.actions, master.actionTags)
 				}
 				
 				filter.traits = []
@@ -611,8 +614,7 @@
 				var spells
 				array = []
 				
-				filter.spellcastingAbility = false
-				filter.hasReactions = !!master.reactions
+				filter.hasReactions = !!master.reaction
 				filter.hasVariants = !!master.variant
 				
 				for ( key of keysForText ) {
@@ -648,7 +650,10 @@
 							}
 							
 							for ( item of spellcasting ) {
-								filter.spellcastingAbility = item.ability || false
+								if ( item.ability ) {
+									filter.spellcastingAbility = item.ability
+								}
+								
 								spells = []
 								
 								if ( Array.isArray(item.will) ) {
@@ -726,10 +731,11 @@
 				if ( filter.environments.length === 0 ) { styles.push('environment-none') }
 				for ( value of filter.environments ) { styles.push('environment-' + value) }
 				
-				filter.miscellaneous = []
-				if ( filter.isSwarm ) { filter.miscellaneous.push('swarm') }
-				if ( filter.isFamiliar ) { filter.miscellaneous.push('familiar') }
-				if ( filter.isLegendary ) { filter.miscellaneous.push('legendary') }
+				array = []
+				if ( filter.isSwarm ) { array.push('swarm') }
+				if ( filter.isFamiliar ) { array.push('familiar') }
+				if ( filter.isLegendary ) { array.push('legendary') }
+				if ( array.length ) { filter.miscellaneous = array }
 				
 				render.styles = styles.join(' ')
 				render.description = libraryResolveReferences(render.description, master)
@@ -939,47 +945,49 @@
 				return 8 * parseFloat(value)
 			}
 			
-			function registerFilters(bestiary) {
-				libraryFilterByKeyValuePatternsRegister([
+			function registerFilters(bestiary, items) {
+				var filters = [
 					{'key':'name', 'aliases':['n', 'nm'], 'property':'key', 'transform':libraryKey},
-					{'key':'environment', 'aliases':['e', 'env'], 'property':'environments', 'transform':{'none':false, '!':false}},
-					{'key':'size', 'aliases':['s', 'sz'], 'isNumber':true, 'transform':transformToSize, 'extent':'tiny...gargantuan'},
+					{'key':'size', 'aliases':['s', 'sz'], 'isNumber':true, 'transform':transformToSize, 'extents':['tiny', 'small', 'medium', 'large', 'huge', 'gargantuan']},
 					{'key':'ac', 'aliases':['armor'], 'property':'armorclass', 'isNumber':true},
 					{'key':'hp', 'property':'hitpoints', 'isNumber':true},
-					{'key':'cr', 'aliases':['challenge'], 'property':'challenge', 'isNumber':true, 'transform':transformToChallenge, 'extent':'0...30'},
+					{'key':'cr', 'aliases':['challenge'], 'property':'challenge', 'isNumber':true, 'transform':transformToChallenge, 'extents':['0', '1/8', '1/4', '1/2', '1', '23', '24', '25', '26', '30']},
 					{'key':'xp', 'aliases':['experience'], 'property':'experience', 'isNumber':true},
 					{'key':'type', 'aliases':['t', 'tp']},
 					{'key':'kind', 'aliases':['k', 'tag'], 'property':'typeTags'},
+					{'key':'environment', 'aliases':['e', 'env'], 'property':'environments'},
 					{'key':'alignment', 'aliases':['a', 'align']},
-					{'key':'language', 'aliases':['l', 'lang'], 'property':'languages', 'transform':{'none':false, '!':false}},
-					{'key':'source', 'aliases':['src'], 'property':'sources', 'transform':libraryKey},
-					{'key':'page', 'aliases':['pg'], 'isNumber':true},
-					{'key':'move', 'property':'movement'},
+					{'key':'language', 'aliases':['l', 'lang'], 'property':'languages'},
+					{'key':'move', 'label':'movement type', 'property':'movement'},
 					{'key':'speed', 'aliases':['spd'], 'isNumber':true},
-					{'key':'swarm', 'property':'isSwarm', 'isBoolean':true, 'isHidden':true},
+					{'key':'caster', 'property':'spellcastingAbility'},
 					{'key':'familiar', 'property':'isFamiliar', 'isBoolean':true},
 					{'key':'legend', 'property':'isLegendary', 'isBoolean':true},
+					{'key':'swarm', 'property':'isSwarm', 'isBoolean':true, 'isHidden':true},
 					{'key':'passive', 'property':'passivePerception', 'isNumber':true},
-					{'key':'ignore', 'property':'unconditionals'},
-					{'key':'immune', 'property':'immunities'},
-					{'key':'resist', 'property':'resistances'},
-					{'key':'vulnerable', 'property':'vulnerabilities'},
+					{'key':'ignore', 'property':'unconditionals', 'label':'immune to condition'},
+					{'key':'immune', 'property':'immunities', 'label':'immune to damage type'},
+					{'key':'resist', 'property':'resistances', 'label':'resist damage type'},
+					{'key':'vulnerable', 'property':'vulnerabilities', 'label':'vulnerable to damage type'},
 					{'key':'save', 'property':'saves'},
-					{'key':'sight', 'property':'sights'},
+					{'key':'sight', 'property':'sights', 'label':'sense'},
+					{'key':'variant', 'property':'hasVariants', 'isBoolean':true},
+					{'key':'reaction', 'property':'hasReactions', 'isBoolean':true},
 					{'key':'skill', 'property':'skills'},
 					{'key':'trait', 'property':'traits'},
 					{'key':'action', 'property':'actions'},
-					{'key':'variant', 'property':'hasVariants', 'isBoolean':true},
-					{'key':'reaction', 'property':'hasReactions', 'isBoolean':true},
-					{'key':'caster', 'property':'spellcastingAbility'},
-					{'key':'miscellaneous', 'isHidden':true},
 					{'key':'strength', 'aliases':['str'], 'property':'strength', 'isNumber':true},
 					{'key':'dexterity', 'aliases':['dex'], 'property':'dexterity', 'isNumber':true},
 					{'key':'constitution', 'aliases':['con'], 'property':'constitution', 'isNumber':true},
 					{'key':'intelligence', 'aliases':['int'], 'property':'intelligence', 'isNumber':true},
 					{'key':'wisdom', 'aliases':['wis'], 'property':'wisdom', 'isNumber':true},
 					{'key':'charisma', 'aliases':['cha'], 'property':'charisma', 'isNumber':true},
-				])
+					{'key':'source', 'aliases':['src'], 'property':'sources', 'transform':libraryKey},
+					{'key':'page', 'aliases':['pg'], 'isNumber':true, 'extents':['…']},
+					{'key':'miscellaneous', 'isHidden':true},
+				]
+				
+				libraryFilterByKeyValuePatternsRegister(filters, libraryItemExtents(items, 'filter'))
 			}
 			
 			function populatePage() {
@@ -987,10 +995,9 @@
 				window.addEventListener('hashchange', libraryHandleHashChanged)
 				
 				var items = parseMonsters(bestiary)
-				//console.log(libraryItemExtents(items, 'filter'))
 				
+				registerFilters(bestiary, items)
 				populateLibrary(items)
-				registerFilters(bestiary)
 				applyParameters()
 				libraryHandleHashChanged()
 			}
@@ -1035,7 +1042,7 @@
 			div#controls > a { text-decoration:none; }
 			
 			input#library-filter { font-size:100%; max-width:98%; }
-			span#library-filter-count { opacity:0.5; font-size:60%; }
+			span#library-filter-count { display:inline-block; opacity:0.5; font-size:60%; min-width:3em; margin-right:1em; }
 			
 			input.toggle, input.filter { display:none; }
 			input.filter + label { text-transform:capitalize; }
@@ -1220,7 +1227,7 @@
 			<form id='library-form'>
 				<div id='controls'>
 					<button type='reset' id='library-reset' title='Show all spells'></button>
-					<label for='library-reset' class='control'>⨂</label>
+					<label for='library-reset' class='control'>↺</label>
 					<a id='share-selection' class='control' href='' title='Share selection'>⇧</a>
 				</div>
 				

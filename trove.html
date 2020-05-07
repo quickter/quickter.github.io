@@ -19,7 +19,7 @@
 				var render = new Object()
 				var filter = new Object()
 				var styles = []
-				var value
+				var value, supplement
 				
 				var type = master.type
 				var require, requires
@@ -38,6 +38,7 @@
 				}
 				
 				render.key = libraryKey(master.name)
+				supplement = lookup.supplements[render.key] || {}
 				filter.key = render.key
 				render.name = master.name
 				render.namekey = master.name.replace(/['‘’]/g, '')
@@ -135,8 +136,9 @@
 				}
 				
 				render.tier = master.tier || ''
-				filter.tier = isMajor ? 'major' : render.tier
 				filter.isMajor = isMajor
+				if ( isMajor ) { filter.tier = 'major' }
+				else if ( master.tier ) { filter.tier = master.tier }
 				
 				var attuneAbbreviation = ["◦", "⚪︎", "•", "⚫︎"]
 				var attuneName = ["Minor", "Major", "Minor, Attune", "Major, Attune"]
@@ -147,17 +149,19 @@
 				render.weight = master.weight || ''
 				render.cost = master.value || ''
 				
-				filter.weight = master.weight || false
-				filter.value = master.value || false
-				filter.charges = master.charges || false
-				filter.recharges = master.recharge || false
+				if ( master.weight ) { filter.weight = +master.weight || false }
+				if ( master.value && master.source === 'DMG' ) { filter.cost = +master.value || false }
+				if ( master.recharge ) { filter.recharges = master.recharge || false }
 				filter.srd = !!master.srd
 				filter.sentient = !!master.sentient
 				filter.cursed = !!master.curse
-				filter.bonusToWeapon = +master.bonusWeapon || 0
-				filter.bonusToArmor = +master.bonusAc || 0
-				filter.bonusToSaves = +master.bonusSavingThrow || 0
-				filter.bonusToSpells = +master.bonusSpellAttack || 0
+				if ( master.bonusWeapon && supplement.bonusWeapon !== false ) { filter.bonusToWeapon = supplement.bonusWeapon || +master.bonusWeapon || 0 }
+				if ( master.bonusAc && supplement.bonusAc !== false ) { filter.bonusToArmor = supplement.bonusAc || +master.bonusAc || 0 }
+				if ( master.bonusSavingThrow && supplement.bonusSavingThrow !== false ) { filter.bonusToSaves = supplement.bonusSavingThrow || +master.bonusSavingThrow || 0 }
+				if ( master.bonusSpellAttack && supplement.bonusSpellAttack !== false ) { filter.bonusToSpells = supplement.bonusSpellAttack || +master.bonusSpellAttack || 0 }
+				
+				if ( typeof master.charges === 'string' ) { filter.charges = master.charges.replace(/{@[^ ]+ ([^|{}]+)}/g, "$1") }
+				else if ( master.charges ) { filter.charges = +master.charges }
 				
 				if ( Array.isArray(master.attachedSpells) ) {
 					filter.spells = master.attachedSpells.map(libraryKey)
@@ -198,7 +202,7 @@
 			function parseTreasureItems(trove) {
 				var result = []
 				var lookup = new Object()
-				var lookupKeys = ['rarities', 'categories', 'sources']
+				var lookupKeys = ['rarities', 'categories', 'sources', 'supplements']
 				var excludeTypes = ['$', 'AIR', 'AT', 'EXP', 'G', 'GS', 'MNT', 'OTH', 'SHP', 'T', 'TAH', 'TG', 'VEH']
 				var excludeRarity = ['none', 'unknown', 'unknown (magic)']
 				var excludeSource = ['AI', 'DC', 'HftT', 'IMR', 'LLK', 'RMBRE', 'SDW', 'VGM']
@@ -212,7 +216,13 @@
 					
 					if ( Array.isArray(trove[key]) ) {
 						for ( item of trove[key] ) {
-							lookup[key][item.key] = item
+							if ( item.key ) {
+								lookup[key][item.key] = item
+							} else if ( item.tag ) {
+								lookup[key][item.tag] = item
+							} else if ( item.name ) {
+								lookup[key][libraryKey(item.name)] = item
+							}
 						}
 					}
 				}
@@ -309,27 +319,33 @@
 				return parseFloat(value) * 100
 			}
 			
-			function registerFilters(trove) {
-				libraryFilterByKeyValuePatternsRegister([
+			function registerFilters(trove, items) {
+				var filters = [
 					{'key':'name', 'aliases':['n', 'nm'], 'property':'key', 'transform':libraryKey},
 					{'key':'type', 'aliases':['t']},
-					//{'key':'rarity', 'isNumber':true, 'transform':transformToRarity, 'extent':'common...artifact'},
+					//{'key':'rarity', 'isNumber':true, 'transform':transformToRarity, 'extents':'common...artifact'},
 					{'key':'rarity', 'aliases':['r'], 'property':'rarityName'},
-					{'key':'tier'},
 					{'key':'attune', 'aliases':['a'], 'isBoolean':true},
-					{'key':'save', 'aliases':['s', 'sv'], 'property':'bonusToSaves', 'isNumber':true},
-					{'key':'ac', 'property':'bonusToArmor', 'isNumber':true},
-					{'key':'weapon', 'aliases':['bonus'], 'property':'bonusToWeapon', 'isNumber':true},
-					{'key':'hit', 'property':'bonusToSpells', 'isNumber':true},
+					{'key':'tier'},
+					{'key':'ac', 'property':'bonusToArmor', 'label':'armor bonus', 'isNumber':true},
+					{'key':'weapon', 'aliases':['bonus'], 'label':'weapon bonus', 'property':'bonusToWeapon', 'isNumber':true},
+					{'key':'save', 'aliases':['s', 'sv'], 'label':'save bonus', 'property':'bonusToSaves', 'isNumber':true},
+					{'key':'hit', 'property':'bonusToSpells', 'label':'spell attack', 'isNumber':true},
+					//{'key':'charges', 'isNumber':true, 'transform':transformToCharges},
 					{'key':'charges', 'isNumber':true},
+					{'key':'recharges'},
 					{'key':'spell', 'property':'spells', 'transform':libraryKey},
-					{'key':'hoard', 'aliases':['table'], 'property':'hoards'},
-					{'key':'major', 'property':'isMajor', 'isBoolean':true},
+					{'key':'hoard', 'aliases':['table'], 'label':'treasure hoard table', 'property':'hoards'},
+					{'key':'cursed', 'isBoolean':true},
+					{'key':'sentient', 'isBoolean':true},
+					{'key':'major', 'property':'isMajor', 'isHidden':true, 'isBoolean':true},
 					{'key':'source', 'aliases':['src'], 'property':'sources', 'transform':libraryKey},
-					{'key':'page', 'aliases':['pg'], 'isNumber':true},
-					{'key':'cost', 'aliases':['gp'], 'isNumber':true, 'transform':transformToCost, 'extent':'0...'},
+					{'key':'page', 'aliases':['pg'], 'isNumber':true, 'extents':['…']},
+					{'key':'cost', 'aliases':['gp'], 'isNumber':true, 'transform':transformToCost, 'extents':[50]},
 					{'key':'weight', 'isNumber':true},
-				])
+				]
+				
+				libraryFilterByKeyValuePatternsRegister(filters, libraryItemExtents(items, 'filter'))
 			}
 			
 			function populatePage() {
@@ -337,10 +353,9 @@
 				window.addEventListener('hashchange', libraryHandleHashChanged)
 				
 				var items = parseTreasureItems(trove)
-				//console.log(libraryItemExtents(items, 'filter'))
 				
+				registerFilters(trove, items)
 				populateLibrary(items)
-				registerFilters(trove)
 				applyParameters()
 				libraryHandleHashChanged()
 			}
@@ -385,7 +400,7 @@
 			div#controls > a { text-decoration:none; }
 			
 			input#library-filter { font-size:100%; max-width:98%; }
-			span#library-filter-count { opacity:0.5; font-size:60%; }
+			span#library-filter-count { display:inline-block; opacity:0.5; font-size:60%; min-width:3em; margin-right:1em; }
 			
 			input.toggle, input.filter { display:none; }
 			input.toggle:not(:checked) ~ div.toggled { display:none; }
@@ -512,7 +527,7 @@
 			<form id='library-form'>
 				<div id='controls'>
 					<button type='reset' id='library-reset' title='Show all spells'></button>
-					<label for='library-reset' class='control'>⨂</label>
+					<label for='library-reset' class='control'>↺</label>
 					<a id='share-selection' class='control' href='' title='Share selection'>⇧</a>
 				</div>
 				

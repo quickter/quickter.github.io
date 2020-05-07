@@ -1,4 +1,9 @@
 var trove = {
+	"supplements":[
+		{"name":"Holy Avenger", "bonusAc":false},
+		{"name":"Vorpal Sword", "bonusAc":false},
+		{"name":"Wand of Orcus", "bonusAc":false},
+	],
 	"sources":[
 		{
 			"key":"PHB",
