@@ -557,10 +557,18 @@ function libraryFilterByKeyValuePatterns(value) {
 	return patterns.length > 0
 }
 
-function libraryItemExtents(items, property) {
+function libraryItemExtents(items, property, filters) {
 	var result = new Object()
 	var item, key, keys, value, entry
 	var none = '!'
+	var filter, minimum, lookup = new Object()
+	var index, counts = new Object()
+	
+	if ( Array.isArray(filters) ) {
+		for ( filter of filters ) {
+			lookup[filter.property || filter.key] = filter
+		}
+	}
 	
 	for ( item of items ) {
 		if ( property && item[property] ) {
@@ -571,9 +579,17 @@ function libraryItemExtents(items, property) {
 		
 		for ( key of keys ) {
 			value = item[key]
+			filter = lookup[key]
+			minimum = filter && filter.minimum || 0
 			
 			if ( !result[key] ) {
 				result[key] = []
+			}
+			
+			if ( minimum > 1 ) {
+				if ( !counts[key] ) {
+					counts[key] = new Object()
+				}
 			}
 			
 			if ( typeof value === 'undefined' ) {
@@ -586,6 +602,9 @@ function libraryItemExtents(items, property) {
 						if ( result[key].indexOf(entry) < 0 ) {
 							result[key].push(entry)
 						}
+						if ( minimum > 1 ) {
+							counts[key][entry] = 1 + (counts[key][entry] || 0)
+						}
 					}
 				} else {
 					if ( result[key][0] !== none ) {
@@ -596,6 +615,23 @@ function libraryItemExtents(items, property) {
 				if ( result[key].indexOf(value) < 0 ) {
 					result[key].push(value)
 				}
+				if ( minimum > 1 ) {
+					counts[key][entry] = 1 + (counts[key][entry] || 0)
+				}
+			}
+		}
+	}
+	
+	keys = Object.keys(counts)
+	
+	for ( key of keys ) {
+		filter = lookup[key]
+		minimum = filter.minimum
+		index = result[key].length
+		
+		while ( index --> 0 ) {
+			if ( result[key][index] !== none && counts[key][result[key][index]] < minimum ) {
+				result[key].splice(index, 1)
 			}
 		}
 	}

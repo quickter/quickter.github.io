@@ -422,6 +422,10 @@ var spellbook = {
 			"damage":"8d6"
 		},
 		{
+			"name":"Immovable Object",
+			"permanent":true
+		},
+		{
 			"name":"Investiture of Flame",
 			"damage":"4d8",
 			"defense":true

@@ -954,17 +954,17 @@
 					{'key':'cr', 'aliases':['challenge'], 'property':'challenge', 'isNumber':true, 'transform':transformToChallenge, 'extents':['0', '1/8', '1/4', '1/2', '1', '23', '24', '25', '26', '30']},
 					{'key':'xp', 'aliases':['experience'], 'property':'experience', 'isNumber':true},
 					{'key':'type', 'aliases':['t', 'tp']},
-					{'key':'kind', 'aliases':['k', 'tag'], 'property':'typeTags'},
+					{'key':'kind', 'aliases':['k', 'tag'], 'property':'typeTags', 'minimum':4},
 					{'key':'environment', 'aliases':['e', 'env'], 'property':'environments'},
 					{'key':'alignment', 'aliases':['a', 'align']},
-					{'key':'language', 'aliases':['l', 'lang'], 'property':'languages'},
+					{'key':'language', 'aliases':['l', 'lang'], 'property':'languages', 'minimum':4},
 					{'key':'move', 'label':'movement type', 'property':'movement'},
 					{'key':'speed', 'aliases':['spd'], 'isNumber':true},
 					{'key':'caster', 'property':'spellcastingAbility'},
 					{'key':'familiar', 'property':'isFamiliar', 'isBoolean':true},
 					{'key':'legend', 'property':'isLegendary', 'isBoolean':true},
 					{'key':'swarm', 'property':'isSwarm', 'isBoolean':true, 'isHidden':true},
-					{'key':'passive', 'property':'passivePerception', 'isNumber':true},
+					{'key':'passive', 'label':'passive perception', 'property':'passivePerception', 'isNumber':true},
 					{'key':'ignore', 'property':'unconditionals', 'label':'immune to condition'},
 					{'key':'immune', 'property':'immunities', 'label':'immune to damage type'},
 					{'key':'resist', 'property':'resistances', 'label':'resist damage type'},
@@ -974,7 +974,7 @@
 					{'key':'variant', 'property':'hasVariants', 'isBoolean':true},
 					{'key':'reaction', 'property':'hasReactions', 'isBoolean':true},
 					{'key':'skill', 'property':'skills'},
-					{'key':'trait', 'property':'traits'},
+					{'key':'trait', 'property':'traits', 'minimum':5},
 					{'key':'action', 'property':'actions'},
 					{'key':'strength', 'aliases':['str'], 'property':'strength', 'isNumber':true},
 					{'key':'dexterity', 'aliases':['dex'], 'property':'dexterity', 'isNumber':true},
@@ -987,7 +987,7 @@
 					{'key':'miscellaneous', 'isHidden':true},
 				]
 				
-				libraryFilterByKeyValuePatternsRegister(filters, libraryItemExtents(items, 'filter'))
+				libraryFilterByKeyValuePatternsRegister(filters, libraryItemExtents(items, 'filter', filters))
 			}
 			
 			function populatePage() {
