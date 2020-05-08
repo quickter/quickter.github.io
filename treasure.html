@@ -407,6 +407,11 @@
 				form#treasure-form { display:none; }
 			}
 			
+			@media print { div#navigation { display:none; } }
+			div#navigation { position:absolute; left:1em; top:0.5em; }
+			div#navigation a { text-decoration:none; display:inline-block; width:2em; height:1.875em; padding-top:0.125em; text-align:center; border-radius:50%; }
+			div#navigation a#navigation-treasure { background:#EEF; }
+			
 			.nose, .reroll {
 				-webkit-touch-callout:none;
 				-webkit-user-select:none;
@@ -418,6 +423,14 @@
 		</style>
 	</head>
 	<body onload='populatePage()'>
+		<div id='navigation'>
+			<a id='navigation-bestiary' href='bestiary.html' title='Monster List'>🐉</a>
+			<a id='navigation-spellbook' href='spellbook.html' title='Spell List'>📜</a>
+			<a id='navigation-trove' href='trove.html' title='Magic Item List'>🔮</a>
+			<a id='navigation-treasure' href='treasure.html' title='Roll Treasure'>💎</a>
+			<a id='navigation-encounter' href='encounter.html' title='Roll Encounters'>🚪</a>
+		</div>
+		
 		<h4>Treasure</h4>
 		
 		<form id='treasure-form' onsubmit="return generateTreasure(event)">

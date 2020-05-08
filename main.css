@@ -15,6 +15,7 @@ body {
     margin: 0 auto;
     max-width: 800px;
     padding: 2em 2em 4em;
+    position:relative;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -241,3 +242,7 @@ div.unprintable { display:none; }
 @media screen {
 	div.unprintable { display:block; }
 }
+
+@media print { div#navigation { display:none; } }
+div#navigation { position:absolute; left:1em; top:0.5em; }
+div#navigation a { text-decoration:none; display:inline-block; width:2em; height:1.875em; padding-top:0.125em; text-align:center; border-radius:50%; }
