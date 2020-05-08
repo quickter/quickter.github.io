@@ -131,16 +131,18 @@
 				return text
 			}
 			
-			function generateTreasuresForRequest(treasure, challenge, quantity, kind, raw) {
+			function generateTreasuresForRequest(treasure, challenges, kind, raw) {
+				var scalar = 1
+				
 				if ( kind === 'player' ) {
 					kind = 'party'
-					quantity /= 4
+					scalar /= 4
 				}
 				
 				switch ( kind ) {
-				case 'hoard': return raw ? treasureRawHoard(treasure, challenge, quantity) : treasureColeHoard(treasure, challenge, quantity)
-				case 'party': return raw ? treasureRawParty(treasure, challenge, quantity) : treasureColeParty(treasure, challenge, quantity)
-				default:      return treasureIndividual(treasure, challenge, quantity); break;
+				case 'hoard': return raw ? treasureRawHoard(treasure, challenges) : treasureColeHoard(treasure, challenges)
+				case 'party': return raw ? treasureRawParty(treasure, challenges, scalar) : treasureColeParty(treasure, challenges, scalar)
+				default:      return treasureIndividual(treasure, challenges); break;
 				}
 			}
 			
@@ -154,24 +156,23 @@
 				var form = _element('treasure-form')
 				var kind = form.kind.value
 				var challenge = form.challenge.value
-				var quantity = form.quantity.value || 1
 				var partition = form.partition.checked
 				var raw = form.raw.checked
 				var treasures
 				var descriptions
+				var challenges = treasureParseLevels(challenge, partition)
 				
-				if ( partition && quantity > 1 ) {
+				if ( partition && challenges.length > 1 ) {
 					treasures = []
 					
-					while ( quantity --> 0 ) {
-						treasures = treasures.concat(generateTreasuresForRequest(treasure, challenge, 1, kind, raw))
-						
-						if ( quantity > 0 ) {
-							treasures.push({'descriptions':["-"], 'summarize':true})
-						}
+					for ( challenge of challenges ) {
+						treasures = treasures.concat(generateTreasuresForRequest(treasure, [challenge], kind, raw))
+						treasures.push({'descriptions':["-"], 'summarize':true})
 					}
+					
+					treasures.pop()
 				} else {
-					treasures = generateTreasuresForRequest(treasure, challenge, quantity, kind, raw)
+					treasures = generateTreasuresForRequest(treasure, challenges, kind, raw)
 				}
 				
 				treasureLookupItems(treasure, lookup, treasures)
@@ -210,7 +211,15 @@
 						
 						if ( item.slice(1, 2) === ':' && treasure.magic[key.toLowerCase()] ) {
 							identifier = "item-" + (index + 1)
-							item = "<span class='reroll' onclick='handleReroll(\"" + key + "\", \""+identifier+"\")'>" + key + ":</span><span id='" + identifier + "'>" + item.slice(2) + "</span>"
+							item = "<span class='reroll' title='Reroll item on table " + key + "' onclick='handleReroll(\"" + key + "\", \""+identifier+"\")'>" + key + ":</span><span id='" + identifier + "'>" + item.slice(2) + "</span>"
+						}
+						
+						if ( item.indexOf(': Challenge') > 0 ) {
+							item = "<span class='challenge-caption'>" + item + "</span>"
+						}
+						
+						if ( item.charAt(0) === '(' ) {
+							item = "<span class='value-summary'>" + item + "</span>"
 						}
 						
 						items.push("<li>" + item + "</li>")
@@ -243,11 +252,11 @@
 					else { form.kind.value = 'hoard' }
 				}
 				
-				value = parseFloat(object['c'] || object['challenge'] || object['level']) || 0
-				if ( value > 0 ) { form.challenge.value = value }
+				value = object['c'] || object['challenge'] || object['level']
+				if ( value ) { form.challenge.value = value }
 				
 				value = parseFloat(object['n'] || object['quantity']) || 0
-				if ( value > 0 ) { form.quantity.value = value }
+				if ( value > 0 ) { form.challenge.value += 'x' + value }
 				
 				value = parseFloat(object['w'] || object['weight']) || 0
 				if ( value ) { treasureDefaults.minimumPoundsToDisplayWeight = value }
@@ -370,8 +379,13 @@
 			p.explanation { font-size:80%; color:#999; }
 			span.reroll { color:#123; cursor:pointer; }
 			span.faded { color:#CCC; }
+			span.challenge-caption { font-size:80%; font-weight:bold; font-variant:small-caps; }
+			span.value-summary { font-size:80%; opacity:0.75; }
 			
 			a { color:inherit; text-decoration:none; }
+			
+			div.options { display:inline-block; margin:0.5em; }
+			div.options > span { display:block; }
 			
 			input.big-button { font-size:150%; border-radius:0.5em; border:3px solid #CCC; padding:0.5em 1.5em; background:#F8F8F8; margin:0 1em; }
 			input.big-number { font-size:125%; }
@@ -407,14 +421,13 @@
 		<h4>Treasure</h4>
 		
 		<form id='treasure-form' onsubmit="return generateTreasure(event)">
-		<select name='kind' id='treasure-kind' class='big-select' title='Type of treasure'>
+		<div class='options'><span>Table</span><select name='kind' id='treasure-kind' class='big-select' title='Type of treasure'>
 			<option value="individual">Individual Treasure</option>
 			<option value="hoard" selected>Treasure Hoard</option>
 			<option value="party">Party Treasure</option>
 			<option value="player">Player (&frac14; Party)</option>
-		</select>
-		<input name='challenge' id='treasure-challenge' type='number' value='4' min='0' max='30' class='big-number' title='Challenge rating or level' />
-		&times; <input type='number' name='quantity' value='1' min='1' max='99' id='treasure-quantity' class='big-number' title='Number of times to roll' />
+		</select></div>
+		<div class='options'><span>Challenge Ratings</span><input type='text' id='treasure-challenge' name='challenge' size='20' placeholder='3x2, 4x2' value='4' title='Challenge Ratings or Levels' /></div>
 		<input type='submit' class='big-button treasure' value='Roll' title='Generate random treasure' />
 		<input type='checkbox' name='partition' id='treasure-partition' title='Separate multiple rolls' /><label for='treasure-partition' class='nose'> &horbar;</label>
 		<input type='checkbox' name='raw' id='treasure-raw' title='Rules as Written - do not mix rarity' /><label for='treasure-raw' class='nose'> RaW</label>

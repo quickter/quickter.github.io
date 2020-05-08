@@ -29,7 +29,7 @@ function treasureRoundingToRandomInteger(number) {
 }
 
 function treasureFrequencyElement(array) {
-	var sum = treasureArrayFrequencySum(array)
+	var sum = array.reduce(treasureFrequencySum, 0)
 	
 	if ( sum > 0 ) {
 		var value = treasureRandomInteger(sum)
@@ -51,6 +51,23 @@ function treasureFrequencyEntries(table, quantity) {
 	
 	while ( quantity --> 0 ) {
 		result.push(treasureFrequencyElement(table))
+	}
+	
+	return result
+}
+
+function treasureFrequencyEntriesForEntryCounts(table, entryCounts) {
+	var result = []
+	var quantity, index, count = table.length
+	var array
+	
+	for ( index = 0 ; index < count ; ++index ) {
+		quantity = entryCounts[index]
+		array = table[index].table
+		
+		while ( quantity --> 0 ) {
+			result.push(treasureFrequencyElement(array))
+		}
 	}
 	
 	return result
@@ -104,12 +121,12 @@ function treasureDiceRoll(dice, quantity) {
 	return treasureDieRoll(sides, roll) * times + add
 }
 
-function treasureArraySum(array) {
-	return array.reduce(function sum(s, v) { return s + v }, 0)
+function treasureSum(sum, value) {
+	return sum + value
 }
 
-function treasureArrayFrequencySum(array) {
-	return array.reduce(function sum(s, e) { return s + (e.frequency | 0) }, 0)
+function treasureFrequencySum(sum, entry) {
+	return sum + (entry.frequency | 0)
 }
 
 function treasureCoalesceArrayElements(array, times) {
@@ -132,16 +149,37 @@ function treasureCoalesceArrayElements(array, times) {
 	return result
 }
 
-function treasureEntryForLevel(array, level) {
-	var index = array.length
+function treasureEntryCountsForLevels(table, levels) {
+	var counts = []
+	var entry, level, index, quantity
 	
-	while ( index --> 1 ) {
-		if ( array[index].cr <= level ) {
-			return array[index]
-		}
+	for ( index = 0 ; index < table.length ; ++index ) {
+		counts[index] = 0
 	}
 	
-	return array[0]
+	for ( level of levels ) {
+		index = typeof level === 'string' ? level.indexOf('x') : -1
+		
+		if ( index < 0 ) {
+			quantity = 1
+			level = +level
+		} else {
+			quantity = +level.slice(index + 1)
+			level = level.slice(0, index)
+		}
+		
+		index = table.length
+		
+		while ( index --> 1 ) {
+			if ( table[index].cr <= level ) {
+				break
+			}
+		}
+		
+		counts[index] += quantity
+	}
+	
+	return counts
 }
 
 function treasurePartyHoardsForLevel(array, level) {
@@ -157,7 +195,7 @@ function treasurePartyHoardsForLevel(array, level) {
 		limit = entry.party_hoards.length
 		
 		if ( range > 0 ) {
-			rolls = treasureArraySum(entry.party_hoards.slice(0, range))
+			rolls = entry.party_hoards.slice(0, range).reduce(treasureSum, 0)
 		}
 		
 		if ( range > limit && index + 1 >= count ) {
@@ -170,33 +208,101 @@ function treasurePartyHoardsForLevel(array, level) {
 	return result
 }
 
-function treasureCoins(treasure, tableRows, quantityPerEntry) {
+function treasureParseLevels(value, partitioned) {
 	var result = []
-	var accumulate = new Object()
-	var element, coin, count, key
+	var multipliers = "*x×✕"
+	var matches = value.split(/(\D+)/g)
+	var index, count = matches.length
+	var level, times
 	
-	for ( element of tableRows ) {
-		for ( coin of treasure.coins ) {
-			key = coin.key
+	for ( index = 0 ; index < count ; index += 2 ) {
+		level = matches[index]
+		times = result.length > 0 ? matches[index - 1].trim() : ''
+		
+		if ( !level ) {
+			continue
+		} else if ( !times || multipliers.indexOf(times) < 0 ) {
+			result.push(level)
+		} else if ( partitioned ) {
+			times = level
+			level = result[result.length - 1]
 			
-			if ( element[key] ) {
-				count = treasureDiceRoll(element[key], quantityPerEntry)
-				
-				if ( accumulate[key] ) {
-					accumulate[key].count.push(count)
-				} else {
-					accumulate[key] = {'table':'coins', 'key':key, 'count':[count]}
-				}
+			while ( times --> 1 ) {
+				result.push(level)
 			}
+		} else {
+			result[result.length - 1] += 'x' + level
 		}
 	}
 	
+	return result
+}
+
+function treasureEntryCountsForPartyLevels(array, levels, scalar) {
+	var counts = []
+	var level, index, count, value, quantity, hoards
+	
+	for ( index = 0, count = array.length ; index < count ; ++index ) {
+		counts[index] = 0
+	}
+	
+	for ( level of levels ) {
+		index = typeof level === 'string' ? level.indexOf('x') : -1
+		
+		if ( index < 0 ) {
+			quantity = 1
+			level = +level
+		} else {
+			quantity = +level.slice(index + 1)
+			level = level.slice(0, index)
+		}
+		
+		hoards = treasurePartyHoardsForLevel(array, level)
+		
+		for ( index = 0, count = hoards.length ; index < count ; ++index ) {
+			counts[index] += hoards[index] * quantity
+		}
+	}
+	
+	for ( index = 0, count = array.length ; index < count ; ++index ) {
+		value = counts[index]
+		if ( scalar > 0 ) { value *= scalar }
+		counts[index] = treasureRoundingToRandomInteger(value)
+	}
+	
+	return counts
+}
+
+function treasureCoins(treasure, tableRows, entryCounts) {
+	var result = []
+	var accumulate = new Object()
+	var element, coin, sum, key
+	var quantity, index, count = tableRows.length
+	var array, value
+	
 	for ( coin of treasure.coins ) {
 		key = coin.key
+		sum = 0
+		array = []
 		
-		if ( accumulate[key] ) {
-			accumulate[key].value = coin.cp * treasureArraySum(accumulate[key].count)
-			result.push(accumulate[key])
+		for ( index = 0 ; index < count ; ++index ) {
+			if ( entryCounts ) {
+				quantity = entryCounts[index] || 0
+				element = tableRows[index].coins
+			} else {
+				quantity = 1
+				element = tableRows[index]
+			}
+			
+			if ( quantity > 0 && element[key] ) {
+				value = treasureDiceRoll(element[key], quantity)
+				array.push(value)
+				sum += value
+			}
+		}
+		
+		if ( sum > 0 ) {
+			result.push({'table':'coins', 'key':key, 'count':array, 'value':sum})
 		}
 	}
 	
@@ -217,7 +323,7 @@ function treasureValuables(tableRows, quantityPerEntry) {
 				count = quantityPerEntry > 0 ? treasureDiceRoll(element[table], quantityPerEntry) : 1
 				tableKey = table + key
 				
-				if ( keys.indexOf(key) >= 0 ) {
+				if ( keys.indexOf(key) < 0 ) {
 					keys.push(key)
 				}
 				
@@ -237,7 +343,7 @@ function treasureValuables(tableRows, quantityPerEntry) {
 			tableKey = table + key
 			
 			if ( accumulate[tableKey] ) {
-				accumulate[tableKey].value = 100 * key * treasureArraySum(accumulate[tableKey].count)
+				accumulate[tableKey].value = 100 * key * accumulate[tableKey].count.reduce(treasureSum, 0)
 				result.push(accumulate[tableKey])
 			}
 		}
@@ -276,170 +382,211 @@ function treasureItems(tableRows, quantityPerEntry) {
 	return result
 }
 
-function treasureItemsUsingPoints(hoard, pointsArray, pointsLimit) {
+function treasureColeItemsForEntryCounts(table, entryCounts, mergeItemPoints) {
 	var result = []
+	var quantity, index, count = table.length
+	var hoard
+	
+	var pointsArray
+	var pointsLimit = 24
+	var pointsDie = 6
+	var point, points
+	
 	var keys = ["i", "h", "g", "f", "e", "d", "c", "b", "a"]
 	var prefix = "magic_"
-	var accumulate = new Object()
-	var points, entry, die, key
+	var entry, die, key
+	var itemKeys = [], itemCounts = new Object()
 	
-	for ( points of pointsArray ) {
-		while ( points > 0 ) {
-			entry = treasureFrequencyElement(hoard.table)
-			die = 0
+	mergeItemPoints = mergeItemPoints || treasureDefaults.mergeItemPoints
+	
+	for ( index = 0 ; index < count ; ++index ) {
+		quantity = entryCounts[index]
+		if ( !(quantity > 0) ) { continue }
+		hoard = table[index]
+		pointsArray = []
 		
-			for ( key of keys ) {
-				if ( entry[prefix + key] ) {
-					die = Math.max(die, entry[prefix + key].die)
-				
-					if ( accumulate[key] ) {
-						accumulate[key].count.push(1)
-					} else {
-						accumulate[key] = {'table':'magic', 'key':key, 'count':[1]}
-					}
-				}
+		for ( point = 0 ; point < quantity ; ++point ) {
+			points = quantity - point
+			
+			if ( points < 1 || mergeItemPoints > 0 ) {
+				points = treasureDieRoll(pointsDie, Math.ceil(points * pointsLimit / pointsDie))
+				point = quantity
+			} else {
+				points = treasureDieRoll(pointsDie, Math.ceil(pointsLimit / pointsDie))
 			}
 			
-			points -= pointsLimit / (die > 0 ? die : 4)
+			pointsArray.push(points)
+		}
+		
+		for ( points of pointsArray ) {
+			while ( points > 0 ) {
+				entry = treasureFrequencyElement(hoard.table)
+				die = 0
+				
+				for ( key of keys ) {
+					if ( !entry[prefix + key] ) { continue }
+					
+					die = Math.max(die, entry[prefix + key].die)
+					itemCounts[key] = 1 + (itemCounts[key] || 0)
+				}
+				
+				points -= pointsLimit / (die > 0 ? die : 4)
+			}
 		}
 	}
 	
 	for ( key of keys ) {
-		if ( accumulate[key] ) {
-			result.push(accumulate[key])
+		if ( itemCounts[key] ) {
+			result.push({'table':'magic', 'key':key, 'count':[itemCounts[key]]})
 		}
 	}
 	
 	return result
 }
 
-function treasureColeItems(hoard, quantity, mergeItemPoints) {
-	var pointsArray = []
-	var pointsLimit = 24
-	var pointsDie = 6
-	var index, points
+function treasureSummaryForEntryCounts(array, entryCounts, times) {
+	var result = []
+	var quantity, index, count = array.length
 	
-	mergeItemPoints = mergeItemPoints || treasureDefaults.mergeItemPoints
-	quantity = quantity > 0 ? quantity : 1
-	
-	for ( index = 0 ; index < quantity ; ++index ) {
-		points = quantity - index
-		
-		if ( points < 1 || mergeItemPoints > 0 ) {
-			points = treasureDieRoll(pointsDie, Math.ceil(points * pointsLimit / pointsDie))
-			index = quantity
-		} else {
-			points = treasureDieRoll(pointsDie, Math.ceil(pointsLimit / pointsDie))
-		}
-		
-		pointsArray.push(points)
-	}
-	
-	return treasureItemsUsingPoints(hoard, pointsArray, pointsLimit)
-}
-
-function treasureIndividual(treasure, level, quantity) {
-	var entry = treasureEntryForLevel(treasure.individual, level)
-	var entries = treasureFrequencyEntries(entry.table, quantity || 1)
-	
-	return treasureCoins(treasure, entries, 1)
-}
-
-function treasureValuablesFromRawHoard(treasure, level, quantity) {
-	var entry = treasureEntryForLevel(treasure.hoard, level)
-	var entries = treasureFrequencyEntries(entry.table, quantity || 1)
-	
-	return treasureValuables(entries, 1)
-}
-
-function treasureItemsFromRawHoard(treasure, level, quantity) {
-	var entry = treasureEntryForLevel(treasure.hoard, level)
-	var entries = treasureFrequencyEntries(entry.table, quantity || 1)
-	
-	return treasureItems(entries, 1)
-}
-
-function treasureRawHoard(treasure, level, quantity) {
-	var entry = treasureEntryForLevel(treasure.hoard, level)
-	var entries = treasureFrequencyEntries(entry.table, quantity || 1)
-	
-	var coins = treasureCoins(treasure, [entry.coins], quantity || 1)
-	var valuables = treasureValuables(entries, 1)
-	var items = treasureItems(entries, 1)
-	
-	return items.concat(valuables, coins)
-}
-
-function treasureRawParty(treasure, level, quantity) {
-	var aggregate = []
-	var list = treasure.hoard
-	var index, count = list.length
-	var entry, hoards, entries, coins, valuables, item, items, rolls
-	
-	quantity = quantity || 1
-	
-	for ( index = 0 ; index < count && list[index].cr <= level ; ++index ) {
-		entry = list[index]
-		hoards = treasureArraySum(entry.party_hoards)
-		entries = treasureFrequencyEntries(entry.table, hoards * quantity)
-		
-		coins = treasureCoins(treasure, [entry.coins], hoards * quantity)
-		valuables = treasureValuables(entries, 1)
-		items = []
-		
-		for ( item of entry.party_items ) {
-			rolls = treasureRoundingToRandomInteger(item.quantity * quantity)
-			
-			if ( rolls > 0 ) {
-				items.push({'table':'magic', 'key':item.magic, 'count':[rolls]})
-			}
-		}
-		
-		items.sort(function sort(a, b) { return a.key < b.key })
-		items.unshift({'table':'hoard', 'key':entry.cr, 'count':hoards * quantity, 'name':entry.name})
-		aggregate.push(items.concat(valuables, coins))
-	}
-	
-	aggregate.reverse()
-	
-	return aggregate.concat.apply([], aggregate)
-}
-
-function treasureColeEntry(treasure, hoard, quantity, mergeItemPoints) {
-	var entries = treasureFrequencyEntries(hoard.table, quantity)
-	var coins = treasureCoins(treasure, [hoard.coins], quantity)
-	var valuables = treasureValuables(entries, 1)
-	var items = treasureColeItems(hoard, quantity, mergeItemPoints)
-	
-	return items.concat(valuables, coins)
-}
-
-function treasureColeHoard(treasure, level, quantity, mergeItemPoints) {
-	var hoard = treasureEntryForLevel(treasure.hoard, level)
-	
-	return treasureColeEntry(treasure, hoard, quantity || 1, mergeItemPoints)
-}
-
-function treasureColeParty(treasure, level, quantity, mergeItemPoints) {
-	var aggregate = []
-	var quantities = treasurePartyHoardsForLevel(treasure.hoard, level)
-	var index, count = quantities.length
-	var hoard, value, treasures
+	times = times || treasureDefaults.times
 	
 	for ( index = 0 ; index < count ; ++index ) {
-		hoard = treasure.hoard[index]
-		value = quantities[index] * (quantity || 1)
+		quantity = entryCounts[index]
+		if ( !(quantity > 0) ) { continue }
 		
-		if ( value > 0 ) {
-			treasures = treasureColeEntry(treasure, hoard, value, mergeItemPoints)
-			treasures.unshift({'table':'hoard', 'key':hoard.cr, 'count':value, 'name':hoard.name})
-			aggregate.push(treasures)
+		result.push(array[index].concise + (quantity > 1 ? times + quantity : ''))
+	}
+	
+	return result.join(", ")
+}
+
+function treasureIndividual(treasure, levels) {
+	var counts = treasureEntryCountsForLevels(treasure.individual, levels)
+	var entries = treasureFrequencyEntriesForEntryCounts(treasure.individual, counts)
+	var result = treasureCoins(treasure, entries)
+	
+	result.unshift({'description':"Individual Treasure: Challenge " + treasureSummaryForEntryCounts(treasure.individual, counts)})
+	
+	return result
+}
+
+function treasureValuablesFromRawHoard(treasure, levels) {
+	var counts = treasureEntryCountsForLevels(treasure.hoard, levels)
+	var entries = treasureFrequencyEntriesForEntryCounts(treasure.hoard, counts)
+	var result = treasureValuables(entries, 1)
+	
+	result.unshift({'description':"Treasure Hoard Valuables: Challenge " + treasureSummaryForEntryCounts(treasure.hoard, counts)})
+	
+	return result
+}
+
+function treasureItemsFromRawHoard(treasure, levels) {
+	var counts = treasureEntryCountsForLevels(treasure.hoard, levels)
+	var entries = treasureFrequencyEntriesForEntryCounts(treasure.hoard, counts)
+	var result = treasureItems(entries, 1)
+	
+	result.unshift({'description':"Treasure Hoard Items: Challenge " + treasureSummaryForEntryCounts(treasure.hoard, counts)})
+	
+	return result
+}
+
+function treasureRawEntry(treasure, counts, partyItems) {
+	var entries = treasureFrequencyEntriesForEntryCounts(treasure.hoard, counts)
+	var coins = treasureCoins(treasure, treasure.hoard, counts)
+	var valuables = treasureValuables(entries, 1)
+	var items = Array.isArray(partyItems) ? partyItems : treasureItems(entries, 1)
+	var result = items.concat(valuables, coins)
+	
+	return result
+}
+
+function treasureRawHoard(treasure, levels) {
+	var counts = treasureEntryCountsForLevels(treasure.hoard, levels)
+	var result = treasureRawEntry(treasure, counts)
+	
+	result.unshift({'description':"Treasure Hoard: Challenge " + treasureSummaryForEntryCounts(treasure.hoard, counts)})
+	
+	return result
+}
+
+function treasureRawParty(treasure, levels, scalar) {
+	var list = treasure.hoard
+	var counts = treasureEntryCountsForLevels(list, levels)
+	var hoards = []
+	var items = [], itemKeys = [], itemCounts = new Object()
+	var index, count = list.length
+	var lower, quantity, entry, key, value
+	
+	for ( index = 0 ; index < count ; ++index ) {
+		hoards[index] = 0
+		quantity = +counts[index]
+		if ( !(quantity > 0) ) { continue }
+		
+		for ( lower = 0 ; lower <= index ; ++lower ) {
+			for ( entry of list[lower].party_items ) {
+				key = entry.magic
+				value = entry.quantity * quantity
+				if ( scalar > 0 ) { value *= scalar }
+				value = treasureRoundingToRandomInteger(value)
+				
+				if ( itemCounts[key] ) {
+					itemCounts[key].push(value)
+				} else {
+					itemCounts[key] = [value]
+					itemKeys.push(key)
+				}
+			}
+			
+			hoards[lower] += list[lower].party_hoards.reduce(treasureSum, 0) * quantity
 		}
 	}
 	
-	aggregate.reverse()
+	for ( index = 0 ; index < count ; ++index ) {
+		value = hoards[index]
+		if ( scalar > 0 ) { value *= scalar }
+		hoards[index] = treasureRoundingToRandomInteger(value)
+	}
 	
-	return aggregate.concat.apply([], aggregate)
+	itemKeys.sort()
+	itemKeys.reverse()
+	
+	for ( key of itemKeys ) {
+		items.push({'table':'magic', 'key':key, 'count':itemCounts[key]})
+	}
+	
+	var result = treasureRawEntry(treasure, hoards, items)
+	
+	result.unshift({'description':"Party, Treasure Hoards: Challenge " + treasureSummaryForEntryCounts(treasure.hoard, hoards)})
+	
+	return result
+}
+
+function treasureColeEntry(treasure, counts, mergeItemPoints) {
+	var entries = treasureFrequencyEntriesForEntryCounts(treasure.hoard, counts)
+	
+	var coins = treasureCoins(treasure, treasure.hoard, counts)
+	var valuables = treasureValuables(entries, 1)
+	var items = treasureColeItemsForEntryCounts(treasure.hoard, counts, mergeItemPoints)
+	
+	return items.concat(valuables, coins)
+}
+
+function treasureColeHoard(treasure, levels, mergeItemPoints) {
+	var counts = treasureEntryCountsForLevels(treasure.hoard, levels)
+	var result = treasureColeEntry(treasure, counts, mergeItemPoints)
+	
+	result.unshift({'description':"Treasure Hoard: Challenge " + treasureSummaryForEntryCounts(treasure.hoard, counts)})
+	
+	return result
+}
+
+function treasureColeParty(treasure, levels, scalar, mergeItemPoints) {
+	var counts = treasureEntryCountsForPartyLevels(treasure.hoard, levels, scalar)
+	var result = treasureColeEntry(treasure, counts, mergeItemPoints)
+	
+	result.unshift({'description':"Party Treasure: Challenge " + treasureSummaryForEntryCounts(treasure.hoard, counts)})
+	
+	return result
 }
 
 function treasureLookupMagicItemEntry(treasure, lookup, entry, times) {
@@ -556,7 +703,7 @@ function treasureLookupItems(treasure, lookup, tableKeyCounts, options) {
 		}
 		
 		if ( entry.table === 'coins' ) {
-			count = treasureArraySum(entry.count)
+			count = entry.count.reduce(treasureSum, 0)
 			entry.descriptions = [count + entry.key]
 			entry.references = [count + "{@treasure-coin " + entry.key + "}"]
 			entry.pounds = count / coinsPerPound
@@ -631,8 +778,10 @@ function treasureDescriptions(tableKeyCounts, property, minimumPoundsToDisplayWe
 			}
 			
 			descriptions.push.apply(descriptions, value)
-		} else {
-			descriptions.push(treasureArraySum(entry.count) + " " + entry.table + " " + entry.key)
+		} else if ( entry.count ) {
+			descriptions.push(entry.count.reduce(treasureSum, 0) + " " + entry.table + " " + entry.key)
+		} else if ( entry.description ) {
+			descriptions.push(entry.description)
 		}
 		
 		if ( entry.value ) { sum += +entry.value }

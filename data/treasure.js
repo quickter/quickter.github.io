@@ -615,6 +615,7 @@ var treasure = {
 		{
 			"cr":0,
 			"name":"Challenge 0 - 4",
+			"concise":"0 - 4",
 			"table":[
 				{"frequency":30, "cp":{"roll":5, "die":6}},
 				{"frequency":30, "sp":{"roll":4, "die":6}},
@@ -626,6 +627,7 @@ var treasure = {
 		{
 			"cr":5,
 			"name":"Challenge 5 - 10",
+			"concise":"5 - 10",
 			"table":[
 				{"frequency":30, "cp":{"roll":4, "die":6, "times":100}, "ep":{"roll":1, "die":6, "times":10}},
 				{"frequency":30, "sp":{"roll":6, "die":6, "times":10}, "gp":{"roll":2, "die":6, "times":10}},
@@ -637,6 +639,7 @@ var treasure = {
 		{
 			"cr":11,
 			"name":"Challenge 11 - 16",
+			"concise":"11 - 16",
 			"table":[
 				{"frequency":20, "sp":{"roll":4, "die":6, "times":100}, "gp":{"roll":1, "die":6, "times":100}},
 				{"frequency":15, "ep":{"roll":1, "die":6, "times":100}, "gp":{"roll":1, "die":6, "times":100}},
@@ -647,6 +650,7 @@ var treasure = {
 		{
 			"cr":17,
 			"name":"Challenge 17+",
+			"concise":"17+",
 			"table":[
 				{"frequency":15, "ep":{"roll":2, "die":6, "times":1000}, "gp":{"roll":8, "die":6, "times":100}},
 				{"frequency":40, "gp":{"roll":1, "die":6, "times":1000}, "pp":{"roll":1, "die":6, "times":100}},
@@ -658,6 +662,7 @@ var treasure = {
 		{
 			"cr":0,
 			"name":"Challenge 0 - 4",
+			"concise":"0 - 4",
 			"party_hoards":[0, 1, 1, 2, 3],
 			"party_items":[
 				{"magic":"a", "quantity":6},
@@ -693,6 +698,7 @@ var treasure = {
 		{
 			"cr":5,
 			"name":"Challenge 5 - 10",
+			"concise":"5 - 10",
 			"party_hoards":[2, 3, 3, 3, 3, 4],
 			"party_items":[
 				{"magic":"a", "quantity":10},
@@ -743,6 +749,7 @@ var treasure = {
 		{
 			"cr":11,
 			"name":"Challenge 11 - 16",
+			"concise":"11 - 16",
 			"party_hoards":[1, 2, 2, 2, 2, 3],
 			"party_items":[
 				{"magic":"a", "quantity":3},
@@ -798,6 +805,7 @@ var treasure = {
 		{
 			"cr":17,
 			"name":"Challenge 17+",
+			"concise":"17+",
 			"party_hoards":[2, 2, 2, 2],
 			"party_items":[
 				{"magic":"c", "quantity":4},
