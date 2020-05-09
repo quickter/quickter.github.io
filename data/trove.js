@@ -1,9 +1,4 @@
 var trove = {
-	"supplements":[
-		{"name":"Holy Avenger", "bonusAc":false},
-		{"name":"Vorpal Sword", "bonusAc":false},
-		{"name":"Wand of Orcus", "bonusAc":false},
-	],
 	"sources":[
 		{
 			"key":"PHB",
@@ -98,12 +93,12 @@ var trove = {
 		{
 			"key":"MFF",
 			"name":"Mordenkainen's Fiendish Folio",
-			"nickname":"Mordenkainen's Folio"
+			"nickname":"Fiendish Folio"
 		},
 		{
 			"key":"MTF",
 			"name":"Mordenkainen's Tome of Foes",
-			"nickname":"Mordenkainen's Tome"
+			"nickname":"Tome of Foes"
 		},
 		{
 			"key":"OotA",
@@ -252,6 +247,20 @@ var trove = {
 			"order":9,
 			"value":0,
 			"level":0
+		}
+	],
+	"supplements":[
+		{
+			"name":"Holy Avenger",
+			"bonusAc":false
+		},
+		{
+			"name":"Vorpal Sword",
+			"bonusAc":false
+		},
+		{
+			"name":"Wand of Orcus",
+			"bonusAc":false
 		}
 	],
 	"categories":[
@@ -1952,16 +1961,6 @@ var trove = {
 			"value":200
 		},
 		{
-			"name":"Absorbing Tattoo",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":8,
-			"rarity":"very rare",
-			"reqAttune":true,
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo incorporates designs that emphasize one color more than others. While the tattoo is on your skin, you have resistance to a type of damage associated with that color, as shown on the table below. The DM chooses the color or determines it randomly.", {"type":"table", "caption":"", "colLabels":["d10", " Damage Type", "Color"], "colStyles":["col-2 text-center", "col-5", "col-5"], "rows":[["1", "Acid", "Green"], ["2", "Cold", "Blue"], ["3", "Fire", "Red"], ["4", "Force", "White"], ["5", "Lightning", "Yellow"], ["6", "Necrotic", "Black"], ["7", "Poison", "Violet"], ["8", "Psychic", "Silver"], ["9", "Radiant", "Gold"], ["10", "Thunder", "Orange"]]}, {"type":"entries", "name":"Damage Absorption", "entries":["When you take damage of the chosen type, you can use your reaction to gain immunity against that instance of the damage, and you regain a number of hit points equal to half the damage you would have taken. Once this reaction is used, it can't be used again until the next dawn."]}, {"type":"entries", "name":"Tattoo Attunement", "entries":["To attune to this item, you hold the needle to your skin where you want the tattoo to appear, pressing the needle there throughout the attunement process. When the attunement is complete, the needle turns into the ink that becomes the tattoo, which appears on the skin. If you have multiple magic tattoos, they count as a single magic item with regard to the number of magic items you can attune to.", "If your attunement to the tattoo ends, the tattoo vanishes, and the needle reappears in the closest unoccupied space to you."]}]
-		},
-		{
 			"name":"Acid (vial)",
 			"source":"PHB",
 			"page":148,
@@ -2417,7 +2416,8 @@ var trove = {
 			"rarity":"none",
 			"weight":5,
 			"value":200,
-			"entries":["A backpack can hold one cubic foot or 30 pounds of gear. You can also strap items, such as a bedroll or a coil of rope, to the outside of a backpack."]
+			"entries":["A backpack can hold one cubic foot or 30 pounds of gear. You can also strap items, such as a bedroll or a coil of rope, to the outside of a backpack."],
+			"containerCapacity":{"weight":[30]}
 		},
 		{
 			"name":"Backpack Parachute",
@@ -2450,14 +2450,6 @@ var trove = {
 			"lootTables":["Magic Item Table C"]
 		},
 		{
-			"name":"Bag of Bounty",
-			"source":"UAWGE",
-			"page":116,
-			"rarity":"uncommon",
-			"wondrous":true,
-			"entries":["This is a sturdy leather sack with tiny Siberys shards embedded into the lining. If you have the Mark of Hospitality you can use an action to cast create food and water, drawing a feast from within the bag. You shape this meal with your thoughts. You can create the standard bland fare without requiring any sort of check, but you can attempt to create finer food by making a Charisma check; if you're proficient with cook's utensils, add your bonus to this check. A failed check results in a sour and squalid meal.", {"type":"table", "colLabels":["Food Quality", "Difficulty"], "colStyles":["col-6", "col-6"], "rows":[["Poor", "No roll required"], ["Modest", 10], ["Comfortable", 13], ["Wealthy", 15], ["Aristocratic", 18]]}, "A bag of bounty can be used up to three times over the course of a day. After that, the bag can't be used again until the next dawn."]
-		},
-		{
 			"name":"Bag of Devouring",
 			"source":"DMG",
 			"page":153,
@@ -2479,6 +2471,7 @@ var trove = {
 			"wondrous":true,
 			"weight":15,
 			"entries":["This bag has an interior space considerably larger than its outside dimensions, roughly 2 feet in diameter at the mouth and 4 feet deep. The bag can hold up to 500 pounds, not exceeding a volume of 64 cubic feet. The bag weighs 15 pounds, regardless of its contents. Retrieving an item from the bag requires an action.", "If the bag is overloaded, pierced, or torn, it ruptures and is destroyed, and its contents are scattered in the Astral Plane. If the bag is turned inside out, its contents spill forth, unharmed, but the bag must be put right before it can be used again. Breathing creatures inside the bag can survive up to a number of minutes equal to 10 divided by the number of creatures (minimum 1 minute), after which time they begin to suffocate.", "Placing a bag of holding inside an extradimensional space created by a {@item Heward's handy haversack}, {@item portable hole}, or similar item instantly destroys both items and opens a gate to the Astral Plane. The gate originates where the one item was placed inside the other. Any creature within 10 feet of the gate is sucked through it to a random location on the Astral Plane. The gate then closes. The gate is one-way only and can't be reopened."],
+			"containerCapacity":{"weight":[500], "weightless":true},
 			"lootTables":["Magic Item Table A", "Magic Item Table B"]
 		},
 		{
@@ -2569,15 +2562,6 @@ var trove = {
 			"attachedSpells":["levitate", "feather fall"]
 		},
 		{
-			"name":"Band of Loyalty",
-			"source":"UAWGE",
-			"page":115,
-			"type":"RG",
-			"rarity":"common",
-			"reqAttune":true,
-			"entries":["If you are reduced to zero hit points while attuned to a band of loyalty, you instantly die. These rings are favored by spies who can't afford to fall into enemy hands."]
-		},
-		{
 			"name":"Banded Agate",
 			"source":"DMG",
 			"page":134,
@@ -2636,36 +2620,6 @@ var trove = {
 			"entries":["At any point while the characters are searching through unusual equipment or detritus in the Monastery of the Distressed Body or the city of Daoine Gloine, roll on the following table to determine what they find. Each character finds one Barrier Peaks trinket over the course of the adventure.", {"type":"table", "caption":"Barrier Peaks Trinkets", "colLabels":["d100", "Trinket"], "colStyles":["text-center col-2", "col-10"], "rows":[["01–02", "A handheld device containing a glowing green gem that darkens when no oxygen is present"], ["03–04", "A foot-long, egg-shaped object made from stitched leather"], ["05–06", "A black metal cylinder that dictates the history of an unknown plant or animal species when held"], ["07–08", "A cylindrical jar containing a pickled crustacean of unknown origin"], ["09–10", "A small thumb-button storage cylinder that releases a useless iron key when pressed"], ["11–12", "An unusual heraldic cloak pin that emits a short musical fanfare when tapped"], ["13–14", "A handheld tube that sucks in dust when squeezed and captures it in a detachable compartment"], ["15–16", "A scintillating disk of unknown material"], ["17–18", "A dial that can be twisted to slowly click back to its origin, whereupon it emits a loud ringing noise"], ["19–20", "A hovering, apple-sized orb of metal that follows you around"], ["21–22", "The {@condition petrified} cocoon of an unknown insect"], ["23–24", "A bronze gauntlet set with many slots, and which violently expels any object pressed into those slots"], ["25–26", "A box that plays an illusory message in an unknown language when opened"], ["27–28", "A rod that causes you to forget the last five minutes when you press a button near its tip"], ["29–30", "A palm-sized cylinder that emits a harmless ray of glowing blue light when squeezed"], ["31–32", "A bead that suppresses your hearing when secreted inside either ear, causing you to be {@condition deafened}"], ["33–34", "An amulet that displays your current health as a green bar above your head, with the bar retracting as your hit point total decreases"], ["35–36", "A casket containing one hundred tasteless blue pills that produce no discernible effect when swallowed"], ["37–38", "A metal mechanical puzzle with no apparent solution"], ["39–40", "A metal spinning top that never tips over when spun"], ["41–42", "Two strips of cloth-like material, each coated with a soft, hair-like fuzz on one side"], ["43–44", "A simple wire pyramid that preserves any foodstuffs it is placed over"], ["45–46", "A star chart labeled in an unknown script"], ["47–48", "A rectangle of black glass that displays indecipherable arcane runes when you swipe your finger across it"], ["49–50", "A schematic that shows the inner workings of an impossibly complex device"], ["51–52", "An odd pair of comfortable shoes made from supple, multicolored material"], ["53–54", "A mirror that makes you appear more beautiful when you tap your reflection"], ["55–56", "A mechanical metal puppy that playfully follows you around when activated"], ["57–58", "A talking bracelet that speaks only to correct your grammar"], ["59–60", "A bar of soap that can remove any stain"], ["61–62", "A journal in Common, written by someone in a world similar to but not quite the same as your own"], ["63–64", "A tub containing one serving of disgusting but nutritious goop that refills itself slowly over the course of one week"], ["65–66", "An instruction manual for activating a mysterious, world-destroying device"], ["67–68", "A small supple disk that displays weird moving symbols when placed over either eye"], ["69–70", "A tiny desk set with large, colorful buttons, each of which plays a discordant musical fanfare when pressed"], ["71–72", "A pair of tinted spectacles that reduce the glare of the sun when worn"], ["73–74", "An inflatable bedroll made from an unknown material, and which slowly deflates when used"], ["75–76", "A rod tipped with a blunt metal pincer whose grip can be adjusted by turning a screw"], ["77–78", "A battered helmet with a transparent orange visor that flips into place when donned"], ["79–80", "An animated map of a mysterious city that appears to be tracking the movements of five creatures"], ["81–82", "A cylinder of mist that holds your hair perfectly in shape when sprayed onto your head"], ["83–84", "A talking wand that tells you the name of any plant you point it at"], ["85–86", "A metal bracelet that displays the number of steps you've taken since your last long rest"], ["87–88", "A tiny handheld device that projects a glowing dot onto whatever you point it at"], ["89–90", "A rectangular piece of glass that displays a twelve-digit countdown on its surface"], ["91–92", "A wall chart of mysterious formulae arranged into a color-coded grid"], ["93–94", "A handheld device that solves any math problem you input using its buttons"], ["95–96", "A ball of speckled brown fur that appears to be alive"], ["97–98", "A complicated crystal board game that you don't know how to play"], ["99–00", "A large glass rectangle that displays a storm of black and white patterns when you press a button on its underside"]]}]
 		},
 		{
-			"name":"Barrier Tattoo (Rare)",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":9,
-			"rarity":"rare",
-			"reqAttune":true,
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo depicts protective imagery and uses ink that resembles liquid metal. While you aren't wearing armor, the tattoo grants you an Armor Class of 15 + your Dexterity modifier (maximum of +2). You can use a shield and still gain this benefit.", {"type":"entries", "name":"Tattoo Attunement", "entries":["To attune to this item, you hold the needle to your skin where you want the tattoo to appear, pressing the needle there throughout the attunement process. When the attunement is complete, the needle turns into the ink that becomes the tattoo, which appears on the skin. If you have multiple magic tattoos, they count as a single magic item with regard to the number of magic items you can attune to.", "If your attunement to the tattoo ends, the tattoo vanishes, and the needle reappears in the closest unoccupied space to you."]}]
-		},
-		{
-			"name":"Barrier Tattoo (Uncommon)",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":9,
-			"rarity":"uncommon",
-			"reqAttune":true,
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo depicts protective imagery and uses ink that resembles liquid metal. While you aren't wearing armor, the tattoo grants you an Armor Class of 12 + your Dexterity modifier. You can use a shield and still gain this benefit.", {"type":"entries", "name":"Tattoo Attunement", "entries":["To attune to this item, you hold the needle to your skin where you want the tattoo to appear, pressing the needle there throughout the attunement process. When the attunement is complete, the needle turns into the ink that becomes the tattoo, which appears on the skin. If you have multiple magic tattoos, they count as a single magic item with regard to the number of magic items you can attune to.", "If your attunement to the tattoo ends, the tattoo vanishes, and the needle reappears in the closest unoccupied space to you."]}]
-		},
-		{
-			"name":"Barrier Tattoo (Very Rare)",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":9,
-			"rarity":"very rare",
-			"reqAttune":true,
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo depicts protective imagery and uses ink that resembles liquid metal. While you aren't wearing armor, the tattoo grants you an Armor Class of 18. You can use a shield and still gain this benefit.", {"type":"entries", "name":"Tattoo Attunement", "entries":["To attune to this item, you hold the needle to your skin where you want the tattoo to appear, pressing the needle there throughout the attunement process. When the attunement is complete, the needle turns into the ink that becomes the tattoo, which appears on the skin. If you have multiple magic tattoos, they count as a single magic item with regard to the number of magic items you can attune to.", "If your attunement to the tattoo ends, the tattoo vanishes, and the needle reappears in the closest unoccupied space to you."]}]
-		},
-		{
 			"name":"Basic Poison (vial)",
 			"source":"PHB",
 			"page":153,
@@ -2685,7 +2639,8 @@ var trove = {
 			"rarity":"none",
 			"weight":2,
 			"value":40,
-			"entries":["A basket holds 2 cubic feet or 40 pounds of gear."]
+			"entries":["A basket holds 2 cubic feet or 40 pounds of gear."],
+			"containerCapacity":{"weight":[40]}
 		},
 		{
 			"name":"Battering Shield",
@@ -3115,16 +3070,6 @@ var trove = {
 			"reqAttune":true,
 			"wondrous":true,
 			"entries":["This diamond contains the blood of a creature—blood that appears in the form of the blod (blood) rune. While the item is on your person, you can use your action to divine the location of the creature nearest to you that is related to the blood in the item and that isn't undead. You sense the distance and direction of the creature relative to your location. The creature is either the one whose blood is in the item or a blood relative.", "This item is made from a large diamond worth at least 5,000 gp. When the blood of a creature is poured onto it during the creation process, the blood seeps into the heart of the gem. If the gem is destroyed, the blood evaporates and is gone forever. A vengeful being might use a blod stone to hunt down an entire bloodline. Such stones are sometimes given as gifts to siblings or handed down from parent to child."]
-		},
-		{
-			"name":"Blood Fury Tattoo",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":10,
-			"rarity":"legendary",
-			"reqAttune":true,
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo evokes fury in its form and colors. While this tattoo is on your skin, you gain the following benefits:", {"type":"list", "items":["Your attack rolls score a critical hit on a {@dice d20} roll of 19 or 20.", "When you score a critical hit against a creature, that target takes an extra {@damage 4d6} necrotic damage, and you gain a number of temporary hit points equal to the necrotic damage dealt.", "When a creature you can see damages you, you can use your reaction to make a melee attack against that creature, with advantage on your attack roll."]}, {"type":"entries", "name":"Tattoo Attunement", "entries":["To attune to this item, you hold the needle to your skin where you want the tattoo to appear, pressing the needle there throughout the attunement process. When the attunement is complete, the needle turns into the ink that becomes the tattoo, which appears on the skin. If you have multiple magic tattoos, they count as a single magic item with regard to the number of magic items you can attune to.", "If your attunement to the tattoo ends, the tattoo vanishes, and the needle reappears in the closest unoccupied space to you."]}]
 		},
 		{
 			"name":"Blood of the Lycanthrope (Injury)",
@@ -4075,7 +4020,8 @@ var trove = {
 			"rarity":"none",
 			"weight":25,
 			"value":500,
-			"entries":["A chest holds 12 cubic feet or 300 pounds of gear."]
+			"entries":["A chest holds 12 cubic feet or 300 pounds of gear."],
+			"containerCapacity":{"weight":[300]}
 		},
 		{
 			"name":"Chest of Preserving",
@@ -4383,16 +4329,6 @@ var trove = {
 			"additionalEntries":["Although the cobbler's trade might seem too humble for an adventurer, a good pair of boots will see a character across rugged wilderness and through deadly dungeons.", {"type":"entries", "name":"Components", "entries":["Cobbler's tools consist of a hammer, an awl, a knife, a shoe stand, a cutter, spare leather, and thread."]}, {"type":"entries", "name":"Arcana, History", "entries":["Your knowledge of shoes aids you in identifying the magical properties of enchanted boots or the history of such items."]}, {"type":"entries", "name":"Investigation", "entries":["Footwear holds a surprising number of secrets. You can learn where someone has recently visited by examining the wear and the dirt that has accumulated on their shoes. Your experience in repairing shoes makes it easier for you to identify where damage might come from."]}, {"type":"entries", "name":"Maintain Shoes", "entries":["As part of a long rest, you can repair your companions' shoes. For the next 24 hours, up to six creatures of your choice who wear shoes you worked on can travel up to 10 hours a day without making saving throws to avoid {@condition exhaustion}."]}, {"type":"entries", "name":"Craft Hidden Compartment", "entries":["With 8 hours of work, you can add a hidden compartment to a pair of shoes. The compartment can hold an object up to 3 inches long and 1 inch wide and deep. You make an Intelligence check using your tool proficiency to determine the Intelligence ({@skill Investigation}) check DC needed to find the compartment."]}, {"type":"table", "caption":"Cobbler's Tools", "colLabels":["Activity", "DC"], "colStyles":["col-10", "col-2 text-center"], "rows":[["Determine a shoe's age and origin", "10"], ["Find a hidden compartment in a boot heel", "15"]]}]
 		},
 		{
-			"name":"Coiling Grasp Tattoo",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":9,
-			"rarity":"uncommon",
-			"reqAttune":true,
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo has long intertwining designs. While the tattoo is on your skin, you can, as an action, cause the tattoo to extrude into inky tendrils, which reach for a creature you can see within 15 feet of you. The creature must succeed on a DC 14 Strength saving throw or take {@damage 3d6} force damage and be {@condition grappled} by you. As an action, the creature can escape the grapple by succeeding on a DC 14 Strength ({@skill Athletics}) or Dexterity ({@skill Acrobatics}) check. The grapple also ends if you halt it (no action required), if the creature is ever more than 15 feet away from you, or if you use this tattoo on a different creature.", {"type":"entries", "name":"Tattoo Attunement", "entries":["To attune to this item, you hold the needle to your skin where you want the tattoo to appear, pressing the needle there throughout the attunement process. When the attunement is complete, the needle turns into the ink that becomes the tattoo, which appears on the skin. If you have multiple magic tattoos, they count as a single magic item with regard to the number of magic items you can attune to.", "If your attunement to the tattoo ends, the tattoo vanishes, and the needle reappears in the closest unoccupied space to you."]}]
-		},
-		{
 			"name":"Coin of Decisionry",
 			"source":"AI",
 			"page":22,
@@ -4591,7 +4527,8 @@ var trove = {
 			"rarity":"none",
 			"weight":1,
 			"value":100,
-			"entries":["This wooden case can hold up to twenty crossbow bolts."]
+			"entries":["This wooden case can hold up to twenty {@item crossbow bolt|phb|crossbow bolts}."],
+			"containerCapacity":{"item":[{"crossbow bolt|phb":20}]}
 		},
 		{
 			"name":"Crowbar",
@@ -5483,17 +5420,6 @@ var trove = {
 			"entries":["When you attain rank 4, you gain a small tome that is an uncommon magic item. The elder cartographer's glossography grants advantage on Intelligence or Wisdom checks related to geographical features or locations."]
 		},
 		{
-			"name":"Eldritch Claw Tattoo",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":9,
-			"rarity":"uncommon",
-			"reqAttune":true,
-			"wondrous":true,
-			"tattoo":true,
-			"bonusWeapon":"+1",
-			"entries":["This tattoo depicts clawlike forms and other jagged shapes. While the tattoo is on your skin, your unarmed strikes are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks, and you gain a +1 bonus to attack and damage rolls with unarmed strikes.", {"type":"entries", "name":"Eldritch Maul", "entries":["As a bonus action, you can empower the tattoo for 1 minute. For the duration, each of your melee weapon attacks can reach a target up to 30 feet away from you, as tendrils of ink launch from your weapon or unarmed strike toward the target. In addition, your melee weapon attacks deal an extra {@damage 1d6} force damage on a hit. Once used, this bonus action can't be used again until the next dawn."]}, {"type":"entries", "name":"Tattoo Attunement", "entries":["To attune to this item, you hold the needle to your skin where you want the tattoo to appear, pressing the needle there throughout the attunement process. When the attunement is complete, the needle turns into the ink that becomes the tattoo, which appears on the skin. If you have multiple magic tattoos, they count as a single magic item with regard to the number of magic items you can attune to.", "If your attunement to the tattoo ends, the tattoo vanishes, and the needle reappears in the closest unoccupied space to you."]}]
-		},
-		{
 			"name":"Electrum (ep)",
 			"source":"PHB",
 			"page":143,
@@ -6271,18 +6197,6 @@ var trove = {
 			"attachedSpells":["mage hand"]
 		},
 		{
-			"name":"Ghost Step Tattoo",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":11,
-			"rarity":"rare",
-			"reqAttune":true,
-			"wondrous":true,
-			"tattoo":true,
-			"recharge":"dawn",
-			"charges":3,
-			"entries":["This tattoo shifts and wavers on the skin, parts of it appearing blurred. The tattoo has 3 charges, and it regains all expended charges daily at dawn.", "As a bonus action while the tattoo is on your skin, you can expend 1 of the tattoo's charges to become incorporeal until the end of your next turn. For the duration, you gain the following benefits:", {"type":"list", "items":["You have resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks.", "You can't be {@condition grappled} or {@condition restrained}.", "You can move through creatures and solid objects as if they were difficult terrain. If you end your turn in a solid object, you take {@damage 1d10} force damage. If the effect ends while you are inside a solid object, you instead are shunted to the nearest unoccupied space, and you take {@damage 1d10} force damage for every 5 feet traveled."]}, {"type":"entries", "name":"Tattoo Attunement", "entries":["To attune to this item, you hold the needle to your skin where you want the tattoo to appear, pressing the needle there throughout the attunement process. When the attunement is complete, the needle turns into the ink that becomes the tattoo, which appears on the skin. If you have multiple magic tattoos, they count as a single magic item with regard to the number of magic items you can attune to.", "If your attunement to the tattoo ends, the tattoo vanishes, and the needle reappears in the closest unoccupied space to you."]}]
-		},
-		{
 			"name":"Ginger",
 			"source":"PHB",
 			"page":157,
@@ -6811,15 +6725,6 @@ var trove = {
 			"attachedSpells":["heat metal"]
 		},
 		{
-			"name":"Hacking Tools",
-			"source":"UAModernMagic",
-			"page":4,
-			"type":"T",
-			"rarity":"none",
-			"age":"modern",
-			"entries":["This kit contains the hardware and software necessary to allow access into most computer systems and electronic devices. Proficiency with hacking tools lets you add your proficiency bonus to any Intelligence checks you make to connect to or make use of a computer system or electronic device. The kit fits snugly in a backpack or toolbox. "]
-		},
-		{
 			"name":"Hammer",
 			"source":"PHB",
 			"page":150,
@@ -7113,6 +7018,7 @@ var trove = {
 			"wondrous":true,
 			"weight":5,
 			"entries":["This backpack has a central pouch and two side pouches, each of which is an extradimensional space. Each side pouch can hold up to 20 pounds of material, not exceeding a volume of 2 cubic feet. The large central pouch can hold up to 8 cubic feet or 80 pounds of material. The backpack always weighs 5 pounds, regardless of its contents.", "Placing an object in the haversack follows the normal rules for interacting with objects. Retrieving an item from the haversack requires you to use an action. When you reach into the haversack for a specific item, the item is always magically on top.", "The haversack has a few limitations. If it is overloaded, or if a sharp object pierces it or tears it, the haversack ruptures and is destroyed. If the haversack is destroyed, its contents are lost forever, although an artifact always turns up again somewhere. If the haversack is turned inside out, its contents spill forth, unharmed, and the haversack must be put right before it can be used again. If a breathing creature is placed within the haversack, the creature can survive for up to 10 minutes, after which time it begins to suffocate.", "Placing the haversack inside an extradimensional space created by a {@item bag of holding}, {@item portable hole}, or similar item instantly destroys both items and opens a gate to the Astral Plane. The gate originates where the one item was placed inside the other. Any creature within 10-feet of the gate is sucked through it and deposited in a random location on the Astral Plane. The gate then closes. The gate is one-way only and can't be reopened."],
+			"containerCapacity":{"weight":[20, 20, 80], "weightless":true},
 			"lootTables":["Magic Item Table C"]
 		},
 		{
@@ -7137,7 +7043,8 @@ var trove = {
 			"weight":10,
 			"ac":11,
 			"bonusAc":"+1",
-			"entries":["A number of Kwalish's experiments were attempts to research the works of the legendary mage Heward, who first crafted what he named hireling armor. While wearing this armor, you gain a +1 bonus to AC. In addition, the armor's animated straps can assist with the drawing and sheathing of weapons, such that you can draw or stow two one-handed weapons when you would normally be able to draw or stow only one.", "This armor also has six pockets, each of which is an extradimensional space. Each pocket can hold up to 20 pounds of material, not exceeding a volume of 2 cubic feet. The armor always weighs 10 pounds, regardless of its pockets' contents. Placing an object into one of the armor's pockets follows the normal rules for interacting with objects. Retrieving an item from a pocket of the armor requires you to use an action. When you reach into a pocket for a specific item, the item is always magically on top.", "Placing the armor inside an extradimensional space created by a {@item bag of holding}, a {@item Heward's handy haversack}, or a similar item instantly destroys both items and opens a gate to the Astral Plane. The gate originates where the one item was placed inside the other. Any creature within 10 feet of the gate is sucked through it and deposited in a random location on the Astral Plane. The gate then closes. The gate is one-way only and can't be reopened."]
+			"entries":["A number of Kwalish's experiments were attempts to research the works of the legendary mage Heward, who first crafted what he named hireling armor. While wearing this armor, you gain a +1 bonus to AC. In addition, the armor's animated straps can assist with the drawing and sheathing of weapons, such that you can draw or stow two one-handed weapons when you would normally be able to draw or stow only one.", "This armor also has six pockets, each of which is an extradimensional space. Each pocket can hold up to 20 pounds of material, not exceeding a volume of 2 cubic feet. The armor always weighs 10 pounds, regardless of its pockets' contents. Placing an object into one of the armor's pockets follows the normal rules for interacting with objects. Retrieving an item from a pocket of the armor requires you to use an action. When you reach into a pocket for a specific item, the item is always magically on top.", "Placing the armor inside an extradimensional space created by a {@item bag of holding}, a {@item Heward's handy haversack}, or a similar item instantly destroys both items and opens a gate to the Astral Plane. The gate originates where the one item was placed inside the other. Any creature within 10 feet of the gate is sucked through it and deposited in a random location on the Astral Plane. The gate then closes. The gate is one-way only and can't be reopened."],
+			"containerCapacity":{"weight":[20, 20, 20, 20, 20, 20], "weightless":true}
 		},
 		{
 			"name":"Hide of the Feral Guardian",
@@ -7354,16 +7261,6 @@ var trove = {
 			"weight":10,
 			"entries":["The Icon of Ravenloft is a 12-inch tall statuette made of the purest silver, weighing 10 pounds. It depicts a cleric kneeling in supplication.", "The icon was given to Strahd by the archpriest Ciril Romulich, an old family friend, to consecrate the castle and its chapel.", "While within 30 feet of the icon, a creature is under the effect of a {@spell protection from evil and good} spell against fiends and undead. Only a creature attuned to the icon can use its other properties.", {"name":"Augury", "type":"entries", "entries":["You can use an action to cast an {@spell augury} spell from the icon, with no material components required. Once used, this property can't be used again until the next dawn."]}, {"name":"Bane of the Undead", "type":"entries", "entries":["You can use the icon as a holy symbol while using the Turn Undead or Turn the Unholy feature. If you do so, increase the save DC by 2."]}, {"name":"Cure Wounds", "type":"entries", "entries":["While holding the icon, you can take an action to heal one creature that you can see within 30 feet of you. The target regains {@dice 3d8 + 3} hit points, unless it is an undead, a construct, or a fiend. Once used, this property can't be used again until the next dawn."]}],
 			"attachedSpells":["protection from evil and good", "augury"]
-		},
-		{
-			"name":"Illuminator's Tattoo",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":10,
-			"rarity":"common",
-			"reqAttune":true,
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo contains beautiful calligraphy, images of writing implements, and the like. While this tattoo is on your skin, you can write with your fingertip as if it were an ink pen that never runs out of ink.", "As an action, you can touch a piece of writing up to one page in length and speak a creature's name. The writing becomes {@condition invisible} to everyone other than you and the named creature for the next 24 hours. Either of you can dismiss the invisibility by touching the script (no action required). Once used, this action can't be used again until the next dawn.", {"type":"entries", "name":"Tattoo Attunement", "entries":["To attune to this item, you hold the needle to your skin where you want the tattoo to appear, pressing the needle there throughout the attunement process. When the attunement is complete, the needle turns into the ink that becomes the tattoo, which appears on the skin. If you have multiple magic tattoos, they count as a single magic item with regard to the number of magic items you can attune to.", "If your attunement to the tattoo ends, the tattoo vanishes, and the needle reappears in the closest unoccupied space to you."]}]
 		},
 		{
 			"name":"Illusionist's Bracers",
@@ -8350,16 +8247,6 @@ var trove = {
 			"additionalEntries":["Knowledge of leatherworking extends to lore concerning animal hides and their properties. It also confers knowledge of leather armor and similar goods.", {"type":"entries", "name":"Components", "entries":["Leatherworker's tools include a knife, a small mallet, an edger, a hole punch, thread, and leather scraps."]}, {"type":"entries", "name":"Arcana", "entries":["Your expertise in working with leather grants you added insight when you inspect magic items crafted from leather, such as boots and some cloaks."]}, {"type":"entries", "name":"Investigation", "entries":["You gain added insight when studying leather items or clues related to them, as you draw on your knowledge of leather to pick out details that others would overlook."]}, {"type":"entries", "name":"Identify Hides", "entries":["When looking at a hide or a leather item, you can determine the source of the leather and any special techniques used to treat it. For example, you can spot the difference between leather crafted using dwarven methods and leather crafted using halfling methods."]}, {"type":"table", "caption":"Leatherworker's Tools", "colLabels":["Activity", "DC"], "colStyles":["col-10", "col-2 text-center"], "rows":[["Modify a leather item's appearance", "10"], ["Determine a leather item's history", "20"]]}]
 		},
 		{
-			"name":"Lifewell Tattoo",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":10,
-			"rarity":"rare",
-			"reqAttune":true,
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo comprises symbols of life and rebirth. While this tattoo is on your skin, you have resistance to necrotic damage.", {"type":"entries", "name":"Death Ward", "entries":["When you would be reduced to 0 hit points, you drop to 1 hit point instead. Once used, this benefit can't be used again until the next dawn."]}, {"type":"entries", "name":"Tattoo Attunement", "entries":["To attune to this item, you hold the needle to your skin where you want the tattoo to appear, pressing the needle there throughout the attunement process. When the attunement is complete, the needle turns into the ink that becomes the tattoo, which appears on the skin. If you have multiple magic tattoos, they count as a single magic item with regard to the number of magic items you can attune to.", "If your attunement to the tattoo ends, the tattoo vanishes, and the needle reappears in the closest unoccupied space to you."]}]
-		},
-		{
 			"name":"Lightbringer",
 			"source":"LMoP",
 			"page":48,
@@ -8770,7 +8657,8 @@ var trove = {
 			"rarity":"none",
 			"weight":1,
 			"value":100,
-			"entries":["This cylindrical leather case can hold up to ten rolled-up sheets of paper or five rolled-up sheets of parchment."]
+			"entries":["This cylindrical leather case can hold up to ten rolled-up {@item paper (one sheet)|phb|sheets of paper} or five rolled-up {@item parchment (one sheet)|phb|sheets of parchment}."],
+			"containerCapacity":{"item":[{"parchment (one sheet)|phb":5, "paper (one sheet)|phb":10}]}
 		},
 		{
 			"name":"Marble font with gold inlay (Legion of Dusk)",
@@ -8812,17 +8700,6 @@ var trove = {
 			"weight":8,
 			"value":1000,
 			"additionalEntries":["Mason's tools allow you to craft stone structures, including walls and buildings crafted from brick.", {"type":"entries", "name":"Components", "entries":["Mason's tools consist of a trowel, a hammer, a chisel, brushes, and a square."]}, {"type":"entries", "name":"History", "entries":["Your expertise aids you in identifying a stone building's date of construction and purpose, along with insight into who might have built it."]}, {"type":"entries", "name":"Investigation", "entries":["You gain additional insight when inspecting areas within stone structures."]}, {"type":"entries", "name":"Perception", "entries":["You can spot irregularities in stone walls or floors, making it easier to find trap doors and secret passages."]}, {"type":"entries", "name":"Demolition", "entries":["Your knowledge of masonry allows you to spot weak points in brick walls. You deal double damage to such structures with your weapon attacks."]}, {"type":"table", "caption":"Mason's Tools", "colLabels":["Activity", "DC"], "colStyles":["col-10", "col-2 text-center"], "rows":[["Chisel a small hole in a stone wall", "10"], ["Find a weak point in a stone wall", "15"]]}]
-		},
-		{
-			"name":"Masquerade Tattoo",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":11,
-			"rarity":"common",
-			"reqAttune":true,
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo appears on your skin as whatever you desire. As a bonus action, you can shape the tattoo into any color or pattern and move it to any area of your skin. Whatever form it takes, it is always obviously a tattoo. It can range in size from no smaller than a copper piece to an intricate work of art that covers all your skin.", {"type":"entries", "name":"Disguise Self", "entries":["As an action, you can use the tattoo to cast the {@spell disguise self} spell. Once the spell is cast from the tattoo, it can't be cast from the tattoo again until the next dawn."]}, {"type":"entries", "name":"Tattoo Attunement", "entries":["To attune to this item, you hold the needle to your skin where you want the tattoo to appear, pressing the needle there throughout the attunement process. When the attunement is complete, the needle turns into the ink that becomes the tattoo, which appears on the skin. If you have multiple magic tattoos, they count as a single magic item with regard to the number of magic items you can attune to.", "If your attunement to the tattoo ends, the tattoo vanishes, and the needle reappears in the closest unoccupied space to you."]}],
-			"attachedSpells":["disguise self"]
 		},
 		{
 			"name":"Masterpiece painting in mahogany frame with gold inlay (Legion of Dusk)",
@@ -9665,8 +9542,7 @@ var trove = {
 			"srd":true,
 			"type":"G",
 			"rarity":"none",
-			"value":20,
-			"entries":["Paper (one sheet)"]
+			"value":20
 		},
 		{
 			"name":"Paper Bird",
@@ -9684,8 +9560,7 @@ var trove = {
 			"srd":true,
 			"type":"G",
 			"rarity":"none",
-			"value":10,
-			"entries":["Parchment (one sheet)"]
+			"value":10
 		},
 		{
 			"name":"Pariah's Shield",
@@ -10710,7 +10585,8 @@ var trove = {
 			"rarity":"none",
 			"weight":1,
 			"value":50,
-			"entries":["A cloth or leather pouch can hold up to 20 sling bullets or 50 blowgun needles, among other things. A compartmentalized pouch for holding spell components is called a component pouch. A pouch can hold up to ⅕ cubic foot or 6 pounds of gear."]
+			"entries":["A cloth or leather pouch can hold up to 20 {@item sling bullet|phb|sling bullets} or 50 {@item blowgun needle|phb|blowgun needles}, among other things. A compartmentalized pouch for holding spell components is called a {@item component pouch|phb}. A pouch can hold up to ⅕ cubic foot or 6 pounds of gear."],
+			"containerCapacity":{"weight":[6], "item":[{"sling bullet|phb":20, "blowgun needle|phb":50}]}
 		},
 		{
 			"name":"Powered Armor",
@@ -10724,7 +10600,7 @@ var trove = {
 			"ac":18,
 			"ability":{"static":{"str":18}},
 			"bonusAc":"+1",
-			"entries":["Powered armor resembles a suit of unusual plate armor, with finely articulated joints connected by an oily, black, leather-like material. The armor has been worked to create the appearance of a heavily muscled warrior, and its great helm is unusual in that it has no openings—only a broad glass plate in the front with a second piece of glass above it. Strange plates, tubing, and large metal bosses adorn the armor in seemingly random fashion. On the back of the armor's left gauntlet is a rectangular metal box, from which projects a short rod tipped with a cone-shaped red crystal.", "While wearing this armor, you gain the following benefits:", {"type":"list", "items":["You have a +1 bonus to AC.", "Your Strength score is 18 (this has no effect if your Strength is already 18 or higher).", "You have advantage on death saving throws."]}, "The armor has further capabilities that can be powered either by energy cells or by your own life energy. You can use a bonus action to draw power from an energy cell or sacrifice hit points to gain one of the following benefits:", {"type":"list", "items":["Emit a force field to gain {@dice 2d6 + 5} temporary hit points (1 charge or 5 hit points).", "Activate boosters to gain a flying speed of 15 feet for 1 minute (1 charge or 5 hit points).", "Fire arm-mounted laser: {@atk rw} {@hit 8} to hit, range 120 feet, one target. {@h}{@dice 2d6} radiant damage (1 charge or 5 hit points).", "Translate any writing you can see in any nonmagical language, to a total of one thousand words over 1 minute (1 charge or 5 hit points).", "Fill the armor with air, allowing you to breathe normally in any environment for up to 1 hour (1 charge or 5 hit points).", "Gain {@sense darkvision} to a range of 60 feet for up to 1 hour (1 charge or 5 hit points)."]}, "The armor can accept only one energy cell at a time. It is found with one energy cell attached, containing {@dice 2d10} charges.", {"type":"inset", "name":"Powered Armor Options", "entries":["Depending on where and how it appears in the adventure, you might wish to modify the features of Kwalish's legendary powered armor.", {"type":"entries", "name":"Automatic Defenses", "entries":["Unless Kwalish deactivates the suit's automatic defenses, no one can approach the armor without setting those defenses off. Treat the armor as a {@creature shield guardian} that has stored a {@spell magic missile} spell cast using a 4th-level spell slot. When the armor is reduced to 0 hit points, its defenses are rendered inert and it can be safely approached."]}, {"type":"entries", "name":"Battle of Wills", "entries":["When donned by a new user, the armor deems itself superior and attempts to take possession of that user. The user must succeed on a DC 13 Charisma saving throw or be possessed by the armor. While possessed, the user is {@condition incapacitated} and loses control of its body but retains its awareness. The armor uses the possessed user's statistics (as adjusted by the armor), but doesn't gain access to the user's knowledge, features, or proficiencies.", "Freeing a creature trapped inside the armor first requires defeating the armor's automatic defenses (as above). The trapped creature can also attempt a DC 20 Charisma saving throw each day at dawn. On a successful save, the armor no longer controls the creature and can be safely donned by that creature at any time."]}, {"type":"entries", "name":"Stasis", "entries":["Whenever a creature wearing the armor drops to 0 hit points, the armor places that creature into a state of stasis. While in this state, the creature is stable and does not make death saving throws, but the armor takes control of the creature (as above). Additionally, the armor attempts to assume the identity of the user, assuring their allies that nothing is amiss. Freeing the user first requires defeating the armor's automatic defenses (as above). A creature in stasis does not make Charisma saving throws to break the armor's control."]}, {"type":"entries", "name":"Alternative Power", "entries":["Powered armor originally required energy cells to fuel it, but was adapted by Kwalish to be fueled by the life energy of the creature wearing it. You might decide that the armor can also draw power from additional sources, or that energy cells can be recharged with the aid of a tinker, inventor, or artificer. It might also be possible for allies to connect to the armor through the use of magic that generates a conduit something like an astral silver cord. While so connected, a willing ally can give up hit points as a reaction to fuel the armor's abilities."]}]}]
+			"entries":["Powered armor resembles a suit of unusual plate armor, with finely articulated joints connected by an oily, black, leather-like material. The armor has been worked to create the appearance of a heavily muscled warrior, and its great helm is unusual in that it has no openings—only a broad glass plate in the front with a second piece of glass above it. Strange plates, tubing, and large metal bosses adorn the armor in seemingly random fashion. On the back of the armor's left gauntlet is a rectangular metal box, from which projects a short rod tipped with a cone-shaped red crystal.", "While wearing this armor, you gain the following benefits:", {"type":"list", "items":["You have a +1 bonus to AC.", "Your Strength score is 18 (this has no effect if your Strength is already 18 or higher).", "You have advantage on death saving throws."]}, "The armor has further capabilities that can be powered either by energy cells or by your own life energy. You can use a bonus action to draw power from an energy cell or sacrifice hit points to gain one of the following benefits:", {"type":"list", "items":["Emit a force field to gain {@dice 2d6 + 5} temporary hit points (1 charge or 5 hit points).", "Activate boosters to gain a flying speed of 15 feet for 1 minute (1 charge or 5 hit points).", "Fire arm-mounted laser: {@atk rw} {@hit 8} to hit, range 120 feet, one target. {@h}{@damage 2d6} radiant damage (1 charge or 5 hit points).", "Translate any writing you can see in any nonmagical language, to a total of one thousand words over 1 minute (1 charge or 5 hit points).", "Fill the armor with air, allowing you to breathe normally in any environment for up to 1 hour (1 charge or 5 hit points).", "Gain {@sense darkvision} to a range of 60 feet for up to 1 hour (1 charge or 5 hit points)."]}, "The armor can accept only one energy cell at a time. It is found with one energy cell attached, containing {@dice 2d10} charges.", {"type":"inset", "name":"Powered Armor Options", "entries":["Depending on where and how it appears in the adventure, you might wish to modify the features of Kwalish's legendary powered armor.", {"type":"entries", "name":"Automatic Defenses", "entries":["Unless Kwalish deactivates the suit's automatic defenses, no one can approach the armor without setting those defenses off. Treat the armor as a {@creature shield guardian} that has stored a {@spell magic missile} spell cast using a 4th-level spell slot. When the armor is reduced to 0 hit points, its defenses are rendered inert and it can be safely approached."]}, {"type":"entries", "name":"Battle of Wills", "entries":["When donned by a new user, the armor deems itself superior and attempts to take possession of that user. The user must succeed on a DC 13 Charisma saving throw or be possessed by the armor. While possessed, the user is {@condition incapacitated} and loses control of its body but retains its awareness. The armor uses the possessed user's statistics (as adjusted by the armor), but doesn't gain access to the user's knowledge, features, or proficiencies.", "Freeing a creature trapped inside the armor first requires defeating the armor's automatic defenses (as above). The trapped creature can also attempt a DC 20 Charisma saving throw each day at dawn. On a successful save, the armor no longer controls the creature and can be safely donned by that creature at any time."]}, {"type":"entries", "name":"Stasis", "entries":["Whenever a creature wearing the armor drops to 0 hit points, the armor places that creature into a state of stasis. While in this state, the creature is stable and does not make death saving throws, but the armor takes control of the creature (as above). Additionally, the armor attempts to assume the identity of the user, assuring their allies that nothing is amiss. Freeing the user first requires defeating the armor's automatic defenses (as above). A creature in stasis does not make Charisma saving throws to break the armor's control."]}, {"type":"entries", "name":"Alternative Power", "entries":["Powered armor originally required energy cells to fuel it, but was adapted by Kwalish to be fueled by the life energy of the creature wearing it. You might decide that the armor can also draw power from additional sources, or that energy cells can be recharged with the aid of a tinker, inventor, or artificer. It might also be possible for allies to connect to the armor through the use of magic that generates a conduit something like an astral silver cord. While so connected, a willing ally can give up hit points as a reaction to fuel the armor's abilities."]}]}]
 		},
 		{
 			"name":"Pressure Capsule",
@@ -10893,7 +10769,8 @@ var trove = {
 			"rarity":"none",
 			"weight":1,
 			"value":100,
-			"entries":["A quiver can hold up to 20 arrows."]
+			"entries":["A quiver can hold up to 20 {@item arrow|phb|arrows}."],
+			"containerCapacity":{"item":[{"arrow|phb":20}]}
 		},
 		{
 			"name":"Quiver of Ehlonna",
@@ -10905,6 +10782,7 @@ var trove = {
 			"wondrous":true,
 			"weight":2,
 			"entries":["Each of the quiver's three compartments connects to an extradimensional space that allows the quiver to hold numerous items while never weighing more than 2 pounds. The shortest compartment can hold up to sixty {@item arrow|phb|arrows}, {@item crossbow bolt|phb|bolts}, or similar objects. The midsize compartment holds up to eighteen {@item javelin|phb|javelins} or similar objects. The longest compartment holds up to six long objects, such as bows, {@item quarterstaff|phb|quarterstaffs}, or {@item spear|phb|spears}.", "You can draw any item the quiver contains as if doing so from a regular quiver or scabbard."],
+			"containerCapacity":{"item":[{"crossbow bolt|phb":60, "arrow|phb":60}, {"javelin|phb":18}, {"quarterstaff|phb":6, "spear|phb":6}], "weightless":true},
 			"lootTables":["Magic Item Table F"]
 		},
 		{
@@ -11523,15 +11401,6 @@ var trove = {
 			"lootTables":["Magic Item Table G"]
 		},
 		{
-			"name":"Rings of Shared Suffering",
-			"source":"UAWGE",
-			"page":117,
-			"type":"RG",
-			"rarity":"uncommon",
-			"reqAttune":true,
-			"entries":["These rings come in linked pairs. If you possess the Mark of Sentinel, you can use a bonus action to form a link to the creature attuned to the other ring; from then on, whenever that creature suffers damage, they only suffer half of that damage and you take the rest. This effect continues until you end it as a bonus action or until you or the other creature removes their ring. This effect isn't limited by range. A creature cannot be attuned to more than one ring of shared suffering."]
-		},
-		{
 			"name":"Robe of Eyes",
 			"source":"DMG",
 			"page":193,
@@ -11912,7 +11781,8 @@ var trove = {
 			"rarity":"none",
 			"weight":0.5,
 			"value":1,
-			"entries":["A sack can hold up to 1 cubic foot or 30 pounds of gear."]
+			"entries":["A sack can hold up to 1 cubic foot or 30 pounds of gear."],
+			"containerCapacity":{"weight":[30]}
 		},
 		{
 			"name":"Saddle of the Cavalier",
@@ -12222,16 +12092,6 @@ var trove = {
 			"value":20000,
 			"poison":true,
 			"entries":["This poison must be harvested from a dead or {@condition incapacitated} {@creature giant poisonous snake}. A creature subjected to this poison must succeed on a DC 11 Constitution saving throw, taking 10 ({@dice 3d6}) poison damage on a failed save, or half as much damage on a successful one."]
-		},
-		{
-			"name":"Shadowfell Brand Tattoo",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":12,
-			"rarity":"very rare",
-			"reqAttune":true,
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo is dark in color and abstract. While it's on your skin, you have advantage on Dexterity ({@skill Stealth}) checks.", {"type":"entries", "name":"Shadowy Defense", "entries":["When you take damage, you can use your reaction to become shadowy and insubstantial for a moment, reducing the damage you take by half. Once used, this reaction can't be used again until the next dawn."]}, {"type":"entries", "name":"Tattoo Attunement", "entries":["To attune to this item, you hold the needle to your skin where you want the tattoo to appear, pressing the needle there throughout the attunement process. When the attunement is complete, the needle turns into the ink that becomes the tattoo, which appears on the skin. If you have multiple magic tattoos, they count as a single magic item with regard to the number of magic items you can attune to.", "If your attunement to the tattoo ends, the tattoo vanishes, and the needle reappears in the closest unoccupied space to you."]}]
 		},
 		{
 			"name":"Shard",
@@ -13053,60 +12913,6 @@ var trove = {
 			"rarity":"common",
 			"wondrous":true,
 			"entries":["This polished Eberron dragonshard fits in the hand and stores information similar to a book. The shard can hold the equivalent of one book that's no more than 320 pages long. A shard can be created blank or already filled with information. When the shard is created, the creator can set a passphrase that must be spoken to access the information stored within.", "While holding the shard, you can use an action to open your mind to the shard, seeing its content in your mind. On subsequent rounds, reading the text or scribing new text on blank \"pages\" in the shard requires concentration (as if concentrating on a spell) and takes the same amount of time it takes you to read and write normally. Thinking of a particular phrase or topic draws you to the first section in the shard that addresses it.", "A wizard can use a spellshard as a spellbook, with the usual cost in gold and time to \"scribe\" a spell into the shard."]
-		},
-		{
-			"name":"Spellwrought Tattoo (1st Level)",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":11,
-			"rarity":"common",
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo contains a single spell, wrought on your skin by a magic needle. To use the tattoo, you must hold the needle against your skin where you want the tattoo to appear and speak the command word. The needle turns into the ink that becomes the tattoo, which appears on your skin. Once the tattoo is on your skin, you can cast its spell, requiring no material components. The tattoo glows faintly while you cast the spell and for the spell's duration. Once the spell ends, the tattoo vanishes from your skin.", "A spell cast from this tattoo has a spellcasting ability modifier of +3, a save DC of 13 and an attack bonus of +5."]
-		},
-		{
-			"name":"Spellwrought Tattoo (2nd Level)",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":11,
-			"rarity":"uncommon",
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo contains a single spell, wrought on your skin by a magic needle. To use the tattoo, you must hold the needle against your skin where you want the tattoo to appear and speak the command word. The needle turns into the ink that becomes the tattoo, which appears on your skin. Once the tattoo is on your skin, you can cast its spell, requiring no material components. The tattoo glows faintly while you cast the spell and for the spell's duration. Once the spell ends, the tattoo vanishes from your skin.", "A spell cast from this tattoo has a spellcasting ability modifier of +3, a save DC of 13 and an attack bonus of +5."]
-		},
-		{
-			"name":"Spellwrought Tattoo (3rd Level)",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":11,
-			"rarity":"uncommon",
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo contains a single spell, wrought on your skin by a magic needle. To use the tattoo, you must hold the needle against your skin where you want the tattoo to appear and speak the command word. The needle turns into the ink that becomes the tattoo, which appears on your skin. Once the tattoo is on your skin, you can cast its spell, requiring no material components. The tattoo glows faintly while you cast the spell and for the spell's duration. Once the spell ends, the tattoo vanishes from your skin.", "A spell cast from this tattoo has a spellcasting ability modifier of +4, a save DC of 15 and an attack bonus of +7."]
-		},
-		{
-			"name":"Spellwrought Tattoo (4th Level)",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":11,
-			"rarity":"rare",
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo contains a single spell, wrought on your skin by a magic needle. To use the tattoo, you must hold the needle against your skin where you want the tattoo to appear and speak the command word. The needle turns into the ink that becomes the tattoo, which appears on your skin. Once the tattoo is on your skin, you can cast its spell, requiring no material components. The tattoo glows faintly while you cast the spell and for the spell's duration. Once the spell ends, the tattoo vanishes from your skin.", "A spell cast from this tattoo has a spellcasting ability modifier of +4, a save DC of 15 and an attack bonus of +7."]
-		},
-		{
-			"name":"Spellwrought Tattoo (5th Level)",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":11,
-			"rarity":"rare",
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo contains a single spell, wrought on your skin by a magic needle. To use the tattoo, you must hold the needle against your skin where you want the tattoo to appear and speak the command word. The needle turns into the ink that becomes the tattoo, which appears on your skin. Once the tattoo is on your skin, you can cast its spell, requiring no material components. The tattoo glows faintly while you cast the spell and for the spell's duration. Once the spell ends, the tattoo vanishes from your skin.", "A spell cast from this tattoo has a spellcasting ability modifier of +5, a save DC of 17 and an attack bonus of +9."]
-		},
-		{
-			"name":"Spellwrought Tattoo (Cantrip)",
-			"source":"UA2020SpellsAndMagicTattoos",
-			"page":11,
-			"rarity":"common",
-			"wondrous":true,
-			"tattoo":true,
-			"entries":["This tattoo contains a single spell, wrought on your skin by a magic needle. To use the tattoo, you must hold the needle against your skin where you want the tattoo to appear and speak the command word. The needle turns into the ink that becomes the tattoo, which appears on your skin. Once the tattoo is on your skin, you can cast its spell, requiring no material components. The tattoo glows faintly while you cast the spell and for the spell's duration. Once the spell ends, the tattoo vanishes from your skin.", "A spell cast from this tattoo has a spellcasting ability modifier of +3, a save DC of 13, and an attack bonus of +5."]
 		},
 		{
 			"name":"Sphere of Annihilation",
