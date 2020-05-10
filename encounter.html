@@ -306,7 +306,7 @@
 			function characterLevelsFromString(value) {
 				var result = []
 				var multipliers = "*x×✕"
-				var matches = value.split(/(\D*)/g)
+				var matches = value.split(/(\D+)/g)
 				var index, count = matches.length
 				var level, times
 				
