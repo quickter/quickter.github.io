@@ -297,7 +297,7 @@ function treasureCoins(treasure, tableRows, entryCounts) {
 			if ( quantity > 0 && element[key] ) {
 				value = treasureDiceRoll(element[key], quantity)
 				array.push(value)
-				sum += value
+				sum += value * coin.cp
 			}
 		}
 		

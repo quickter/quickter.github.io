@@ -21,6 +21,7 @@
 					33000, 41000, 50000, 62000, 75000, 90000, 105000, 120000, 135000, 155000
 				],
 				"difficulties":["easy", "medium", "hard", "deadly", "day"],
+				"difficultyNames":["Easy", "Medium", "Hard", "Deadly", "Day"],
 				"easy":   [0,  25,  50,   75,  125,  250,  300,  350,  450,  550,  600,   800,  1000,  1100,  1250,  1400,  1600,  2000,  2100,  2400,  2800],
 				"medium": [0,  50, 100,  150,  250,  500,  600,  750,  900, 1100, 1200,  1600,  2000,  2200,  2500,  2800,  3200,  3900,  4200,  4900,  5700],
 				"hard":   [0,  75, 150,  225,  375,  750,  900, 1100, 1400, 1600, 1900,  2400,  3000,  3400,  3800,  4300,  4800,  5900,  6300,  7300,  8500],
@@ -94,8 +95,8 @@
 				}
 			}
 			
-			function referenceKey(name) {
-				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’(){}×.,:]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
+			function libraryKey(name) {
+				return stripDiacriticals(name.toLowerCase()).replace(/(['‘’(){}×.,:"“”]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
 			}
 			
 			function resolveReferences(text, object) {
@@ -114,6 +115,8 @@
 					return "<span class='property " + key + "'>" + (value || '-') + "</span>"
 				})
 				
+				text = text.replace(/\{@i ([^{}]+)\}/g, "<span class='entries italic'>$1</span> ")
+				
 				text = text.replace(/\{@([^{} ]+)\s+([^{}]+)\}/g, function (match, type, list) {
 					var part = list.split('|')
 					
@@ -122,24 +125,35 @@
 					case "recharge": return "<span class='entries recharge'>" + list + "</span>"
 					case "b": case "bold": return "<span class='entries bold'>" + list + "</span>"
 					case "i": case "italic": return "<span class='entries italic'>" + list + "</span>"
-					case "dice": case "damage": return "<span class='entries " + type + " italic' onclick='handleDice(event, \"" + part[0] + "\")'>" + (part[1] || part[0]) + "</span>"
-					case "chance": return "<span class='entries " + type + "' onclick='handleChance(event, \"" + part[0] + "\")'>" + (part[1] || part[0] + " percent") + "</span>"
+					case "scaledice": case "scaledamage": return "<span class='entries " + type + "' >" + (part[2] || part[0]) + "</span>"
+					case "dice": case "damage": return "<span class='entries " + type + " italic action' onclick='libraryHandleDice(event, \"" + part[0] + "\")'>" + (part[1] || part[0]) + "<span class='rolled'></span></span>"
+					case "chance": return "<span class='entries " + type + " action' onclick='libraryHandleChance(event, \"" + part[0] + "\")'>" + (part[1] || part[0] + " percent") + "<span class='rolled'></span></span>"
 					case "link": return "<span class='entries " + type + " italic'>" + list + "</span>"
-					case "hit": return (+list < 0 ? "" : "+") + list
+					case "hit": return (list.charAt(0) === "+" || +list < 0 ? "" : "+") + list
 					case "atk": return "<span class='entries attack italic'>" + list.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</span> "
 					case "dc": return list
-					case "item": return "<a class='entries item' href='trove.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
-					case "spell": return "<a class='entries spell italic' href='spellbook.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
-					case "creature": return "<a class='entries creature' href='bestiary.html#" + referenceKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
-					case "hoard": return "<a class='entries hoard' href='treasure.html?k=h&n=1&p&r&c=" + (part[0] | 0) + "'>" + (part[2] || "Hoard") + "</a>"
+					case "item": return "<a class='entries item' href='trove.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+					case "spell": return "<a class='entries spell italic' href='spellbook.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+					case "creature": return "<a class='entries creature' href='bestiary.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
+					case "hoard": return "<a class='entries hoard' href='treasure.html?k=h&p&r&c=" + (part[0] || 0) + "'>" + (part[2] || "Hoard") + "</a>"
 					case "condition": case "skill": case "sense": case "action": case "hazard": return "<span class='entries " + type + "'>" + part[0] + "</span>"
-					case "filter": return (part.length > 2 && part[1] === 'spells') ? "<a class='entries spell italic' href='spellbook.html?" + part[2] + "'>" + part[0] + "</a>" : "<span class='entries italic " + type + "'>" + part[0] + "</span>"
 					case "adventure": return "<span class='entries italic " + type + "'>" + part[0] + "</span>"
 					case "table": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
 					case "book": return "<span class='entries italic " + type + "'>" + (part[3] || part[0]) + "</span>"
+					case "race": return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
+					case "filter":
+						switch ( part[1] ) {
+						case 'items': return "<a class='entries filter item italic' href='trove.html?" + part.slice(2).join('&') + "'>" + part[0] + "</a>"
+						case 'spells': return "<a class='entries filter spell italic' href='spellbook.html?" + part.slice(2).join('&') + "'>" + part[0] + "</a>"
+						case 'bestiary': return "<a class='entries filter creature italic' href='bestiary.html?" + part.slice(2).join('&').replace('challenge rating=', 'cr=').replace(/=\[&?([^\];]+);&?([^\]]+)\]/, '=$1...$2') + "'>" + part[0] + "</a>"
+						default: return "<span class='entries filter italic " + (part[1] || '') + "'>" + part[0] + "</span>"
+						}
 					default: return "<span class='entries italic " + type + "'>" + (part[2] || part[0]) + "</span>"
 					}
 				})
+				
+				text = text.replace(/\{@i ([^{}]+)\}/g, "<span class='entries italic'>$1</span> ")
+				text = text.replace(/\{@note ([^{}]+)\}/g, "<span class='entries note'>$1</span> ")
 				
 				text = text.replace(/\{@h\}/g, "<span class='entries hit italic'>Hit:</span> ")
 				text = text.replace(/\{@recharge\}/g, "<span class='entries recharge'></span>")
@@ -151,156 +165,506 @@
 				return challenge > 0 && challenge < 1 ? "0⅛¼⅜½⅝¾⅞".charAt(Math.round(challenge * 8)) : challenge
 			}
 			
-			function generateEncounterList(encounter, characterLevels, difficulties, environments, composition) {
-				var difficulty, environment, repeat
-				var limit, limits = encounterLimits(encounter, characterLevels)
-				var index, count, prior, range, number, challenge, threshold, sum, creature
-				var constraint, treasure, multiplier, group, key
-				var rows = [], auxilaryRows = []
+			function generateDifficultyTable(encounter, characterLevels, environments) {
+				var maximumCreatures = 20
+				var maximumDifficulty = 3
+				var experienceForChallengeRating = encounter.experienceForChallengeRating
+				var experienceForDifficulty = encounterExperiencePerDifficulty(encounter, characterLevels)
+				var multiplier, multipliers = encounterMultipliers(encounter, characterLevels, maximumCreatures)
+				var index, quantity, challenge, experience, product
+				var array, difficultyArray = encounterDifficultyByQuantityByChallenge(encounter, characterLevels, maximumCreatures, true)
+				var prior, equal, empty, skipQuantities = new Object()
+				var upperQuantity, lowerQuantity, lowerIndex, lowerChallenge, lowerExperience, lowerSet, lowerDifficulty, lowerName, lowerArray
+				var maximumExperience = experienceForDifficulty[maximumDifficulty] * 1.5
+				var newline = "&#13;"
 				
-				for ( limit of limits ) {
-					if ( !limit.uniformChallengeRatingForNumber ) {
+				encounterApplyGroupsToQuantityByChallenge(encounter, difficultyArray, environments)
+				
+				for ( quantity = 7 ; quantity <= maximumCreatures ; ++quantity ) {
+					for ( equal = true, empty = true, index = -3 ; (equal || empty) && index <= 30 ; ++index ) {
+						array = difficultyArray[index + 3]
+						difficulty = array[quantity]
+						
+						if ( !(difficulty < 0 || difficulty > maximumDifficulty) ) { empty = false }
+						if ( !(difficulty === array[quantity - 1] && difficulty === array[quantity + 1]) ) { equal = false }
+					}
+					
+					if ( equal || empty ) {
+						skipQuantities[quantity] = true
+					}
+				}
+				
+				var isHidden, styles
+				var key, name, title, suffix = ["none", "easy", "medium", "hard", "deadly", "undue", "undue"]
+				var html = "<caption>Difficulty by Number of Creatures</caption><tr><th>CR</th>"
+				var link, environment, creatures, commonEnvironments
+				var cells = []
+				
+				prior = 0
+				for ( multiplier of multipliers ) {
+					experience = []
+					
+					for ( index = 0 ; index <= maximumDifficulty ; ++index ) {
+						experience.push(Math.ceil(experienceForDifficulty[index] / multiplier.multiplier / 5) * 5)
+					}
+					
+					experience = experience.join(" ... ")
+					
+					for ( quantity = multiplier.minimum ; quantity <= multiplier.maximum ; ++quantity ) {
+						if ( skipQuantities[quantity] ) { continue }
+						
+						if ( prior && skipQuantities[quantity - 1] ) {
+							if ( prior >= multiplier.minimum ) {
+								title = prior + " to " + quantity + " Creatures (" + experience + " XP)" + newline + multiplier.multiplier + " &times; multiplier"
+							} else {
+								title = prior + " to " + quantity + " Creatures"
+							}
+							
+							cells[cells.length - 1] = "<th colspan='2' title='" + title + "'>" + prior + "&ndash;" + quantity + "</th>"
+							prior = false
+						} else {
+							title = quantity + " Creatures (" + experience + " XP)" + newline + multiplier.multiplier + " &times; multiplier"
+							cells.push("<th title='" + title + "'>" + quantity + "</th>")
+							prior = quantity
+						}
+					}
+				}
+				
+				html += cells.join("")
+				html += "</tr>"
+				
+				for ( index = -3 ; index <= 30 ; ++index ) {
+					challenge = ( index < 1 ) ? [0, 0.125, 0.25, 0.5][index + 3] : index
+					experience = ( challenge > 0 && challenge < 1 ) ? experienceForChallengeRating[1] * challenge : experienceForChallengeRating[challenge]
+					name = challengeName(challenge)
+					
+					commonEnvironments = []
+					creatures = []
+					title = []
+					
+					for ( environment of environments ) {
+						environment.trim()
+						
+						array = encounter.creatureBy && encounter.creatureBy[environment] && encounter.creatureBy[environment][challenge]
+						if ( !array ) { continue }
+						
+						if ( encounter.list.commonEnvironments && encounter.list.commonEnvironments.indexOf(environment) >= 0 ) {
+							commonEnvironments.push(environment)
+						} else {
+							creatures.push.apply(creatures, array)
+						}
+						
+						for ( key of array ) {
+							title.push(encounter.creatureBy.key[key].name)
+						}
+					}
+					
+					if ( !environments || !environments.length || !encounter.creatureBy ) {
+						link = "bestiary.html?cr=" + challenge + "&shuffle"
+					} else if ( commonEnvironments.length || creatures.length ) {
+						commonEnvironments = commonEnvironments.length > 0 ? "&environment=" + commonEnvironments.join(",") : ""
+						creatures = creatures.length > 0 ? "#" + creatures.join(",") : ""
+						
+						link = "bestiary.html?cr=" + challenge + commonEnvironments + "&shuffle" + creatures
+					} else {
+						link = ""
+					}
+					
+					if ( title.length ) {
+						title = "CR " + name + " (" + experience + " XP) e.g. " + title.join(", ").replace("'", "‘")
+					} else {
+						title = "CR " + name + " (" + experience + " XP)"
+					}
+					
+					link = link ? "<a href='" + link + "'>" + name + "</a>" : name
+					array = difficultyArray[index + 3]
+					isHidden = array[1] > maximumDifficulty || array[0] < 0
+					html += "<tr class='" + (isHidden ? 'hidden' : 'normal') + "'><th title='" + title + "'>" + link + "</th>"
+					
+					for ( multiplier of multipliers ) {
+						for ( quantity = multiplier.minimum ; quantity <= multiplier.maximum ; ++quantity ) {
+							if ( skipQuantities[quantity] ) { continue }
+							
+							difficulty = array[quantity]
+							styles = ['difficulty-' + suffix[difficulty + 1]]
+							
+							title = []
+							lowerSet = ~0 << (maximumDifficulty + 1)
+							lowerArray = array['mix_' + quantity]
+							if ( challenge > 0.125 && lowerArray && lowerArray.length > 1 ) {
+								for ( lowerIndex = 0 ; lowerIndex < lowerArray.length ; ++lowerIndex ) {
+									lowerChallenge = lowerArray[lowerIndex].challenge[1] || 0
+									lowerQuantity = lowerArray[lowerIndex].quantity[1] || 0
+									upperQuantity = quantity - lowerQuantity
+									lowerDifficulty = lowerArray[lowerIndex].difficulty
+									if ( lowerQuantity > 0 ) {
+										if ( lowerChallenge < 0.125 ) { continue }
+										if ( lowerQuantity < upperQuantity ) { continue }
+										if ( lowerSet & 1 << lowerDifficulty ) { continue }
+									}
+									lowerSet |= 1 << lowerDifficulty
+									lowerExperience = lowerArray[lowerIndex].sum
+									lowerName = challengeName(lowerChallenge)
+									
+									if ( lowerArray[lowerIndex].pairs ) {
+										styles.push('has-pairs')
+									}
+									
+									title.push(
+										upperQuantity + " CR " + name +
+										(lowerQuantity > 0 ? " with " + lowerQuantity + " CR " + lowerName : "") +
+										(lowerDifficulty >= 0 && lowerDifficulty <= maximumDifficulty ? " is " + encounter.difficulties[lowerDifficulty] : "") +
+										" (" + lowerExperience + " XP)" +
+										(environments.length > 0 && lowerArray[lowerIndex].pairs ? " ★" : "")
+									)
+								}
+								
+								if ( difficulty > maximumDifficulty && title.length > 1 ) {
+									styles.push('difficulty-mix')
+								}
+							} else {
+								title.push(
+									quantity + " CR " + name +
+									(difficulty >= 0 && difficulty <= maximumDifficulty ? " is " + encounter.difficulties[difficulty] : "") +
+									" (" + (experience * quantity) + " XP)"
+								)
+							}
+							title = title.join(newline)
+							
+							if ( quantity === 1 || difficulty !== array[quantity - 1] ) { styles.push('begin-horizontal') }
+							if ( difficulty !== array[quantity + 1] ) { styles.push('end-horizontal') }
+							if ( challenge === 0 || difficulty !== difficultyArray[index + 2][quantity] ) { styles.push('begin-vertical') }
+							if ( challenge === 30 || difficulty !== difficultyArray[index + 4][quantity] ) { styles.push('end-vertical') }
+							html += "<td class='" + styles.join(" ") + "' title='" + title + "'></td>"
+							prior = quantity
+						}
+					}
+					
+					html += "</tr>"
+				}
+				
+				return html
+			}
+			
+			function generateUniformEncounterList(encounter, difficultyArray, difficulties, environments, maximumEncounters) {
+				var maximumDifficulty = 3
+				var experienceForChallengeRating = encounter.experienceForChallengeRating
+				var rows = [], array = [], byQuantity
+				var index, challenge, experience, name, quantity, difficulty, prior
+				var text, difficultyName, quantityText, challengeText, experienceText, treasureText, environment
+				var creature
+				
+				for ( difficulty = 0 ; difficulty <= maximumDifficulty ; ++difficulty ) {
+					array[difficulty] = []
+				}
+				
+				for ( byQuantity of difficultyArray ) {
+					if ( byQuantity[1] > maximumDifficulty || byQuantity[0] < 0 ) {
 						continue
 					}
 					
-					if ( difficulties.length > 0 ) {
-						if ( difficulties.indexOf(limit.difficulty) < 0 ) {
+					challenge = byQuantity.challenge
+					experience = (challenge > 0 && challenge < 1) ? experienceForChallengeRating[1] * challenge : experienceForChallengeRating[challenge]
+					name = challengeName(challenge)
+					prior = 0
+					
+					for ( quantity = 1 ; quantity < byQuantity.length ; ++quantity ) {
+						difficulty = byQuantity[quantity]
+						difficultyName = encounter.difficulties[difficulty]
+						
+						if ( quantity + 1 < byQuantity.length && difficulty === byQuantity[quantity + 1] ) {
 							continue
 						}
-					}
-					
-					switch ( composition ) {
-					case 'uniform': repeat = 0; break
-					case 'diverse': repeat = 2; break
-					case 'none':    repeat = 0; break
-					default:        repeat = 1; break
-					}
-					
-					while ( repeat --> 0 ) {
-						for ( index = 0, count = limit.multipliers.length ; index < count ; ++index ) {
-							environment = encounterRandomEnvironment(encounter, environments)
-							multiplier = limit.multipliers[index]
-							threshold = multiplier.experience
-							group = encounterRandomGroup(encounter, multiplier, environment)
-							
-							if ( !group && environments.indexOf(environment) < 0 ) {
-								group = encounterRandomGroup(encounter, multiplier, 'all')
-								environment = group.environment || "any"
-							}
-							
-							if ( !group ) {
-								continue
-							}
-							
-							if ( group.lowerMaximum > group.lowerMinimum ) {
-								sum = group.upperExperience * group.upperNumber
-								sum = (sum + group.lowerExperience * group.lowerMinimum) + "-" + (sum + group.lowerExperience * group.lowerMaximum)
-								range = group.lowerMinimum + "-" + group.lowerMaximum
-							} else {
-								sum = group.upperExperience * group.upperNumber + group.lowerExperience * group.lowerMinimum
-								range = group.lowerMinimum
-							}
-							
-							treasure = " {@hoard " + group.upperCreature.challenge + "||Hoard}"
-							key = [group.upperCreature.key, group.lowerCreature.key].join('_')
-							creature = " " + group.upperNumber + " &times; {@creature " + key + "||" + group.upperCreature.name + "} and " + group.lowerNumber + " &times; {@creature " + key + "||" + group.lowerCreature.name + "} &bull;"
-							
-							challenge = challengeName(group.lowerCreature.challenge)
-							constraint = group.upperNumber + " &times; CR " + challengeName(group.upperCreature.challenge) + " and " + range + " &times; CR " + challenge + " (" + (false ? threshold + " <= " : "") + sum + (false ? " <= " + multiplier.experienceLimit : "") + " XP) "
-							
-							constraint = limit.difficulty + " " + constraint + environment + creature + treasure
-							
-							if ( rows.indexOf(constraint) < 0 ) {
-								rows.push(constraint)
-							}
-						}
-					}
-					
-					switch ( composition ) {
-					case 'uniform': repeat = 2; break
-					case 'diverse': repeat = 0; break
-					case 'none':    repeat = 1; break
-					default:        repeat = 1; break
-					}
-					
-					while ( repeat --> 0 ) {
-						prior = false
 						
-						for ( index = 1, count = limit.uniformChallengeRatingForNumber.length ; index < count ; ++index ) {
-							number = index
-							threshold = limit.experienceForNumber[number]
-							challenge = limit.uniformChallengeRatingForNumber[number]
-							
-							if ( challenge === null ) {
-								continue
-							}
-							
-							if ( challenge === limit.uniformChallengeRatingForNumber[index + 1] ) {
-								if ( !prior ) {
-									prior = number
-								}
-								
-								continue
-							}
-							
-							sum = encounterExperienceSum(encounter, [challenge])
-							sum = prior ? (prior * sum) + "-" + (index * sum) : (index * sum)
+						if ( difficulty >= 0 && difficulty <= maximumDifficulty && !(difficulties.length > 0 && difficulties.indexOf(difficultyName) < 0) ) {
+							prior += 1
 							environment = encounterRandomEnvironment(encounter, environments)
 							
-							if ( composition === 'none' ) {
-								creature = false
-							} else {
+							if ( maximumEncounters > 0 ) {
 								creature = encounterRandomCreature(encounter, challenge, environment)
 								
 								if ( !creature && environments.indexOf(environment) < 0 ) {
 									creature = encounterRandomCreature(encounter, challenge, 'all')
-									environment = encounterRandomElement(creature.environments)
+									environment = creature && encounterRandomElement(creature.environments)
 								}
-							}
-							
-							treasure = " {@hoard " + challenge + "||Hoard}"
-							challenge = challengeName(challenge)
-							range = prior ? prior + "-" + index : ( index >= 15 && index + 1 == count ) ? index + "+" : index
-							constraint = range + " &times; CR " + challenge + " (" + sum + (false ? " >= " + threshold : "") + " XP) "
-							prior = false
-							
-							if ( creature ) {
-								creature = creature ? " " + (prior ? prior + encounterRandomInteger(1 + index - prior) : index) + " &times; {@creature " + creature.name + "} &bull;" : ""
-								constraint = limit.difficulty + " " + constraint + environment + creature + treasure
 								
-								if ( rows.indexOf(constraint) < 0 ) {
-									rows.push(constraint)
+								if ( !creature && encounter.creatureBy ) {
+									continue
 								}
 							} else {
-								constraint = limit.difficulty + " " + constraint + environment + treasure
-								
-								if ( auxilaryRows.indexOf(constraint) < 0 ) {
-									auxilaryRows.push(constraint)
-								}
+								creature = false
 							}
+							
+							if ( creature ) {
+								creature = (prior < quantity ? prior + encounterRandomInteger(1 + quantity - prior) : quantity) + " {@creature " + creature.name + "}"
+							}
+							
+							if ( encounter.list && encounter.list.commonEnvironments.indexOf(environment) >= 0 ) {
+								environment = "{@filter " + environment + "|bestiary|cr=" + challenge + "|environment=" + environment + "}"
+							} else if ( encounter.syntheticName ) {
+								environment = encounter.syntheticName[environment] || environment
+							}
+							
+							quantityText = (prior < quantity ? prior + "-" : "") + quantity
+							challengeText = "&times; CR " + name
+							experienceText = (prior < quantity ? (experience * prior) + "-" : "") + (experience * quantity) + " XP"
+							treasureText = "{@hoard " + challenge + "||Hoard}"
+							difficultyName = encounter.difficultyName[difficultyName] || difficultyName
+							
+							text = [difficultyName, experienceText, quantityText + " " + challengeText]
+							if ( environment ) { text.push(environment) }
+							if ( creature ) { text.push(creature) }
+							text.push(treasureText)
+							
+							array[difficulty].push(text.join(" &bull; "))
+						}
+						
+						prior = quantity
+					}
+				}
+				
+				rows = rows.concat.apply(rows, array)
+				
+				if ( maximumEncounters > 0 ) {
+					while ( rows.length > maximumEncounters ) {
+						rows.splice(encounterRandomInteger(rows.length), 1)
+					}
+				}
+				
+				if ( !rows.length ) {
+					return false
+				}
+				
+				return resolveReferences("<ol class='encounters'><li>" + rows.join("</li><li>") + "</li></ol>")
+			}
+			
+			function generateEncounterList(encounter, characterLevels, difficulties, environments, composition) {
+				var maximumEncounters = 10
+				var maximumCreatures = 20
+				var maximumDifficulty = 3
+				var experienceForChallengeRating = encounter.experienceForChallengeRating
+				var byQuantity, difficultyArray = encounterDifficultyByQuantityByChallenge(encounter, characterLevels, maximumCreatures, true)
+				var index, count, entry, array, candidates, hasCreatures, byChallenge
+				var quantity, difficulty, difficultySet, difficultyName, challenge, name, creature, pairs, upper, lower
+				var challengeText, experienceText, creatureText, treasureText, text
+				var depth, counts, limit, total, value
+				var rows
+				
+				if ( composition === 'none' || composition === 'uniform' ) {
+					return generateUniformEncounterList(encounter, difficultyArray, difficulties, environments, composition === 'uniform' ? maximumEncounters : 0)
+				}
+				
+				if ( composition !== 'random' && composition !== 'uniform' ) {
+					encounterApplyGroupsToQuantityByChallenge(encounter, difficultyArray, environments)
+				}
+				
+				hasCreatures = []
+				candidates = []
+				index = 0
+				
+				for ( byQuantity of difficultyArray ) {
+					if ( composition !== 'none' && environments.length > 0 && encounter.creatureBy ) {
+						challenge = byQuantity.challenge
+						creature = false
+						
+						for ( environment of environments ) {
+							environment.trim()
+							array = encounter.creatureBy[environment] && encounter.creatureBy[environment][challenge]
+							
+							if ( array && array.length > 0 ) {
+								creature = true
+								break
+							}
+						}
+						
+						hasCreatures[challenge] = creature
+						
+						if ( !creature ) {
+							continue
+						}
+					}
+					
+					for ( quantity = 1 ; quantity < byQuantity.length ; ++quantity ) {
+						difficulty = byQuantity[quantity]
+						array = byQuantity['mix_' + quantity]
+						
+						if ( composition === 'random' || composition === 'diverse' ) {
+							array = array.slice(1)
+						} else if ( composition === 'none' || composition === 'uniform' ) {
+							array = array.slice(0, 1)
+						}
+						
+						difficultySet = ~0 << (maximumDifficulty + 1)
+						for ( entry of array ) {
+							if ( composition === 'diverse' && !entry.pairs && encounter.creatureBy ) {
+								continue
+							}
+							
+							difficulty = entry.difficulty
+							count = entry.challenge.length
+							
+							if ( entry.quantity[1] > 0 ) {
+								if ( !entry.pairs && hasCreatures.length > 0 && !hasCreatures[entry.challenge[1]] ) { continue }
+								if ( entry.challenge[1] < 0.125 && entry.challenge[0] > 0.5 ) { continue }
+								if ( entry.quantity[1] < entry.quantity[0] ) { continue }
+								if ( difficultySet & 1 << difficulty ) { continue }
+							}
+							difficultySet |= 1 << difficulty
+							
+							if ( count > 0 && difficulty >= 0 && difficulty <= maximumDifficulty && !(difficulties.length > 0 && difficulties.indexOf(encounter.difficulties[difficulty]) < 0) ) {
+								if ( !candidates[difficulty] ) { candidates[difficulty] = [] }
+								if ( !candidates[difficulty][index] ) { candidates[difficulty][index] = [] }
+								if ( !candidates[difficulty][index][count - 1] ) { candidates[difficulty][index][count - 1] = [] }
+								if ( !candidates[difficulty][index][count - 1][quantity] ) { candidates[difficulty][index][count - 1][quantity] = [] }
+								
+								candidates[difficulty][index][count - 1][quantity].push(entry)
+							}
+						}
+					}
+					
+					index += 1
+				}
+				
+				for ( depth = 4 ; depth --> 0 ; ) {
+					if ( candidates.length < maximumEncounters || composition === 'none' ) {
+ 						array = candidates.concat.apply([], candidates)
+ 						if ( depth > 0 ) { array = array.filter(Array.isArray) }
+ 						
+ 						if ( array.length > maximumEncounters && composition !== 'none' ) {
+ 							count = candidates.length
+ 							limit = Math.floor(maximumEncounters / count)
+ 							total = 0
+ 							array = []
+ 							counts = []
+ 							
+ 							for ( index = 0 ; index < count ; ++index ) {
+ 								if ( depth > 0 ) { candidates[index] = candidates[index].filter(Array.isArray) }
+ 								if ( candidates[index].length > 0 ) { array.push(index) }
+ 								counts[index] = 0
+ 							}
+ 							
+ 							while ( total + array.length <= maximumEncounters ) {
+ 								for ( value = array.length ; value --> 0 ; ) {
+ 									index = array[value]
+ 									counts[index] += 1
+ 									total += 1
+ 									if ( counts[index] >= candidates[index].length ) { array.splice(value, 1) }
+ 								}
+ 							}
+ 							
+ 							while ( total < maximumEncounters ) {
+ 								value = encounterRandomInteger(array.length)
+								index = array[value]
+								counts[index] += 1
+								total += 1
+								array.splice(value, 1)
+ 							}
+ 							
+ 							array = []
+ 							
+ 							for ( index = 0 ; index < count ; ++index ) {
+								array.push.apply(array, encounterRandomElements(candidates[index], counts[index]))
+ 							}
+ 							
+ 							candidates = array
+ 						} else {
+ 							candidates = array
+ 						}
+					} else {
+						while ( candidates.length > maximumEncounters ) {
+							candidates.splice(encounterRandomInteger(candidates.length), 1)
+						}
+						
+						array = candidates
+						candidates = []
+						
+						for ( entry of array ) {
+							if ( depth > 0 ) { entry = entry.filter(Array.isArray) }
+							candidates.push(encounterRandomElement(entry))
 						}
 					}
 				}
 				
-				if ( composition === 'none' ) {
-					rows = auxilaryRows
-				} else {
-					var maximumEncounters = 10
-					rows = encounterRandomElements(rows, maximumEncounters)
-				
-					if ( rows.length < maximumEncounters ) {
-						rows = rows.concat(encounterRandomElements(auxilaryRows, maximumEncounters - rows.length))
+				rows = []
+				for ( entry of candidates ) {
+					difficulty = entry.difficulty
+					difficultyName = encounter.difficulties[difficulty]
+					environment = encounterRandomEnvironment(encounter, environments)
+					challenge = entry.challenge[0]
+					creatureText = false
+					
+					if ( entry.challenge.length > 1 ) {
+						challengeText = entry.quantity[0] + " &times CR " + challengeName(entry.challenge[0]) + ", " + entry.quantity[1] + " &times CR " + challengeName(entry.challenge[1])
+						experienceText = (entry.quantity[0] * entry.experience[0]) + (entry.quantity[1] * entry.experience[1])
+						
+						if ( entry.pairs && composition !== 'random' ) {
+							pairs = encounterRandomElement(entry.pairs)
+							upper = encounterRandomElement(pairs[0])
+							lower = encounterRandomElement(pairs[1])
+							upper = encounter.creatureBy.key[upper]
+							lower = encounter.creatureBy.key[lower]
+							
+							if ( upper && environments.indexOf(environment) < 0 ) {
+								environment = upper && encounterRandomElement(upper.environments)
+							}
+						} else {
+							upper = encounterRandomCreature(encounter, entry.challenge[0], environment)
+							
+							if ( !upper && environments.indexOf(environment) < 0 ) {
+								upper = encounterRandomCreature(encounter, entry.challenge[0], 'all')
+								environment = upper && encounterRandomElement(upper.environments)
+							}
+							
+							lower = encounterRandomCreature(encounter, entry.challenge[1], environment)
+							
+							if ( !lower && composition !== 'diverse' ) {
+								lower = encounterRandomCreature(encounter, entry.challenge[1], 'all')
+							}
+						}
+						
+						if ( upper && lower ) {
+							value = upper.key + "~" + lower.key
+							creatureText = entry.quantity[0] + " {@creature " + value + "||" + upper.name + "} and " + entry.quantity[1] + " {@creature " + value + "||" + lower.name + "}"
+						}
+					} else {
+						challengeText = entry.quantity[0] + " &times CR " + challengeName(entry.challenge[0])
+						experienceText = entry.quantity[0] * entry.experience[0]
+						
+						if ( composition !== 'none' ) {
+							creature = encounterRandomCreature(encounter, challenge, environment)
+							
+							if ( !creature && environments.indexOf(environment) < 0 ) {
+								creature = encounterRandomCreature(encounter, challenge, 'all')
+								environment = creature && encounterRandomElement(creature.environments)
+							}
+							
+							if ( creature ) {
+								creatureText = entry.quantity[0] + " {@creature " + creature.name + "}"
+							}
+						}
 					}
+					
+					if ( encounter.list && encounter.list.commonEnvironments.indexOf(environment) >= 0 ) {
+						environment = "{@filter " + environment + "|bestiary|cr=" + entry.challenge.join(",") + "|environment=" + environment + "}"
+					} else if ( encounter.syntheticName ) {
+						environment = encounter.syntheticName[environment] || environment
+					}
+					
+					difficultyName = encounter.difficultyName[difficultyName] || difficultyName
+					treasureText = "{@hoard " + challenge + "||Hoard}"
+					text = [difficultyName, experienceText + " XP", challengeText]
+					if ( environment ) { text.push(environment) }
+					if ( creatureText ) { text.push(creatureText) }
+					text.push(treasureText)
+					
+					rows.push(text.join(" &bull; "))
 				}
 				
-				var html = "<ol class='encounters'>"
+				if ( !rows.length ) {
+					return false
+				}
 				
-				html += "<li>" + rows.join("</li><li>") + "</li>"
-				html += "</ol>"
-				html = resolveReferences(html)
-				html = html.replace(/_/g, ',')
-				
-				return html
+				return resolveReferences("<ol class='encounters'><li>" + rows.join("</li><li>") + "</li></ol>").replace(/~/g, ',')
 			}
 			
 			function characterLevelsFromString(value) {
@@ -331,6 +695,18 @@
 				return result
 			}
 			
+			function handleCharacterLevelsChanged(event) {
+				var encounter = window.encounter
+				var form = _element('encounter-form')
+				var characterLevels = form.level.value
+				var environments = form.environment.value
+				
+				characterLevels = characterLevelsFromString(characterLevels)
+				environments = environments ? environments.split(',') : []
+				
+				_element('encounter-table').innerHTML = generateDifficultyTable(encounter, characterLevels, environments)
+			}
+			
 			function handleOptionChanged(event) {
 				var encounter = window.encounter
 				var form = _element('encounter-form')
@@ -354,7 +730,8 @@
 				
 				var html = generateEncounterList(encounter, characterLevels, difficulties, environments, composition)
 				
-				_element('encounter-list').innerHTML = html
+				_element('encounter-list').innerHTML = html || "<span>It is pitch black. You are likely to be eaten by a grue.</span>"
+				_element('encounter-table').innerHTML = generateDifficultyTable(encounter, characterLevels, environments)
 			}
 			
 			function handleSubmit(event) {
@@ -392,18 +769,19 @@
 				var templateGroup = "<optgroup label='{label}'>{options}</optgroup>"
 				var templateOption = "<option value='{value}'>{name}</option>"
 				var group, optionsGroups = []
-				var option, options, list
+				var option, options, list, names
 				var rows = []
 				
 				for ( group of groups ) {
+					names = group.names || []
 					list = group.options || [group]
 					options = []
 					
 					for ( option of list ) {
 						if ( typeof option === 'string' ) {
-							options.push(templateOption.replace("{value}", option).replace("{name}", option))
+							options.push(templateOption.replace("{value}", option).replace("{name}", names[option] || option))
 						} else {
-							options.push(templateOption.replace("{value}", option.value).replace("{name}", option.name || option.value))
+							options.push(templateOption.replace("{value}", option.value).replace("{name}", option.name || names[option.value] || option.value))
 						}
 					}
 					
@@ -419,14 +797,25 @@
 			}
 			
 			function populateForm(encounter) {
-				populateSelect('difficulty', [{'label':"Level", 'options':encounter.difficulties.slice(0, -1)}, {'label':"Group", 'options':encounter.difficulties.slice(-1)}])
-				populateSelect('environment', [{'label':"Prime Material", 'options':encounter.list.commonEnvironments}, {'label':"Planar", 'options':encounter.list.syntheticEnvironments}])
-				populateSelect('composition', [{'name':"Mixed Groups", 'value':'diverse'}, {'name':"Uniform Groups", 'value':'uniform'}, {'name':"Only Limits", 'value':'none'}])
+				if ( Array.isArray(encounter.difficultyNames) ) {
+					var index = encounter.difficultyNames.length
+					
+					encounter.difficultyName = new Object()
+					
+					while ( index --> 0 ) {
+						encounter.difficultyName[encounter.difficulties[index]] = encounter.difficultyNames[index]
+					}
+				}
+				
+				populateSelect('difficulty', [{'label':"Level", 'options':encounter.difficulties.slice(0, -1), 'names':encounter.difficultyName}, {'label':"Group", 'options':encounter.difficulties.slice(-1), 'names':encounter.difficultyName}])
+				populateSelect('environment', encounter.list ? [{'label':"Prime Material", 'options':encounter.list.commonEnvironments}, {'label':"Planar", 'options':encounter.list.syntheticEnvironments, 'names':encounter.syntheticName}] : [])
+				populateSelect('composition', [{'name':"No Mixes", 'value':'uniform'}, {'name':"Likely Mixes", 'value':'diverse'}, {'name':"Random Mixes", 'value':'random'}, {'name':"Only Limits", 'value':'none'}])
 				//populateSelect('group', ['1', '2', '3-6', '7-10', '11-14', '15+'])
 			}
 			
 			function populatePage() {
-				encounterIntegrateBestiary(encounter, bestiary)
+				var excludeSource = ['WDH']
+				encounterIntegrateBestiary(encounter, bestiary, excludeSource)
 				populateForm(encounter)
 				applyParameters()
 				handleSubmit()
@@ -474,6 +863,26 @@
 			div#navigation a { text-decoration:none; display:inline-block; width:2em; height:1.875em; padding-top:0.125em; text-align:center; border-radius:50%; }
 			div#navigation a#navigation-encounter { background:#EEF; }
 			
+			table#encounter-table { border-collapse:collapse; margin:0 auto; }
+			table#encounter-table tr { line-height:1.5em; }
+			table#encounter-table tr.hidden { display:none; }
+			table#encounter-table tr > th a { color:inherit; }
+			table#encounter-table tr > td, table#encounter-table tr > th { height:1em; width:1.5em; border-radius:0.5em; border:solid white 1px; }
+			table#encounter-table tr > td:not(.begin-horizontal.begin-vertical) { border-top-left-radius:0; }
+			table#encounter-table tr > td:not(.end-horizontal.end-vertical) { border-bottom-right-radius:0; }
+			table#encounter-table tr > td:not(.begin-horizontal.end-vertical) { border-bottom-left-radius:0; }
+			table#encounter-table tr > td:not(.end-horizontal.begin-vertical) { border-top-right-radius:0; }
+			table#encounter-table tr > td.difficulty-none { background:#F4F4FF; }
+			table#encounter-table tr > td.difficulty-easy { background:#66F; }
+			table#encounter-table tr > td.difficulty-medium { background:#6C6; }
+			table#encounter-table tr > td.difficulty-hard { background:#EC3; }
+			table#encounter-table tr > td.difficulty-deadly { background:#C66; }
+			table#encounter-table tr > td.difficulty-undue { background:#FFF8F8; }
+			table#encounter-table tr > td.difficulty-mix { background:#FEE; }
+			table#encounter-table tr > td.has-pairs { }
+			
+			span.bold { font-weight:bold; }
+			
 			.nose, .reroll {
 				-webkit-touch-callout:none;
 				-webkit-user-select:none;
@@ -497,7 +906,7 @@
 		
 		<form id='encounter-form' onsubmit="handleSubmit(); return false">
 		
-		<div class='options'><span>Character Levels</span><input type='text' id='level' name='level' placeholder='3x2, 4x2' /></div>
+		<div class='options'><span>Character Levels</span><input type='text' id='level' name='level' placeholder='3x2, 4x2' oninput='handleCharacterLevelsChanged()' /></div>
 		<div class='options'><span>Difficulty</span><select id='difficulty' name='difficulty' onchange='handleOptionChanged()'></select></div>
 		<div class='options'><span>Environment</span><select id='environment' name='environment' onchange='handleOptionChanged()'></select></div>
 		<div class='options'><span>Composition</span><select id='composition' name='composition' onchange='handleOptionChanged()'></select></div>
@@ -506,7 +915,8 @@
 		</form>
 		
 		<p id='encounter-list'></p>
+		<table id='encounter-table'></table>
 		
-		<p class='explanation'>Any creature can appear in a uniform group but only some travel in mixed groups.</p>
+		<p class='explanation'>Likely mixes include only creatures that are likely to mingle based on their descriptions.  Random mixes share an environment.</p>
 	</body>
 </html>

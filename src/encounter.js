@@ -34,14 +34,31 @@ function encounterRandomElement(array) {
 }
 
 function encounterRandomElements(array, count) {
-	var result = []
+	var result, indices
+	var index, where, limit = array.length
 	
-	array = result.concat(array)
-	if ( count < 0 ) { count += array.length }
-	if ( count > array.length ) { count = array.length }
+	if ( count < 0 ) { count += limit }
+	if ( count <= 0 ) { return [] }
+	if ( count >= limit ) { return array }
 	
-	while ( count --> 0 ) {
-		result.push.apply(result, array.splice(encounterRandomInteger(array.length), 1))
+	if ( count * 2 < limit ) {
+		indices = []
+		result = []
+		
+		while ( indices.length < count ) {
+			index = encounterRandomInteger(limit)
+			where = encounterBinarySearch(indices, index)
+			
+			if ( where < 0 ) { indices.splice(-1 - where, 0, index) }
+		}
+		
+		for ( index of indices ) {
+			result.push(array[index])
+		}
+	} else {
+		for ( result = [].concat(array) ; limit > count ; --limit ) {
+			result.splice(encounterRandomInteger(limit), 1)
+		}
 	}
 	
 	return result
@@ -57,7 +74,7 @@ function encounterBinarySearch(array, value, compare) {
 			else { n = o - 1 }
 		}
 		
-		if ( o < 0 || compare(value, array[m > o ? m : o]) < 0 ) { m = -1 - m }
+		if ( o < 0 || compare(value, array[o]) ) { m = -1 - m }
 	} else {
 		while ( m <= n ) {
 			o = (m + n) >> 1
@@ -65,7 +82,7 @@ function encounterBinarySearch(array, value, compare) {
 			else { n = o - 1 }
 		}
 		
-		if ( o < 0 || value < array[m > o ? m : o] ) { m = -1 - m }
+		if ( o < 0 || value != array[o] ) { m = -1 - m }
 	}
 	
 	return m
@@ -107,20 +124,118 @@ function encounterExperiencePerDifficulty(encounter, characterLevels) {
 	var difficulties = encounter.difficulties
 	var experiencePerLevel
 	var level, sum, experience = []
-	var index, count
+	var index, count, limit
 	
 	for ( index = 0, count = difficulties.length ; index < count ; ++index ) {
 		experiencePerLevel = encounter[difficulties[index]]
+		limit = experiencePerLevel.length
 		sum = 0
 		
 		for ( level of characterLevels ) {
-			sum += experiencePerLevel[level | 0] || 0
+			level |= 0
+			
+			if ( level < 0 ) {
+				continue
+			} else if ( level < limit ) {
+				sum += experiencePerLevel[level]
+			} else {
+				sum += experiencePerLevel[limit - 1] + (experiencePerLevel[limit - 1] - experiencePerLevel[limit - 2]) * (1 + level - limit)
+			}
 		}
 		
 		experience[index] = sum
 	}
 	
 	return experience
+}
+
+function encounterDifficultyByQuantityByChallenge(encounter, characterLevels, maximumCreatures, includeChallengePairs) {
+	var maximumDifficulty = 3
+	var experienceForChallengeRating = encounter.experienceForChallengeRating
+	var multiplier, multipliers = encounterMultipliers(encounter, characterLevels, maximumCreatures)
+	var experienceForDifficulty = encounterExperiencePerDifficulty(encounter, characterLevels)
+	var maximumExperience = experienceForDifficulty[maximumDifficulty] * 1.5
+	var index, quantity, challenge, experience, product
+	var prior, array, difficultyArray = []
+	var upperQuantity, lowerQuantity, lowerIndex, lowerChallenge, lowerExperience, lowerProduct, lowerDifficulty, lowerSum, lowerArray
+	
+	for ( index = -3 ; index <= 30 ; ++index ) {
+		array = [-1]
+		challenge = ( index < 1 ) ? [0, 0.125, 0.25, 0.5][index + 3] : index
+		experience = ( challenge > 0 && challenge < 1 ) ? experienceForChallengeRating[1] * challenge : experienceForChallengeRating[challenge]
+		
+		for ( multiplier of multipliers ) {
+			for ( quantity = multiplier.minimum ; quantity <= multiplier.maximum ; ++quantity ) {
+				product = experience * quantity * multiplier.multiplier
+				
+				if ( product < experienceForDifficulty[0] ) {
+					difficulty = -1
+				} else if ( product > maximumExperience ) {
+					difficulty = maximumDifficulty + 1
+				} else {
+					difficulty = encounterBinarySearch(experienceForDifficulty, product)
+					
+					if ( difficulty < 0 ) {
+						difficulty = -2 - difficulty
+					}
+				}
+				
+				if ( challenge === 0 || prior[quantity] < maximumDifficulty ) {
+					if ( difficulty > maximumDifficulty && product === maximumExperience ) {
+						difficulty = maximumDifficulty
+					}
+				} else {
+					if ( difficulty === maximumDifficulty ) {
+						difficulty = maximumDifficulty + 1
+					}
+				}
+				
+				array[quantity] = difficulty
+				
+				if ( !includeChallengePairs ) {
+					continue
+				}
+				
+				lowerArray = []
+				lowerArray.push({'challenge':[challenge], 'quantity':[quantity], 'difficulty':difficulty, 'experience':[experience], 'sum':experience * quantity})
+				
+				if ( difficulty >= 0 && challenge > 0 ) {
+					for ( lowerQuantity = 1 ; lowerQuantity < quantity ; ++lowerQuantity ) {
+						upperQuantity = quantity - lowerQuantity
+						
+						for ( lowerIndex = -3 ; lowerIndex < index ; ++lowerIndex ) {
+							lowerChallenge = ( lowerIndex < 1 ) ? [0, 0.125, 0.25, 0.5][lowerIndex + 3] : lowerIndex
+							lowerExperience = ( lowerChallenge > 0 && lowerChallenge < 1 ) ? experienceForChallengeRating[1] * lowerChallenge : experienceForChallengeRating[lowerChallenge]
+							lowerSum = upperQuantity * experience + lowerQuantity * lowerExperience
+							lowerProduct = lowerSum * multiplier.multiplier
+							
+							if ( lowerProduct < experienceForDifficulty[0] ) { continue }
+							if ( lowerProduct > maximumExperience ) { break }
+							
+							lowerDifficulty = encounterBinarySearch(experienceForDifficulty, lowerProduct)
+							
+							if ( lowerDifficulty < 0 ) { lowerDifficulty = -2 - lowerDifficulty }
+							if ( lowerDifficulty > maximumDifficulty ) { break }
+							
+							lowerArray.push({'challenge':[challenge, lowerChallenge], 'quantity':[upperQuantity, lowerQuantity], 'difficulty':lowerDifficulty, 'experience':[experience, lowerExperience], 'sum':lowerSum})
+							
+							if ( lowerDifficulty >= maximumDifficulty ) { break }
+						}
+					}
+				}
+				
+				lowerArray.sort(function (a, b) { return (b.sum - a.sum) || (b.quantity[0] - a.quantity[0]) })
+				array['mix_' + quantity] = lowerArray
+			}
+		}
+		
+		array[0] = difficulty
+		array.challenge = challenge
+		difficultyArray.push(array)
+		prior = array
+	}
+	
+	return difficultyArray
 }
 
 function encounterExperienceSum(encounter, challenges) {
@@ -140,7 +255,40 @@ function encounterExperienceSum(encounter, challenges) {
 }
 
 function encounterChallengeSearch(experienceForChallengeRating, experience, rounding) {
+	var zero = experienceForChallengeRating[0]
 	var base = experienceForChallengeRating[1]
+	var array, challenge
+	var value, ratio
+	
+	if ( experience < base ) {
+		array = [zero, base * 0.125, base * 0.25, base * 0.5, base]
+	} else {
+		array = experienceForChallengeRating
+	}
+	
+	challenge = encounterBinarySearch(array, experience)
+	
+	if ( challenge < 0 ) {
+		challenge = -2 - challenge
+		
+		if ( challenge < 0 ) {
+			challenge = 0
+		} else if ( challenge + 1 < array.length && typeof rounding === 'number' ) {
+			value = array[challenge]
+			ratio = (experience - value) / (array[challenge + 1] - value)
+			
+			if ( ratio > rounding ) {
+				challenge += 1
+			}
+		}
+	}
+	
+	if ( experience < base ) {
+		challenge = [0, 0.125, 0.25, 0.5, 1][challenge]
+	}
+	
+	return challenge
+	
 	var array = [].concat(experienceForChallengeRating)
 	
 	array.splice(1, 0, base * 0.125, base * 0.25, base * 0.5)
@@ -337,10 +485,10 @@ function encounterLimits(encounter, characterLevels, maximumCreatures) {
 		
 		result[difficultyIndex].uniformChallengeRatingForNumber[number] = challenge
 		
-// 					for ( previous = challenge ; previous > 0 && (result[difficultyIndex].numberForUniformChallengeRating[previous] || 0) < number ; ) {
-// 						result[difficultyIndex].numberForUniformChallengeRating[previous] = number
-// 						previous = previous > 0.125 ? previous > 1 ? previous - 1 : previous / 2 : 0
-// 					}
+// 		for ( previous = challenge ; previous > 0 && (result[difficultyIndex].numberForUniformChallengeRating[previous] || 0) < number ; ) {
+// 			result[difficultyIndex].numberForUniformChallengeRating[previous] = number
+// 			previous = previous > 0.125 ? previous > 1 ? previous - 1 : previous / 2 : 0
+// 		}
 		
 		while ( challenge > 0 && difficultyIndex > 0 ) {
 			previous = challenge
@@ -367,10 +515,10 @@ function encounterLimits(encounter, characterLevels, maximumCreatures) {
 				} else {
 					result[difficultyIndex].uniformChallengeRatingForNumber[number] = challenge
 					
-// 								for ( previous = challenge ; previous > 0 && (result[difficultyIndex].numberForUniformChallengeRating[previous] || 0) < number ; ) {
-// 									result[difficultyIndex].numberForUniformChallengeRating[previous] = number
-// 									previous = previous > 0.125 ? previous > 1 ? previous - 1 : previous / 2 : 0
-// 								}
+// 					for ( previous = challenge ; previous > 0 && (result[difficultyIndex].numberForUniformChallengeRating[previous] || 0) < number ; ) {
+// 						result[difficultyIndex].numberForUniformChallengeRating[previous] = number
+// 						previous = previous > 0.125 ? previous > 1 ? previous - 1 : previous / 2 : 0
+// 					}
 				}
 			}
 		}
@@ -388,7 +536,7 @@ function encounterRandomEnvironment(encounter, environment) {
 		environment = environment.trim()
 	}
 	
-	if ( encounter.list.environments.indexOf(environment) < 0 ) {
+	if ( encounter.list && encounter.list.environments.indexOf(environment) < 0 ) {
 		environment = encounterRandomElement(encounter.list.environments)
 	}
 	
@@ -396,7 +544,7 @@ function encounterRandomEnvironment(encounter, environment) {
 }
 
 function encounterRandomCreature(encounter, challenge, environment) {
-	var creatureByEnvironment = encounter.creatureBy[environment]
+	var creatureByEnvironment = encounter.creatureBy && encounter.creatureBy[environment]
 	var creatures = creatureByEnvironment && creatureByEnvironment[challenge]
 	var creatureKey = creatures && encounterRandomElement(creatures)
 	var creature = creatureKey && encounter.creatureBy.key[creatureKey]
@@ -523,7 +671,89 @@ function encounterRandomGroup(encounter, multiplier, environment) {
 	return false
 }
 
-function encounterIntegrateBestiary(encounter, bestiary) {
+function encounterApplyGroupsToQuantityByChallenge(encounter, difficultyByQuantityByChallenge, environments) {
+	if ( !encounter.creatureBy ) {
+		return difficultyByQuantityByChallenge
+	}
+	
+	var envirnment
+	var creatureByEnvironment
+	var group, groups
+	var byQuantity, quantity, array, pairing, pairs, pair, experiences
+	var experienceKey, experience, key, index, upper, lower, count
+	var pairsByExperience = new Object()
+	
+	if ( typeof environments === 'string' ) {
+		environments = environments.split(",")
+	} else if ( !Array.isArray(environments) || !environments.length ) {
+		environments = ['all']
+	}
+	
+	for ( environment of environments ) {
+		environment.trim()
+		creatureByEnvironment = encounter.creatureBy[environment]
+		groups = creatureByEnvironment && creatureByEnvironment.groups
+		
+		if ( !Array.isArray(groups) ) {
+			continue
+		}
+		
+		for ( group of groups ) {
+			pairs = new Object()
+			experiences = []
+			
+			for ( experienceKey of group ) {
+				index = experienceKey.indexOf(':')
+				if ( index < 0 ) { continue }
+				
+				experience = experienceKey.slice(0, index)
+				key = experienceKey.slice(index + 1)
+				
+				if ( pairs[experience] ) {
+					pairs[experience].push(key)
+				} else {
+					pairs[experience] = [key]
+					experiences.push(experience)
+				}
+			}
+			
+			count = experiences.length
+			
+			for ( upper = 1 ; upper < count ; ++upper ) {
+				for ( lower = 0 ; lower < upper ; ++lower ) {
+					key = +experiences[upper] + "," + +experiences[lower]
+					pair = [pairs[experiences[upper]], pairs[experiences[lower]]]
+				
+					if ( pairsByExperience[key] ) {
+						pairsByExperience[key].push(pair)
+					} else {
+						pairsByExperience[key] = [pair]
+					}
+				}
+			}
+		}
+	}
+	
+	for ( byQuantity of difficultyByQuantityByChallenge ) {
+		for ( quantity = 1 ;  ; ++quantity ) {
+			array = byQuantity['mix_' + quantity]
+			if ( !array ) { break }
+			if ( array.length < 2 ) { continue }
+			
+			for ( pairing of array ) {
+				pairs = pairsByExperience[pairing.experience.join(",")]
+				
+				if ( pairs ) {
+					pairing.pairs = pairs
+				}
+			}
+		}
+	}
+	
+	return difficultyByQuantityByChallenge
+}
+
+function encounterIntegrateBestiary(encounter, bestiary, excludeSource) {
 	var experienceForChallengeRating = encounter.experienceForChallengeRating
 	var creature, creatureList = [], creatureBy = new Object()
 	var challenge, name, experience, experienceKey
@@ -532,7 +762,7 @@ function encounterIntegrateBestiary(encounter, bestiary) {
 	var key, anyEnvironment = 'all', noEnvironment = 'unspecified'
 	var entry, array, varieties, varietyList = []
 	var type, typeList = []
-	var group, where, found, synthesize
+	var group, where, found, synthesize, syntheticName = new Object()
 	
 	creatureBy[anyEnvironment] = new Object()
 	creatureBy[noEnvironment] = new Object()
@@ -544,6 +774,10 @@ function encounterIntegrateBestiary(encounter, bestiary) {
 	synthesized.push(noEnvironment)
 	
 	for ( creature of bestiary.monster ) {
+		if ( excludeSource && excludeSource.indexOf(creature.source) >= 0 ) {
+			continue
+		}
+		
 		entry = new Object()
 		name = creature.name
 		environment = creature.environment
@@ -626,7 +860,7 @@ function encounterIntegrateBestiary(encounter, bestiary) {
 		experienceKey = "" + experience
 		experienceKey = "        ".slice(0, 6 - experienceKey.length) + experienceKey
 		
-		entry.key = referenceKey(name)
+		entry.key = libraryKey(name)
 		entry.name = name
 		entry.type = type
 		entry.challenge = challenge
@@ -691,7 +925,8 @@ function encounterIntegrateBestiary(encounter, bestiary) {
 		where = new Object()
 		
 		if ( group.synthesize ) {
-			synthesize = referenceKey(group.synthesize)
+			synthesize = libraryKey(group.synthesize)
+			syntheticName[synthesize] = group.synthesize
 		} else {
 			synthesize = false
 		}
@@ -771,5 +1006,6 @@ function encounterIntegrateBestiary(encounter, bestiary) {
 	encounter.list.syntheticEnvironments = synthesized
 	encounter.list.creatures = creatureList
 	encounter.creatureBy = creatureBy
+	encounter.syntheticName = syntheticName
 }
 

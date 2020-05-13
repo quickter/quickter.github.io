@@ -340,7 +340,7 @@ var treasure = {
 			{"frequency": 1, "name":"Helm of Telepathy"},
 			{"frequency": 1, "name":"Instrument of the Bards", "variant":"Doss lute", "integrate":","},
 			{"frequency": 1, "name":"Instrument of the Bards", "variant":"Fochlucan bandore", "integrate":","},
-			{"frequency": 1, "name":"Instrument of the Bards", "variant":"Mac-Fuimidh cittern", "integrate":","},
+			{"frequency": 1, "name":"Instrument of the Bards", "variant":"Mac-Fuirmidh cittern", "integrate":","},
 			{"frequency": 1, "name":"Medallion of Thoughts"},
 			{"frequency": 1, "name":"Necklace of Adaptation"},
 			{"frequency": 1, "name":"Periapt of Wound Closure"},
