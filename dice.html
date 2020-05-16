@@ -8,6 +8,7 @@
 		<meta name="author" content="Cole">
 		<meta name="keywords" content="dnd,5e,dungeons,dragons,dice">
 		<meta name="description" content="Dice">
+		<script src="src/parseattack.js"></script>
 		
 		<script type="text/javascript">
 			'use strict';
@@ -122,7 +123,135 @@
 				diceCount.form.diceCount.value = diceCount.value
 			}
 			
+			function handleMoreCombat(name, roll) {
+				var parent = _element('tracking-combat-rolls')
+				var children = parent.getElementsByClassName('tracking-combat-rolls-row hidden')
+				
+				if ( children.length > 0 ) {
+					var element = children[0]
+					
+					_assignClass(element, 'hidden', -1)
+					_element(element.id + '-name').value = name || ""
+					_element(element.id + '-script').value = roll || ""
+					_element(element.id + '-output').value = ""
+					_element(element.id + '-detail').value = ""
+				}
+			}
+			
+			function handleLessCombat(key) {
+				if ( !key ) {
+					var parent = _element('tracking-combat-rolls')
+					var child, children = parent.getElementsByClassName('tracking-combat-rolls-row')
+					
+					for ( child of children ) {
+						_assignClass(child, 'hidden', 1)
+					}
+					
+					return
+				}
+				
+				var element = _element(key)
+				
+				if ( element ) {
+					_assignClass(element, 'hidden', 1)
+					_element(element.id + '-name').value = ""
+					_element(element.id + '-script').value = ""
+					_element(element.id + '-output').value = ""
+					_element(element.id + '-detail').value = ""
+				}
+			}
+			
+			function handleAttackRoll(prefix) {
+				var script = _element(prefix + '-script')
+				var output = _element(prefix + '-output')
+				var detail = _element(prefix + '-detail')
+				var target = _element('tracking-combat-rolls-target')
+				
+				var value = script.value
+				
+// 				var versus = evaluateRudimentaryDuel(value, false)
+// 				
+// 				if ( versus ) {
+// 					output.value = ''
+// 					detail.value = ''
+// 					detail.innerHTML = "<ol start='0'><li>" + versus.join("</li><li>") + "</li></ol>"
+// 					return
+// 				}
+				
+				var where = value.indexOf('@')
+				
+				if ( target && where < 0 ) {
+					var suffix = target.value
+					
+					if ( suffix.length > 0 && suffix.indexOf('@') < 0 ) { suffix = '@' + suffix }
+					
+					value = value + suffix
+					where = value.indexOf('@')
+				}
+				
+				var index = value.indexOf('%')
+				var allowMontecarlo = where < 0 ? value.indexOf('/') === 0 && index > 0 : index > where
+				var montecarlo = allowMontecarlo ? Math.min(+value.slice(index + 1) || 1000, 10000) : 0
+				
+				var parsed = parseAttackParameters(value, {})
+				
+				if ( montecarlo > 0 ) {
+					var sum = 0
+					var sample, samples = []
+					
+					for ( index = 0 ; index < montecarlo ; ++index ) {
+						sample = evaluateEffectiveness(parsed, false)
+						sum += sample.damage || 0
+						
+						if ( index < 10 ) { samples.push(sample.damage || 0) }
+					}
+					
+					output.value = (sum / montecarlo)
+					detail.value = " (" + samples.join(", ") + (montecarlo > samples.length ? ", ... × " + montecarlo : "") + ")"
+				} else {
+					var result = evaluateEffectiveness(parsed, true)
+					
+					output.value = result.damage === false ? "" : result.damage + " : "
+					detail.value = result.concise.join(", ")
+				}
+			}
+			
+			function replaceKeys(template, object) {
+				var pattern = /\{([^ {}]+)\}/g
+				
+				return template.replace(pattern, function (match, key) { return object[key] })
+			}
+			
+			function populateCombatRolls() {
+				var element = _element('tracking-combat-rolls')
+				var index, maximumRolls = 10
+				var rows = []
+				var prefixRow = "<div>" +
+					"<input type='button' id='tracking-combat-rolls-add' value='+' class='not-action' onclick='handleMoreCombat()' /><!-- label for='tracking-combat-add' class='action'><span>+</span></label -->" +
+					//"<input id='toggle-combat-instructions' class='toggle' type='checkbox' /><label for='toggle-combat-instructions' class='toggle'> </label><div id='tracking-combat-instructions' class='toggled'></div>" +
+					"</div>"
+				var suffixRow = "<div>" +
+					"<span>@</span><input type='text' id='tracking-combat-rolls-target' value='' placeholder='16' class='tracking-combat-rolls-script' />" +
+					"</div>"
+				var templateRow = "<div id='tracking-combat-rolls-{index}' class='tracking-combat-rolls-row {style}'>" +
+					"<input type='button' id='tracking-combat-rolls-{index}-remove' value='-' onclick='handleLessCombat(\"tracking-combat-rolls-{index}\")' />" +
+					"<input type='text' id='tracking-combat-rolls-{index}-name' value='' placeholder='Name' class='tracking-combat-rolls-name' />" +
+					"<input type='text' id='tracking-combat-rolls-{index}-script' value='' placeholder='+4/d8+2' class='tracking-combat-rolls-script' />" +
+					"<input type='button' id='tracking-combat-rolls-{index}-action' value='>' onclick='handleAttackRoll(\"tracking-combat-rolls-{index}\")' />" +
+					"<output id='tracking-combat-rolls-{index}-output' for='tracking-combat-rolls-{index}-script' class='tracking-combat-rolls-output'></output>" +
+					"<output id='tracking-combat-rolls-{index}-detail' for='tracking-combat-rolls-{index}-script' class='tracking-combat-rolls-detail'></output>" +
+					"</div>"
+				
+				for ( index = 0 ; index < maximumRolls ; ++index ) {
+					rows.push(replaceKeys(templateRow, {'index':index + 1, 'style':(index > 0 ? 'hidden' : '')}))
+				}
+				
+				element.innerHTML = prefixRow + rows.join(" ") + suffixRow
+				//populateCombatInstructions()
+			}
+			
 			function populatePage() {
+				populateCombatRolls()
 			}
 		</script>
 		
@@ -147,10 +276,12 @@
 			html { background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%); }
 			body { position:relative; box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
 			
+			.hidden { display:none; }
+			
 			input.tracking-combat-rolls-name { max-width:25%; }
 			input.tracking-combat-rolls-script { max-width:50%; }
 			output.tracking-number-output { display:inline-block; min-width:2em; text-align:right; }
-			#tracking-dice { font-size:200%; }
+			#tracking-dice { font-size:200%; margin-bottom:2em; }
 			#tracking-dice { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; }
 			#tracking-dice > div { min-width:50%; height:5em; text-align:center; margin-top:1em; }
 			#tracking-dice-times { margin:0 0.75em 0 0.5em; }
@@ -162,7 +293,7 @@
 			@media print { div#navigation { display:none; } }
 			div#navigation { position:absolute; left:1em; top:0.5em; }
 			div#navigation a { text-decoration:none; display:inline-block; width:2em; height:1.875em; padding-top:0.125em; text-align:center; border-radius:50%; }
-			div#navigation a#navigation-treasure { background:#EEF; }
+			div#navigation a#navigation-dice { background:#EEF; }
 			
 			input.action[type="button"] { display:none; }
 			label.action:active { background-color:#EEE; }
@@ -202,24 +333,25 @@
 		
 		<h4>Dice</h4>
 		
-		<form id='dice-form' onsubmit="return false">
-			<div id='tracking-dice'>
-				<span><input type='range' id='tracking-dice-count' value='1' min='1' max='20' oninput='form.diceCount.value = value' /><output for='tracking-dice-count' name='diceCount' class='tracking-number-output'>1</output></span>
-				<span id='tracking-dice-times'>&times;</span>
-				<span><input type='button' id='tracking-dice-d4' value='4' class='action' onclick='handleDieRoll(4)' /><label for='tracking-dice-d4' class='action'><span class='die-roll'>D4</span></label></span>
-				<span><input type='button' id='tracking-dice-d6' value='6' class='action' onclick='handleDieRoll(6)' /><label for='tracking-dice-d6' class='action'><span class='die-roll'>D6</span></label></span>
-				<span><input type='button' id='tracking-dice-d8' value='8' class='action' onclick='handleDieRoll(8)' /><label for='tracking-dice-d8' class='action'><span class='die-roll'>D8</span></label></span>
-				<span><input type='button' id='tracking-dice-d10' value='10' class='action' onclick='handleDieRoll(10)' /><label for='tracking-dice-d10' class='action'><span class='die-roll'>D10</span></label></span>
-				<span><input type='button' id='tracking-dice-d12' value='12' class='action' onclick='handleDieRoll(12)' /><label for='tracking-dice-d12' class='action'><span class='die-roll'>D12</span></label></span>
-				<span><input type='button' id='tracking-dice-d20' value='20' class='action' onclick='handleDieRoll(20)' /><label for='tracking-dice-d20' class='action'><span class='die-roll'>D20</span></label></span>
-				<span><input type='button' id='tracking-dice-d100' value='100' class='action' onclick='handleDieRoll(100)' /><label for='tracking-dice-d100' class='action'><span class='die-roll'>D100</span></label></span>
-				<span><input type='button' id='tracking-dice-clear' value='0' class='action' onclick='handleDieRoll(0)' /><label for='tracking-dice-clear' class='action'><span class='die-roll'>Clear</span></label></span>
-				<div>
-					<span id='tracking-dice-sum'></span>
-					<br /><span id='tracking-dice-rolls'></span>
-				</div>
+		<div id='tracking-dice'>
+			<span><input type='range' id='tracking-dice-count' value='1' min='1' max='20' oninput='form.diceCount.value = value' /><output for='tracking-dice-count' name='diceCount' class='tracking-number-output'>1</output></span>
+			<span id='tracking-dice-times'>&times;</span>
+			<span><input type='button' id='tracking-dice-d4' value='4' class='action' onclick='handleDieRoll(4)' /><label for='tracking-dice-d4' class='action'><span class='die-roll'>D4</span></label></span>
+			<span><input type='button' id='tracking-dice-d6' value='6' class='action' onclick='handleDieRoll(6)' /><label for='tracking-dice-d6' class='action'><span class='die-roll'>D6</span></label></span>
+			<span><input type='button' id='tracking-dice-d8' value='8' class='action' onclick='handleDieRoll(8)' /><label for='tracking-dice-d8' class='action'><span class='die-roll'>D8</span></label></span>
+			<span><input type='button' id='tracking-dice-d10' value='10' class='action' onclick='handleDieRoll(10)' /><label for='tracking-dice-d10' class='action'><span class='die-roll'>D10</span></label></span>
+			<span><input type='button' id='tracking-dice-d12' value='12' class='action' onclick='handleDieRoll(12)' /><label for='tracking-dice-d12' class='action'><span class='die-roll'>D12</span></label></span>
+			<span><input type='button' id='tracking-dice-d20' value='20' class='action' onclick='handleDieRoll(20)' /><label for='tracking-dice-d20' class='action'><span class='die-roll'>D20</span></label></span>
+			<span><input type='button' id='tracking-dice-d100' value='100' class='action' onclick='handleDieRoll(100)' /><label for='tracking-dice-d100' class='action'><span class='die-roll'>D100</span></label></span>
+			<span><input type='button' id='tracking-dice-clear' value='0' class='action' onclick='handleDieRoll(0)' /><label for='tracking-dice-clear' class='action'><span class='die-roll'>Clear</span></label></span>
+			<div>
+				<span id='tracking-dice-sum'></span>
+				<br /><span id='tracking-dice-rolls'></span>
 			</div>
-			<div id='tracking-combat-rolls'></div>
-		</form>
+		</div>
+		
+		<hr />
+		<h4>Combat</h4>
+		<div id='tracking-combat-rolls'></div>
 	</body>
 </html>
