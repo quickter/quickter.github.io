@@ -227,17 +227,20 @@
 				var index, maximumRolls = 10
 				var rows = []
 				var prefixRow = "<div>" +
-					"<input type='button' id='tracking-combat-rolls-add' value='+' class='not-action' onclick='handleMoreCombat()' /><!-- label for='tracking-combat-add' class='action'><span>+</span></label -->" +
+					"<input type='button' id='tracking-combat-rolls-add' value='+' class='action' onclick='handleMoreCombat()' /><!-- label for='tracking-combat-add' class='action'><span>+</span></label -->" +
+					"<label for='tracking-combat-rolls-add' class='combat action add'>+</label>" +
 					//"<input id='toggle-combat-instructions' class='toggle' type='checkbox' /><label for='toggle-combat-instructions' class='toggle'> </label><div id='tracking-combat-instructions' class='toggled'></div>" +
 					"</div>"
-				var suffixRow = "<div>" +
+				var suffixRow = "<div class='tracking-combat-rolls-suffix'>" +
 					"<span>@</span><input type='text' id='tracking-combat-rolls-target' value='' placeholder='16' class='tracking-combat-rolls-script' />" +
 					"</div>"
 				var templateRow = "<div id='tracking-combat-rolls-{index}' class='tracking-combat-rolls-row {style}'>" +
-					"<input type='button' id='tracking-combat-rolls-{index}-remove' value='-' onclick='handleLessCombat(\"tracking-combat-rolls-{index}\")' />" +
+					"<input type='button' id='tracking-combat-rolls-{index}-remove' value='-' class='action' onclick='handleLessCombat(\"tracking-combat-rolls-{index}\")' />" +
+					"<label for='tracking-combat-rolls-{index}-remove' class='combat action remove'>-</label>" +
 					"<input type='text' id='tracking-combat-rolls-{index}-name' value='' placeholder='Name' class='tracking-combat-rolls-name' />" +
 					"<input type='text' id='tracking-combat-rolls-{index}-script' value='' placeholder='+4/d8+2' class='tracking-combat-rolls-script' />" +
-					"<input type='button' id='tracking-combat-rolls-{index}-action' value='>' onclick='handleAttackRoll(\"tracking-combat-rolls-{index}\")' />" +
+					"<input type='button' id='tracking-combat-rolls-{index}-action' value='>' class='action' onclick='handleAttackRoll(\"tracking-combat-rolls-{index}\")' />" +
+					"<label for='tracking-combat-rolls-{index}-action' class='combat action evaluate'>=</label>" +
 					"<output id='tracking-combat-rolls-{index}-output' for='tracking-combat-rolls-{index}-script' class='tracking-combat-rolls-output'></output>" +
 					"<output id='tracking-combat-rolls-{index}-detail' for='tracking-combat-rolls-{index}-script' class='tracking-combat-rolls-detail'></output>" +
 					"</div>"
@@ -278,10 +281,10 @@
 			
 			.hidden { display:none; }
 			
-			input.tracking-combat-rolls-name { max-width:25%; }
-			input.tracking-combat-rolls-script { max-width:50%; }
+			input.tracking-combat-rolls-name { max-width:50%; }
+			input.tracking-combat-rolls-script { max-width:70%; }
 			output.tracking-number-output { display:inline-block; min-width:2em; text-align:right; }
-			#tracking-dice { font-size:200%; margin-bottom:2em; }
+			#tracking-dice { font-size:180%; margin-bottom:2em; }
 			#tracking-dice { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; }
 			#tracking-dice > div { min-width:50%; height:5em; text-align:center; margin-top:1em; }
 			#tracking-dice-times { margin:0 0.75em 0 0.5em; }
@@ -289,6 +292,16 @@
 			#tracking-dice-sum { display:inline-block; line-height:1.5; width:3em; height:1.75em; text-align:center; padding-top:0.25em; margin:0 1em; font-size:200%; font-weight:bold; color:#666; border-radius:50%; border:1px solid #CCC; }
 			span.die-roll { display:inline-block; min-width:2.25em; text-align:center; }
 			span.any-digit::after { content:"#"; color:#AAA; }
+			
+			#tracking-combat-rolls > div { margin-bottom:1em; }
+			#tracking-combat-rolls > div > input[type="text"] { font-size:150%; margin:0.25em 0.5em 0.25em 0; }
+			#tracking-combat-rolls > div > input[type="text"]::placeholder { color:#CCC; }
+			#tracking-combat-rolls > div > label.combat.action { font-size:150%; line-height:0.6em; padding-top:0.5em; padding-bottom:0.5em; text-align:center; }
+			#tracking-combat-rolls > div > label.combat.action { margin-right:0.5em; display:inline-block; min-width:0.6em; }
+			
+			div.tracking-combat-rolls-suffix { display:none; }
+			div.tracking-combat-rolls-suffix > span { color:#999; font-size:150%; margin-right:0.25em; }
+			div.tracking-combat-rolls-row:not(.hidden) ~ div.tracking-combat-rolls-suffix { display:block; }
 			
 			@media print { div#navigation { display:none; } }
 			div#navigation { position:absolute; left:1em; top:0.5em; }
@@ -334,7 +347,7 @@
 		
 		<h4>Dice</h4>
 		
-		<div id='tracking-dice'>
+		<form id='tracking-dice-form'><div id='tracking-dice'>
 			<span><input type='range' id='tracking-dice-count' value='1' min='1' max='20' oninput='form.diceCount.value = value' /><output for='tracking-dice-count' name='diceCount' class='tracking-number-output'>1</output></span>
 			<span id='tracking-dice-times'>&times;</span>
 			<span><input type='button' id='tracking-dice-d4' value='4' class='action' onclick='handleDieRoll(4)' /><label for='tracking-dice-d4' class='action'><span class='die-roll'>D4</span></label></span>
@@ -349,7 +362,7 @@
 				<span id='tracking-dice-sum'></span>
 				<br /><span id='tracking-dice-rolls'></span>
 			</div>
-		</div>
+		</div></form>
 		
 		<hr />
 		<h4>Combat</h4>
