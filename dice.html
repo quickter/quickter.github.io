@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Dice</title>
+		<meta name="author" content="Cole">
+		<meta name="keywords" content="dnd,5e,dungeons,dragons,dice">
+		<meta name="description" content="Dice">
+		
+		<script type="text/javascript">
+			'use strict';
+			
+			function _element(id) {
+				if ( id && Node.ELEMENT_NODE === id.nodeType ) return id;
+				else if ( 'body' === id || 'head' === id ) return document[id];
+				else return document.getElementById(id);
+			}
+			
+			function _assignClass(element, c) {
+				var result = 0;
+				var action = ( arguments.length > 2 ) ? arguments[2] || 0 : 1
+				
+				if ( element.classList && 'function' === typeof element.classList.contains ) {
+					if ( !(action > 0 || action < 0) ) {
+						result = element.classList.toggle(c) ? 1 : -1
+					} else if ( element.classList.contains(c) ) {
+						result = !( action > 0 ) ? element.classList.remove(c) || -1 : 0
+					} else {
+						result = !( action < 0 ) ? element.classList.add(c) || 1 : 0
+					}
+				} else if ( element.className && 'function' === typeof element.className.search ) {
+					var pattern = new RegExp('(^|\\s+)'+c+'(\\s+|$)');
+					
+					if ( element.className.search(pattern) < 0 ) {
+						if ( !(action < 0) ) {
+							element.className = element.className !== "" ? element.className + " " + c : c
+							result = 1
+						}
+					} else {
+						if ( !(action > 0) ) {
+							element.className = element.className.replace(pattern, " ").trim()
+							result = -1
+						}
+					}
+				} else if ( !(action < 0) ) {
+					element.className = c
+					result = 1
+				}
+				
+				return result;
+			}
+			
+			function inflateParameters(result, string, leading, separator) {
+				if ( string.charAt(0) === leading ) { string = string.slice(1) }
+				
+				var part, parts = string.split(separator)
+				var object = result || {}
+				
+				for ( part of parts ) {
+					var equals = part.indexOf("=")
+					var value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
+					var key = equals < 0 ? part : part.slice(0, equals)
+					
+					object[key] = value
+				}
+				
+				return object
+			}
+			
+			function add(a, b) { return a + b }
+			function subtract(a, b) { return a - b }
+			
+			function randomInteger(count) {
+				if ( crypto && crypto.getRandomValues ) {
+					var randomValues = new Uint32Array(1)
+					
+					crypto.getRandomValues(randomValues)
+					
+					return randomValues[0] % count
+				} else {
+					return Math.floor(Math.random() * Math.floor(count)) | 0
+				}
+			}
+			
+			function diceRoll(sides, diceToRoll, diceToKeep) {
+				var rolls = []
+				
+				for ( var index = 0 ; index < diceToRoll ; ++index ) {
+					rolls.push(1 + randomInteger(sides))
+				}
+				
+				if ( diceToKeep > 0 && diceToKeep < diceToRoll ) {
+					rolls = rolls.sort(subtract).slice(diceToRoll - diceToKeep)
+				}
+				
+				return rolls
+			}
+			
+			function handleDieRoll(sides) {
+				var diceRolls = _element('tracking-dice-rolls')
+				var diceCount = _element('tracking-dice-count')
+				var diceSum = _element('tracking-dice-sum')
+				
+				if ( sides > 0 ) {
+					var dieCount = diceCount.value || 1
+					var rolls = diceRoll(sides, dieCount)
+					var sum = rolls.reduce(add, 0)
+					var summary = (dieCount > 1 ? dieCount : "") + "d" + sides + " (" + rolls.join(", ") + ")"
+					
+					if ( summary === diceRolls.innerHTML ) { summary = "• " + summary + " •" }
+					
+					diceRolls.innerHTML = summary
+					diceSum.innerHTML = sum
+				} else {
+					diceCount.value = '1'
+					diceRolls.innerHTML = ' '
+					diceSum.innerHTML = ' '
+				}
+				
+				diceCount.form.diceCount.value = diceCount.value
+			}
+			
+			function populatePage() {
+			}
+		</script>
+		
+		<style>
+			html {
+				background: #EEE;
+			}
+			
+			body {
+				-webkit-font-smoothing: antialiased;
+				-webkit-touch-callout: none;
+				color: #555;
+				background: #FFF;
+				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+				font-size: 14px;
+				line-height: 1.75;
+				padding: 2em;
+				margin: 0 auto;
+				max-width: 50em;
+			}
+			
+			html { background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%); }
+			body { position:relative; box-shadow: 0 0 0.125em rgba(0, 0, 0, 0.06); }
+			
+			input.tracking-combat-rolls-name { max-width:25%; }
+			input.tracking-combat-rolls-script { max-width:50%; }
+			output.tracking-number-output { display:inline-block; min-width:2em; text-align:right; }
+			#tracking-dice { font-size:200%; }
+			#tracking-dice { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; }
+			#tracking-dice > div { min-width:50%; height:5em; text-align:center; margin-top:1em; }
+			#tracking-dice-times { margin:0 0.75em 0 0.5em; }
+			#tracking-dice-rolls { display:inline-block; color:#999; }
+			#tracking-dice-sum { display:inline-block; line-height:1.5; width:3em; height:1.75em; text-align:center; padding-top:0.25em; margin:0 1em; font-size:200%; font-weight:bold; color:#666; border-radius:50%; border:1px solid #CCC; }
+			span.die-roll { display:inline-block; min-width:2.25em; text-align:center; }
+			span.any-digit::after { content:"#"; color:#AAA; }
+			
+			@media print { div#navigation { display:none; } }
+			div#navigation { position:absolute; left:1em; top:0.5em; }
+			div#navigation a { text-decoration:none; display:inline-block; width:2em; height:1.875em; padding-top:0.125em; text-align:center; border-radius:50%; }
+			div#navigation a#navigation-treasure { background:#EEF; }
+			
+			input.action[type="button"] { display:none; }
+			label.action:active { background-color:#EEE; }
+			
+			label.option, label.action {
+				margin-right:0.5em;
+				line-height:3.25;
+				padding:0.75em;
+				border-radius:0.5em;
+				border:0.125em solid #CCC;
+				white-space:nowrap;
+				cursor:pointer;
+			}
+			
+			.toggle, .roll, .action, .option {
+				-webkit-tap-highlight-color:transparent;
+			}
+			
+			.nose, .toggle, .roll, .action, .option {
+				-webkit-touch-callout:none;
+				-webkit-user-select:none;
+				-moz-user-select:none;
+				-ms-user-select:none;
+				-o-user-select:none;
+				user-select:none;
+			}
+		</style>
+	</head>
+	<body onload='populatePage()'>
+		<div id='navigation'>
+			<a id='navigation-bestiary' href='bestiary.html' title='Monster List'>🐉</a>
+			<a id='navigation-spellbook' href='spellbook.html' title='Spell List'>📜</a>
+			<a id='navigation-trove' href='trove.html' title='Magic Item List'>🔮</a>
+			<a id='navigation-treasure' href='treasure.html' title='Roll Treasure'>💎</a>
+			<a id='navigation-encounter' href='encounter.html' title='Roll Encounters'>🚪</a>
+		</div>
+		
+		<h4>Dice</h4>
+		
+		<form id='dice-form' onsubmit="return false">
+			<div id='tracking-dice'>
+				<span><input type='range' id='tracking-dice-count' value='1' min='1' max='20' oninput='form.diceCount.value = value' /><output for='tracking-dice-count' name='diceCount' class='tracking-number-output'>1</output></span>
+				<span id='tracking-dice-times'>&times;</span>
+				<span><input type='button' id='tracking-dice-d4' value='4' class='action' onclick='handleDieRoll(4)' /><label for='tracking-dice-d4' class='action'><span class='die-roll'>D4</span></label></span>
+				<span><input type='button' id='tracking-dice-d6' value='6' class='action' onclick='handleDieRoll(6)' /><label for='tracking-dice-d6' class='action'><span class='die-roll'>D6</span></label></span>
+				<span><input type='button' id='tracking-dice-d8' value='8' class='action' onclick='handleDieRoll(8)' /><label for='tracking-dice-d8' class='action'><span class='die-roll'>D8</span></label></span>
+				<span><input type='button' id='tracking-dice-d10' value='10' class='action' onclick='handleDieRoll(10)' /><label for='tracking-dice-d10' class='action'><span class='die-roll'>D10</span></label></span>
+				<span><input type='button' id='tracking-dice-d12' value='12' class='action' onclick='handleDieRoll(12)' /><label for='tracking-dice-d12' class='action'><span class='die-roll'>D12</span></label></span>
+				<span><input type='button' id='tracking-dice-d20' value='20' class='action' onclick='handleDieRoll(20)' /><label for='tracking-dice-d20' class='action'><span class='die-roll'>D20</span></label></span>
+				<span><input type='button' id='tracking-dice-d100' value='100' class='action' onclick='handleDieRoll(100)' /><label for='tracking-dice-d100' class='action'><span class='die-roll'>D100</span></label></span>
+				<span><input type='button' id='tracking-dice-clear' value='0' class='action' onclick='handleDieRoll(0)' /><label for='tracking-dice-clear' class='action'><span class='die-roll'>Clear</span></label></span>
+				<div>
+					<span id='tracking-dice-sum'></span>
+					<br /><span id='tracking-dice-rolls'></span>
+				</div>
+			</div>
+			<div id='tracking-combat-rolls'></div>
+		</form>
+	</body>
+</html>
