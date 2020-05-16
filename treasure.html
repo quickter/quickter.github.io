@@ -131,6 +131,27 @@
 				return text
 			}
 			
+			function generateTreasureForMagicItemTables(text) {
+				var matches = text.split(/([A-Ia-i]\s*[*x×✕]?\s*\d*)\s*[,]*/g)
+				var index, count = matches.length
+				var parts, key, quantity, items = []
+				
+				for ( index = 0 ; index < count ; ++index ) {
+					if ( index & 1 ) {
+						parts = matches[index].match(/([A-Ia-i])\s*[*x×✕]?\s*(\d*)/)
+						key = parts[1].toLowerCase()
+						quantity = +parts[2] || 1
+						items.push({'table':'magic', 'key':key, 'count':[quantity]})
+					} else {
+						if ( matches[index] !== "" ) {
+							return false
+						}
+					}
+				}
+				
+				return items.length > 0 ? items : false
+			}
+			
 			function generateTreasuresForRequest(treasure, challenges, kind, raw) {
 				var scalar = 1
 				
@@ -158,21 +179,23 @@
 				var challenge = form.challenge.value
 				var partition = form.partition.checked
 				var raw = form.raw.checked
-				var treasures
+				var treasures = generateTreasureForMagicItemTables(challenge)
 				var descriptions
 				var challenges = treasureParseLevels(challenge, partition)
 				
-				if ( partition && challenges.length > 1 ) {
-					treasures = []
+				if ( !treasures ) {
+					if ( partition && challenges.length > 1 ) {
+						treasures = []
 					
-					for ( challenge of challenges ) {
-						treasures = treasures.concat(generateTreasuresForRequest(treasure, [challenge], kind, raw))
-						treasures.push({'descriptions':["-"], 'summarize':true})
+						for ( challenge of challenges ) {
+							treasures = treasures.concat(generateTreasuresForRequest(treasure, [challenge], kind, raw))
+							treasures.push({'descriptions':["-"], 'summarize':true})
+						}
+					
+						treasures.pop()
+					} else {
+						treasures = generateTreasuresForRequest(treasure, challenges, kind, raw)
 					}
-					
-					treasures.pop()
-				} else {
-					treasures = generateTreasuresForRequest(treasure, challenges, kind, raw)
 				}
 				
 				treasureLookupItems(treasure, lookup, treasures)
