@@ -163,8 +163,6 @@
 			
 			function handleAttackRoll(prefix) {
 				var script = _element(prefix + '-script')
-				var output = _element(prefix + '-output')
-				var detail = _element(prefix + '-detail')
 				var target = _element('tracking-combat-rolls-target')
 				
 				var value = script.value
@@ -194,6 +192,8 @@
 				var montecarlo = allowMontecarlo ? Math.min(+value.slice(index + 1) || 1000, 10000) : 0
 				
 				var parsed = parseAttackParameters(value, {})
+				var damage = ""
+				var detail = ""
 				
 				if ( montecarlo > 0 ) {
 					var sum = 0
@@ -206,14 +206,59 @@
 						if ( index < 10 ) { samples.push(sample.damage || 0) }
 					}
 					
-					output.value = (sum / montecarlo)
-					detail.value = " (" + samples.join(", ") + (montecarlo > samples.length ? ", ... × " + montecarlo : "") + ")"
+					damage = (sum / montecarlo)
+					detail = samples.join(", ") + (montecarlo > samples.length ? ", ... × " + montecarlo : "")
 				} else {
 					var result = evaluateEffectiveness(parsed, true)
+					var entry, list = []
+					var text, noDamage
+					var isAttack = false
 					
-					output.value = result.damage === false ? "" : result.damage + " : "
-					detail.value = result.concise.join(", ")
+					for ( entry of result.summary ) {
+						noDamage = false
+						if ( entry.toHit !== false ) { isAttack = true }
+						
+						if ( entry.toHit === false ) {
+							text = ""
+						} else if ( entry.hit === false ) {
+							text = "Miss (natural 1)"
+							noDamage = true
+						} else if ( entry.hit === true ) {
+							text = "Hit (natural 20)"
+						} else if ( !entry.armorClass ) {
+							text = "Hits AC " + entry.hit + " (" + entry.toHit + (entry.bonusToHit < 0 ? "" : "+") + entry.bonusToHit + ")"
+						} else if ( entry.isHit ) {
+							text = "Hit (" + entry.toHit + (entry.bonusToHit < 0 ? "" : "+") + entry.bonusToHit + " hits by " + (entry.hit - entry.armorClass) + ")"
+						} else {
+							text = "Miss (" + entry.toHit + (entry.bonusToHit < 0 ? "" : "+") + entry.bonusToHit + " misses by " + (entry.armorClass - entry.hit) + ")"
+							noDamage = true
+						}
+						
+						if ( !noDamage ) {
+							if ( text ) { text += " &bull; " }
+							
+							text += entry.damage + (entry.critical ? " critical" : "") + " damage"
+						}
+						
+						list.push(text)
+					}
+					
+					damage = isAttack ? result.damage === false ? "" : result.damage : result.damageRolled
+					
+					if ( list.length > 1 ) {
+						detail = "<ol><li>" + list.join("</li><li>") + "</li><ol>"
+					} else if ( isAttack ) {
+						detail = list.join("")
+					}
 				}
+				
+				_element(prefix + '-damage').innerHTML = damage
+				_element(prefix + '-detail').innerHTML = detail
+				_assignClass(_element(prefix + '-result'), 'hidden', -1)
+			}
+			
+			function handleAttackClose(prefix) {
+				_assignClass(_element(prefix + '-result'), 'hidden', 1)
 			}
 			
 			function replaceKeys(template, object) {
@@ -234,15 +279,17 @@
 				var suffixRow = "<div class='tracking-combat-rolls-suffix'>" +
 					"<span>@</span><input type='text' id='tracking-combat-rolls-target' value='' placeholder='16' class='tracking-combat-rolls-script' />" +
 					"</div>"
-				var templateRow = "<div id='tracking-combat-rolls-{index}' class='tracking-combat-rolls-row {style}'>" +
+				var templateRow = "<div id='tracking-combat-rolls-{index}' class='tracking-combat-rolls-row combat-parent {style}'>" +
 					"<input type='button' id='tracking-combat-rolls-{index}-remove' value='-' class='action' onclick='handleLessCombat(\"tracking-combat-rolls-{index}\")' />" +
 					"<label for='tracking-combat-rolls-{index}-remove' class='combat action remove'>-</label>" +
 					"<input type='text' id='tracking-combat-rolls-{index}-name' value='' placeholder='Name' class='tracking-combat-rolls-name' />" +
 					"<input type='text' id='tracking-combat-rolls-{index}-script' value='' placeholder='+4/d8+2' class='tracking-combat-rolls-script' />" +
 					"<input type='button' id='tracking-combat-rolls-{index}-action' value='>' class='action' onclick='handleAttackRoll(\"tracking-combat-rolls-{index}\")' />" +
 					"<label for='tracking-combat-rolls-{index}-action' class='combat action evaluate'>=</label>" +
-					"<output id='tracking-combat-rolls-{index}-output' for='tracking-combat-rolls-{index}-script' class='tracking-combat-rolls-output'></output>" +
-					"<output id='tracking-combat-rolls-{index}-detail' for='tracking-combat-rolls-{index}-script' class='tracking-combat-rolls-detail'></output>" +
+					"<div id='tracking-combat-rolls-{index}-result' class='combat-result hidden' onclick='handleAttackClose(\"tracking-combat-rolls-{index}\")'>" +
+						"<span id='tracking-combat-rolls-{index}-damage' class='combat-damage'></span>" +
+						"<div id='tracking-combat-rolls-{index}-detail' class='combat-detail'></div>" +
+					"</div>" +
 					"</div>"
 				
 				for ( index = 0 ; index < maximumRolls ; ++index ) {
@@ -288,10 +335,9 @@
 			#tracking-dice { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; }
 			#tracking-dice > div { min-width:50%; height:5em; text-align:center; margin-top:1em; }
 			#tracking-dice-times { margin:0 0.75em 0 0.5em; }
-			#tracking-dice-rolls { display:inline-block; color:#999; }
+			#tracking-dice-rolls { display:inline-block; color:#999; font-size:80%; }
 			#tracking-dice-sum { display:inline-block; line-height:1.5; width:3em; height:1.75em; text-align:center; padding-top:0.25em; margin:0 1em; font-size:200%; font-weight:bold; color:#666; border-radius:50%; border:1px solid #CCC; }
 			span.die-roll { display:inline-block; min-width:2.25em; text-align:center; }
-			span.any-digit::after { content:"#"; color:#AAA; }
 			
 			#tracking-combat-rolls > div { margin-bottom:1em; }
 			#tracking-combat-rolls > div > input[type="text"] { font-size:150%; margin:0.25em 0.5em 0.25em 0; }
@@ -302,6 +348,16 @@
 			div.tracking-combat-rolls-suffix { display:none; }
 			div.tracking-combat-rolls-suffix > span { color:#999; font-size:150%; margin-right:0.25em; }
 			div.tracking-combat-rolls-row:not(.hidden) ~ div.tracking-combat-rolls-suffix { display:block; }
+			div.tracking-combat-rolls-row > div.output { text-align:center; }
+			div.tracking-combat-rolls-row > div.output > output:not(:empty) { font-size:150%; background:#F0F4F0; border:1px solid #DDD; padding:0.25em 0.5em; }
+			
+			div.combat-parent { position:relative; }
+			div.combat-result { position:absolute; left:0; right:0; bottom:4em; width:30em; max-width:90%; border:4px solid #999; border-radius:2em; background:white; }
+			div.combat-result { margin:0 auto; text-align:center; padding:2em 0; }
+			div.combat-detail { margin-top:1em; }
+			div.combat-detail > ol { display:inline-block; text-align:left; margin:0; padding-right:2em; }
+			span.combat-damage:empty { display:none; }
+			span.combat-damage { display:inline-block; line-height:1.5; width:3em; height:1.75em; text-align:center; padding-top:0.25em; margin:0 1em; font-size:200%; font-weight:bold; color:#666; border-radius:50%; border:1px solid #CCC; }
 			
 			@media print { div#navigation { display:none; } }
 			div#navigation { position:absolute; left:1em; top:0.5em; }

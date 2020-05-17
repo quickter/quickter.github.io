@@ -373,7 +373,7 @@ function evaluateRandomInteger(count) {
 	}
 }
 
-function evaluateDieRoll(die, rolls, record, prefix, reroll, minimum) {
+function evaluateDieRoll(die, rolls, chronicle, prefix, reroll, minimum) {
 	var sum = 0
 	var value, other, each = []
 	var negative = rolls < 0
@@ -402,7 +402,7 @@ function evaluateDieRoll(die, rolls, record, prefix, reroll, minimum) {
 		sum += value
 	}
 	
-	record.push(prefix + " (" + each.join(", ") + ")")
+	chronicle.push(prefix + " (" + each.join(", ") + ")")
 	return sum
 }
 
@@ -436,8 +436,9 @@ function evaluateSingleInitiative(e) {
 
 function evaluateSingleEffectiveness(e, context, verbose) {
 	context = context || {}
-	context.summary = context.summary || []
+	context.chronicle = context.chronicle || []
 	context.concise = context.concise || []
+	context.summary = context.summary || []
 	context.hits = context.hits || 0
 	context.misses = context.misses || 0
 	context.attacks = context.attacks || 0
@@ -445,9 +446,10 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 	context.damageRolled = context.damageRolled || 0
 	context.bonusActionUsed = context.bonusActionUsed || false
 	
-	var concise = context.concise
 	var summary = context.summary
-	var result = ""
+	var concise = context.concise
+	var chronicle = context.chronicle
+	var summarize, result = ""
 	
 	var isAttack = e.isAttack
 	var isDefenseKnown = e.isDefenseKnown
@@ -493,8 +495,9 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 	if ( advantageMiss === 'once' && context.misses > 0 ) { advantageMiss = false }
 	
 	for ( attack = 0 ; attack < attacks ; ++attack ) {
-		summary.push("#" + (context.attacks + 1))
+		chronicle.push("#" + (context.attacks + 1))
 		
+		summarize = new Object()
 		result = ""
 		isHit = false
 		hasAdvantage = false
@@ -504,16 +507,16 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 		armorClass = e.armorClass || 10
 		
 		if ( isAttack ) {
-			toHit = evaluateDieRoll(20, 1, summary, "roll hit", e.lowAttackReroll)
+			toHit = evaluateDieRoll(20, 1, chronicle, "roll hit", e.lowAttackReroll)
 			
 			if ( disadvantageHit ) {
 				if ( disadvantageHit === 'once' ) { disadvantageHit = 0 }
-				if ( !advantageHit ) { hasDisadvantage = true; toHit = Math.min(evaluateDieRoll(20, 1, summary, "roll disadvantage", e.lowAttackReroll), toHit) }
+				if ( !advantageHit ) { hasDisadvantage = true; toHit = Math.min(evaluateDieRoll(20, 1, chronicle, "roll disadvantage", e.lowAttackReroll), toHit) }
 			}
 			
 			if ( advantageHit ) {
 				if ( advantageHit === 'once' ) { advantageHit = 0 }
-				if ( !hasDisadvantage ) { hasAdvantage = true; toHit = Math.max(evaluateDieRoll(20, 1, summary, "roll advantage", e.lowAttackReroll), toHit) }
+				if ( !hasDisadvantage ) { hasAdvantage = true; toHit = Math.max(evaluateDieRoll(20, 1, chronicle, "roll advantage", e.lowAttackReroll), toHit) }
 			}
 		}
 		
@@ -523,7 +526,7 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 				
 				if ( !item.once ) {
 					if ( item.modifier ) { modifierHit += item.modifier }
-					if ( item.die ) { modifierHit += evaluateDieRoll(item.die, item.roll, summary, "roll modifier") }
+					if ( item.die ) { modifierHit += evaluateDieRoll(item.die, item.roll, chronicle, "roll modifier") }
 				}
 			}
 		}
@@ -534,7 +537,7 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 				
 				if ( !item.once ) {
 					if ( item.modifier ) { armorClass += item.modifier }
-					if ( item.die ) { armorClass += evaluateDieRoll(item.die, item.roll, summary, "roll defense") }
+					if ( item.die ) { armorClass += evaluateDieRoll(item.die, item.roll, chronicle, "roll defense") }
 				}
 			}
 		}
@@ -550,8 +553,8 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 						item = onceToHit.shift()
 						useOnceToHit += 1
 						
-						if ( item.modifier ) { modifierHit += item.modifier; summary.push("once modifier " + item.modifier) }
-						if ( item.die ) { modifierHit += evaluateDieRoll(item.die, item.roll, summary, "once modifier") }
+						if ( item.modifier ) { modifierHit += item.modifier; chronicle.push("once modifier " + item.modifier) }
+						if ( item.die ) { modifierHit += evaluateDieRoll(item.die, item.roll, chronicle, "once modifier") }
 					} else {
 						break
 					}
@@ -561,8 +564,8 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 					if ( toHit + modifierHit < armorClass + once ) {
 						item = onceToDefend.shift()
 						
-						if ( item.modifier ) { armorClass += item.modifier; summary.push("once defense " + item.modifier) }
-						if ( item.die ) { armorClass += evaluateDieRoll(item.die, item.roll, summary, "once defense") }
+						if ( item.modifier ) { armorClass += item.modifier; chronicle.push("once defense " + item.modifier) }
+						if ( item.die ) { armorClass += evaluateDieRoll(item.die, item.roll, chronicle, "once defense") }
 					} else {
 						break
 					}
@@ -576,27 +579,36 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 			if ( toHit <= 1 ) {
 				isHit = false
 				result = "-"
-				summary.push("miss (natural 1)")
+				chronicle.push("miss (natural 1)")
 			} else if ( toHit >= 20 ) {
 				isHit = true
 				result = "+"
-				summary.push("hit (natural 20)")
+				chronicle.push("hit (natural 20)")
 			} else if ( !isDefenseKnown ) {
 				isHit = null
 				result = "AC " + (toHit + modifierHit)
-				summary.push("can hit AC " + (toHit + modifierHit))
+				chronicle.push("can hit AC " + (toHit + modifierHit))
 			} else if ( toHit + modifierHit < armorClass ) {
 				isHit = false
 				result = "-" + (armorClass - modifierHit - toHit)
-				summary.push("miss AC " + armorClass + " by " + (armorClass - modifierHit - toHit))
+				chronicle.push("miss AC " + armorClass + " by " + (armorClass - modifierHit - toHit))
 			} else {
 				isHit = true
 				result = "+" + (toHit + modifierHit - armorClass)
-				summary.push("hit AC " + armorClass + " by " + (toHit + modifierHit - armorClass))
+				chronicle.push("hit AC " + armorClass + " by " + (toHit + modifierHit - armorClass))
 			}
+			
+			summarize.toHit = toHit
+			summarize.bonusToHit = modifierHit
+			summarize.hit = toHit > 1 ? toHit < 20 ? toHit + modifierHit : true : false
+			summarize.armorClass = isDefenseKnown ? armorClass : null
+			summarize.isHit = isDefenseKnown ? isHit : null
+			summarize.once = useOnceToHit || 0
 			
 			for ( index = 0 ; index < useOnceToHit ; ++index ) { result += "•" }
 			result += "/"
+		} else {
+			summarize.toHit = false
 		}
 		
 		if ( isAttack && isDefenseKnown && isHit && disadvantageHit === 'hit' ) {
@@ -607,8 +619,9 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 			context.misses += 1
 			attacks += 1
 			advantageMiss = 0
-			summary.push("retry miss")
+			chronicle.push("retry miss")
 			concise.push(result + "#")
+			summarize.retry = 1
 			continue
 		}
 		
@@ -636,7 +649,7 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 			resistant = (resistant ? resistant !== 'once' ? 2 : 1 : 0) | resistantAll
 			vulnerable = (vulnerable ? vulnerable !== 'once' ? 2 : 1 : 0) | vulnerableAll
 			
-			if ( immune && !(context.hits && immune === 1) ) { summary.push("immune " + type); continue }
+			if ( immune && !(context.hits && immune === 1) ) { chronicle.push("immune " + type); continue }
 			if ( resistant && !(context.hits && resistant === 1) ) { damageScalar = 0.5 }
 			if ( vulnerable && !(context.hits && vulnerable === 1) ) { damageScalar *= 2.0 }
 			
@@ -644,7 +657,7 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 				if ( item.once ) { useOnceDamage += 1 }
 				if ( item.die > 0 ) { item.type = type; damageDice.push(item); damageScalars.push(damageScalar) }
 				if ( item.die * damageScalar > dieForCritical * damageScalarForCritical ) { dieForCritical = item.die; damageScalarForCritical = damageScalar }
-				if ( item.modifier ) { damageModifier += item.modifier * damageScalar; summary.push(type + " damage " + item.modifier) }
+				if ( item.modifier ) { damageModifier += item.modifier * damageScalar; chronicle.push(type + " damage " + item.modifier) }
 			}
 		}
 		
@@ -652,25 +665,25 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 		damageDiceLength = damageDice.length
 		
 		if ( isCritical ) {
-			summary.push("critical")
+			chronicle.push("critical")
 			damageDice = damageDice.concat(damageDice)
 			damageScalars = damageScalars.concat(damageScalars)
-			if ( e.criticalDamage ) { damageModifier += e.criticalDamage; summary.push("damage " + e.criticalDamage) }
-			if ( e.criticalDice > 0 && dieForCritical ) { damageDice.push({'die':dieForCritical, 'roll':e.criticalDice}); damageScalars.push(damageScalarForCritical); summary.push("dice " + (e.criticalDice || 1) + "d" + dieForCritical) }
-			if ( e.criticalBonusAttack && !context.bonusActionUsed ) { context.bonusActionUsed = true; attacks += 1; summary.push("bonus attack") }
+			if ( e.criticalDamage ) { damageModifier += e.criticalDamage; chronicle.push("damage " + e.criticalDamage) }
+			if ( e.criticalDice > 0 && dieForCritical ) { damageDice.push({'die':dieForCritical, 'roll':e.criticalDice}); damageScalars.push(damageScalarForCritical); chronicle.push("dice " + (e.criticalDice || 1) + "d" + dieForCritical) }
+			if ( e.criticalBonusAttack && !context.bonusActionUsed ) { context.bonusActionUsed = true; attacks += 1; chronicle.push("bonus attack") }
 		}
 		
 		for ( index = 0 ; index < damageDice.length ; ++index ) {
 			item = damageDice[index]
 			if ( item.roll < 0 && !(index < damageDiceLength) ) { continue }
-			damageRolled += evaluateDieRoll(item.die, item.roll, summary, item.type + " damage", item.reroll, item.minimum) * damageScalars[index]
+			damageRolled += evaluateDieRoll(item.die, item.roll, chronicle, item.type + " damage", item.reroll, item.minimum) * damageScalars[index]
 		}
 		
 		if ( advantageDamage ) {
 			for ( index = 0 ; index < damageDice.length ; ++index ) {
 				item = damageDice[index]
 				if ( item.roll < 0 && !(index < damageDiceLength) ) { continue }
-				damageAdvantageRolled += evaluateDieRoll(item.die, item.roll, summary, item.type + " advantage", item.reroll, item.minimum) * damageScalars[index]
+				damageAdvantageRolled += evaluateDieRoll(item.die, item.roll, chronicle, item.type + " advantage", item.reroll, item.minimum) * damageScalars[index]
 			}
 			
 			damageRolled = Math.max(damageRolled, damageAdvantageRolled)
@@ -681,15 +694,19 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 			item = e.reduction[index]
 			
 			if ( !item.once || (isHit && !context.hits) ) {
-				if ( item.die ) { damageModifier -= evaluateDieRoll(item.die, item.roll, summary, "reduce") }
-				if ( item.modifier ) { damageModifier -= item.modifier; summary.push("reduce " + item.modifier) }
+				if ( item.die ) { damageModifier -= evaluateDieRoll(item.die, item.roll, chronicle, "reduce") }
+				if ( item.modifier ) { damageModifier -= item.modifier; chronicle.push("reduce " + item.modifier) }
 			}
 		}
 		
-		summary.push("sum " + (damageRolled + damageModifier))
+		chronicle.push("sum " + (damageRolled + damageModifier))
 		
 		damageRolled = Math.max(0, Math.round(damageRolled + damageModifier))
 		result += damageRolled
+		
+		summarize.damageDone = isDefenseKnown && isHit ? damageRolled : false
+		summarize.damage = damageRolled
+		summarize.critical = isCritical
 		
 		if ( isHit ) {
 			context.hits += 1
@@ -708,10 +725,11 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 		}
 		
 		concise.push(result)
+		summary.push(summarize)
 	}
 	
 	if ( verbose ) {
-		console.log(summary.join(" "))
+		console.log(chronicle.join(" "))
 	}
 	
 	return context
