@@ -705,7 +705,7 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 		result += damageRolled
 		
 		summarize.damageDone = isDefenseKnown && isHit ? damageRolled : false
-		summarize.damage = damageRolled
+		summarize.damage = e.damage.length > 0 ? damageRolled : false
 		summarize.critical = isCritical
 		
 		if ( isHit ) {
