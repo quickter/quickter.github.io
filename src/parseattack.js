@@ -472,7 +472,7 @@ function evaluateSingleEffectiveness(e, context) {
 	var onceToHit = e.hit.filter(evaluateOnce)
 	var onceToDefend = e.defense.filter(evaluateOnce)
 	
-	var mundane = ['bludgeoning', 'piercing', 'slashing']
+	var mundane = ['b', 'p', 's', 'bludgeoning', 'piercing', 'slashing']
 	var immuneAll = (e.immune && e.immune['all']) || false
 	var resistantAll = (e.resistant && e.resistant['all']) || false
 	var vulnerableAll = (e.vulnerable && e.vulnerable['all']) || false

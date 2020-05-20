@@ -272,10 +272,12 @@
 				_assignClass(_element(prefix + '-result'), 'hidden', 1)
 			}
 			
+			function replaceIndices(template, array) {
+				return template.replace(/\{([^ {}]+)\}/g, function (match, index) { return array[+index] })
+			}
+			
 			function replaceKeys(template, object) {
-				var pattern = /\{([^ {}]+)\}/g
-				
-				return template.replace(pattern, function (match, key) { return object[key] })
+				return template.replace(/\{([^ {}]+)\}/g, function (match, key) { return object[key] })
 			}
 			
 			function saveCombat() {
@@ -445,9 +447,135 @@
 				//populateCombatInstructions()
 			}
 			
+			function populateCombatInstructions() {
+				var definitions = [
+					["", "Begin Hit"],
+					["&plusmn;X", "Hit modifier", "all attacks", "Proficiency Bonus", "+2"],
+					["&plusmn;Xo", "Hit modifier", "first near miss", "Foe Slayer", "+3o"],
+					["&plusmn;XdX", "Hit modifier dice", "all attacks", "Bane", "-d4"],
+					["&plusmn;XdXo", "Hit modifier dice", "first near miss", "Precision", "+d6o"],
+					["a", "Advantage", "all attacks", "Reckless Attack", "a"],
+					["ao", "Advantage", "first attack", "Shadow Step", "ao"],
+					["d", "Disadvantage", "all attacks", "Sunlight Sensitivity", "d"],
+					["do", "Disadvantage", "first attack", "Vicious Mockery", "do"],
+					["dh", "Disadvantage", "until a hit", "Displacement", "dh"],
+					["rm", "Reroll miss", "first miss", "Unerring Accuracy", "rm"],
+					["rX", "Reroll low hit", "value or lower", "Halfling Lucky", "r1"],
+					["cX", "Critical roll", "value or higher", "Improved Critical", "c19"],
+					["m", "Magic", "for resistance", "Primal Strike", "m"],
+					["i&plusmn;X", "Initiative modifier", "for duel", "Alert", "i+5"],
+					
+					["", " ", "", "", ""],
+					["/", "Begin Damage"],
+					["XdX", "Damage dice", "base damage", "Greatsword", "/2d6s"],
+					["&plusmn;X", "Damage modifier", "all hits", "Dueling", "/ +2"],
+					["&plusmn;Xo", "Damage modifier", "first hit", "Divine Fury", "/ +d6ro+1ro"],
+					["&plusmn;XdX", "Damage modifier dice", "all hits", "Hex", "/ +d6"],
+					["&plusmn;XdXo", "Damage modifier dice", "first hit", "Colossus Slayer", "/ +d8o"],
+					["abceflnpqyrst", "Damage Type ", "(a acid, c cold, f fire, l lightning, t thunder)", "Flame Strike", "/4d6f+4d6r"],
+					["+cX", "Critical damage", "critical hits", "Sword of Sharpness", "/ +c14"],
+					["+cXd", "Critical dice", "critical hits", "Savage Attacks", "/ +c1d"],
+					["rX", "Reroll low dice", "value or lower", "Great Weapon Fighting", "/ r2"],
+					["mX", "Minimum roll", "below value", "Elemental Adept", "/ m2"],
+					["a", "Advantage", "all hits", "", ""],
+					["ao", "Advantage", "first hit", "Savage Attacker", "/ ao"],
+					
+					["", " ", "", "", ""],
+					["#", "Begin Attacks"],
+					["X", "Number of Attacks", "default 1", "Extra Attack", "#2"],
+					["b", "Bonus Attack", "bonus action", "Sudden Strike", "#b"],
+					["cb", "Critical Bonus Attack", "first critical hit", "Great Weapon Master", "#cb"],
+					["r", "Reaction", "", "Retaliation", "#r"],
+					
+					["", " ", "", "", ""],
+					["@", "Begin Defense"],
+					["X", "Armor Class", "default 10", "Mage Armor", "@13"],
+					["+X", "Defense modifier", "all hits", "Defense", "@ +1"],
+					["+Xo", "Defense modifier", "first near hit", "Defensive Duelist", "@ +2o"],
+					["+Xm", "Defense modifier", "after first hit", "Multiattack Defense", "@ +4m"],
+					["+XdX", "Defense modifier dice", "all hits", "Defensive Flourish", "@ +d6"],
+					["+XdXo", "Defense modifier dice", "first near hit", "Combat Inspiration", "@ +d6o"],
+					["-X", "Damage reduction", "all hits", "Heavy Armor Master", "@ -3bps"],
+					["-Xo", "Damage reduction", "first hit", "Song of Defense", "@ -5o"],
+					["-XdX", "Damage reduction dice", "all hits", "", ""],
+					["-XdXo", "Damage reduction dice", "first hit", "Deflect Missle", "@ -d10o-6o"],
+					
+					["v", "Vulnerability", "double damage", "Path to the Grave", "@ vo"],
+					["r", "Resistance", "half damage", "Stoneskin", "@ rbps"],
+					["i", "Immunity", "no damage", "Purity of Body", "@ iq"],
+					["abceflnpqyrst", "Damage Type ", "(e force, n necrotic, q poison, y psychic, r radiant)", "Bear Totem", "@ rabcefnpqrst"],
+					
+					["a", "Advantage", "given to attacker", "Reckless Attack", "@ a"],
+					["ao", "Advantage", "given to attacker once", "", ""],
+					["az", "Remove Advantage", "from attacker", "Elusive", "@ az"],
+					["d", "Disadvantage", "imposed on attacker", "Blur", "@ d"],
+					["do", "Disadvantage", "imposed on attacker once", "Shadowy Dodge", "@ do"],
+					["dh", "Disadvantage", "imposed on attacker until hit", "Displacement", "@ dh"],
+					
+					["", " ", "", "", ""],
+					[";", "Separate attacks", "", "two weapons", "+5/d6+3;+5/d6"],
+					["%", "Compute damage per round", "via Monte Carlo method", "", ""],
+				]
+				
+				var samples = [
+					["+2+3 /d8s+3+2 #1", "Fighter 1, Strength 16, Longsword, Dueling"],
+					["+2+3 /d6s+3 #1; +2+3 /d4b+3 #b", "Monk 1, Dexterity 16, Shortsword, Martial Arts"],
+					["+2+3 /d10e+3 #1", "Warlock 1, Charisma 16, Agonizing Blast"],
+					["+2+3 /d6s+3+1d6 #1", "Rogue 1, Dexterity 16, Short Sword, Sneak Attack"],
+					
+					["+4+5 /d10s+5+3+c1d #2; +4+5 /d4b+5+3+c1d #b", "Barbarian 11, Strength 20, Halberd, Rage, Polearm Master"],
+					["+4+5+2-5 /d8p+5+10 #3", "Fighter 11, Dexterity 20, Longbow, Archery, Sharpshooter"],
+					["+4+4 /d8p+4+2+d8ro #2", "Paladin 11, Strength 18, Longsword, Dueling, Improved Divine Strike"],
+					["+4+5 /d10e+5 #3", "Warlock 11, Charisma 20, Agonizing Blast"],
+					
+					["+6+5+3m+2-5+d12o /d8p+3+5+2+10 #4", "Battle Master 20, Dexterity 20, Longbow +3, Archery, Bracers, Sharpshooter, Precision"],
+					["c18+6+5+3m-5 /2d6s+3+5+10 r2 #4cb", "Champion 20, Strength 20, Greatsword +3, Great Weapon Master"],
+					["c19+6+5+3m-5 /2d6s+3+5+10+d8r r2 #3cb", "Conquest Paladin 20, Strength 20, Greatsword +3, Great Weapon Master, Conquerer"],
+					["+6+5+3m+2-5+5o rm /d8p+3+5+2+10 #4", "Gloom Stalker 20, Dexterity 20, Longbow +3, Archery, Bracers, Sharpshooter, Swift Quiver"],
+					["a+6+5+3m /d8s+3+5+2+2d12 #2", "Sword Bard 20, Dexterity 20, Rapier +3, Dueling, Duelist, Tenser"],
+					["+6+7+3m-5 /d10s+3+7+10+4 +d6ro+10ro +c4d #2cb; +6+7+3m /d4b+3+7+4+c4d #b", "Zealot 20, Strength 24, Halberd +3, Great Weapon Master, Polearm Master, Rage"],
+					["a+6+5+3 /d10s+5+3+10d10o #2; a+6+5 /d10b+5 #b", "Hand Monk 20, Dexterity 20, Short Sword +3, Empty Body"],
+					["a+6+5+3 r1 /d6p+5+3+10d6 a #1", "Arcane Trickster 20, Dexterity 20, Short Sword +3, Savage Attacker, Greater Invisibility"],
+					["+6+5+3+2 /d10e+5 #4", "Warlock 20, Charisma 20, Wand +3, Archmagi, Agonizing Blast"],
+					
+					["+4/d6p+2 @13 vb iq hp13", "Skeleton"],
+					["+4/d6s+2 @15 hp7", "Goblin"],
+					["+3/d8s+1 @18 hp11", "Hobgoblin"],
+					["+6/d8b+4 @11 hp59", "Ogre"],
+					["+6/d6b+4+d6p#2 @13 dh hp85", "Displacer Beast"],
+					["+8/2d8b+5#2 @17 vt iq rbps hp126", "Earth Elemental"],
+					["+9m/2d8s+4#6; +9m/2d10b+4 @18+5o iq rcflbps hp189", "Marilith"],
+					["+14m/4d6p+8; +14m/2d8s+8; +14m/2d6b+8+6d6f; +14m/3d8b+8 @19 ifq rcbps hp300", "Pit Fiend"],
+					["+15m/4d6s+8+6d8r#2; @21 inq rbpsr hp243", "Solar"],
+					["+17m/2d10p+10+4d6f; +17m/2d6s+10#2; +17m/2d8b+10#r @22 if hp546", "Ancient Red Dragon"],
+					["+19m/4d12p+10; +19m/4d8s+10#2; +19m/4d10p+10; +19m/4d6b+10; +19m/4d12p+10/#r @25 ifqbps hp676", "Tarrasque"],
+				]
+				
+				var notes = [
+					"Start with / to only roll damage.",
+					"Skip # for a single attack.",
+					"Skip @ to see what armor class would be hit, and ignore one time attack and damage bonuses and damage type.",
+				]
+				
+				definitions.forEach(function (d) { return d[0] = d[0].replace(/X/g, "<span class='any-digit'></span>") })
+				
+				var tableTemplate = "<table class='combat-instructions instructions small'>{rows}</table><ul>{notes}</ul><table class='combat-instructions combat-examples instructions small'><caption>Examples</caption>{samples}</table>"
+				var noteTemplate = "<li class='small'>{0}</li>"
+				var sampleTemplate = "<tr class='combat-instructions-sample'><td>{0}</td><td class='summary action' onclick='handleMoreCombat(\"{1}\", \"{0}\")'>{1}</td></tr>"
+				var headerTemplate = "<tr class='combat-instructions-header'><th scope='row'>{0}</th><td class='definition'>{1}</td><td class='example'></td></tr>"
+				var definitionTemplate = "<tr class='combat-instructions-row'><td class='script'>{0}</td><td class='definition'>{1} <span class='small'>{2}</span></td><td class='example'><span class='example-source'>{3}</span> <span class='example-script'>{4}</span></td></tr>"
+				var rows = definitions.map(function (a) { return replaceIndices(a.length > 4 ? definitionTemplate : headerTemplate, a) })
+				var noteRows = notes.map(function (s) { return replaceIndices(noteTemplate, [s]) })
+				var sampleRows = samples.map(function (a) { return replaceIndices(sampleTemplate, a) })
+				var html = replaceKeys(tableTemplate, {"rows":rows.join(" "), "notes":noteRows.join(" "), "samples":sampleRows.join(" ")})
+				
+				_element('tracking-combat-instructions').innerHTML = html
+			}
+			
 			function populatePage() {
 				populateCombatRolls()
 				prepareStorageToSaveCombat(parseParameters())
+				populateCombatInstructions()
 			}
 		</script>
 		
@@ -505,13 +633,24 @@
 			span.combat-damage:empty { display:none; }
 			span.combat-damage { display:inline-block; line-height:1.5; width:3em; height:1.75em; text-align:center; padding-top:0.25em; margin:0 1em; font-size:200%; font-weight:bold; color:#666; border-radius:50%; border:1px solid #CCC; }
 			
+			input#tracking-combat-toggle-instructions:not(:checked) ~ #tracking-combat-instructions { display:none; }
+			span.any-digit::after { content:"#"; color:#AAA; }
+			span.example-script { font-weight:bold; }
+			span.example-source:not(:empty)::before { content:"e.g.  "; font-size:75%; }
+			table.combat-instructions td { vertical-align:top; }
+			table.combat-examples td { vertical-align:top; }
+			table.combat-examples td.action { cursor:pointer; }
+			
 			@media print { div#navigation { display:none; } }
 			div#navigation { position:absolute; left:1em; top:0.5em; }
 			div#navigation a { text-decoration:none; display:inline-block; width:2em; height:1.875em; padding-top:0.125em; text-align:center; border-radius:50%; }
 			div#navigation a#navigation-dice { background:#EEF; }
 			
-			input.action[type="button"] { display:none; }
+			input.action[type="button"], input.toggle { display:none; }
 			label.action:active { background-color:#EEE; }
+			
+			label.circle-glyph { display:inline-block; border-radius:50%; border:0.25em solid #EEE; }
+			label.circle-glyph { font-size:150%; text-align:center; line-height:1.125em; width:1.125em; height:1.125em; }
 			
 			label.option, label.action {
 				margin-right:0.5em;
@@ -550,7 +689,7 @@
 		<h4>Dice</h4>
 		
 		<form id='tracking-dice-form'><div id='tracking-dice'>
-			<span><input type='range' id='tracking-dice-count' value='1' min='1' max='20' oninput='form.diceCount.value = value' /><output for='tracking-dice-count' name='diceCount' class='tracking-number-output'>1</output></span>
+			<span><input type='range' id='tracking-dice-count' value='1' min='1' max='20' oninput='form.dice.value = value' /><output for='tracking-dice-count' name='dice' class='tracking-number-output'>1</output></span>
 			<span id='tracking-dice-times'>&times;</span>
 			<span><input type='button' id='tracking-dice-d4' value='4' class='action' onclick='handleDieRoll(4)' /><label for='tracking-dice-d4' class='action'><span class='die-roll'>D4</span></label></span>
 			<span><input type='button' id='tracking-dice-d6' value='6' class='action' onclick='handleDieRoll(6)' /><label for='tracking-dice-d6' class='action'><span class='die-roll'>D6</span></label></span>
@@ -569,5 +708,9 @@
 		<hr />
 		<h4>Combat</h4>
 		<div id='tracking-combat-rolls'></div>
+		
+		<input type='checkbox' id='tracking-combat-toggle-instructions' class='toggle' />
+		<label for='tracking-combat-toggle-instructions' class='circle-glyph'>?</label>
+		<div id='tracking-combat-instructions'></div>
 	</body>
 </html>
