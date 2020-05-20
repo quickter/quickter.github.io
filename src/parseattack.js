@@ -297,11 +297,11 @@ function parseAttackParametersElement(string, damageTypeMap) {
 		}
 	}
 	
-	if ( result.advantageHit = 'zero' ) {
+	if ( result.advantageHit === 'zero' ) {
 		result.advantageHit = false
 	}
 	
-	if ( result.disadvantageHit = 'zero' ) {
+	if ( result.disadvantageHit === 'zero' ) {
 		result.disadvantageHit = false
 	}
 	
@@ -434,7 +434,7 @@ function evaluateSingleInitiative(e) {
 	return initiative + (e.initiativeModifier | 0)
 }
 
-function evaluateSingleEffectiveness(e, context, verbose) {
+function evaluateSingleEffectiveness(e, context) {
 	context = context || {}
 	context.chronicle = context.chronicle || []
 	context.concise = context.concise || []
@@ -728,10 +728,6 @@ function evaluateSingleEffectiveness(e, context, verbose) {
 		summary.push(summarize)
 	}
 	
-	if ( verbose ) {
-		console.log(chronicle.join(" "))
-	}
-	
 	return context
 }
 
@@ -741,6 +737,10 @@ function evaluateEffectiveness(parsed, verbose) {
 	
 	for ( single of parsed ) {
 		result = evaluateSingleEffectiveness(single, result, verbose)
+	}
+	
+	if ( verbose && result && result.chronicle ) {
+		console.log(result.chronicle.join(" "))
 	}
 	
 	return result
