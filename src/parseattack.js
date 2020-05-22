@@ -23,11 +23,6 @@ function parseAttackParametersDamageType(string, result, key, damageTypeMap) {
 function parseAttackParametersElement(string, damageTypeMap) {
 	var result = new Object()
 	
-	string = string.toLowerCase()
-	string = string.replace(/[,•]+/g, " ")
-	string = string.replace(/\s+/g, " ")
-	string = string.replace(/[‒–—‐‑‧⁃]+/g, "-")
-	
 	result.armorClass = 10
 	result.hit = []
 	result.damage = []
@@ -43,6 +38,11 @@ function parseAttackParametersElement(string, damageTypeMap) {
 		result.name = string.slice(0, index)
 		string = string.slice(index + 1)
 	}
+	
+	string = string.toLowerCase()
+	string = string.replace(/[,•]+/g, " ")
+	string = string.replace(/\s+/g, " ")
+	string = string.replace(/[‒–—‐‑‧⁃]+/g, "-")
 	
 	var beginHit = 0
 	var beginDamage = string.indexOf('/', beginHit)
@@ -226,7 +226,7 @@ function parseAttackParametersElement(string, damageTypeMap) {
 		}
 	}
 	
-	var patternDefense = /(\d+|[-+]\d*d?\d+[mo]?|hp\s*\d+|[vr][a-z]*|i[a-z]+|d[oh]?|a[oz]?)/g
+	var patternDefense = /(\d+|[-+]\d*d?\d+[mo]?|h[phr]\s*\d+|[vr][a-z]*|i[a-z]+|d[oh]?|a[oz]?|cz)/g
 	var matchDefense = stringDefense.split(patternDefense)
 	
 	for ( index = 0 ; index < matchDefense.length ; ++index ) {
@@ -248,8 +248,14 @@ function parseAttackParametersElement(string, damageTypeMap) {
 			if ( !result.disadvantageHit ) { result.disadvantageHit = 'once' }
 		} else if ( match === 'dh' ) {
 			if ( !result.disadvantageHit || result.disadvantageHit === 'once' ) { result.disadvantageHit = 'hit' }
+		} else if ( match === 'cz' ) {
+			result.noCriticals = true
 		} else if ( match.slice(0, 2) === 'hp' ) {
 			result.hitpoints = +match.slice(2)
+		} else if ( match.slice(0, 2) === 'hh' ) {
+			result.survivor = +match.slice(2)
+		} else if ( match.slice(0, 2) === 'hr' ) {
+			result.regenerate = +match.slice(2)
 		} else if ( match.charAt(0) === '+' ) {
 			matched = match.match(patternDiceModifierText)
 			
@@ -354,7 +360,6 @@ function parseAttackParametersRudimentaryDuel(a, b, damageTypeMap) {
 	
 	var ahp = be[0].hitpoints | 0
 	var bhp = ae[0].hitpoints | 0
-	if ( !ahp || !bhp ) { return false }
 	
 	return {'a':ae, 'b':be, 'ahp':ahp, 'bhp':bhp, 'aname':ae[0].name, 'bname':be[0].name}
 }
@@ -661,7 +666,7 @@ function evaluateSingleEffectiveness(e, context) {
 			}
 		}
 		
-		isCritical = isAttack && !(toHit < (e.criticalRoll || 20))
+		isCritical = isAttack && !(toHit < (e.criticalRoll || 20)) && !e.noCriticals
 		damageDiceLength = damageDice.length
 		
 		if ( isCritical ) {

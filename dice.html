@@ -99,6 +99,80 @@
 				return rolls
 			}
 			
+			function evaluateRudimentaryDuel(parsed, verbose) {
+				var maximumRounds = 40
+				var a = new Object()
+				var b = new Object()
+				
+				a.combat = parsed.a
+				a.defense = parsed.b[0]
+				a.hitpoints = parsed.ahp || 1
+				a.hp = a.hitpoints
+				a.name = parsed.aname || "p1"
+				a.initiative = evaluateSingleInitiative(a.combat[0])
+				a.regenerate = a.defense.regenerate || 0
+				a.survivor = a.defense.survivor || 0
+				
+				b.combat = parsed.b
+				b.defense = parsed.a[0]
+				b.hitpoints = parsed.bhp || 1
+				b.hp = b.hitpoints
+				b.name = parsed.bname || "p2"
+				b.initiative = evaluateSingleInitiative(b.combat[0])
+				b.regenerate = b.defense.regenerate || 0
+				b.survivor = b.defense.survivor || 0
+				
+				if ( a.name === b.name ) {
+					a.name += " 1"
+					b.name += " 2"
+				}
+				
+				var concise = []
+				var message, index, result, damage, healed
+				var player, target, players = []
+				players.push(a.initiative < b.initiative ? b : a)
+				players.push(a.initiative < b.initiative ? a : b)
+				
+				for ( player of players ) {
+					message = player.name + " starts with " + player.hitpoints + " HP, Initiative " + player.initiative
+					concise.push(message)
+				}
+				
+				while ( a.hp > 0 && b.hp > 0 && maximumRounds --> 0 ) {
+					for ( index = 0 ; index < 2 ; ++index ) {
+						player = players[index]
+						if ( !(player.hp > 0) ) { continue }
+						
+						healed = player.hp
+						if ( player.survivor > 0 && player.hp * 2 <= player.hitpoints ) { player.hp = Math.min(player.hitpoints, player.hp + player.survivor) }
+						if ( player.regenerate > 0 ) { player.hp = Math.min(player.hitpoints, player.hp + player.regenerate) }
+						healed = player.hp - healed
+						
+						result = evaluateEffectiveness(player.combat, verbose)
+						damage = result.damage | 0
+						
+						target = players[1 - index]
+						target.hp -= damage
+						message = player.name +
+							" does " + damage + " (" + result.concise.join(" ") + ")" +
+							(healed > 0 ? " and healed " + healed : "") +
+							", " + target.name + " at " + Math.max(target.hp, 0) + " HP"
+						concise.push(message)
+					}
+				}
+				
+				if ( a.hp > 0 && b.hp > 0 ) {
+					concise.push("Draw")
+				} else {
+					for ( player of players ) {
+						message = player.name + " " + (player.hp > 0 ? "won with " + player.hp + " of " + player.hitpoints + " HP" : player.hp > -player.hitpoints ? "lost" : "died")
+						concise.push(message)
+					}
+				}
+				
+				return concise
+			}
+			
 			function handleDieRoll(sides) {
 				var diceRolls = _element('tracking-dice-rolls')
 				var diceCount = _element('tracking-dice-count')
@@ -123,7 +197,41 @@
 				diceCount.form.diceCount.value = diceCount.value
 			}
 			
-			function handleMoreCombat(name, roll) {
+			function handleDuel() {
+				var player1 = _element('duel-player-1')
+				var player2 = _element('duel-player-2')
+				var damageAbbreviation = false // lookup.damageAbbreviation
+				var parsed = parseAttackParametersRudimentaryDuel(player1.value, player2.value, damageAbbreviation)
+				
+				if ( !parsed ) { return false }
+				
+				var summary = evaluateRudimentaryDuel(parsed)
+				var result = _element('duel-result')
+				
+				result.innerHTML = summary.join("<br />")
+			}
+			
+			function handleDuelist(name, script) {
+				name = name.split(",")[0]
+				
+				if ( script.indexOf('@') < 0 ) {
+					handleMoreCombat(name, script)
+					
+					return
+				}
+				
+				var player1 = _element('duel-player-1')
+				var player2 = _element('duel-player-2')
+				var value = name + ":" + script
+				
+				if ( player1.value ) {
+					player2.value = value
+				} else {
+					player1.value = value
+				}
+			}
+			
+			function handleMoreCombat(name, script) {
 				var parent = _element('tracking-combat-rolls')
 				var children = parent.getElementsByClassName('tracking-combat-rolls-row hidden')
 				
@@ -132,7 +240,7 @@
 					
 					_assignClass(element, 'hidden', -1)
 					_element(element.id + '-name').value = name || ""
-					_element(element.id + '-script').value = roll || ""
+					_element(element.id + '-script').value = script || ""
 					_element(element.id + '-damage').value = ""
 					_element(element.id + '-detail').value = ""
 				}
@@ -171,16 +279,6 @@
 				var target = _element('tracking-combat-rolls-target')
 				
 				var value = script.value
-				
-// 				var versus = evaluateRudimentaryDuel(value, false)
-// 				
-// 				if ( versus ) {
-// 					output.value = ''
-// 					detail.value = ''
-// 					detail.innerHTML = "<ol start='0'><li>" + versus.join("</li><li>") + "</li></ol>"
-// 					return
-// 				}
-				
 				var where = value.indexOf('@')
 				
 				if ( target && where < 0 ) {
@@ -239,9 +337,9 @@
 						} else if ( !entry.armorClass ) {
 							text = "Hits AC " + entry.hit + " (" + entry.toHit + (entry.bonusToHit < 0 ? "" : "+") + entry.bonusToHit + ")"
 						} else if ( entry.isHit ) {
-							text = "Hit (" + entry.toHit + (entry.bonusToHit < 0 ? "" : "+") + entry.bonusToHit + " hits by " + (entry.hit - entry.armorClass) + ")"
+							text = "Hit (" + entry.toHit + (entry.bonusToHit < 0 ? "" : "+") + entry.bonusToHit + (entry.once > 0 ? "•••••".slice(0, entry.once) : "") + " hits by " + (entry.hit - entry.armorClass) + ")"
 						} else {
-							text = "Miss (" + entry.toHit + (entry.bonusToHit < 0 ? "" : "+") + entry.bonusToHit + " misses by " + (entry.armorClass - entry.hit) + ")"
+							text = "Miss (" + entry.toHit + (entry.bonusToHit < 0 ? "" : "+") + entry.bonusToHit + (entry.once > 0 ? "•••••".slice(0, entry.once) : "") + " misses by " + (entry.armorClass - entry.hit) + ")"
 							noDamage = true
 						}
 						
@@ -430,7 +528,7 @@
 					"<input type='button' id='tracking-combat-rolls-{index}-remove' value='-' class='action' onclick='handleLessCombat(\"tracking-combat-rolls-{index}\")' />" +
 					"<label for='tracking-combat-rolls-{index}-remove' class='combat action remove'>-</label>" +
 					"<input type='text' id='tracking-combat-rolls-{index}-name' value='' placeholder='Name' class='tracking-combat-rolls-name' onchange='saveCombat()' />" +
-					"<input type='text' id='tracking-combat-rolls-{index}-script' value='' placeholder='+4/d8+2' class='tracking-combat-rolls-script' onchange='saveCombat()' />" +
+					"<input type='text' id='tracking-combat-rolls-{index}-script' value='' placeholder='+5/d8+3' class='tracking-combat-rolls-script' onchange='saveCombat()' />" +
 					"<input type='button' id='tracking-combat-rolls-{index}-action' value='>' class='action' onclick='handleAttackRoll(\"tracking-combat-rolls-{index}\")' />" +
 					"<label for='tracking-combat-rolls-{index}-action' class='combat action evaluate'>=</label>" +
 					"<div id='tracking-combat-rolls-{index}-result' class='combat-result hidden' onclick='handleAttackClose(\"tracking-combat-rolls-{index}\")'>" +
@@ -511,6 +609,9 @@
 					["d", "Disadvantage", "imposed on attacker", "Blur", "@ d"],
 					["do", "Disadvantage", "imposed on attacker once", "Shadowy Dodge", "@ do"],
 					["dh", "Disadvantage", "imposed on attacker until hit", "Displacement", "@ dh"],
+					["cz", "Prevent criticals", "imposed on attacker", "Adamantine Armor", "@ cz"],
+					["hhX", "Heal every turn", "when below half hit points", "Survivor", "@ hh8"],
+					["hrX", "Regenerate every turn", "when above zero hit points", "Troll", "@ hr10"],
 					
 					["", " ", "", "", ""],
 					[";", "Separate attacks", "", "two weapons", "+5/d6+3;+5/d6"],
@@ -538,15 +639,16 @@
 					["a+6+5+3 r1 /d6p+5+3+10d6 a #1", "Arcane Trickster 20, Dexterity 20, Short Sword +3, Savage Attacker, Greater Invisibility"],
 					["+6+5+3+2 /d10e+5 #4", "Warlock 20, Charisma 20, Wand +3, Archmagi, Agonizing Blast"],
 					
-					["+4/d6p+2 @13 vb iq hp13", "Skeleton"],
-					["+4/d6s+2 @15 hp7", "Goblin"],
-					["+3/d8s+1 @18 hp11", "Hobgoblin"],
-					["+6/d8b+4 @11 hp59", "Ogre"],
-					["+6/d6b+4+d6p#2 @13 dh hp85", "Displacer Beast"],
-					["+8/2d8b+5#2 @17 vt iq rbps hp126", "Earth Elemental"],
-					["+9m/2d8s+4#6; +9m/2d10b+4 @18+5o iq rcflbps hp189", "Marilith"],
-					["+14m/4d6p+8; +14m/2d8s+8; +14m/2d6b+8+6d6f; +14m/3d8b+8 @19 ifq rcbps hp300", "Pit Fiend"],
-					["+15m/4d6s+8+6d8r#2; @21 inq rbpsr hp243", "Solar"],
+					["+4 i+2/d6p+2 @13 vb iq hp13", "Skeleton"],
+					["+4 i+2/d6s+2 @15 hp7", "Goblin"],
+					["+3 i+1/d8s+1 @18 hp11", "Hobgoblin"],
+					["+6 i-1/d8b+4 @11 hp59", "Ogre"],
+					["+6 i+2/d6b+4+d6p#2 @13 dh hp85", "Displacer Beast"],
+					["+8 i-1/2d8b+5#2 @17 vt iq rbps hp126", "Earth Elemental"],
+					["+7 i+1/d6p+4; +7/2d6s+4#2 @15 hp84 hr10", "Troll"],
+					["+9m i+5/2d8s+4#6; +9m/2d10b+4 @18+5o iq rcflbps hp189", "Marilith"],
+					["+14m i+2/4d6p+8; +14m/2d8s+8; +14m/2d6b+8+6d6f; +14m/3d8b+8 @19 ifq rcbps hp300", "Pit Fiend"],
+					["+15m i+6/4d6s+8+6d8r#2; @21 inq rbpsr hp243", "Solar"],
 					["+17m/2d10p+10+4d6f; +17m/2d6s+10#2; +17m/2d8b+10#r @22 if hp546", "Ancient Red Dragon"],
 					["+19m/4d12p+10; +19m/4d8s+10#2; +19m/4d10p+10; +19m/4d6b+10; +19m/4d12p+10/#r @25 ifqbps hp676", "Tarrasque"],
 				]
@@ -555,13 +657,14 @@
 					"Start with / to only roll damage.",
 					"Skip # for a single attack.",
 					"Skip @ to see what armor class would be hit, and ignore one time attack and damage bonuses and damage type.",
+					"Duels require @ armor class with hp",
 				]
 				
 				definitions.forEach(function (d) { return d[0] = d[0].replace(/X/g, "<span class='any-digit'></span>") })
 				
 				var tableTemplate = "<table class='combat-instructions instructions small'>{rows}</table><ul>{notes}</ul><table class='combat-instructions combat-examples instructions small'><caption>Examples</caption>{samples}</table>"
 				var noteTemplate = "<li class='small'>{0}</li>"
-				var sampleTemplate = "<tr class='combat-instructions-sample'><td>{0}</td><td class='summary action' onclick='handleMoreCombat(\"{1}\", \"{0}\")'>{1}</td></tr>"
+				var sampleTemplate = "<tr class='combat-instructions-sample'><td>{0}</td><td class='summary action' onclick='handleDuelist(\"{1}\", \"{0}\")'>{1}</td></tr>"
 				var headerTemplate = "<tr class='combat-instructions-header'><th scope='row'>{0}</th><td class='definition'>{1}</td><td class='example'></td></tr>"
 				var definitionTemplate = "<tr class='combat-instructions-row'><td class='script'>{0}</td><td class='definition'>{1} <span class='small'>{2}</span></td><td class='example'><span class='example-source'>{3}</span> <span class='example-script'>{4}</span></td></tr>"
 				var rows = definitions.map(function (a) { return replaceIndices(a.length > 4 ? definitionTemplate : headerTemplate, a) })
@@ -632,6 +735,11 @@
 			div.combat-detail > ol { display:inline-block; text-align:left; margin:0; padding-right:2em; }
 			span.combat-damage:empty { display:none; }
 			span.combat-damage { display:inline-block; line-height:1.5; width:3em; height:1.75em; text-align:center; padding-top:0.25em; margin:0 1em; font-size:200%; font-weight:bold; color:#666; border-radius:50%; border:1px solid #CCC; }
+			
+			#combat-duel { text-align:center; margin-bottom:2em; }
+			#combat-duel > input[type="text"] { font-size:150%; margin:0.25em; min-width:80%; }
+			#combat-duel > input[type="text"]::placeholder { color:#CCC; }
+			#combat-duel > #duel-result { min-height:8em; }
 			
 			input#tracking-combat-toggle-instructions:not(:checked) ~ #tracking-combat-instructions { display:none; }
 			span.any-digit::after { content:"#"; color:#AAA; }
@@ -712,5 +820,15 @@
 		<input type='checkbox' id='tracking-combat-toggle-instructions' class='toggle' />
 		<label for='tracking-combat-toggle-instructions' class='circle-glyph'>?</label>
 		<div id='tracking-combat-instructions'></div>
+		
+		<hr />
+		<h4>Duel</h4>
+		<div id='combat-duel'>
+			<input type='text' id='duel-player-1' />
+			<br /><span>versus</span>
+			<br /><input type='text' id='duel-player-2' />
+			<br /><input type='button' id='duel-run' class='action' onclick='handleDuel()' /><label for='duel-run' class='action'>Fight</label>
+			<div id='duel-result'></div>
+		</div>
 	</body>
 </html>
