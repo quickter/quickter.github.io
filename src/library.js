@@ -920,7 +920,7 @@ function libraryResolveReferences(text, object) {
 		case "link": return "<span class='entries " + type + " italic'>" + list + "</span>"
 		case "hit": return (list.charAt(0) === "+" || +list < 0 ? "" : "+") + list
 		case "atk": return "<span class='entries attack italic'>" + list.replace(/./g, function (l) { return (["Ranged", "Melee", "Spell", "Weapon", "or"]["rmsw,".indexOf(l)] || l) + " " }) + " Attack:</span> "
-		case "dc": return list
+		case "dc": return "<span class='entries difficulty-class'>DC " + list + "</span>"
 		case "item": return "<a class='entries item' href='trove.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
 		case "spell": return "<a class='entries spell italic' href='spellbook.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"
 		case "creature": return "<a class='entries creature' href='bestiary.html#" + libraryKey(part[0]) + "'>" + (part[2] || part[0]) + "</a>"

@@ -574,7 +574,7 @@
 					result.push(spell)
 				}
 				
-				result.sort(function (a, b) { return (a.level - b.level) || a.name.localeCompare(b.name) })
+				result.sort(function (a, b) { return (a.level - b.level) || a.namekey.localeCompare(b.namekey) })
 				
 				return result
 			}

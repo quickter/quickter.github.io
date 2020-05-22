@@ -110,6 +110,15 @@
 					render.typetags = ""
 				}
 				
+				////////// Order
+				var dragon = master.name.match(/(\w+) Dragon (Wyrmling)|(Young|Adult|Ancient) (\w+) Dragon/)
+				if ( dragon ) {
+					var age = dragon[3] || dragon[2]
+					var ages = ["Wyrmling", "Young", "Adult", "Ancient"]
+					
+					render.namekey = "Drag on " + (dragon[4] || dragon[1]) + " " + (ages.indexOf(age) + 1) + "-" + age
+				}
+				
 				////////// Size
 				var size = master.size
 				
@@ -787,7 +796,7 @@
 					result.push(item)
 				}
 				
-				result.sort(function (a, b) { return a.key > b.key })
+				result.sort(function (a, b) { return a.namekey.localeCompare(b.namekey) })
 				
 				return result
 			}

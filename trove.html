@@ -244,7 +244,7 @@
 					result.push(item)
 				}
 				
-				result.sort(function (a, b) { return a.key > b.key })
+				result.sort(function (a, b) { return a.namekey.localeCompare(b.namekey) })
 				
 				return result
 			}
