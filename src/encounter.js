@@ -155,7 +155,7 @@ function encounterDifficultyByQuantityByChallenge(encounter, characterLevels, ma
 	var multiplier, multipliers = encounterMultipliers(encounter, characterLevels, maximumCreatures)
 	var experienceForDifficulty = encounterExperiencePerDifficulty(encounter, characterLevels)
 	var maximumExperience = experienceForDifficulty[maximumDifficulty] * 1.5
-	var index, quantity, challenge, experience, product
+	var index, quantity, challenge, experience, product, difficulty
 	var prior, array, difficultyArray = []
 	var upperQuantity, lowerQuantity, lowerIndex, lowerChallenge, lowerExperience, lowerProduct, lowerDifficulty, lowerSum, lowerArray
 	
@@ -676,7 +676,7 @@ function encounterApplyGroupsToQuantityByChallenge(encounter, difficultyByQuanti
 		return difficultyByQuantityByChallenge
 	}
 	
-	var envirnment
+	var environment
 	var creatureByEnvironment
 	var group, groups
 	var byQuantity, quantity, array, pairing, pairs, pair, experiences

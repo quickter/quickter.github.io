@@ -172,7 +172,7 @@
 				var experienceForChallengeRating = encounter.experienceForChallengeRating
 				var experienceForDifficulty = encounterExperiencePerDifficulty(encounter, characterLevels)
 				var multiplier, multipliers = encounterMultipliers(encounter, characterLevels, maximumCreatures)
-				var index, quantity, challenge, experience, product
+				var index, quantity, challenge, experience, product, difficulty
 				var array, difficultyArray = encounterDifficultyByQuantityByChallenge(encounter, characterLevels, maximumCreatures, true)
 				var prior, equal, empty, skipQuantities = new Object()
 				var upperQuantity, lowerQuantity, lowerIndex, lowerChallenge, lowerExperience, lowerSet, lowerDifficulty, lowerName, lowerArray
@@ -445,7 +445,7 @@
 				var maximumDifficulty = 3
 				var experienceForChallengeRating = encounter.experienceForChallengeRating
 				var byQuantity, difficultyArray = encounterDifficultyByQuantityByChallenge(encounter, characterLevels, maximumCreatures, true)
-				var index, count, entry, array, candidates, hasCreatures, byChallenge
+				var index, count, entry, array, candidates, hasCreatures, byChallenge, environment
 				var quantity, difficulty, difficultySet, difficultyName, challenge, name, creature, pairs, upper, lower
 				var challengeText, experienceText, creatureText, treasureText, text
 				var depth, counts, limit, total, value
@@ -833,6 +833,7 @@
 			
 			p#encounter-list a.entries { color:#036; text-decoration-color:#CCC; }
 			p#encounter-list a.entries.hoard { color:#630; }
+			p#encounter-list a.entries.filter { text-transform:capitalize; }
 			
 			p.explanation { font-size:80%; color:#999; }
 			
@@ -885,6 +886,6 @@
 		<p id='encounter-list'></p>
 		<table id='encounter-table'></table>
 		
-		<p class='explanation'>Likely mixes include only creatures that are likely to mingle based on their descriptions.  Random mixes share an environment.</p>
+		<p class='explanation'>Likely mixes include only creatures that are likely to mingle based on their descriptions.  Random mixes often share an environment.</p>
 	</body>
 </html>
