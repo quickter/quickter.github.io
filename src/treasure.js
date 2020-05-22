@@ -526,13 +526,11 @@ function treasureRawParty(treasure, levels, scalar) {
 			for ( entry of list[lower].party_items ) {
 				key = entry.magic
 				value = entry.quantity * quantity
-				if ( scalar > 0 ) { value *= scalar }
-				value = treasureRoundingToRandomInteger(value)
 				
 				if ( itemCounts[key] ) {
-					itemCounts[key].push(value)
+					itemCounts[key] += value
 				} else {
-					itemCounts[key] = [value]
+					itemCounts[key] = value
 					itemKeys.push(key)
 				}
 			}
@@ -543,15 +541,17 @@ function treasureRawParty(treasure, levels, scalar) {
 	
 	for ( index = 0 ; index < count ; ++index ) {
 		value = hoards[index]
-		if ( scalar > 0 ) { value *= scalar }
-		hoards[index] = treasureRoundingToRandomInteger(value)
+		if ( scalar > 0 ) { value = treasureRoundingToRandomInteger(value * scalar) }
+		hoards[index] = value
 	}
 	
 	itemKeys.sort()
 	itemKeys.reverse()
 	
 	for ( key of itemKeys ) {
-		items.push({'table':'magic', 'key':key, 'count':itemCounts[key]})
+		value = itemCounts[key]
+		if ( scalar > 0 ) { value = treasureRoundingToRandomInteger(value * scalar) }
+		items.push({'table':'magic', 'key':key, 'count':[value]})
 	}
 	
 	var result = treasureRawEntry(treasure, hoards, items)
