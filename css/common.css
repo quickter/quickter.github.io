@@ -81,45 +81,45 @@ span#library-filter-count { display:inline-block; opacity:0.5; font-size:60%; mi
 
 /*** library table ***/
 table#library-table { min-width:98%; padding:0; margin:1em 0 8em 0; border-spacing:0; border-collapse:collapse; }
-table#library-table tr.library { border-bottom:0.25px solid #DDD; }
-table#library-table tr.library > td, #library-table tr.library > th { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
-table#library-table tr.library > td:last-of-type { padding-right:0; }
-table#library-table a.item-name { display:block; cursor:pointer; }
+tr.library { border-bottom:0.25px solid #DDD; }
+td.library, th.library { vertical-align:baseline; padding:0.125em 1em 0.125em 0; }
+td.library:last-of-type { padding-right:0; }
+a.item-name { display:block; cursor:pointer; }
 
-table#library-table label.toggle.close { display:none; }
+label.toggle.close { display:none; }
 @media screen {
-	table#library-table label.toggle.close { display:inline-block; position:absolute; border-radius:50%; border:0.25em solid #EEE; bottom:0.375em; right:0.375em; }
-	table#library-table label.toggle.close { font-size:150%; text-align:center; line-height:1.125em; width:1.125em; height:1.125em; }
-	table#library-table input.toggle:checked + label.toggle > a:after { content:" ▲"; opacity:0.25; }
+	label.toggle.close { display:inline-block; position:absolute; border-radius:50%; border:0.25em solid #EEE; bottom:0.375em; right:0.375em; }
+	label.toggle.close { font-size:150%; text-align:center; line-height:1.125em; width:1.125em; height:1.125em; }
+	input.toggle:checked + label.toggle.close > a.library:after { content:" ▲"; opacity:0.25; }
 }
 
 /*** library table details ***/
-div.details { position:relative; white-space:normal; width:0; }
-div.details > div.details.inner { position:relative; width:40em; max-width:70vw; line-height:1.5; padding:0 1em; margin:0.5em 0; border:1px solid #EEE; }
+div.outer.details { position:relative; white-space:normal; width:0; }
+div.inner.details { position:relative; width:40em; max-width:70vw; line-height:1.5; padding:0 1em; margin:0.5em 0; border:1px solid #EEE; }
 
 /*** library table entries ***/
-div.details span.entries.indent + span.entries { margin-left:1em }
-div.details dl.entries > dt { font-weight:bold; }
-div.details .entries.italic { font-style:oblique; }
-div.details .entries.bold { font-weight:bold; }
-div.details span.prominent { font-weight:bold; }
-div.details span.prominent::after { content:"."; }
-div.details table.entries { border-spacing:0; border-collapse:collapse; }
-div.details table.entries td { vertical-align:top; }
-div.details table.entries td:not(:last-of-type) { padding-right:1em; }
-div.details table.entries td:first-child { min-width:4em; white-space:nowrap; }
-div.details a, div.details a:visited { text-decoration-color:#CCC; color:inherit; }
+span.entries.indent + span.entries { margin-left:1em }
+span.entries.italic, a.entries.italic { font-style:oblique; }
+span.entries.bold { font-weight:bold; }
+span.prominent { font-weight:bold; }
+span.prominent::after { content:"."; }
+table.entries { border-spacing:0; border-collapse:collapse; }
+table.entries td { vertical-align:top; }
+table.entries td:not(:last-of-type) { padding-right:1em; }
+table.entries td:first-of-type { min-width:4em; white-space:nowrap; }
+a.entries, a.entries:visited { text-decoration-color:#CCC; color:inherit; }
 p.source { font-style:oblique; color:#666; font-size:80%; }
 p.source > span.page-number:not(:empty)::before { content:" page "; }
+dl.entries > dt { font-weight:bold; }
 
 dl.compact > dt, dl.compact > dd { }
 
 @media screen {
-	div.details table.entries tr.rolled { background:#DEF; }
-	div.details span.entries.action { text-decoration:underline; text-decoration-color:#CCC; }
-	div.details span.rolled { color:#666; font-weight:normal; font-style:normal; }
-	div.details span.rolled-success { color:#696; text-decoration-color:inherit; }
-	div.details span.rolled-failure { color:#966; text-decoration-color:inherit; }
+	table.entries tr.rolled { background:#DEF; }
+	span.entries.action { text-decoration:underline; text-decoration-color:#CCC; }
+	span.rolled { color:#666; font-weight:normal; font-style:normal; }
+	span.rolled-success { color:#696; text-decoration-color:inherit; }
+	span.rolled-failure { color:#966; text-decoration-color:inherit; }
 }
 
 /*** table cells ***/
@@ -154,6 +154,6 @@ th.sortable.sorted-ascending { text-decoration:underline; }
 /*** printing ***/
 @media print {
 	div.filtering, div#controls { display:none; }
-	div.details span.rolled { display:none; }
+	span.rolled { display:none; }
 	p.source { page-break-after:always; }
 }

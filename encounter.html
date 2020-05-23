@@ -280,7 +280,7 @@
 					link = link ? "<a href='" + link + "'>" + name + "</a>" : name
 					array = difficultyArray[index + 3]
 					isHidden = array[1] > maximumDifficulty || array[0] < 0
-					html += "<tr class='" + (isHidden ? 'hidden' : 'normal') + "'><th title='" + title + "'>" + link + "</th>"
+					html += "<tr class='encounter-row " + (isHidden ? 'hidden' : 'normal') + "'><th class='encounter-cell' title='" + title + "'>" + link + "</th>"
 					
 					for ( multiplier of multipliers ) {
 						for ( quantity = multiplier.minimum ; quantity <= multiplier.maximum ; ++quantity ) {
@@ -336,7 +336,7 @@
 							if ( difficulty !== array[quantity + 1] ) { styles.push('end-horizontal') }
 							if ( challenge === 0 || difficulty !== difficultyArray[index + 2][quantity] ) { styles.push('begin-vertical') }
 							if ( challenge === 30 || difficulty !== difficultyArray[index + 4][quantity] ) { styles.push('end-vertical') }
-							html += "<td class='" + styles.join(" ") + "' title='" + title + "'></td>"
+							html += "<td class='encounter-cell " + styles.join(" ") + "' title='" + title + "'></td>"
 							prior = quantity
 						}
 					}
@@ -831,9 +831,9 @@
 			input.big-button { font-size:150%; border-radius:0.5em; border:3px solid #CCC; padding:0.5em 1.5em; background:#F8F8F8; }
 			input.big-text { font-size:125%; }
 			
-			p#encounter-list a.entries { color:#036; text-decoration-color:#CCC; }
-			p#encounter-list a.entries.hoard { color:#630; }
-			p#encounter-list a.entries.filter { text-transform:capitalize; }
+			a.entries { color:#036; text-decoration-color:#CCC; }
+			a.entries.hoard { color:#630; }
+			a.entries.filter { text-transform:capitalize; }
 			
 			p.explanation { font-size:80%; color:#999; }
 			
@@ -843,22 +843,22 @@
 			}
 			
 			table#encounter-table { border-collapse:collapse; margin:0 auto; }
-			table#encounter-table tr { line-height:1.5em; }
-			table#encounter-table tr.hidden { display:none; }
-			table#encounter-table tr > th a { color:inherit; }
-			table#encounter-table tr > td, table#encounter-table tr > th { height:1em; width:1.5em; border-radius:0.5em; border:solid white 1px; }
-			table#encounter-table tr > td:not(.begin-horizontal.begin-vertical) { border-top-left-radius:0; }
-			table#encounter-table tr > td:not(.end-horizontal.end-vertical) { border-bottom-right-radius:0; }
-			table#encounter-table tr > td:not(.begin-horizontal.end-vertical) { border-bottom-left-radius:0; }
-			table#encounter-table tr > td:not(.end-horizontal.begin-vertical) { border-top-right-radius:0; }
-			table#encounter-table tr > td.difficulty-none { background:#F4F4FF; }
-			table#encounter-table tr > td.difficulty-easy { background:#66F; }
-			table#encounter-table tr > td.difficulty-medium { background:#6C6; }
-			table#encounter-table tr > td.difficulty-hard { background:#EC3; }
-			table#encounter-table tr > td.difficulty-deadly { background:#C66; }
-			table#encounter-table tr > td.difficulty-undue { background:#FFF8F8; }
-			table#encounter-table tr > td.difficulty-mix { background:#FEE; }
-			table#encounter-table tr > td.has-pairs { }
+			tr.encounter-row { line-height:1.5em; }
+			tr.encounter-row.hidden { display:none; }
+			th.encounter-cell a { color:inherit; }
+			td.encounter-cell, th.encounter-cell { height:1em; width:1.5em; border-radius:0.5em; border:solid white 1px; }
+			td.encounter-cell:not(.begin-horizontal.begin-vertical) { border-top-left-radius:0; }
+			td.encounter-cell:not(.end-horizontal.end-vertical) { border-bottom-right-radius:0; }
+			td.encounter-cell:not(.begin-horizontal.end-vertical) { border-bottom-left-radius:0; }
+			td.encounter-cell:not(.end-horizontal.begin-vertical) { border-top-right-radius:0; }
+			td.encounter-cell.difficulty-none { background:#F4F4FF; }
+			td.encounter-cell.difficulty-easy { background:#66F; }
+			td.encounter-cell.difficulty-medium { background:#6C6; }
+			td.encounter-cell.difficulty-hard { background:#EC3; }
+			td.encounter-cell.difficulty-deadly { background:#C66; }
+			td.encounter-cell.difficulty-undue { background:#FFF8F8; }
+			td.encounter-cell.difficulty-mix { background:#FEE; }
+			td.encounter-cell.has-pairs { }
 		</style>
 	</head>
 	<body onload='populatePage()'>

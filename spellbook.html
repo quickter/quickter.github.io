@@ -593,36 +593,36 @@
 			
 			function renderItemTable(list) {
 				var rowTemplate = "<tr id='item-{key}' class='library spell {styles}'>" +
- 					"<td class='selected spell-prepared'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='libraryHandleSelect(\"{key}\")' /> </td>" +
-					"<td class='name spell-name' id='name-{key}' data-sort-key='{namekey}'>" +
+ 					"<td class='library selected spell-prepared'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='libraryHandleSelect(\"{key}\")' /> </td>" +
+					"<td class='library name spell-name' id='name-{key}' data-sort-key='{namekey}'>" +
 						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' onchange='handleToggle(\"{key}\")' />" +
-						"<label for='toggle-{key}' class='toggle spell-name'><a id='{key}' class='spell-name'>{name}</a></label>" +
-						"<div class='toggled details'><div id='inner-{key}' class='inner details'>" +
+						"<label for='toggle-{key}' class='toggle spell-name'><a id='{key}' class='library spell-name'>{name}</a></label>" +
+						"<div class='toggled outer details'><div id='inner-{key}' class='inner details'>" +
 						"</div></div>" +
 					"</td>" +
-					"<td class='spell-level numeric' data-sort-key='{level}' title='Level {level}{levelsuffix}'>{level}</td>" +
-					"<td class='spell-school' data-sort-key='{ss}' title='{schoolname}'>{ss}</td>" +
-					"<td class='spell-casting' data-sort-key='{castingkey}' title='Casting Time {casting_time}{title_ritual}'>{casting}</td>" +
-					"<td class='spell-range numeric' data-sort-key='{rangekey}' title='Range {range}'>{range}</td>" +
-					"<td class='spell-components' data-sort-key='{vsmkey}' title='Components {vsmname}'>{vsm}</td>" +
-					"<td class='spell-duration' data-sort-key='{durationkey}' title='Duration {title_concentration}{duration}'>{period}</td>" +
-					"<td class='spell-damage' data-sort-key='{damagekey}' title='{damagesave}'>{damage}</td>" +
-					//"<td class='spell-damage-type'>{damage_type}</td>" +
-					//"<td class='spell-save'>{sv}</td>" +
+					"<td class='library spell-level numeric' data-sort-key='{level}' title='Level {level}{levelsuffix}'>{level}</td>" +
+					"<td class='library spell-school' data-sort-key='{ss}' title='{schoolname}'>{ss}</td>" +
+					"<td class='library spell-casting' data-sort-key='{castingkey}' title='Casting Time {casting_time}{title_ritual}'>{casting}</td>" +
+					"<td class='library spell-range numeric' data-sort-key='{rangekey}' title='Range {range}'>{range}</td>" +
+					"<td class='library spell-components' data-sort-key='{vsmkey}' title='Components {vsmname}'>{vsm}</td>" +
+					"<td class='library spell-duration' data-sort-key='{durationkey}' title='Duration {title_concentration}{duration}'>{period}</td>" +
+					"<td class='library spell-damage' data-sort-key='{damagekey}' title='{damagesave}'>{damage}</td>" +
+					//"<td class='library spell-damage-type'>{damage_type}</td>" +
+					//"<td class='library spell-save'>{sv}</td>" +
 				"</tr>"
 				
 				var header = "<tr id='header' class='library header'>" +
- 					"<th class='spell-prepared sortable' data-sort-invert> </th>" +
-					"<th class='spell-name natural sortable' data-sort-format='locale'>Name</th>" +
-					"<th class='spell-level numeric sortable sorted-ascending' data-sort-format='number'>Level</th>" +
-					"<th class='spell-school natural sortable' data-sort-format='normal'>Sc</th>" +
-					"<th class='spell-casting natural sortable' data-sort-format='number'>Time</th>" +
-					"<th class='spell-range numeric sortable' data-sort-format='number'>Range</th>" +
-					"<th class='spell-components natural sortable' data-sort-format='number'>VSM</th>" +
-					"<th class='spell-duration natural sortable' data-sort-format='number'>Duration</th>" +
-					"<th class='spell-damage natural sortable' data-sort-format='number'>Damage</th>" +
-					//"<th class='spell-damage-type sortable' data-sort-format='natural'>Type</th>" +
-					//"<th class='spell-save sortable' data-sort-format='natural'>Save</th>" +
+ 					"<th class='library spell-prepared sortable' data-sort-invert> </th>" +
+					"<th class='library spell-name natural sortable' data-sort-format='locale'>Name</th>" +
+					"<th class='library spell-level numeric sortable sorted-ascending' data-sort-format='number'>Level</th>" +
+					"<th class='library spell-school natural sortable' data-sort-format='normal'>Sc</th>" +
+					"<th class='library spell-casting natural sortable' data-sort-format='number'>Time</th>" +
+					"<th class='library spell-range numeric sortable' data-sort-format='number'>Range</th>" +
+					"<th class='library spell-components natural sortable' data-sort-format='number'>VSM</th>" +
+					"<th class='library spell-duration natural sortable' data-sort-format='number'>Duration</th>" +
+					"<th class='library spell-damage natural sortable' data-sort-format='number'>Damage</th>" +
+					//"<th class='library spell-damage-type sortable' data-sort-format='natural'>Type</th>" +
+					//"<th class='library spell-save sortable' data-sort-format='natural'>Save</th>" +
 				"</tr>"
 				
 				return header + libraryRenderTemplateItemArray(rowTemplate, list).join("")
@@ -831,15 +831,15 @@
 			}
 			
 			table#library-table { table-layout:fixed; width:100%; }
-			table#library-table tr.library > th.spell-prepared { width:1.25em; }
-			table#library-table tr.library > th.spell-level { width:2.5em; }
-			table#library-table tr.library > th.spell-school { width:1.5em; }
-			table#library-table tr.library > th.spell-casting { width:3.5em; }
-			table#library-table tr.library > th.spell-range { width:4.5em; }
-			table#library-table tr.library > th.spell-components { width:2em; }
-			table#library-table tr.library > th.spell-duration { width:6em; }
-			table#library-table tr.library > th.spell-damage { width:3em; }
-			table#library-table tr.library > th.spell-source { width:3em; }
+			th.library.spell-prepared { width:1.25em; }
+			th.library.spell-level { width:2.5em; }
+			th.library.spell-school { width:1.5em; }
+			th.library.spell-casting { width:3.5em; }
+			th.library.spell-range { width:4.5em; }
+			th.library.spell-components { width:2em; }
+			th.library.spell-duration { width:6em; }
+			th.library.spell-damage { width:3em; }
+			th.library.spell-source { width:3em; }
 			
 			p.higher-level:not(:empty):before { content:"At Higher Level. "; font-weight:bold; font-style:italic; }
 			.spell-condition.material:not(:empty):before { content:"Materials: "; font-weight:bold; }
@@ -860,21 +860,11 @@
 			tr.is-damage-in-area > td.spell-damage { font-style:oblique; }
 			tr.is-damage-shield > td.spell-damage { font-style:oblique; }
 			
-			div.details > div.details.inner { background:#FAFAFA; }
 			td.item-type, td.item-source { font-size:80%; }
-			div.details p:not(:first-of-type) { text-indent:1em; }
-			div.details table.entries tr:nth-child(even) { background:#FFF6F6; }
-			div.details p.item-caption { font-style:oblique; }
-			
-			label.trivia.disable > span { opacity:0.5; }
-			label.trivia.exclude { position:relative; }
-			label.trivia.exclude:after { content:""; position:absolute; left:-0.125em; right:-0.125em; bottom:30%; border-top:solid #C00 1.5px; }
-			input.trivia { display:none; }
-			input.trivia:not(:checked) + input.trivia + .trivia + label.trivia + label.trivia { display:none; }
-			input.trivia:not(:checked) + label.trivia { display:none; }
-			
-			.action { cursor:pointer; }
-			.filter, .trivia { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+			div.inner.details { background:#FAFAFA; }
+			div.inner.details > p:not(:first-of-type) { text-indent:1em; }
+			div.inner.details table.entries tr:nth-child(even) { background:#FFF6F6; }
+			div.inner.details > p.item-caption { font-style:oblique; }
 			
 			@media screen {
 				tr.acid > td.spell-damage-type { color:#360; }

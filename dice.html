@@ -517,15 +517,15 @@
 				var element = _element('tracking-combat-rolls')
 				var index, maximumRolls = 12
 				var rows = []
-				var prefixRow = "<div>" +
+				var prefixRow = "<div class='tracking-combat'>" +
 					"<input type='button' id='tracking-combat-rolls-add' value='+' class='action' onclick='handleMoreCombat()' /><!-- label for='tracking-combat-add' class='action'><span>+</span></label -->" +
 					"<label for='tracking-combat-rolls-add' class='combat action add'>+</label>" +
 					//"<input id='toggle-combat-instructions' class='toggle' type='checkbox' /><label for='toggle-combat-instructions' class='toggle'> </label><div id='tracking-combat-instructions' class='toggled'></div>" +
 					"</div>"
-				var suffixRow = "<div class='tracking-combat-rolls-suffix'>" +
+				var suffixRow = "<div class='tracking-combat tracking-combat-rolls-suffix'>" +
 					"<span>@</span><input type='text' id='tracking-combat-rolls-target' value='' placeholder='16' class='tracking-combat-rolls-script' onchange='saveCombat()' />" +
 					"</div>"
-				var templateRow = "<div id='tracking-combat-rolls-{index}' class='tracking-combat-rolls-row combat-parent'>" +
+				var templateRow = "<div id='tracking-combat-rolls-{index}' class='tracking-combat tracking-combat-rolls-row combat-parent'>" +
 					"<input type='button' id='tracking-combat-rolls-{index}-remove' value='-' class='action' onclick='handleLessCombat(\"tracking-combat-rolls-{index}\")' />" +
 					"<label for='tracking-combat-rolls-{index}-remove' class='combat action remove'>-</label>" +
 					"<input type='text' id='tracking-combat-rolls-{index}-name' value='' placeholder='Name' class='tracking-combat-rolls-name' onchange='saveCombat()' />" +
@@ -636,7 +636,6 @@
 					["+6+5+3m+2-5+5o rm /d8p+3+5+2+10 #4", "Gloom Stalker 20, Dexterity 20, Longbow +3, Archery, Bracers, Sharpshooter, Swift Quiver"],
 					["a+6+5+3m /d8s+3+5+2+2d12 #2", "Sword Bard 20, Dexterity 20, Rapier +3, Dueling, Duelist, Tenser"],
 					["+6+7+3m-5 /d10s+3+7+10+4 +d6ro+10ro +c4d #2cb; +6+7+3m /d4b+3+7+4+c4d #b", "Zealot 20, Strength 24, Halberd +3, Great Weapon Master, Polearm Master, Rage"],
-					["a+6+5+3 /d10s+5+3+10d10o #2; a+6+5 /d10b+5 #b", "Hand Monk 20, Dexterity 20, Short Sword +3, Empty Body"],
 					["a+6+5+3 r1 /d6p+5+3+10d6 a #1", "Arcane Trickster 20, Dexterity 20, Short Sword +3, Savage Attacker, Greater Invisibility"],
 					["+6+5+3+2 /d10e+5 #4", "Warlock 20, Charisma 20, Wand +3, Archmagi, Agonizing Blast"],
 					
@@ -689,19 +688,19 @@
 			input.tracking-combat-rolls-name { max-width:50%; }
 			input.tracking-combat-rolls-script { max-width:70%; }
 			output.tracking-number-output { display:inline-block; min-width:2em; text-align:right; }
-			#tracking-dice { font-size:180%; margin-bottom:2em; }
+			#tracking-dice { font-size:160%; margin-bottom:2em; }
 			#tracking-dice { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; }
-			#tracking-dice > div { min-width:50%; height:5em; text-align:center; margin-top:1em; }
+			#tracking-dice > div { min-width:80%; height:5em; text-align:center; margin-top:1em; }
 			#tracking-dice-times { margin:0 0.75em 0 0.5em; }
 			#tracking-dice-rolls { display:inline-block; color:#999; font-size:80%; }
 			#tracking-dice-sum { display:inline-block; line-height:1.5; width:3em; height:1.75em; text-align:center; padding-top:0.25em; margin:0 1em; font-size:200%; font-weight:bold; color:#666; border-radius:50%; border:1px solid #CCC; }
 			span.die-roll { display:inline-block; min-width:2.25em; text-align:center; }
 			
-			#tracking-combat-rolls > div { margin-bottom:1em; }
-			#tracking-combat-rolls > div > input[type="text"] { font-size:150%; margin:0.25em 0.5em 0.25em 0; }
-			#tracking-combat-rolls > div > input[type="text"]::placeholder { color:#CCC; }
-			#tracking-combat-rolls > div > label.combat.action { font-size:150%; line-height:0.6em; padding-top:0.5em; padding-bottom:0.5em; text-align:center; }
-			#tracking-combat-rolls > div > label.combat.action { margin-right:0.5em; display:inline-block; min-width:0.6em; }
+			div.tracking-combat { margin-bottom:1em; }
+			div.tracking-combat > input[type="text"] { font-size:125%; margin:0.25em 0.5em 0.25em 0; }
+			div.tracking-combat > input[type="text"]::placeholder { color:#CCC; }
+			div.tracking-combat > label.combat.action { font-size:150%; line-height:0.6em; padding-top:0.5em; padding-bottom:0.5em; text-align:center; }
+			div.tracking-combat > label.combat.action { margin-right:0.5em; display:inline-block; min-width:0.6em; }
 			
 			div.tracking-combat-rolls-suffix { display:none; }
 			div.tracking-combat-rolls-suffix > span { color:#999; font-size:150%; margin-right:0.25em; }
@@ -718,7 +717,7 @@
 			span.combat-damage { display:inline-block; line-height:1.5; width:3em; height:1.75em; text-align:center; padding-top:0.25em; margin:0 1em; font-size:200%; font-weight:bold; color:#666; border-radius:50%; border:1px solid #CCC; }
 			
 			#combat-duel { text-align:center; margin-bottom:2em; }
-			#combat-duel > input[type="text"] { font-size:150%; margin:0.25em; min-width:80%; }
+			#combat-duel > input[type="text"] { font-size:125%; margin:0.25em; min-width:80%; }
 			#combat-duel > input[type="text"]::placeholder { color:#CCC; }
 			#combat-duel > #duel-result { min-height:8em; }
 			

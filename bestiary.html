@@ -692,7 +692,7 @@
 								spells = spells.join(",")
 								
 								if ( item.name || item.headerEntries ) {
-									spells = "<a class='spellcasting spells' href='spellbook.html#" + spells + "' >" + item.name + "</a>"
+									spells = "<a class='entries spellcasting spells' href='spellbook.html#" + spells + "' >" + item.name + "</a>"
 									array.push(libraryResolveEntries({'name':spells, 'entries':item.headerEntries || []}, "<p class='spellcasting'>", "</p>"))
 								}
 								
@@ -841,30 +841,30 @@
 			
 			function renderItemTable(list) {
 				var rowTemplate = "<tr id='item-{key}' class='library monster {styles}'>" +
-					"<td class='selected monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='libraryHandleSelect(\"{key}\")' /></td>" +
-					"<td class='name monster-name natural' id='name-{key}' data-sort-key='{namekey}'>" +
+					"<td class='library selected monster-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='libraryHandleSelect(\"{key}\")' /></td>" +
+					"<td class='library name monster-name natural' id='name-{key}' data-sort-key='{namekey}'>" +
 						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' onchange='handleToggle(\"{key}\")' />" +
-						"<label for='toggle-{key}' class='toggle'><a id='{key}' class='item-name'>{name}</a></label>" +
-						"<div class='toggled details'><div id='inner-{key}' class='inner details'>" +
+						"<label for='toggle-{key}' class='toggle'><a id='{key}' class='library item-name'>{name}</a></label>" +
+						"<div class='toggled outer details'><div id='inner-{key}' class='inner details'>" +
 						"</div></div>" +
 					"</td>" +
-					"<td class='monster-size natural monster-size-{sizekey}' data-sort-key='{sizekey}' title='Size {sizename}'>{size}</td>" +
-					"<td class='monster-type natural' title='{typename}'><span>{typeconcise}</span></td>" +
-					"<td class='monster-armorclass numeric' title='Armor Class {ac}'>{ac}</td>" +
-					"<td class='monster-hitpoints numeric' title='Hit Points {hp}'>{hp}</td>" +
-					"<td class='monster-challenge numeric' data-sort-key='{challengekey}' title='Challenge Rating {challengename} {challengeexperience}'>{challengename}</td>" +
-					"<td class='monster-source natural' title='{sourcename} {page}'>{source}</td>" +
+					"<td class='library monster-size natural monster-size-{sizekey}' data-sort-key='{sizekey}' title='Size {sizename}'>{size}</td>" +
+					"<td class='library monster-type type-{type} natural' title='{typename}'><span>{typeconcise}</span></td>" +
+					"<td class='library monster-armorclass numeric' title='Armor Class {ac}'>{ac}</td>" +
+					"<td class='library monster-hitpoints numeric' title='Hit Points {hp}'>{hp}</td>" +
+					"<td class='library monster-challenge numeric' data-sort-key='{challengekey}' title='Challenge Rating {challengename} {challengeexperience}'>{challengename}</td>" +
+					"<td class='library monster-source natural' title='{sourcename} {page}'>{source}</td>" +
 				"</tr>"
 				
 				var header = "<tr id='monster-header' class='library monster header'>" +
-					"<th class='monster-selected sortable' data-sort-invert> </th>" +
-					"<th class='monster-name natural sortable' data-sort-format='locale'>Name</th>" +
-					"<th class='monster-size natural sortable' data-sort-format='normal' title='Size'>S</th>" +
-					"<th class='monster-type natural sortable' data-sort-format='normal' title='Type'>T</th>" +
-					"<th class='monster-armorclass numeric sortable' data-sort-format='number' title='Armor Class'>AC</th>" +
-					"<th class='monster-hitpoints numeric sortable' data-sort-format='number' title='Hit Points'>HP</th>" +
-					"<th class='monster-challenge numeric sortable' data-sort-format='number' title='Challenge Rating'>CR</th>" +
-					"<th class='monster-source natural sortable' data-sort-format='normal'>From</th>" +
+					"<th class='library monster-selected sortable' data-sort-invert> </th>" +
+					"<th class='library monster-name natural sortable' data-sort-format='locale'>Name</th>" +
+					"<th class='library monster-size natural sortable' data-sort-format='normal' title='Size'>S</th>" +
+					"<th class='library monster-type natural sortable' data-sort-format='normal' title='Type'>T</th>" +
+					"<th class='library monster-armorclass numeric sortable' data-sort-format='number' title='Armor Class'>AC</th>" +
+					"<th class='library monster-hitpoints numeric sortable' data-sort-format='number' title='Hit Points'>HP</th>" +
+					"<th class='library monster-challenge numeric sortable' data-sort-format='number' title='Challenge Rating'>CR</th>" +
+					"<th class='library monster-source natural sortable' data-sort-format='normal'>From</th>" +
 				"</tr>"
 				
 				return header + libraryRenderTemplateItemArray(rowTemplate, list).join("")
@@ -1017,11 +1017,10 @@
 			div#navigation a#navigation-bestiary { background:#EEF; }
 			
 			div.details.inner { background:#FDF4E8; }
-			div.details.inner img.artwork { position:absolute; max-width:20vw; max-height:12em; right:-1em; top:2em; }
-			div.details.inner img.artwork:hover { max-width:80vw; max-height:80vh; right:0em; }
-			div.details.inner div.beside-artwork { max-width:60vw; }
-			
-			table#library-table label.toggle.close { border-color:#F8ECE0; }
+			img.artwork { position:absolute; max-width:20vw; max-height:12em; right:-1em; top:2em; }
+			img.artwork:hover { max-width:80vw; max-height:80vh; right:0em; }
+			div.beside-artwork { max-width:60vw; }
+			label.toggle.close { border-color:#F8ECE0; }
 			
 			@media (max-width:420px) {
 				th.monster-source, td.monster-source { display:none; }
@@ -1030,30 +1029,30 @@
 			/*	table#library-table input.toggle:checked ~ a.item-name { font-variant:small-caps; font-weight:bold; } */
 			
 			@media screen {
-				table#library-table tr.library > td.monster-hitpoints::before { content:"♥︎"; font-size:50%; opacity:0.25; }
-				table#library-table tr.library > td.monster-challenge::before { content:"★"; font-size:50%; opacity:0.25; }
-				table#library-table tr.library > td.monster-armorclass::before { content:"♦︎"; font-size:50%; opacity:0.25; }
+				td.library.monster-hitpoints::before { content:"♥︎"; font-size:50%; opacity:0.25; }
+				td.library.monster-challenge::before { content:"★"; font-size:50%; opacity:0.25; }
+				td.library.monster-armorclass::before { content:"♦︎"; font-size:50%; opacity:0.25; }
 			}
 			
 			table#library-table { table-layout:fixed; width:100%; }
-			table#library-table tr.library > th.monster-selected { width:1.25em; }
-			table#library-table tr.library > th.monster-size,
-			table#library-table tr.library > th.monster-type { width:1.5em; }
-			table#library-table tr.library > th.monster-armorclass,
-			table#library-table tr.library > th.monster-challenge { width:2em; }
-			table#library-table tr.library > th.monster-hitpoints { width:3em; }
-			table#library-table tr.library > th.monster-source { width:3em; }
+			th.library.monster-selected { width:1.25em; }
+			th.library.monster-size,
+			th.library.monster-type { width:1.5em; }
+			th.library.monster-armorclass,
+			th.library.monster-challenge { width:2em; }
+			th.library.monster-hitpoints { width:3em; }
+			th.library.monster-source { width:3em; }
 			
 			td.monster-source { font-size:80%; }
-			div.details { color:#333; }
-			div.details table.entries tr:nth-child(even) { background:#FFFAFA; }
-			div.details div.monster-caption { font-style:oblique; }
-			div.details table.abilities th { text-align:center; text-transform:uppercase; }
-			div.details table.abilities td { text-align:center; min-width:3em; width:4em; }
-			div.details table.abilities span.ability-score { font-weight:bold; }
-			div.details hr.monster-thin { border:0; height:2px; background:#333; margin-top:0; }
-			div.details hr.monster-thick { border:0; height:4px; background:#333; }
-			div.details span.monster-title { font-variant:small-caps; font-size:125%; }
+			div.inner.details { color:#333; }
+			table.entries tr:nth-child(even) { background:#FFFAFA; }
+			div.monster-caption { font-style:oblique; }
+			table.abilities th { text-align:center; text-transform:uppercase; }
+			table.abilities td { text-align:center; min-width:3em; width:4em; }
+			table.abilities span.ability-score { font-weight:bold; }
+			hr.monster-thin { border:0; height:2px; background:#333; margin-top:0; }
+			hr.monster-thick { border:0; height:4px; background:#333; }
+			span.monster-title { font-variant:small-caps; font-size:125%; }
 			
 			p.environments { color:#666; font-size:80%; }
 			p.prefix.environments:not(:empty)::before { content:"Environments: "; }
@@ -1082,36 +1081,36 @@
 			div.spellcasting span.spell-slots:not(:empty)::after { content:" slots): " }
 			
 			@media screen {
-				div.details hr.monster-thin,
-				div.details hr.monster-thick { background:#933; background-image:linear-gradient(90deg, #933 0%, #C98 70%, #F8F0E6 100%); }
-				div.details > div.details.inner { background-image:linear-gradient(157.5deg, #F0EAE0 0%, #F7EFE4 30%, #FDF4E8 100%); }
+				hr.monster-thin,
+				hr.monster-thick { background:#933; background-image:linear-gradient(90deg, #933 0%, #C98 70%, #F8F0E6 100%); }
+				div.details.inner { background-image:linear-gradient(157.5deg, #F0EAE0 0%, #F7EFE4 30%, #FDF4E8 100%); }
 				
-				div.details span.monster-title,
-				div.details table.abilities th,
-				div.details table.abilities span.ability-score,
+				span.monster-title,
+				table.abilities th,
+				table.abilities span.ability-score,
 				span.prefix:not(:empty)::before { color:#633; }
 				
-				div.details span.entries.action { text-decoration-color:#CAA; }
+				span.entries.action { text-decoration-color:#CAA; }
 			}
 			
 			@media screen and (hover) and (color) {
-				table#library-table.emoji tr.library th.monster-type { padding-left:0.375em; }
-				table#library-table.emoji tr.library td.monster-type > span { display:none; }
-				table#library-table.emoji tr.library td.monster-type::after { opacity:0.75; }
-				table#library-table.emoji tr.library.type-aberration td.monster-type::after { content:"👽"; }
-				table#library-table.emoji tr.library.type-beast td.monster-type::after { content:"🐺"; }
-				table#library-table.emoji tr.library.type-celestial td.monster-type::after { content:"🦄"; }
-				table#library-table.emoji tr.library.type-construct td.monster-type::after { content:"👤"; }
-				table#library-table.emoji tr.library.type-dragon td.monster-type::after { content:"🐉"; }
-				table#library-table.emoji tr.library.type-elemental td.monster-type::after { content:"🔥"; }
-				table#library-table.emoji tr.library.type-fiend td.monster-type::after { content:"👺"; }
-				table#library-table.emoji tr.library.type-fey td.monster-type::after { content:"🧚"; }
-				table#library-table.emoji tr.library.type-giant td.monster-type::after { content:"🗿"; }
-				table#library-table.emoji tr.library.type-humanoid td.monster-type::after { content:"🧝"; }
-				table#library-table.emoji tr.library.type-monstrosity td.monster-type::after { content:"🦂"; }
-				table#library-table.emoji tr.library.type-plant td.monster-type::after { content:"🌿"; }
-				table#library-table.emoji tr.library.type-ooze td.monster-type::after { content:"🦠"; }
-				table#library-table.emoji tr.library.type-undead td.monster-type::after { content:"🧟"; }
+				table#library-table.emoji th.library.monster-type { padding-left:0.375em; }
+				table#library-table.emoji td.library.monster-type > span { display:none; }
+				table#library-table.emoji td.library.monster-type::after { opacity:0.75; }
+				table#library-table.emoji td.library.monster-type.type-aberration::after { content:"👽"; }
+				table#library-table.emoji td.library.monster-type.type-beast::after { content:"🐺"; }
+				table#library-table.emoji td.library.monster-type.type-celestial::after { content:"🦄"; }
+				table#library-table.emoji td.library.monster-type.type-construct::after { content:"👤"; }
+				table#library-table.emoji td.library.monster-type.type-dragon::after { content:"🐉"; }
+				table#library-table.emoji td.library.monster-type.type-elemental::after { content:"🔥"; }
+				table#library-table.emoji td.library.monster-type.type-fiend::after { content:"👺"; }
+				table#library-table.emoji td.library.monster-type.type-fey::after { content:"🧚"; }
+				table#library-table.emoji td.library.monster-type.type-giant::after { content:"🗿"; }
+				table#library-table.emoji td.library.monster-type.type-humanoid::after { content:"🧝"; }
+				table#library-table.emoji td.library.monster-type.type-monstrosity::after { content:"🦂"; }
+				table#library-table.emoji td.library.monster-type.type-plant::after { content:"🌿"; }
+				table#library-table.emoji td.library.monster-type.type-ooze::after { content:"🦠"; }
+				table#library-table.emoji td.library.monster-type.type-undead::after { content:"🧟"; }
 			}
 			
 			@media print {

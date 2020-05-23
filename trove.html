@@ -262,26 +262,26 @@
 			
 			function renderItemTable(list) {
 				var rowTemplate = "<tr id='item-{key}' class='library item {styles}'>" +
-					"<td class='selected item-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='libraryHandleSelect(\"{key}\")' /></td>" +
-					"<td class='name item-name natural' id='name-{key}' data-sort-key='{namekey}'>" +
+					"<td class='library selected item-selected'><input id='select-{key}' name='select_{key}' type='checkbox' class='selection' onchange='libraryHandleSelect(\"{key}\")' /></td>" +
+					"<td class='library name item-name natural' id='name-{key}' data-sort-key='{namekey}'>" +
 						"<input id='toggle-{key}' name='toggle-{key}' type='checkbox' class='toggle' onchange='handleToggle(\"{key}\")' />" +
-						"<label for='toggle-{key}' class='toggle item-name'><a id='{key}' class='item-name'>{name}</a></label>" +
-						"<div class='toggled details'><div id='inner-{key}' class='inner details'>" +
+						"<label for='toggle-{key}' class='toggle item-name'><a id='{key}' class='library item-name'>{name}</a></label>" +
+						"<div class='toggled outer details'><div id='inner-{key}' class='inner details'>" +
 						"</div></div>" +
 					"</td>" +
-					"<td class='item-type natural'>{typename}</td>" +
-					"<td class='item-rarity center' title='{rarityname}{raritysuffix}' data-sort-key='{raritykey}'>{rarityabbreviation}</td>" +
-					"<td class='item-attune center' title='{attunename}' data-sort-key='{attunekey}'>{attune}</td>" +
-					"<td class='item-source natural' title='{sourcename}'>{source}</td>" +
+					"<td class='library item-type natural'>{typename}</td>" +
+					"<td class='library item-rarity center' title='{rarityname}{raritysuffix}' data-sort-key='{raritykey}'>{rarityabbreviation}</td>" +
+					"<td class='library item-attune center' title='{attunename}' data-sort-key='{attunekey}'>{attune}</td>" +
+					"<td class='library item-source natural' title='{sourcename}'>{source}</td>" +
 				"</tr>"
 				
 				var header = "<tr id='item-header' class='library item header'>" +
-					"<th class='item-selected sortable' data-sort-invert> </th>" +
-					"<th class='item-name natural sortable' data-sort-format='locale'>Name</th>" +
-					"<th class='item-type natural sortable' data-sort-format='normal'>Type</th>" +
-					"<th class='item-rarity center sortable' data-sort-format='number'>R</th>" +
-					"<th class='item-attune center sortable' data-sort-format='number'>A</th>" +
-					"<th class='item-source natural sortable' data-sort-format='normal'>From</th>" +
+					"<th class='library item-selected sortable' data-sort-invert> </th>" +
+					"<th class='library item-name natural sortable' data-sort-format='locale'>Name</th>" +
+					"<th class='library item-type natural sortable' data-sort-format='normal'>Type</th>" +
+					"<th class='library item-rarity center sortable' data-sort-format='number'>R</th>" +
+					"<th class='library item-attune center sortable' data-sort-format='number'>A</th>" +
+					"<th class='library item-source natural sortable' data-sort-format='normal'>From</th>" +
 				"</tr>"
 				
 				return header + libraryRenderTemplateItemArray(rowTemplate, list).join("")
@@ -370,54 +370,22 @@
 			}
 			
 			table#library-table { table-layout:fixed; width:100%; }
-			table#library-table tr.library > th.item-selected { width:1.25em; }
-			table#library-table tr.library > th.item-rarity,
-			table#library-table tr.library > th.item-attune { width:1.5em; }
-			table#library-table tr.library > th.item-type,
-			table#library-table tr.library > th.item-source { width:3em; }
-			
-			div.details > div.details.inner { background:#FAFAFA; }
+			th.library.item-selected { width:1.25em; }
+			th.library.item-rarity,
+			th.library.item-attune { width:1.5em; }
+			th.library.item-type,
+			th.library.item-source { width:3em; }
 			
 			td.item-type, td.item-source { font-size:80%; }
-			div.details p:not(:first-of-type) { text-indent:1em; }
-			div.details table.entries tr:nth-child(even) { background:#FFF6F6; }
-			div.details p.item-caption { font-style:oblique; }
+			div.inner.details { background:#FAFAFA; }
+			div.inner.details > p:not(:first-of-type) { text-indent:1em; }
+			div.inner.details table.entries tr:nth-child(even) { background:#FFF6F6; }
+			div.inner.details > p.item-caption { font-style:oblique; }
 			
 			@media screen {
 				tr.is-cursed > td.item-attune { color:#900; }
 				tr.is-sentient > td.item-rarity { color:#00C; }
 			}
-			
-			input#filter-rarity-mundane:not(:checked) ~ table#library-table tr.mundane { display:none; }
-			input#filter-rarity-common:not(:checked) ~ table#library-table tr.common { display:none; }
-			input#filter-rarity-uncommon:not(:checked) ~ table#library-table tr.uncommon { display:none; }
-			input#filter-rarity-rare:not(:checked) ~ table#library-table tr.rare { display:none; }
-			input#filter-rarity-veryrare:not(:checked) ~ table#library-table tr.veryrare { display:none; }
-			input#filter-rarity-legendary:not(:checked) ~ table#library-table tr.legendary { display:none; }
-			input#filter-rarity-artifact:not(:checked) ~ table#library-table tr.artifact { display:none; }
-			
-			input#filter-category-ammo:not(:checked) ~ table#library-table tr.ammo { display:none; }
-			input#filter-category-armor:not(:checked) ~ table#library-table tr.armor { display:none; }
-			input#filter-category-focus:not(:checked) ~ table#library-table tr.focus { display:none; }
-			input#filter-category-music:not(:checked) ~ table#library-table tr.music { display:none; }
-			input#filter-category-potion:not(:checked) ~ table#library-table tr.potion { display:none; }
-			input#filter-category-poison:not(:checked) ~ table#library-table tr.poison { display:none; }
-			input#filter-category-rod:not(:checked) ~ table#library-table tr.rod { display:none; }
-			input#filter-category-ring:not(:checked) ~ table#library-table tr.ring { display:none; }
-			input#filter-category-shield:not(:checked) ~ table#library-table tr.shield { display:none; }
-			input#filter-category-staff:not(:checked) ~ table#library-table tr.staff { display:none; }
-			input#filter-category-scroll:not(:checked) ~ table#library-table tr.scroll { display:none; }
-			input#filter-category-wand:not(:checked) ~ table#library-table tr.wand { display:none; }
-			input#filter-category-magic:not(:checked) ~ table#library-table tr.magic { display:none; }
-			
-			input#filter-require-curse:checked ~ table#spells tr:not(.is-curse):not(.header) { display:none; }
-			input#filter-exclude-curse:checked ~ table#spells tr.is-curse { display:none; }
-			input#filter-require-major:checked ~ table#spells tr:not(.is-major):not(.header) { display:none; }
-			input#filter-exclude-major:checked ~ table#spells tr.is-major { display:none; }
-			input#filter-require-attune:checked ~ table#spells tr:not(.is-attune):not(.header) { display:none; }
-			input#filter-exclude-attune:checked ~ table#spells tr.is-attune { display:none; }
-			input#filter-require-sentient:checked ~ table#spells tr:not(.is-sentient):not(.header) { display:none; }
-			input#filter-exclude-sentient:checked ~ table#spells tr.is-sentient { display:none; }
 			
 			@media print {
 				th.item-selected, td.item-selected { display:none; }
