@@ -583,11 +583,11 @@ function evaluateSingleEffectiveness(e, context) {
 		if ( isAttack ) {
 			if ( toHit <= 1 ) {
 				isHit = false
-				result = "-"
+				result = isDefenseKnown ? "miss" : "-"
 				chronicle.push("miss (natural 1)")
 			} else if ( toHit >= 20 ) {
 				isHit = true
-				result = "+"
+				result = isDefenseKnown ? "" : "+"
 				chronicle.push("hit (natural 20)")
 			} else if ( !isDefenseKnown ) {
 				isHit = null
@@ -595,11 +595,11 @@ function evaluateSingleEffectiveness(e, context) {
 				chronicle.push("can hit AC " + (toHit + modifierHit))
 			} else if ( toHit + modifierHit < armorClass ) {
 				isHit = false
-				result = "-" + (armorClass - modifierHit - toHit)
+				result = "miss"
 				chronicle.push("miss AC " + armorClass + " by " + (armorClass - modifierHit - toHit))
 			} else {
 				isHit = true
-				result = "+" + (toHit + modifierHit - armorClass)
+				result = ""
 				chronicle.push("hit AC " + armorClass + " by " + (toHit + modifierHit - armorClass))
 			}
 			
@@ -611,7 +611,7 @@ function evaluateSingleEffectiveness(e, context) {
 			summarize.once = useOnceToHit || 0
 			
 			for ( index = 0 ; index < useOnceToHit ; ++index ) { result += "•" }
-			result += "/"
+			if ( !isDefenseKnown ) { result += "/" }
 		} else {
 			summarize.toHit = false
 		}
@@ -707,7 +707,10 @@ function evaluateSingleEffectiveness(e, context) {
 		chronicle.push("sum " + (damageRolled + damageModifier))
 		
 		damageRolled = Math.max(0, Math.round(damageRolled + damageModifier))
-		result += damageRolled
+		
+		if ( isHit || !isDefenseKnown ) {
+			result += damageRolled
+		}
 		
 		summarize.damageDone = isDefenseKnown && isHit ? damageRolled : false
 		summarize.damage = e.damage.length > 0 ? damageRolled : false

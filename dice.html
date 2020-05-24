@@ -109,7 +109,7 @@
 				a.defense = parsed.b[0]
 				a.hitpoints = parsed.ahp || 1
 				a.hp = a.hitpoints
-				a.name = parsed.aname || "p1"
+				a.name = parsed.aname || "Duelist 1"
 				a.initiative = evaluateSingleInitiative(a.combat[0])
 				a.regenerate = a.defense.regenerate || 0
 				a.survivor = a.defense.survivor || 0
@@ -118,7 +118,7 @@
 				b.defense = parsed.a[0]
 				b.hitpoints = parsed.bhp || 1
 				b.hp = b.hitpoints
-				b.name = parsed.bname || "p2"
+				b.name = parsed.bname || "Duelist 2"
 				b.initiative = evaluateSingleInitiative(b.combat[0])
 				b.regenerate = b.defense.regenerate || 0
 				b.survivor = b.defense.survivor || 0
@@ -155,7 +155,7 @@
 						target = players[1 - index]
 						target.hp -= damage
 						message = player.name +
-							" does " + damage + " (" + result.concise.join(" ") + ")" +
+							" does " + damage + " (" + result.concise.join(", ") + ")" +
 							(healed > 0 ? " and healed " + healed : "") +
 							", " + target.name + " at " + Math.max(target.hp, 0) + " HP"
 						concise.push(message)

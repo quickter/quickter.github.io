@@ -3072,7 +3072,7 @@ var dnd = {
 			"Change. The low are lifted up, and the high and mighty are brought down. Change is the nature of things. (Chaotic)",
 			"Retribution. The rich need to be shown what life and death are like in the gutters. (Evil)",
 			"People. I help the people who help me - that’s what keeps us alive. (Neutral)",
-			"Aspiration. I'm going to prove that I'm worthy of a bette life.",
+			"Aspiration. I'm going to prove that I'm worthy of a better life.",
 		],
 		"bond":[
 			"My town or city is my home, and I’ll fight to defend it.",
