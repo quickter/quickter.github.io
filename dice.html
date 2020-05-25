@@ -371,6 +371,27 @@
 				_assignClass(_element(prefix + '-result'), 'hidden', 1)
 			}
 			
+			function handleDismissResults(event) {
+				console.log(event.target)
+				
+				var elements = document.querySelectorAll('.dismissable:not(.hidden)')
+				var index = elements ? elements.length : 0
+				var parent, ascend
+				
+				while ( index --> 0 ) {
+					parent = elements[index].parentElement
+					ascend = event.target
+					
+					while ( ascend && ascend.nodeType === 1 && ascend !== parent ) {
+						ascend = ascend.parentElement
+					}
+					
+					if ( parent !== ascend ) {
+						_assignClass(elements[index], 'hidden', 1)
+					}
+				}
+			}
+			
 			function replaceIndices(template, array) {
 				return template.replace(/\{([^ {}]+)\}/g, function (match, index) { return array[+index] })
 			}
@@ -532,7 +553,8 @@
 					"<input type='text' id='tracking-combat-rolls-{index}-script' value='' placeholder='+5/d8+3' class='tracking-combat-rolls-script' onchange='saveCombat()' />" +
 					"<input type='button' id='tracking-combat-rolls-{index}-action' value='>' class='action' onclick='handleAttackRoll(\"tracking-combat-rolls-{index}\")' />" +
 					"<label for='tracking-combat-rolls-{index}-action' class='combat action evaluate'>=</label>" +
-					"<div id='tracking-combat-rolls-{index}-result' class='combat-result hidden' onclick='handleAttackClose(\"tracking-combat-rolls-{index}\")'>" +
+					"<div id='tracking-combat-rolls-{index}-result' class='combat-result hidden dismissable'>" +
+						"<span class='combat-close' onclick='handleAttackClose(\"tracking-combat-rolls-{index}\")'></span>" +
 						"<span id='tracking-combat-rolls-{index}-damage' class='combat-damage'></span>" +
 						"<div id='tracking-combat-rolls-{index}-detail' class='combat-detail'></div>" +
 					"</div>" +
@@ -679,6 +701,8 @@
 				populateCombatRolls()
 				prepareStorageToSaveCombat(parseParameters())
 				populateCombatInstructions()
+				
+				window.addEventListener('click', handleDismissResults)
 			}
 		</script>
 		
@@ -715,6 +739,8 @@
 			div.combat-detail > ol { display:inline-block; text-align:left; margin:0; padding-right:2em; }
 			span.combat-damage:empty { display:none; }
 			span.combat-damage { display:inline-block; line-height:1.5; width:3em; height:1.75em; text-align:center; padding-top:0.25em; margin:0 1em; font-size:200%; font-weight:bold; color:#666; border-radius:50%; border:1px solid #CCC; }
+			span.combat-close { position:absolute; display:block; font-size:125%; right:-0.5em; top:-0.5em; width:2em; height:2em; text-align:center; background:#999; color:#FFF; border-radius:50%; border:2px solid #999; }
+			span.combat-close::before { content:"×"; }
 			
 			#combat-duel { text-align:center; margin-bottom:2em; }
 			#combat-duel > input[type="text"] { font-size:125%; margin:0.25em; min-width:80%; }
