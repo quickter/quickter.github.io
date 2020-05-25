@@ -143,9 +143,17 @@
 				
 				var attuneAbbreviation = ["◦", "⚪︎", "•", "⚫︎"]
 				var attuneName = ["Minor", "Major", "Minor, Attune", "Major, Attune"]
-				render.attunekey = (attunement ? 2 : 0) + (isMajor ? 1 : 0)
-				render.attune = attuneAbbreviation[render.attunekey]
-				render.attunename = attuneName[render.attunekey]
+				
+				if ( render.raritykey > 10 ) {
+					render.attunekey = (attunement ? 2 : 0) + (isMajor ? 1 : 0)
+					render.attune = attuneAbbreviation[render.attunekey]
+					render.attunename = attuneName[render.attunekey]
+					render.attunekey += 4
+				} else {
+					render.attunekey = 0
+					render.attune = ""
+					render.attunename = ""
+				}
 				
 				render.weight = master.weight || ''
 				render.cost = master.value || ''
@@ -190,8 +198,99 @@
 				if ( master.curse ) { styles.push('is-cursed') }
 				if ( master.sentient ) { styles.push('is-sentient') }
 				
-				render.caption = (category && category.caption || render.typename) + ", " + render.rarityname + attunement + " " + (render.tier || "")
-				render.description = libraryResolveReferences(libraryResolveEntries(entries, "<p>", "</p>"), master)
+				var description = []
+				var property, properties = []
+				
+				if ( master.value > 0 ) {
+					if ( master.value < 10 ) {
+						description.push(Math.ceil(master.value) + " cp")
+					} else if ( master.value < 100 ) {
+						description.push(Math.ceil(master.value / 10) + " sp")
+					} else {
+						description.push(Math.ceil(master.value / 100) + " gp")
+					}
+				}
+				
+				if ( master.armor ) {
+					styles.push("is-armor")
+					filter.armorclass = master.ac
+					
+					value = "Armor Class " + master.ac
+					
+					switch ( master.type ) {
+					case 'HA': category = "Heavy " + category; break
+					case 'MA': category = "Medium " + category; value += " + Dexterity Modifier (max 2)"; break
+					case 'LA': category = "Light " + category; value += " + Dexterity Modifier"; break
+					}
+					
+					description.push(value)
+					
+					if ( master.strength > 0 ) { description.push("Strength " + master.strength) }
+					if ( master.stealth ) { description.push("Stealth Disadvantage") }
+				}
+				
+				if ( master.dmg1 ) {
+					value = lookup.damagetypes[master.dmgType]
+					description.push(master.dmg1 + " " + (value ? value.name : master.dmgType).toLowerCase() + " damage")
+				}
+				
+				if ( Array.isArray(master.property) ) {
+					for ( property of master.property ) {
+						value = lookup.weaponproperties[property]
+						value = value ? libraryResolveReferences(value.name + (value.suffix || ""), master) : property
+						properties.push(properties.length > 0 ? value.toLowerCase() : value)
+					}
+				}
+				
+				if ( master.vehSpeed > 0 ) { description.push("Speed " + master.vehSpeed + " mph") }
+				if ( master.crew > 0 ) { description.push("Crew " + master.crew) }
+				if ( master.capPassenger > 0 ) { description.push("Passengers " + master.capPassenger) }
+				if ( master.capCargo > 0 ) { description.push("Cargo " + master.capCargo + " tons") }
+				if ( master.vehAc > 0 ) { description.push("AC " + master.vehAc) }
+				if ( master.vehHp > 0 ) { description.push("HP " + master.vehHp) }
+				if ( master.vehDmgThresh > 0 ) { description.push("Damage Threshold " + master.vehDmgThresh) }
+				if ( master.speed > 0 ) { description.push("Speed " + master.speed + " ft.") }
+				if ( master.carryingCapacity > 0 ) { description.push("Carrying Capacity " + master.carryingCapacity + " lb.") }
+				
+				if ( master.type === 'MNT' && master.source === 'PHB' ) {
+					value = master.name
+					if ( value === 'Donkey' ) { value = 'Mule' }
+					description.push(libraryResolveReferences("{@creature " + value + "}"))
+				}
+				
+				if ( master.weight > 0 ) {
+					value = +master.weight
+					
+					if ( value < 1 ) {
+						if ( value !== 0.5 && value !== 0.25 && Math.floor(value * 16) === value * 16 ) {
+							value = Math.ceil(value * 16) + " oz."
+						} else {
+							value = "1/" + Math.round(1 / value) + " lb."
+						}
+					} else {
+						value = value + " lb."
+					}
+					
+					render.weight = value
+					description.push(value)
+				}
+				
+				if ( properties.length > 0 ) {
+					description.push.apply(description, properties)
+				}
+				
+				if ( description.length > 0 ) {
+					description = "<p class='entries equipment'>" + description.join(", ") + "</p>"
+				} else {
+					description = ""
+				}
+				
+				category = category && category.name || render.typename
+				if ( master.weaponCategory ) { category = master.weaponCategory + " " + category }
+				if ( master.age ) { category = master.age + " " + category }
+				
+				render.caption = category + ", " + render.rarityname + attunement + " " + (render.tier || "")
+				render.description = libraryResolveReferences(libraryResolveEntries(entries, "<p>", "</p>"), master) + description
 				render.sourcename = render.sourcename.replace(/'/g, "’")
 				
 				render.styles = styles.join(" ")
@@ -203,14 +302,14 @@
 			function parseTreasureItems(trove) {
 				var result = []
 				var lookup = new Object()
-				var lookupKeys = ['rarities', 'categories', 'sources', 'supplements']
-				var excludeTypes = ['$', 'AIR', 'AT', 'EXP', 'G', 'GS', 'MNT', 'OTH', 'SHP', 'T', 'TAH', 'TG', 'VEH']
-				var excludeRarity = ['none', 'unknown', 'unknown (magic)']
-				var excludeSource = ['AI', 'DC', 'HftT', 'IMR', 'LLK', 'RMBRE', 'SDW', 'VGM']
+				var lookupKeys = ['rarities', 'categories', 'sources', 'supplements', 'damagetypes', 'weaponproperties']
+				var excludeTypes = ['OTH']
+				var excludeRarity = ['unknown', 'unknown (magic)']
+				var excludeSource = ['AI', 'CoS', 'DC', 'EET', 'HftT', 'IMR', 'LLK', 'PSX', 'RMBRE', 'SDW', 'VGM']
 				var item, masterItem
 				var styles, text
-				var key
-				var masterList = trove.item.concat(trove.variant)
+				var key, unique = new Object()
+				var masterList = trove.item.concat(trove.baseitem, trove.variant)
 				
 				for ( key of lookupKeys ) {
 					lookup[key] = new Object()
@@ -235,6 +334,8 @@
 					if ( excludeSource.indexOf((masterItem.inherits || masterItem).source) >= 0 ) { continue }
 					
 					item = parseTroveItem(masterItem, lookup)
+					if ( unique[item.key] ) { continue }
+					unique[item.key] = true
 					
 					text = [
 						item.name, item.caption, item.description, item.sourcename, "pg " + item.page
@@ -342,7 +443,7 @@
 					{'key':'major', 'property':'isMajor', 'isHidden':true, 'isBoolean':true},
 					{'key':'source', 'aliases':['src'], 'property':'sources', 'transform':libraryKey},
 					{'key':'page', 'aliases':['pg'], 'isNumber':true, 'extents':['…']},
-					{'key':'cost', 'aliases':['gp'], 'isNumber':true, 'transform':transformToCost, 'extents':[50]},
+					{'key':'cost', 'aliases':['gp'], 'isNumber':true, 'transform':transformToCost, 'extents':['…']},
 					{'key':'weight', 'isNumber':true},
 				]
 				
