@@ -897,7 +897,7 @@ function libraryStripDiacriticals(string) {
 }
 
 function libraryKey(name) {
-	return libraryStripDiacriticals(name.toLowerCase()).replace(/(['‘’(){}×.,:"“”]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
+	return libraryStripDiacriticals(name.toLowerCase()).replace(/(['‘’(){}×.,:;!"“”]+|[-+ \t]+|\ba\s|\bof\s|\bthe\s)/g, '')
 }
 
 function libraryResolveReferences(text, object) {
@@ -977,21 +977,6 @@ function libraryResolveEntries(entries, begin, close, depth) {
 		result = begin + entries + close
 	} else if ( typeof entries === 'number' ) {
 		result = begin + entries + close
-	} else if ( entries.type === 'table' && Array.isArray(entries.rows) ) {
-		result = "<table class='entries" + depthClass + "'>"
-		
-		if ( entries.caption ) {
-			result += "<caption>" + entries.caption + "</caption>"
-		}
-		
-		if ( entries.colLabels && Array.isArray(entries.colLabels) && entries.colLabels.length > 0 ) {
-			var isDice = /^\s*\d*[dD]\d+\s*$/
-			
-			result += "<tr>" + entries.colLabels.map(function (h) { return "<th>" + (isDice.test(h) ? "{@dice " + h + "}" : h) + "</th>" }).join("") + "</tr>"
-		}
-		
-		result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + libraryResolveEntries(c, "", "", depth + 1) + "</td>" }).join("") + "</tr>" }).join("")
-		result += "</table>"
 	} else if ( entries.type === 'cell' && entries.roll ) {
 		var roll = entries.roll
 		
@@ -1020,6 +1005,30 @@ function libraryResolveEntries(entries, begin, close, depth) {
 	} else if ( entries.type === 'inset' && entries.entries ) {
 		result = "<dl class='entries" + depthClass + "'><dt>" + entries.name + "</dt>" +
 			libraryResolveEntries(entries.entries, "<dd>", "</dd>", depth + 1) + "</dl>"
+	} else if ( entries.type === 'abilityDc' && entries.attributes ) {
+		var index, array = entries.attributes
+		
+		if ( window.lookup && lookup.abilities ) {
+			index = array.length
+			
+			while ( index --> 0 ) {
+				if ( lookup.abilities[array[index]] ) { array[index] = lookup.abilities[array[index]].name }
+			}
+		}
+		
+		result = "<div class='entries center ability difficulty-class'><span class='entries bold'>" + entries.name + " save DC</span><span> = 8 + your proficiency bonus + your " + array.join(", ") + " modifier</span></div>"
+	} else if ( entries.type === 'abilityAttackMod' && entries.attributes ) {
+		var index, array = entries.attributes
+		
+		if ( window.lookup && lookup.abilities ) {
+			index = array.length
+			
+			while ( index --> 0 ) {
+				if ( lookup.abilities[array[index]] ) { array[index] = lookup.abilities[array[index]].name }
+			}
+		}
+		
+		result = "<div class='entries center ability attack-modifier'><span class='entries bold'>" + entries.name + " altack modifier</span><span> = your proficiency bonus + your " + array.join(", ") + " modifier</span></div>"
 	} else if ( entries.name && entries.entries ) {
 		var spacer = "<br /><span class='indent entries" + depthClass + "'></span>"
 		
@@ -1029,6 +1038,21 @@ function libraryResolveEntries(entries, begin, close, depth) {
 		result = result.replace(spacer + close, close)
 	} else if ( entries.entries ) {
 		result = libraryResolveEntries(entries.entries, begin, close, depth + 1)
+	} else if ( entries.type === 'table' || Array.isArray(entries.rows) ) {
+		result = "<table class='entries" + depthClass + "'>"
+		
+		if ( entries.caption ) {
+			result += "<caption>" + entries.caption + "</caption>"
+		}
+		
+		if ( entries.colLabels && Array.isArray(entries.colLabels) && entries.colLabels.length > 0 ) {
+			var isDice = /^\s*\d*[dD]\d+\s*$/
+			
+			result += "<tr>" + entries.colLabels.map(function (h) { return "<th>" + (isDice.test(h) ? "{@dice " + h + "}" : h) + "</th>" }).join("") + "</tr>"
+		}
+		
+		result += entries.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + libraryResolveEntries(c, "", "", depth + 1) + "</td>" }).join("") + "</tr>" }).join("")
+		result += "</table>"
 	} else {
 		result = begin + entries.type + close
 	}
@@ -1235,6 +1259,7 @@ function libraryRenderTriviaFilters(filters, spanClasses, accumulateStyles) {
 	
 	return libraryRenderTemplateItemArray(templateContent, filters).join(separator)
 }
+
 function libraryRenderFilterOptionsFromExtents(filters, itemExtents) {
 	var filter, key, name, value, entry, label, end
 	var extents = new Object()

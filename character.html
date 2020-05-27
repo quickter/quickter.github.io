@@ -1,0 +1,3315 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Character</title>
+		<meta name="author" content="Cole">
+		<meta name="keywords" content="dnd,5e,dungeons,dragons,character,sheet">
+		<meta name="description" content="Character Sheet">
+		<link rel="stylesheet" href="css/common.css">
+		<script src="data/character.js"></script>
+		<script src="src/library.js"></script>
+		<script src="src/parseattack.js"></script>
+		
+		<script type="text/javascript">
+			'not strict';
+			
+			////////// Character
+			function Character(character) {
+				if ( character ) {
+					this.inflate(character)
+				}
+			}
+			
+			Character.prototype.inflate = function Character_inflate(character) {
+				var empty = new Object()
+				var key, entry, levels = 0
+				var background = false, size = false
+				var sources = []
+				
+				this.race = empty
+				this.subrace = empty
+				this.classes = []
+				this.options = new Object()
+				
+				if ( character.background ) {
+					background = lookup.backgrounds[character.background]
+					
+					if ( background ) {
+						sources.push(background)
+					}
+				}
+				
+				if ( character.race ) {
+					var subrace = lookup.subraces[character.race]
+					var race = subrace && lookup.races[subrace.race]
+					
+					if ( race ) {
+						this.race = race
+						this.subrace = subrace
+						sources.push(subrace.features ? subrace : race)
+						
+						size = subrace.size || race.size
+					} else if ( subrace ) {
+						this.race = subrace
+						sources.push(subrace)
+						
+						size = subrace.size
+					}
+				}
+				
+				if ( character.classes ) {
+					var crass, archetype, level
+					
+					for ( entry of character.classes ) {
+						level = +entry.level
+						crass = lookup.classes[entry.key]
+						archetype = lookup.archetypes[entry.archetype]
+						
+						if ( entry.key && !entry.archetype && !crass ) {
+							archetype = lookup.archetypes[entry.key]
+							crass = archetype && lookup.classes[archetype.crass]
+						}
+						
+						if ( crass || archetype ) {
+							levels += level
+							
+							this.classes.push({'crass':crass || empty, 'archetype':archetype || empty, 'level':level})
+						}
+						
+						if ( crass ) { sources.push(crass) }
+						if ( archetype ) { sources.push(archetype) }
+					}
+				}
+				
+				if ( character.options ) {
+					for ( key of character.options ) {
+						if ( character[key] ) {
+							this.options[key] = character[key]
+						}
+					}
+				}
+				
+				this.size = lookup.sizes[size] || empty
+				this.level = levels
+				this.proficiencyBonus = levels > 0 ? ((levels - 1) >> 2) + 2 : 0
+				this.sex = lookup.sexes[character.sex] || empty
+				this.alignment = lookup.alignments[character.alignment] || empty
+				this.background = background || empty
+				this.abilities = this.abilitiesFromRolls(character.rolls, character.ordered)
+				this.primarySources = sources
+				
+				this.character = new Object()
+				this.character.rolls = character.rolls || []
+				this.character.increases = character.increases || []
+				this.character.ordered = character.ordered || false
+				this.character.traits = character.traits || []
+				this.character.ideal = character.ideal | 0
+				this.character.bond = character.bond | 0
+				this.character.flaw = character.flaw | 0
+				this.character.height = character.height | 0
+				this.character.weight = character.weight | 0
+				this.character.age = character.age | 0
+				this.character.experience = character.experience | 0
+				this.character.name = character.name || ''
+				this.character.notes = character.notes || ''
+				this.character.coins = character.coins || empty
+				this.character.languages = character.languages || []
+				this.character.proficiencies = character.proficiencies || []
+				this.character.spellsPrepared = character.spells || []
+				this.character.spellsKnown = character.known || []
+				this.character.itemsInUse = character.wearing || []
+				this.character.itemsCarried = character.inventory || []
+			}
+			
+			Character.prototype.abilitiesFromRolls = function Character_abilitiesFromRolls(rolls, ordered) {
+				var list = reference.abilities
+				var abilities = new Object()
+				var importance = false
+				var entry, index
+				
+				for ( entry of this.classes ) {
+					importance = entry.archetype.importance || entry.crass.importance || false
+					
+					if ( importance ) break
+				}
+				
+				if ( importance && !ordered && importance.length === list.length ) {
+					for ( index = 0 ; index < importance.length ; ++index ) {
+						abilities[importance[index]] = rolls[index] || 0
+					}
+				} else {
+					for ( index = 0 ; index < list.length ; ++index ) {
+						abilities[list[index].key] = rolls[index] || 0
+					}
+				}
+				
+				return abilities
+			}
+			
+			Character.prototype.compute = function Character_compute() {
+				this.computeFeatures()
+				this.computeAbilities()
+				this.computeSkills()
+				this.computeProficiencies()
+				
+				return this
+			}
+			
+			Character.prototype.computeFeatures = function Character_computeFeatures() {
+				var source, sources = []
+				var feature, features = []
+				var entry, activeFeatures = []
+				var displayFeatures = []
+				var level, option, hash
+				
+				level = this.level
+				
+				if ( this.background.key ) {
+					sources.push([this.background, level])
+				}
+				
+				if ( this.subrace.key ) {
+					sources.push([this.subrace, level])
+				} else if ( this.race.key ) {
+					sources.push([this.race, level])
+				}
+				
+				for ( entry of this.classes ) {
+					level = +entry.level
+					
+					if ( entry.crass.key ) {
+						sources.push([entry.crass, level])
+					}
+					if ( entry.archetype.key ) {
+						sources.push([entry.archetype, level])
+					}
+				}
+				
+				for ( entry of sources ) {
+					source = entry[0]
+					level = entry[1]
+					
+					if ( !source.features ) { continue }
+					
+					for ( feature of source.features ) {
+						features.push(feature)
+						
+						displayFeatures.push({
+							'key':feature.key,
+							'name':feature.name,
+							'level':feature.level || '',
+							'origin':feature.origin,
+							'type':'none', // TODO: action, reaction, bonus action, ...
+							'summary':'', // TODO: summary
+							'entries':feature.entries
+						})
+						
+						if ( +feature.level <= level ) {
+							sources.push([feature, level])
+							activeFeatures.push(feature)
+						}
+						
+						if ( !feature.options || !reference[feature.options.key] ) {
+							continue
+						}
+						
+						option = false
+						hash = this.options[feature.options.hash]
+						if ( hash ) {
+							for ( item of reference[feature.options.key] ) {
+								if ( item.key === hash ) {
+									option = item
+									break
+								}
+							}
+						} else {
+							option = reference[feature.options.key][0]
+							
+							if ( option && option.key ) {
+								this.options[feature.option.hash] = option.key
+							}
+						}
+						
+						if ( option ) {
+							if ( option.entries ) {
+								displayFeatures[displayFeatures.length - 1].entries = option.entries
+							}
+							
+							if ( +feature.level <= level ) {
+								sources.push([option, level])
+								activeFeatures.push(option)
+							}
+						}
+					}
+				}
+				
+				displayFeatures.sort(function (a, b) { return a.level - b.level || a.origin - b.origin || a.name.localeCompare(b.name)})
+				
+				this.sources = sources
+				this.features = features
+				this.activeFeatures = activeFeatures
+				this.displayFeatures = displayFeatures
+			}
+			
+			Character.prototype.computeAbilities = function Character_computeAbilities() {
+				var list = reference.abilities
+				var abilities = this.abilities
+				var increases = this.character.increases
+				var styles, abilityItems = []
+				var index, entry, roll, score, ability, modifier, amount, save, saveBonus
+				var isProficient, isIncreasable
+				var increased = 0, any = 0
+				
+				var abilityScore = new Object()
+				var abilityModifier = new Object()
+				var source, sources = this.sources
+				var choices = []
+				var proficient = new Object()
+				var spellcastingAbility = new Object()
+				var modifyAbility = new Object()
+				var specificAbility = new Object()
+				var minimumAbility = new Object()
+				var maximumAbility = 20
+				var choiceRow, choiceMatrix = []
+				
+				for ( source of sources ) {
+					source = source[0]
+					
+					if ( Array.isArray(source.proficiency) ) {
+						for ( entry of source.proficiency ) {
+							proficient[entry] = true
+						}
+					}
+					
+					if ( source.minimumAbility ) {
+						for ( entry of list ) {
+							minimumAbility[entry.key] = Math.max(minimumAbility[entry.key] | 0, +source.minimumAbility[entry.key] | 0)
+						}
+					}
+					
+					if ( source.abilities ) {
+						for ( entry of list ) {
+							modifyAbility[entry.key] = (modifyAbility[entry.key] | 0) + (source.abilities[entry.key] | 0)
+						}
+						
+						if ( source.abilities.choose ) {
+							choices.push(source.abilities.choose)
+						}
+					}
+					
+					if ( source.spellcastingAbility ) {
+						spellcastingAbility[source.spellcastingAbility] = true
+					}
+				}
+				
+				for ( index = 0 ; index < list.length ; ++index ) {
+					entry = increases[index] | 0
+					increased += entry
+				}
+				
+				for ( entry of choices ) {
+					count = +entry.count || 0
+					
+					if ( entry.from && entry.from.length > 0 ) {
+						choiceRow = []
+						
+						for ( ability of list ) {
+							choiceRow.push(entry.from.indexOf(ability.key) < 0 ? 0 : -1)
+						}
+						
+						choiceRow.push(count || 1)
+						choiceMatrix.push(choiceRow)
+					} else {
+						any += count
+					}
+				}
+				
+				if ( choiceMatrix.length > 0 ) {
+					choiceMatrix.push(increases)
+					choiceRow = evaluateAvailableChoices(choiceMatrix)
+				} else {
+					choiceRow = []
+				}
+				
+				for ( index = 0 ; index < list.length ; ++index ) {
+					entry = list[index]
+					roll = +abilities[entry.key]
+					ability = roll + (+increases[index] || 0) + (+modifyAbility[entry.key] || 0)
+					score = Math.max(ability, minimumAbility[entry.key] | 0)
+					modifier = (score >> 1) - 5
+					isProficient = proficient[entry.key] || false
+					saveBonus = 0 // TODO: from features
+					save = modifier + saveBonus + (isProficient ? this.proficiencyBonus : 0)
+					styles = []
+					isIncreasable = 0
+					
+					if ( score < maximumAbility ) {
+						if ( choiceRow[index] ) { isIncreasable = 2 }
+						else if ( any > increased ) { isIncreasable = 1 }
+					}
+					
+					if ( isProficient ) { styles.push('proficient') }
+					if ( isIncreasable > 0 ) { styles.push('increasable') }
+					if ( isIncreasable > 1 ) { styles.push('limited') }
+					if ( ability < score ) { styles.push('provisional') }
+					if ( spellcastingAbility[entry.key] ) { styles.push('spellcasting') }
+					
+					abilityScore[entry.key] = score
+					abilityModifier[entry.key] = modifier
+					
+					abilityItems.push({
+						'key':entry.key,
+						'name':entry.name,
+						'index':index,
+						'roll':roll,
+						'ability':ability,
+						'score':score,
+						'modifier':(modifier < 0 ? "" : "+") + modifier,
+						'proficient':isProficient ? 1 : 0,
+						'increasable':isIncreasable ? 1 : 0,
+						'save':(save < 0 ? "" : "+") + save,
+						'styles':styles.join(' ')
+					})
+				}
+				
+				this.abilityProficient = proficient
+				this.abilityScore = abilityScore
+				this.abilityModifier = abilityModifier
+				this.abilityItems = abilityItems
+			}
+			
+			Character.prototype.computeSkills = function Character_computeSkills() {
+				var items = []
+				var list = reference.skills
+				var index, count, skill, key
+				var bonus = this.proficiencyBonus
+				
+				var source, sources = this.sources
+				var proficiency, proficiencies
+				var entry, value
+				var proficiencyMultiplier = new Object()
+				var proficiencyChoiceMask = new Object()
+				var multiplier, modifier
+				var singleAny = 0, singleRow, singleStyle, singleMatrix = [], singleChoices = []
+				var doubleAny = 0, doubleRow, doubleStyle, doubleMatrix = [], doubleChoices = []
+				var mutable
+				var abilityKey, abilityNames = new Object()
+				
+				for ( entry of reference.abilities ) {
+					abilityNames[entry.key] = entry.name
+				}
+				
+				for ( entry of this.character.proficiencies ) {
+					index = entry.indexOf('^')
+					
+					if ( index < 0 ) {
+						value = 1
+					} else {
+						value = +entry.slice(index + 1) || 1
+						entry = entry.slice(0, index)
+					}
+					
+					proficiencyChoiceMask[entry] = value
+				}
+				
+				for ( source of sources ) {
+					source = source[0]
+					proficiencies = []
+					
+					if ( Array.isArray(source.skillProficiencies) ) {
+						proficiencies.push.apply(proficiencies, source.skillProficiencies)
+					}
+					
+					if ( source.startingProficiencies && Array.isArray(source.startingProficiencies.skills) ) {
+						proficiencies.push.apply(proficiencies, source.startingProficiencies.skills)
+					}
+					
+					for ( entry of proficiencies ) {
+						if ( entry.choose ) { singleChoices.push(entry.choose) }
+						if ( entry.chooseDouble ) { doubleChoices.push(entry.chooseDouble) }
+						
+						for ( skill of list ) {
+							value = +entry[skill.name.toLowerCase()] || +entry.all || 0
+							if ( value && entry.half ) { value = 0.5 }
+							
+							if ( (proficiencyMultiplier[skill.key] | 0) < value ) {
+								proficiencyMultiplier[skill.key] = value
+							}
+						}
+					}
+				}
+				
+				for ( entry of singleChoices ) {
+					count = +entry.count || 0
+					
+					if ( entry.from && entry.from.length > 0 ) {
+						singleRow = []
+						
+						for ( skill of list ) {
+							singleRow.push(entry.from.indexOf(skill.name.toLowerCase()) < 0 ? 0 : -1)
+						}
+						
+						singleRow.push(count || 1)
+						singleMatrix.push(singleRow)
+					} else {
+						singleAny += count
+					}
+				}
+				
+				for ( entry of doubleChoices ) {
+					count = +entry.count || 0
+					
+					if ( entry.from && entry.from.length > 0 ) {
+						doubleRow = []
+						
+						for ( skill of list ) {
+							doubleRow.push(entry.from.indexOf(skill.name.toLowerCase()) < 0 ? 0 : -1)
+						}
+						
+						doubleRow.push(count || 1)
+						doubleMatrix.push(doubleRow)
+					} else {
+						doubleAny += count
+					}
+				}
+				
+				if ( singleMatrix.length > 0 || singleAny > 0 ) {
+					if ( singleAny > 0 ) {
+						singleRow = []
+						for ( skill of list ) { singleRow.push(-1) }
+						singleRow.push(singleAny)
+						singleMatrix.push(singleRow)
+					}
+					
+					singleRow = []
+					
+					for ( skill of list ) {
+						value = (proficiencyChoiceMask[skill.key] & 1) && (proficiencyMultiplier[skill.key] | 0) < 1 ? 1 : 0
+						singleRow.push(value)
+					}
+					
+					singleMatrix.push(singleRow)
+					singleRow = evaluateAvailableChoices(singleMatrix, 1)
+				} else {
+					singleRow = []
+				}
+				
+				if ( doubleMatrix.length > 0 || doubleAny > 0 ) {
+					if ( doubleAny > 0 ) {
+						doubleRow = []
+						for ( skill of list ) { doubleRow.push(-1) }
+						doubleRow.push(doubleAny)
+						doubleMatrix.push(doubleRow)
+					}
+					
+					doubleRow = []
+					
+					for ( skill of list ) {
+						value = (proficiencyChoiceMask[skill.key] & 2) && (proficiencyMultiplier[skill.key] | 0) < 2 ? 1 : 0
+						doubleRow.push(value)
+					}
+					
+					doubleMatrix.push(doubleRow)
+					doubleRow = evaluateAvailableChoices(doubleMatrix, 1)
+				} else {
+					doubleRow = []
+				}
+				
+				for ( index = 0 ; index < list.length ; ++index ) {
+					skill = list[index]
+					key = skill.ability.slice(0, 3)
+					modifier = this.abilityModifier[key] | 0
+					multiplier = proficiencyMultiplier[skill.key] || 0
+					mutable = 0
+					abilityKey = skill.ability.slice(0, 3)
+					
+					entry = proficiencyChoiceMask[skill.key] | 0
+					if ( (entry & 2) && ((entry & 1) || !(multiplier < 1)) ) {
+						mutable = (entry & 1) ? 3 : 2
+						if ( multiplier < 2 ) { multiplier = 2 }
+					} else if ( entry & 1 ) {
+						mutable = doubleRow[index] ? 3 : 1
+						if ( multiplier < 1 ) { multiplier = 1 }
+					} else {
+						if ( singleRow[index] && multiplier < 1 ) { mutable |= 1 }
+						if ( doubleRow[index] && multiplier < 2 && !(multiplier < 1) ) { mutable |= 2 }
+					}
+					
+					modifier += Math.floor(multiplier * bonus)
+					
+					if ( multiplier < 1 ) {
+						singleStyle = multiplier > 0 ? 'half' : 'none'
+						doubleStyle = 'hide'
+					} else if ( multiplier < 2 ) {
+						singleStyle = 'full'
+						doubleStyle = doubleRow[index] ? 'none' : 'hide'
+					} else {
+						singleStyle = 'full'
+						doubleStyle = 'full'
+					}
+					
+					singleStyle = 'skill-single skill-' + singleStyle
+					doubleStyle = 'skill-double skill-' + doubleStyle
+					singleStyle += (mutable & 1) ? ' skill-mutable' : ' skill-immutable'
+					doubleStyle += (mutable & 2) ? ' skill-mutable' : ' skill-immutable'
+					
+					items.push({
+						'key':skill.key,
+						'name':skill.name,
+						'ability':abilityKey,
+						'abilityname':abilityNames[abilityKey],
+						'singlestyle':singleStyle,
+						'doublestyle':doubleStyle,
+						'mutable':mutable,
+						'modifier':(modifier < 0 ? "" : "+") + modifier
+					})
+				}
+				
+				this.skillItems = items
+			}
+			
+			Character.prototype.computeProficiencies = function Character_computeProficiencies() {
+				var source, sources = this.sources
+				var referenceProficiencies = reference.proficiencies
+				var referenceLanguages = reference.languages, gatherLanguages = [], languages = [], chooseLanguages = []
+				var referenceTools = reference.tools, gatherTools = [], tools = [], chooseTools = []
+				var gatherArmors = [], armors = []
+				var gatherWeapons = [], weapons = []
+				var key, item, entry, value, name, aliases, index, count, array
+				var anyStandard = 0
+				
+				for ( source of sources ) {
+					source = source[0]
+					
+					value = source.languageProficiencies
+					if ( Array.isArray(value) && value.length === 1 ) {
+						gatherLanguages.push.apply(gatherLanguages, value)
+					} else if ( value ) {
+						//	Clan Crafter
+						console.log(source)
+					}
+					
+					value = source.toolProficiencies
+					if ( Array.isArray(value) && value.length === 1 ) {
+						gatherTools.push.apply(gatherTools, value)
+					} else if ( value ) {
+						console.log(source)
+					}
+					
+					if ( source.startingProficiencies ) {
+						if ( Array.isArray(source.startingProficiencies.languages) ) {
+							gatherLanguages.push.apply(gatherLanguages, source.startingProficiencies.languages)
+						}
+						
+						if ( Array.isArray(source.startingProficiencies.tools) ) {
+							gatherTools.push.apply(gatherTools, source.startingProficiencies.tools)
+						}
+						
+						if ( Array.isArray(source.startingProficiencies.armor) ) {
+							gatherArmors.push.apply(gatherArmors, source.startingProficiencies.armor)
+						}
+						
+						if ( Array.isArray(source.startingProficiencies.weapons) ) {
+							gatherWeapons.push.apply(gatherWeapons, source.startingProficiencies.weapons)
+						}
+					}
+				}
+				
+				for ( entry of gatherLanguages ) {
+					if ( entry.anyStandard ) {
+						anyStandard += entry.anyStandard | 0
+					}
+					
+					if ( entry.other ) {
+						//	TODO: Other - Centaur, Minotaur, Loxodon, Kalashtar, Vedalken
+						console.log(entry)
+					}
+					
+					if ( entry.choose ) {
+						chooseLanguages.push(entry.choose)
+					}
+					
+					for ( item of referenceLanguages ) {
+						if ( entry[item.name.toLowerCase()] ) {
+							key = libraryKey(item.name)
+							
+							if ( languages.indexOf(key) < 0 ) {
+								languages.push(key)
+							}
+						}
+					}
+				}
+				
+				for ( entry of gatherTools ) {
+					if ( typeof entry === 'string' ) {
+						value = entry
+					} else if ( entry.choose ) {
+						chooseTools.push(entry.choose)
+						continue
+					} else if ( entry.proficiency ) {
+						value = entry.proficiency
+					} else {
+						for ( item of referenceTools ) {
+							key = item.key || libraryKey(item.name)
+							
+							if ( !item.isGroup && !(tools.indexOf(key) < 0) ) {
+								continue
+							}
+							
+							if ( entry[item.name.toLowerCase()] ) {
+								tools.push(key)
+							} else if ( item.aliases ) {
+								for ( name of item.aliases ) {
+									if ( entry[name.toLowerCase()] ) {
+										tools.push(key)
+										break
+									}
+								}
+							}
+						}
+						
+						continue
+					}
+					
+					if ( value.indexOf('of your choice') > 0 ) {
+						array = []
+						count = value.indexOf('four') < 0 ? value.indexOf('three') < 0 ? value.indexOf('two') < 0 ? 1 : 2 : 3 : 4
+						
+						for ( item of referenceTools ) {
+							if ( item.isGroup && value.indexOf(item.name.toLowerCase()) > 0 ) {
+								array.push(item.key)
+							}
+						}
+						
+						if ( array.length > 1 ) {
+							chooseTools.push({'from':array, 'count':count})
+						} else if ( array.length == 1 ) {
+							while ( count --> 0 ) {
+								tools.push(array[0])
+							}
+						}
+						
+						if ( array.length > 0 ) {
+							continue
+						}
+					}
+					
+					value = value.toLowerCase()
+					for ( item of referenceTools ) {
+						if ( value === item.key || value === item.name.toLowerCase() ) {
+							tools.push(item.key)
+							value = false
+							break
+						}
+					}
+				}
+				
+				for ( entry of gatherArmors ) {
+					if ( typeof entry === 'string' ) {
+						value = entry
+					} else if ( entry.proficiency ) {
+						value = entry.proficiency
+					} else {
+						continue
+					}
+					
+					if ( armors.indexOf(value) < 0 ) {
+						armors.push(value)
+					}
+				}
+				
+				for ( entry of gatherWeapons ) {
+					if ( typeof entry === 'string' ) {
+						value = entry
+					} else if ( entry.proficiency ) {
+						value = entry.proficiency
+					} else {
+						continue
+					}
+					
+					for ( item of referenceProficiencies ) {
+						if ( item.weapons ) {
+							if ( value === item.key ) {
+								if ( weapons.indexOf(value) < 0 ) {
+									index = weapons.length
+									weapons.push(value)
+									value = false
+									
+									while ( index --> 0 ) {
+										if ( item.weapons.indexOf(weapons[index]) >= 0 ) {
+											weapons.splice(index, 1)
+										}
+									}
+								}
+							} else {
+								index = item.weapons.length
+								value = value.replace(/ /g, '')
+								
+								while ( index --> 0 ) {
+									if ( value.indexOf(item.weapons[index]) === 0 ) {
+										weapons.push(item.weapons[index])
+										value = false
+										break
+									}
+								}
+							}
+						}
+						
+						if ( !value ) {
+							break
+						}
+					}
+					
+					if ( value && weapons.indexOf(value) < 0 ) {
+						console.log(value)
+						weapons.push(value)
+					}
+				}
+				
+				//	TODO: chooseLanguages
+				//	TODO: chooseTools
+				
+				this.proficiency = new Object()
+				this.proficiency.languages = languages
+				this.proficiency.tools = tools
+				this.proficiency.armors = armors
+				this.proficiency.weapons = weapons
+				
+				array = []
+				for ( entry of reference.abilities ) { if ( this.abilityProficient[entry.key] ) { array.push(entry.name) } }
+				this.abilityNames = array
+				
+				array = []
+				names = new Object()
+				for ( entry of referenceLanguages ) { names[entry.key || libraryKey(entry.name)] = entry.name }
+				for ( key of languages ) { array.push(names[key] || key) }
+				if ( anyStandard > 0 ) { array.push("Choose " + anyStandard) }
+				this.languageNames = array
+				
+				array = []
+				names = new Object()
+				for ( entry of referenceTools ) { names[entry.key || libraryKey(entry.name)] = entry.name }
+				for ( key of tools ) { array.push(names[key] || key) }
+				this.toolNames = array
+				
+				array = []
+				names = new Object()
+				for ( entry of referenceProficiencies ) { names[entry.key || libraryKey(entry.name)] = entry.name }
+				for ( key of armors ) { array.push(names[key] || key) }
+				this.armorNames = array
+				
+				array = []
+				for ( key of weapons ) { array.push(names[key] || key) }
+				this.weaponNames = array
+			}
+			
+			Character.prototype.resolveEntries = function Character_resolveEntries() {
+				var entry
+				var entries = []
+				
+				var tagEnter = "<p class='entries root'>"
+				var tagLeave = "</p>"
+				
+				if ( this.race && this.race.entries ) {
+					entries.push(libraryResolveReferences(libraryResolveEntries(this.race.entries, tagEnter, tagLeave), this.race))
+				}
+				
+				if ( this.subrace && this.subrace.entries ) {
+					entries.push(libraryResolveReferences(libraryResolveEntries(this.subrace.entries, tagEnter, tagLeave), this.subrace))
+				}
+				
+				if ( this.background && this.background.entries ) {
+					entries.push(libraryResolveReferences(libraryResolveEntries(this.background.entries, tagEnter, tagLeave), this.background))
+				}
+				
+				for ( entry of this.classes ) {
+// 					if ( entry.crass && entry.crass.classTableGroups ) {
+// 						entries.push(libraryResolveReferences(libraryResolveEntries(entry.crass.classTableGroups, tagEnter, tagLeave), entry.crass))
+// 					}
+					
+					if ( entry.crass && entry.crass.classFeatures ) {
+						entries.push(libraryResolveReferences(libraryResolveEntries(entry.crass.classFeatures, tagEnter, tagLeave), entry.crass))
+					}
+					
+					if ( entry.archetype && entry.archetype.subclassFeatures ) {
+						entries.push(libraryResolveReferences(libraryResolveEntries(entry.archetype.subclassFeatures, tagEnter, tagLeave), entry.archetype))
+					}
+				}
+				
+				return entries.join("")
+			}
+			
+			Character.prototype.resolveFeatures = function Character_resolveFeatures() {
+				var sources = this.primarySources
+				var features = []
+				var entries = []
+				
+				var tagEnter = "<p class='entries root'>"
+				var tagLeave = "</p>"
+				
+				for ( entry of sources ) {
+					if ( !entry.features ) { continue }
+					
+					features.push.apply(features, entry.features)
+				}
+				
+				features.sort(function (a, b) {
+					return ((a.level || 0) - (b.level || 0)) || ((a.origin || 0) - (b.origin || 0)) || a.name.localeCompare(b.name)
+				})
+				
+				for ( entry of features ) {
+					entries.push(libraryResolveReferences(libraryResolveEntries(entry, tagEnter, tagLeave), entry))
+				}
+				
+				return entries.join("")
+			}
+			
+			////////// Utility
+			function inflateParameters(result, string, leading, separator) {
+				if ( string.charAt(0) === leading ) { string = string.slice(1) }
+				
+				var part, parts = string.split(separator)
+				var object = result || {}
+				
+				for ( part of parts ) {
+					var equals = part.indexOf("=")
+					var value = (equals < 0) ? true : decodeURIComponent(part.slice(equals + 1))
+					var key = equals < 0 ? part : part.slice(0, equals)
+					
+					object[key] = value
+				}
+				
+				return object
+			}
+			
+			function evaluateAvailableChoices(matrix, columnLimit) {
+				/*
+					matrix is an array of arrays in row major order
+					columnLimit is 1 when each column may only be chosen once
+					
+					the last element in each row is the limit of that row
+					other elements are 0 (choice prohibited) 1 (choice required) or other (choice available)
+					the last row is the number of times each column was chosen
+					the result is the number of times each column may still be chosen
+					
+					elements may not be chosen more than once
+					multiple choices in a column require multiple rows with the same choice
+				*/
+				
+				var changes, row, rows, column, columns, index, other
+				var bits, known, unknown, one, maybe, availableChoices = 0
+				var rowIsSet = [], rowIsForced = [], rowIsUnknown = []
+				var columnIsSet = [], columnIsForced = [], columnIsUnknown = []
+				var result = []
+				
+				changes = -1
+				rows = matrix.length - 1
+				columns = rows > 0 ? matrix[0].length - 1 : 0
+				if ( rows > 30 || columns > 30 ) { return [] }
+				
+				for ( column = 0 ; column < columns ; ++column ) {
+					columnIsSet[column] = 0
+					columnIsForced[column] = 0
+					columnIsUnknown[column] = 0
+					
+					availableChoices -= matrix[rows][column] | 0
+				}
+				
+				for ( row = 0 ; row < rows ; ++row ) {
+					known = 0
+					unknown = 0
+					
+					for ( column = 0 ; column < columns ; ++column ) {
+						switch ( matrix[row][column] ) {
+						case 0: break
+						case 1: columnIsSet[column] |= 1 << row; known |= 1 << column; break
+						default: columnIsUnknown[column] |= 1 << row; unknown |= 1 << column; break
+						}
+					}
+					
+					rowIsSet[row] = known
+					rowIsForced[row] = 0
+					rowIsUnknown[row] = unknown
+					
+					availableChoices += matrix[row][columns] | 0
+				}
+				
+				if ( availableChoices <= 0 ) { return [] }
+				
+				while ( changes ) {
+					changes = 0
+					
+					for ( row = 0 ; row < rows ; ++row ) {
+						unknown = rowIsUnknown[row]
+						for ( maybe = 0, bits = unknown ; bits ; ++maybe ) { bits &= bits - 1 }
+						for ( one = 0, bits = rowIsSet[row] | rowIsForced[row] ; bits ; ++one ) { bits &= bits - 1 }
+						
+						if ( maybe > 0 && one >= matrix[row][columns] ) {
+							// no more choices are available so clear unknowns
+							for ( column = 0 ; column < columns ; ++column ) {
+								if ( !(unknown & (1 << column)) ) { continue }
+								
+								columnIsUnknown[column] &= ~(1 << row)
+								changes += 1
+							}
+							
+							rowIsUnknown[row] = 0
+						}
+						
+						if ( maybe > 0 && one + maybe <= matrix[row][columns] ) {
+							// all choices in row must be chosen so set unknowns
+							for ( column = 0 ; column < columns ; ++column ) {
+								if ( !(unknown & (1 << column)) ) { continue }
+								
+								columnIsUnknown[column] &= ~(1 << row)
+								columnIsForced[column] |= 1 << row
+								rowIsForced[row] |= 1 << column
+								changes += 1
+							}
+							
+							rowIsUnknown[row] = 0
+						}
+					}
+					
+					for ( column = 0 ; column < columns ; ++column ) {
+						unknown = columnIsUnknown[column]
+						for ( maybe = 0, bits = unknown ; bits ; ++maybe ) { bits &= bits - 1 }
+						for ( one = 0, bits = columnIsSet[column] | columnIsForced[column] ; bits ; ++one ) { bits &= bits - 1 }
+						
+						if ( maybe > 0 && one + maybe <= matrix[rows][column] ) {
+							// all choices in column have been chosen so set unknowns
+							for ( row = 0 ; row < rows ; ++row ) {
+								if ( !(unknown & (1 << row)) ) { continue }
+								
+								rowIsUnknown[row] &= ~(1 << column)
+								columnIsForced[column] |= 1 << row
+								rowIsForced[row] |= 1 << column
+								changes += 1
+							}
+							
+							columnIsUnknown[column] = 0
+						}
+						
+						if ( maybe > 0 && one > 0 && columnLimit === 1 ) {
+							// no more choices are available in column so clear unknowns
+							for ( row = 0 ; row < rows ; ++row ) {
+								if ( (unknown & (1 << row)) === 0 ) { continue }
+								
+								rowIsUnknown[row] &= ~(1 << column)
+								changes += 1
+							}
+							
+							columnIsUnknown[column] = 0
+						}
+					}
+					
+					if ( columnLimit !== 1 ) { continue }
+					
+					for ( row = 0 ; row < rows ; ++row ) {
+						for ( index = 0 ; index < row ; ++index ) {
+							bits = rowIsSet[row] | rowIsForced[row] | rowIsUnknown[row] | rowIsSet[index] | rowIsForced[index] | rowIsUnknown[index]
+							for ( maybe = 0 ; bits ; ++maybe ) { bits &= bits - 1 }
+							
+							if ( maybe <= matrix[row][columns] + matrix[index][columns] ) {
+								// set of choices between columns precludes those choices in other rows
+								for ( other = 0 ; other < rows ; ++other ) {
+									if ( other === row || other === index ) { continue }
+									
+									for ( column = 0 ; column < columns ; ++column ) {
+										if ( !(rowIsUnknown[other] & (1 << column)) ) { continue }
+										
+										columnIsUnknown[column] &= ~(1 << other)
+										rowIsUnknown[other] &= ~(1 << column)
+										changes += 1
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				for ( column = 0 ; column < columns ; ++column ) {
+					for ( maybe = 0, bits = columnIsUnknown[column] ; bits ; ++maybe ) { bits &= bits - 1 }
+					for ( one = 0, bits = columnIsSet[column] | columnIsForced[column] ; bits ; ++one ) { bits &= bits - 1 }
+					
+					if ( columnLimit === 1 ) {
+						result[column] = matrix[rows][column] > 0 ? 0 : Math.min(1, maybe + one)
+					} else {
+						result[column] = maybe + Math.max(0, one - (matrix[rows][column] | 0))
+					}
+				}
+				
+				return result
+			}
+			
+			function compareName(a, b) {
+				return (a.name || '').localeCompare(b.name || '')
+			}
+			
+			function compareRoll(a, b) {
+				return +b - +a
+			}
+			
+			function sum(a, b) {
+				return a + b
+			}
+			
+			function encode(text) {
+				return btoa(text).replace(/\+/g, '-').replace(/\//g, '_')
+			}
+			
+			function decode(data) {
+				return atob(data.replace(/-/g, '+').replace(/_/g, '/'))
+			}
+			
+			////////// Serialization
+			function characterFromString(string, separator) {
+				var object = new Object()
+				var character = new Object()
+				var key, array, entry, value, level, index, count
+				
+				array = string.split(separator || '|')
+				
+				for ( value of array ) {
+					index = value.indexOf('=')
+					if ( index > 0 ) { object[value.slice(0, index)] = value.slice(index + 1) }
+				}
+				
+				if ( object.z ) { character.notes = decode(object.z) }
+				if ( object.n ) { character.name = decode(object.n) }
+				if ( object.y ) { character.alignment = object.y }
+				if ( object.x ) { character.experience = +object.x }
+				if ( object.t ) { character.languages = object.t.split('.') }
+				
+				if ( object.p ) { character.proficiencies = object.p.split('.') } // handle multipliers
+				if ( object.v ) { character.inventory = object.v.split('.') } // handle quantities
+				if ( object.u ) { character.using = object.u.split('.') }
+				
+				if ( object.s ) {
+					index = object.s.indexOf('..')
+					
+					if ( index < 0 ) {
+						character.spells = object.s.split('.')
+					} else {
+						character.spells = object.s.slice(0, index).split('.')
+						character.known = object.s.slice(index + 2).split('.')
+					}
+				}
+				
+				if ( object.b ) {
+					array = object.b.split('.')
+					character.background = array[0] || ''
+					character.traits = [array[1] || '', array[2] || '']
+					character.ideal = array[3] || ''
+					character.bond = array[4] || ''
+					character.flaw = array[5] || ''
+				}
+				
+				if ( object.r ) {
+					array = object.r.split('.')
+					character.race = array[0] || ''
+					character.sex = array[1] || ''
+				}
+				
+				if ( object.h ) {
+					array = object.h.split('.')
+					character.height = array[0] || ''
+					character.weight = array[1] || ''
+					character.age = array[2] || ''
+				}
+				
+				if ( object.g ) {
+					array = object.g.split('.')
+					character.coins = new Object()
+					character.coins.copper = array[0] || ''
+					character.coins.silver = array[1] || ''
+					character.coins.electrum = array[2] || ''
+					character.coins.gold = array[3] || ''
+					character.coins.platinum = array[4] || ''
+				}
+				
+				character.archetype = new Object()
+				if ( object.c ) {
+					value = 0
+					array = object.c ? object.c.split(/\.*(\d+)\.*/) : []
+					character.classes = []
+					
+					for ( index = 0, count = array.length ; index < count ; index += 2 ) {
+						if ( index > 0 && !array[index] ) { continue }
+						
+						level = +array[index + 1] || 1
+						value += level
+						
+						entry = array[index].split('.')
+						character.classes.push({'key':entry[0] || '', 'archetype':entry[1] || '', 'level':level})
+						
+						if ( entry[0] && entry[1] ) { character.archetype[entry[0]] = entry[1] }
+					}
+					
+					character.level = value
+				}
+				
+				if ( object.d ) { character.rolls = object.d.split('.') }
+				if ( object.i ) { character.increases = object.i.split('.') }
+				if ( object.a ) { character.rolls = object.a.split('.'); character.ordered = true }
+				
+				if ( !character.rolls || character.rolls.length < 6 ) {
+					character.rolls = [15, 14, 13, 12, 10, 8]
+					character.ordered = false
+				}
+				
+				character.options = []
+				if ( lookup.optionHash ) {
+					for ( key of lookup.optionHash ) {
+						if ( object[key] ) {
+							character[key] = object[key]
+							character.options.push(key)
+						}
+					}
+				}
+				
+				return character
+			}
+			
+			function characterToString(character, separator, exclude) {
+				var result = []
+				var value, entry, array
+				
+				exclude = exclude || 'o'
+				
+				if ( character.rolls && character.rolls.length === 6 ) {
+					result.push((character.ordered ? 'a=' : 'd=') + character.rolls.join('.'))
+					
+					if ( character.increases && character.increases.length === 6 ) {
+						result.push('i=' + character.increases.join('.'))
+					}
+				}
+				
+				if ( character.classes && character.classes.length > 0 ) {
+					array = []
+					
+					for ( entry of character.classes ) {
+						array.push(entry.key || '')
+						array.push(entry.archetype || '')
+						array.push(entry.level || '1')
+					}
+					
+					result.push('c=' + array.join('.'))
+				}
+				
+				if ( character.race || character.sex ) {
+					result.push('r=' + [character.race || '', character.sex || ''].join('.'))
+				}
+				
+				if ( character.alignment ) {
+					result.push('y=' + character.alignment)
+				}
+				
+				if ( character.background ) {
+					array = character.traits || []
+					
+					result.push('b=' + [character.background || '', array[0] || '0', array[1] || '0', character.ideal || '0', character.bond || '0', character.flaw || '0'].join('.'))
+				}
+				
+				if ( character.height || character.weight || character.age ) {
+					result.push('h=' + [character.height || '', character.weight || '', character.age || ''].join('.'))
+				}
+				
+				if ( character.proficiencies && character.proficiencies.length > 0 ) {
+					result.push('p=' + character.proficiencies.join('.')) // handle multipliers
+				}
+				
+				if ( character.languages && character.languages.length > 0 ) {
+					result.push('t=' + character.languages.join('.'))
+				}
+				
+				if ( character.options && character.options.length > 0 ) {
+					for ( entry of character.options ) {
+						if ( character[entry] ) {
+							result.push(entry + '=' + character[entry])
+						}
+					}
+					
+					if ( exclude.indexOf('o') < 0 ) {
+						result.push('o=' + character.options.join('.'))
+					}
+				}
+				
+				if ( character.experience > 0 ) {
+					result.push('x=' + character.experience)
+				}
+				
+				if ( character.coins ) {
+					result.push('g=' + [character.coins.copper | 0, character.coins.silver | 0, character.coins.electrum | 0, character.coins.gold | 0, character.coins.platinum | 0].join('.'))
+				}
+				
+				if ( character.inventory && character.inventory.length > 0 && exclude.indexOf('v') < 0 ) {
+					result.push('v=' + character.inventory.join('.')) // handle quantities
+				}
+				
+				if ( character.using && character.using.length > 0 && exclude.indexOf('u') < 0 ) {
+					result.push('u=' + character.using.join('.'))
+				}
+				
+				if ( character.spells && character.spells.length > 0 && exclude.indexOf('s') < 0 ) {
+					if ( character.known && character.known.length > 0 && exclude.indexOf('ss') < 0 ) {
+						result.push('s=' + character.spells.join('.') + '..' + character.known.join('.'))
+					} else {
+						result.push('s=' + character.spells.join('.'))
+					}
+				}
+				
+				if ( character.name && exclude.indexOf('n') < 0 ) {
+					result.push('n=' + encode(character.name))
+				}
+				
+				if ( character.notes && exclude.indexOf('z') < 0 ) {
+					result.push('z=' + encode(character.notes))
+				}
+				
+				return result.join(separator || '|')
+			}
+			
+			////////// Populate
+			function populateCharacter(character) {
+				var element, object, value, entry, index
+				var crass, archetype, level, key
+				var detail = new Character(character)
+				
+				detail.compute()
+				
+				element = libraryElement('race')
+				if ( element ) { element.textContent = (detail.subrace && detail.subrace.racename) || (detail.race && detail.race.racename) || '' }
+				
+				element = libraryElement('alignment')
+				if ( element ) { element.textContent = detail.alignment && detail.alignment.name || '' }
+				
+				element = libraryElement('background')
+				if ( element ) { element.textContent = detail.background && detail.background.name || '' }
+				
+				element = libraryElement('sex')
+				if ( element ) { element.textContent = detail.sex && detail.sex.name || '' }
+				
+				element = libraryElement('size')
+				if ( element ) { element.textContent = detail.race && detail.race.summarysize || '' }
+				
+				element = libraryElement('age')
+				if ( element ) { element.textContent = character.age || '' }
+				
+				index = detail.classes ? detail.classes.length : 0
+				
+				if ( !index ) {
+					index = 1
+					detail.classes = [{'level':character.level || 1}]
+				}
+				
+				while ( index --> 0 ) {
+					entry = detail.classes[index]
+					
+					element = libraryElement('level-' + (index + 1))
+					if ( element ) { element.textContent = entry.level || '' }
+					
+					element = libraryElement('class-' + (index + 1))
+					if ( element ) { element.textContent = entry.crass && entry.crass.name || '' }
+					
+					populateArchetypes(reference, index + 1, entry.crass && entry.crass.key)
+					
+					element = libraryElement('archetype-' + (index + 1))
+					if ( element ) { element.textContent = entry.archetype && entry.archetype.name || '' }
+				}
+				
+				element = libraryElement('entries')
+				//if ( element ) { element.innerHTML = detail.resolveEntries() }
+				if ( element ) { element.innerHTML = detail.resolveFeatures() }
+				
+				populateMeasurements(character)
+				populateAbilities(detail)
+				populateSkills(detail)
+				populateProficiencies(detail)
+				populateFeatures(detail)
+			}
+			
+			function populateAbilities(detail) {
+				var templateTable = "<table id='abilities-table' class='abilities'>" +
+					"<tr class='abilities'><th>Ability</th><th>Roll</th><th>Score</th><th class='ability-modifier'>Modifier</th><th>Save</th></tr>" +
+					"{rows}" +
+					"</table>"
+				
+				var templateRow = "<tr id='{key}-row' class='abilities {styles}'>" +
+					"<td id='{key}-name' class='ability-name numeric'>{name}</td>" +
+					"<td id='{key}-roll' class='ability-roll numeric' onclick='handleAbilityOrder(\"{key}\")'>{roll}</td>" +
+					"<td id='{key}-score' class='ability-score numeric action {styles}' onclick='handleAbilityIncrease(\"{key}\", {increasable})'>{score}</td>" +
+					"<td id='{key}-modifier' class='ability-modifier numeric'>{modifier}<span class='ability-modifier border primary-ability-{key}'></span></td>" +
+					"<td id='{key}-save' class='ability-save numeric'>{save}</td>" +
+					"</tr>"
+				
+				var rows = libraryRenderTemplateItemArray(templateRow, detail.abilityItems)
+				var table = libraryRenderTemplateItem(templateTable, {'rows':rows.join("")})
+				
+				libraryElement('abilities').innerHTML = table
+			}
+			
+			function populateFeatures(detail) {
+				var templateTable = "<table id='features-table' class='features'>" +
+					//"<tr class='features'><th>Level</th><th>Feature</th><th>Summary</th></tr>" +
+					"{rows}" +
+					"</table>"
+				
+				var templateRow = "<tr id='{key}-row' class='features {styles}'>" +
+					"<td id='{key}-level' class='feature-level numeric'>{level}</td>" +
+					"<td id='{key}-name' class='feature-name'>{name}</td>" +
+					"<td id='{key}-summary' class='feature-summary'>{summary}</td>" +
+					"</tr>"
+				
+				var rows = libraryRenderTemplateItemArray(templateRow, detail.displayFeatures)
+				var table = libraryRenderTemplateItem(templateTable, {'rows':rows.join("")})
+				
+				libraryElement('features').innerHTML = table
+			}
+			
+			function populateSkills(detail) {
+				var templateTable = "<table id='skills-table' class='skills'>" +
+					"<tr class='skills'><th>Skill</th><th class='skill-ability-name'>Ability</th><th>Proficiency</th><th class='skill-modifier'>Modifier</th></tr>" +
+					"{rows}" +
+					"</table>"
+				
+				var templateRow = "<tr id='{key}-row' class='skills {styles}'>" +
+					"<td id='{key}-name' class='skill-name numeric'>{name}</td>" +
+					"<td id='{key}-ability-name' class='skill-ability-name'><span class='skill-ability-name'>{abilityname}</span></td>" +
+					"<td id='{key}-proficiency' class='skill-proficiency'><span class='skill-toggle {singlestyle}' onclick='handleToggleSingleSkill(\"{key}\", {mutable})'></span><span class='skill-toggle {doublestyle}' onclick='handleToggleDoubleSkill(\"{key}\", {mutable})'></span></td>" +
+					"<td id='{key}-modifier' class='skill-modifier numeric'>{modifier}<span class='skill-modifier border primary-ability-{ability}'></span></td>" +
+					"</tr>"
+				
+				var rows = libraryRenderTemplateItemArray(templateRow, detail.skillItems)
+				var table = libraryRenderTemplateItem(templateTable, {'rows':rows.join("")})
+				
+				libraryElement('skills').innerHTML = table
+			}
+			
+			function populateProficiencies(detail) {
+				libraryElement('ability-proficiencies').innerHTML = detail.abilityNames.join(", ")
+				libraryElement('weapon-proficiencies').innerHTML = detail.weaponNames.join(", ")
+				libraryElement('armor-proficiencies').innerHTML = detail.armorNames.join(", ")
+				libraryElement('tool-proficiencies').innerHTML = detail.toolNames.join(", ")
+				libraryElement('language-proficiencies').innerHTML = detail.languageNames.join(", ")
+			}
+			
+			function populateMeasurements(character) {
+				var height = character.height
+				var weight = character.weight
+				
+				height = height > 0 ? Math.floor(height / 12) + "’ " + (height % 12) + "”" : ""
+				weight = weight > 0 ? weight + " lb" : ""
+				
+				libraryElement('height').textContent = height
+				libraryElement('weight').textContent = weight
+			}
+			
+			////////// Storage
+			function saveCharacter(character) {
+				var hash = characterToString(character, null, 'ouvsknz')
+				
+				if ( history.pushState ) {
+					history.pushState(null, null, "#" + hash)
+				} else {
+					location.hash = hash
+				}
+			}
+			
+			////////// Modify
+			function changeCharacter(key, value, index) {
+				var character = window.character
+				var needsRender = true
+				var prior, level, entry
+				
+				if ( key === 'race' ) {
+					delete character.increases
+					delete character.height
+					delete character.weight
+					delete character.age
+					
+					changeHeight(false)
+				}
+				
+				if ( key === 'class' || key === 'crass' || key === 'archetype' || key === 'level' ) {
+					if ( !character.archetype ) { character.archetype = new Object() }
+					if ( !character.classes ) { character.classes = [] }
+					if ( !index || index < 0 ) { index = 0 }
+					
+					prior = 0
+					for ( entry of character.classes ) { prior += entry.level || 1 }
+					
+					if ( typeof value === 'number' || typeof value === 'string' ) {
+						if ( index >= character.classes.length ) { character.classes[index] = new Object() }
+						
+						character.classes[index][key === 'class' || key === 'crass' ? 'key' : key] = value
+						
+						value = character.classes[index]
+					} else if ( !value ) {
+						character.classes.splice(index, 1)
+						
+						value = false
+					} else {
+						character.classes[index] = value
+					}
+					
+					level = 0
+					for ( entry of character.classes ) { level += entry.level || 1 }
+					if ( level < prior || key === 'class' ) { delete character.increases }
+					if ( value && value.key && value.archetype ) { character.archetype[value.key] = value.archetype }
+					
+					character.level = level
+					key = 'classes'
+				} else if ( ['copper', 'sliver', 'electrum', 'gold', 'platinum'].indexOf(key) >= 0 ) {
+					if ( !character.coins ) { character.coins = new Object() }
+					character.coins[key] = value
+					key = 'coins'
+				} else {
+					character[key] = value
+				}
+				
+				if ( ['age', 'alignment', 'sex', 'height', 'weight', 'proficiencies', 'languages', 'experience', 'coins', 'inventory', 'spells', 'known', 'name', 'notes'].indexOf(key) >= 0 ) {
+					needsRender = false
+				}
+				
+				saveCharacter(character)
+				
+				if ( needsRender ) {
+					populateCharacter(character)
+				}
+				
+				if ( key === 'proficiencies' ) {
+					populateSkills(new Character(character).compute())
+				}
+			}
+			
+			////////// Random
+			function randomInteger(count) {
+				if ( crypto && crypto.getRandomValues ) {
+					var randomValues = new Uint32Array(1)
+					
+					crypto.getRandomValues(randomValues)
+					
+					return randomValues[0] % count
+				} else {
+					return Math.floor(Math.random() * Math.floor(count)) | 0
+				}
+			}
+			
+			function randomDie(sides, dice) {
+				var sum = 0
+				
+				while ( dice --> 0 ) {
+					sum += 1 + randomInteger(sides)
+				}
+				
+				return sum
+			}
+			
+			function randomDice(sides, diceToRoll, diceToDiscard) {
+				var rolls = []
+				var diceToKeep = diceToRoll - diceToDiscard
+				
+				while ( diceToRoll --> 0 ) {
+					rolls.push(1 + randomInteger(sides))
+				}
+				
+				if ( diceToDiscard > 0 ) {
+					rolls = rolls.sort(compareRoll).slice(0, diceToKeep)
+				}
+				
+				return rolls
+			}
+			
+			////////// Changes
+			function preserveAbilityOrder(character, rolls) {
+				var index, count, entry, array, ordered
+				
+				count = rolls.length
+				
+				if ( count === character.rolls.length && character.ordered ) {
+					ordered = character.referenceRolls || character.rolls
+					array = []
+					
+					for ( index = 0 ; index < count ; ++index ) {
+						array.push(ordered[index] + '.' + index)
+					}
+					
+					array.sort(compareRoll)
+					ordered = []
+					
+					for ( index = 0 ; index < count ; ++index ) {
+						entry = array[index]
+						entry = +entry.slice(entry.indexOf('.') + 1)
+						ordered[entry] = rolls[index]
+					}
+					
+					return ordered
+				}
+				
+				return rolls
+			}
+			
+			function changeHeight(action, changeWeight) {
+				var height, weight
+				var subrace = lookup.subraces[character.race]
+				var race = subrace && lookup.races[subrace.race]
+				var raceHeight = (subrace && subrace.height) || (race && race.height)
+				var raceWeight = (subrace && subrace.weight) || (race && race.weight)
+				var plusHeight, timesWeight, minimum, maximum, current, parmeters
+				
+				height = character.height
+				weight = character.weight
+				
+				if ( action === false ) {
+					
+				} else if ( raceHeight && raceWeight ) {
+					if ( height < raceHeight[0] + raceHeight[1] && changeWeight ) {
+						plusHeight = raceHeight[2] > 1 ? randomDie(raceHeight[2], raceHeight[1]) : raceHeight[1]
+					} else {
+						plusHeight = height - raceHeight[0]
+					}
+					
+					if ( weight < raceWeight[0] + raceWeight[1] && !changeWeight ) {
+						timesWeight = raceWeight[2] > 1 ? randomDie(raceWeight[2], raceWeight[1]) : raceWeight[1]
+					} else {
+						timesWeight = Math.floor((weight - raceWeight[0]) / plusHeight)
+					}
+					
+					if ( changeWeight ) {
+						parameters = raceWeight
+						current = timesWeight
+					} else {
+						parameters = raceHeight
+						current = plusHeight
+					}
+					
+					minimum = parameters[1]
+					maximum = parameters[1] * parameters[2]
+					
+					if ( action > 0 ) {
+						current = current < maximum ? Math.max(current + 1, minimum) : minimum
+					} else if ( action < 0 ) {
+						current = current > minimum ? Math.min(current - 1, maximum) : maximum
+					} else {
+						current = parameters[2] > 1 ? randomDie(parameters[2], parameters[1]) : parameters[1]
+					}
+					
+					if ( changeWeight ) {
+						timesWeight = current
+					} else {
+						plusHeight = current
+					}
+					
+					height = raceHeight[0] + plusHeight
+					weight = raceWeight[0] + plusHeight * timesWeight
+				} else {
+					height = 0
+					weight = 0
+				}
+				
+				if ( height !== character.height ) { changeCharacter('height', height) }
+				if ( weight !== character.weight ) { changeCharacter('weight', weight) }
+				
+				populateMeasurements(character)
+			}
+			
+			////////// Actions
+			function pickerValue(value, current, list) {
+				if ( typeof value !== 'string' ) {
+					var count = list.length
+					var index = count
+					
+					while ( index --> 0 && list[index].key !== current ) {}
+					
+					if ( value ) {
+						value = list[index > 0 ? (index + count - 1) % count : (count - 1)].key
+					} else {
+						value = list[(index + 1) % count].key
+					}
+				}
+				
+				return value
+			}
+			
+			function handlePickerRace(value, key) {
+				value = pickerValue(value, character.race, reference.subraces)
+				
+				libraryElement('toggle-race').checked = false
+				libraryElement('race').textContent = lookup.subraces[value].racename
+				
+				changeCharacter('race', value)
+			}
+			
+			function handlePickerBackground(value, key) {
+				value = pickerValue(value, character.background, reference.backgrounds)
+				
+				libraryElement('toggle-background').checked = false
+				libraryElement('background').textContent = lookup.backgrounds[value].name
+				
+				changeCharacter('background', value)
+			}
+			
+			function handlePickerAlignment(value, key) {
+				value = pickerValue(value, character.alignment, reference.alignments)
+				
+				libraryElement('toggle-alignment').checked = false
+				libraryElement('alignment').textContent = lookup.alignments[value].name
+				
+				changeCharacter('alignment', value)
+			}
+			
+			function handlePickerSex(value, key) {
+				value = pickerValue(value, character.sex, reference.sexes)
+				
+				libraryElement('toggle-sex').checked = false
+				libraryElement('sex').textContent = lookup.sexes[value].name
+				
+				changeCharacter('sex', value)
+			}
+			
+			function handlePickerClass(value, key) {
+				var index = (+key.slice(-1) || 1) - 1
+				var entry = character.classes && character.classes[index]
+				var crass, archetype, current = entry && entry.key
+				
+				value = pickerValue(value, current, reference.classes)
+				crass = lookup.classes[value]
+				archetype = lookup.archetypes[entry && entry.archetype]
+				
+				libraryElement('toggle-' + key).checked = false
+				libraryElement(key).textContent = crass.name
+				
+				if ( value !== current ) { changeCharacter('class', {
+					'level':entry && entry.level || 1,
+					'key':value,
+					'archetype':(archetype && archetype.crass === value) ? entry.archetype : character.archetype[value] || ''
+				}, index) }
+			}
+			
+			function handlePickerArchetype(value, key) {
+				var index = (+key.slice(-1) || 1) - 1
+				var entry = character.classes && character.classes[index]
+				var current = entry && entry.archetype
+				var crass = entry && entry.key
+				var archetype, archetypes = []
+				
+				if ( crass ) {
+					for ( archetype of reference.archetypes ) {
+						if ( archetype.crass === crass ) {
+							archetypes.push(archetype)
+						}
+					}
+				}
+				
+				if ( !archetypes.length ) {
+					archetypes = reference.archetypes
+				}
+				
+				value = pickerValue(value, current, archetypes)
+				archetype = lookup.archetypes[value]
+				
+				libraryElement('toggle-' + key).checked = false
+				libraryElement(key).textContent = archetype.name
+				
+				if ( value !== current ) { changeCharacter('archetype', {
+					'level':entry && entry.level || 1,
+					'key':entry && entry.key ? archetype.crass : '',
+					'archetype':value
+				}, index) }
+			}
+			
+			function handleCyclerHeight(action, key) {
+				changeHeight(action, false)
+			}
+			
+			function handleCyclerWeight(action, key) {
+				changeHeight(action, true)
+			}
+			
+			function handleCyclerAge(action, key) {
+				var current = +character.age
+				var subrace = lookup.subraces[character.race]
+				var race = subrace && lookup.races[subrace.race]
+				var minimum, maximum, raceAge
+				
+				raceAge = (subrace && subrace.age) || (race && race.age) || [15, 75]
+				minimum = raceAge[0]
+				maximum = raceAge[1]
+				
+				if ( action > 0 ) {
+					current = current < maximum ? Math.max(current + 1, minimum) : minimum
+				} else if ( action < 0 ) {
+					current = current > minimum ? Math.min(current - 1, maximum) : maximum
+				} else if ( action !== false ) {
+					current = minimum + randomInteger((maximum - minimum) >> 2)
+				}
+				
+				libraryElement('age').textContent = current || ''
+				
+				if ( current !== character.age ) { changeCharacter('age', current) }
+			}
+			
+			function handleCyclerLevel(action, key) {
+				var index = (+key.slice(-1) || 1) - 1
+				var entry = character.classes && character.classes[index]
+				var current = entry && +entry.level
+				var minimum = 1, maximum = 20
+				
+				if ( action > 0 ) {
+					current = current < maximum ? Math.max(current + 1, minimum) : minimum
+				} else if ( action < 0 ) {
+					current = current > minimum ? Math.min(current - 1, maximum) : maximum
+				} else if ( action !== false && !current ) {
+					current = minimum
+				}
+				
+				libraryElement(key).textContent = current || ''
+				
+				if ( !entry || current !== entry.level ) { changeCharacter('level', current, index) }
+			}
+			
+			function handleAbilityReset() {
+				delete character.referenceRolls
+				delete character.increases
+				delete character.ordered
+				
+				character.rolls.sort(compareRoll)
+				changeCharacter('rolls', character.rolls)
+			}
+			
+			function handleAbilityStandard() {
+				var rolls = [15, 14, 13, 12, 10, 8]
+				
+				character.rollsType = 'standard'
+				character.rollsMade = 0
+				changeCharacter('rolls', preserveAbilityOrder(character, rolls))
+			}
+			
+			function handleAbilityRoll() {
+				var index = reference.abilities.length
+				var diceToRoll
+				var rolls = []
+				
+				while ( index --> 0 ) {
+					rolls.push(randomDice(6, 4, 1).reduce(sum, 0))
+				}
+				
+				rolls.sort(compareRoll)
+				
+				character.rollsType = '4d6'
+				character.rollsMade = 1 + (character.rollsMade | 0)
+				changeCharacter('rolls', preserveAbilityOrder(character, rolls))
+			}
+			
+			function handleAbilityArena() {
+				var rolls = [18, 16, 14, 12, 10, 8]
+				
+				character.rollsType = 'arena'
+				character.rollsMade = 0
+				changeCharacter('rolls', preserveAbilityOrder(character, rolls))
+			}
+			
+			function handleAbilityIncrease(key, enabled) {
+				if ( enabled ) {
+					if ( !character.increases ) { character.increases = [] }
+					
+					var list = reference.abilities
+					var index
+					
+					for ( index = 0 ; index < list.length ; ++index ) {
+						character.increases[index] = (character.increases[index] | 0) + (key === list[index].key ? 1 : 0)
+					}
+					
+					changeCharacter('increases', character.increases)
+				}
+			}
+			
+			function handleAbilityOrder(key) {
+				var roll = libraryElement(key + '-roll')
+				var swap = document.querySelector('.ability-roll.reorder')
+				var value, rolls, entry, toIndex, fromIndex, fromKey, keys, abilities
+				
+				if ( swap ) {
+					libraryAssignClass(swap, 'reorder', -1)
+					
+					abilities = reference.abilities
+					keys = []
+					
+					for ( entry of abilities ) {
+						keys.push(entry.key)
+					}
+					
+					fromKey = swap.id.slice(0, -5)
+					fromIndex = keys.indexOf(fromKey)
+					toIndex = keys.indexOf(key)
+					
+					if ( fromIndex < 0 || toIndex < 0 || fromIndex === toIndex ) {
+						return
+					}
+					
+					if ( !character.ordered ) {
+						value = new Character(character).abilities
+						rolls = []
+						
+						for ( entry of abilities ) {
+							rolls.push(value[entry.key])
+						}
+						
+						character.ordered = true
+						character.rolls = rolls
+					}
+					
+					value = character.rolls[toIndex]
+					character.rolls[toIndex] = character.rolls[fromIndex]
+					character.rolls[fromIndex] = value
+					character.referenceRolls = [].concat(character.rolls)
+					
+					changeCharacter('rolls', character.rolls)
+				} else {
+					libraryAssignClass(roll, 'reorder', 1)
+				}
+			}
+			
+			function handleToggleSingleSkill(key, mutable) {
+				if ( !(mutable & 1) ) { return }
+				
+				if ( Array.isArray(character.proficiencies) ) {
+					var index = character.proficiencies.length
+					
+					while ( index --> 0 ) {
+						if ( character.proficiencies[index].indexOf(key) === 0 ) {
+							break
+						}
+					}
+					
+					if ( index < 0 ) {
+						character.proficiencies.push(key)
+					} else {
+						character.proficiencies.splice(index, 1)
+					}
+				} else {
+					character.proficiencies = [key]
+				}
+				
+				changeCharacter('proficiencies', character.proficiencies)
+			}
+			
+			function handleToggleDoubleSkill(key, mutable) {
+				if ( !(mutable & 2) ) { return }
+				
+				if ( Array.isArray(character.proficiencies) ) {
+					var index = character.proficiencies.length
+					
+					while ( index --> 0 ) {
+						if ( character.proficiencies[index].indexOf(key) === 0 ) {
+							break
+						}
+					}
+					
+					if ( index < 0 ) {
+						character.proficiencies.push(key + '^' + mutable)
+					} else if ( character.proficiencies[index] === key + '^' + 3 ) {
+						character.proficiencies[index] = key
+					} else if ( character.proficiencies[index] === key + '^' + 2 ) {
+						character.proficiencies.splice(index, 1)
+					} else {
+						character.proficiencies[index] = key + '^' + mutable
+					}
+				} else {
+					character.proficiencies = [key + '^' + mutable]
+				}
+				
+				changeCharacter('proficiencies', character.proficiencies)
+			}
+			
+			function handleDismissMenus(event) {
+				var elements = document.querySelectorAll('input.menu:checked')
+				var index = elements ? elements.length : 0
+				var parent, ascend
+				
+				while ( index --> 0 ) {
+					parent = elements[index].parentElement
+					ascend = event.target
+					
+					while ( ascend && ascend.nodeType === 1 && ascend !== parent ) {
+						ascend = ascend.parentElement
+					}
+					
+					if ( parent !== ascend || libraryHasClass(event.target, 'toggled') ) {
+						elements[index].checked = false
+					}
+				}
+			}
+			
+			function handleHashChanged(event) {
+				var hash = location.hash
+				var character = characterFromString(decodeURIComponent(hash.charAt(0) === '#' ? hash.slice(1) : hash))
+				
+				window.character = character
+				populateCharacter(character)
+			}
+			
+			////////// Generate
+			function summarizeBackgrounds(reference) {
+				var tool, tools = reference.tools
+				var skill, skills = reference.skills
+				var language, languages = reference.languages
+				var backgrounds = reference.backgrounds
+				var value, array, entry, lower, upper, range, object
+				
+				for ( entry of backgrounds ) {
+					array = []
+					lower = Infinity
+					upper = 0
+					
+					if ( entry.skillProficiencies ) {
+						if ( entry.skillProficiencies.length === 1 ) {
+							for ( skill of skills ) {
+								for ( object of entry.skillProficiencies ) {
+									if ( object[skill.name.toLowerCase()] ) {
+										array.push(skill.name)
+									}
+								}
+							}
+						}
+						
+						for ( object of entry.skillProficiencies ) {
+							if ( object.choose ) {
+								value = object.choose.count || 1
+							} else if ( entry.skillProficiencies.length > 1 ) {
+								value = Object.keys(object).length
+							} else {
+								continue
+							}
+							
+							upper = Math.max(upper, value)
+							lower = Math.min(lower, value)
+						}
+					}
+					
+					if ( upper > 0 ) {
+						array.push((lower < upper ? lower + "-" : "") + upper + " Skill" + (upper === 1 ? "" : "s"))
+					}
+					
+					upper = 0
+					lower = Infinity
+					
+					if ( entry.toolProficiencies ) {
+						if ( entry.toolProficiencies.length === 1 ) {
+							for ( tool of tools ) {
+								for ( object of entry.toolProficiencies ) {
+									if ( object[tool.name.toLowerCase()] ) {
+										array.push(tool.name)
+									}
+								}
+							}
+						}
+						
+						for ( object of entry.toolProficiencies ) {
+							if ( object.choose ) {
+								value = object.choose.count || 1
+							} else if ( entry.toolProficiencies.length > 1 ) {
+								value = Object.keys(object).length
+							} else {
+								continue
+							}
+							
+							upper = Math.max(upper, value)
+							lower = Math.min(lower, value)
+						}
+					}
+					
+					if ( upper > 0 ) {
+						array.push((lower < upper ? lower + "-" : "") + upper + " Tool" + (upper === 1 ? "" : "s"))
+					}
+					
+					upper = 0
+					lower = Infinity
+					
+					if ( entry.languageProficiencies ) {
+						if ( entry.languageProficiencies.length === 1 ) {
+							for ( language of languages ) {
+								if ( language.source !== 'PHB' ) {
+									continue
+								}
+								
+								for ( object of entry.languageProficiencies ) {
+									if ( object[language.name.toLowerCase()] ) {
+										array.push(language.name)
+									}
+								}
+							}
+						}
+						
+						for ( object of entry.languageProficiencies ) {
+							if ( object.choose ) {
+								value = object.choose.count || 1
+							} else if ( object.anyStandard ) {
+								value = object.anyStandard || 0
+							} else if ( entry.languageProficiencies.length > 1 ) {
+								value = Object.keys(object).length
+							} else {
+								continue
+							}
+							
+							upper = Math.max(upper, value)
+							lower = Math.min(lower, value)
+						}
+					}
+					
+					if ( upper > 0 ) {
+						array.push((lower < upper ? lower + "-" : "") + upper + " Language" + (upper === 1 ? "" : "s"))
+					}
+					
+					entry.skills = array.join(", ")
+				}
+			}
+			
+			function summarizeRaces(reference) {
+				var abilities = reference.abilities
+				var subrace, race, subraceAbility, raceAbility
+				var value, object, count, entry, summary, sum
+				var primary
+				
+				for ( subrace of reference.subraces ) {
+					race = subrace.race ? lookup.races[subrace.race] : false
+					
+					value = subrace.size || 'M'
+					value = lookup.sizes[value.toLowerCase()]
+					subrace.summarysize = value.name
+					
+					value = subrace.speed || false
+					subrace.summaryspeed = value.walk || value || ''
+					
+					value = subrace.darkvision || 0
+					subrace.summaryvision = value || ''
+					
+					sum = 0
+					primary = []
+					summary = []
+					object = subrace.abilities
+					for ( entry of abilities ) {
+						value = +object[entry.key]
+						
+						if ( value ) {
+							summary.push(entry.name + (value < 0 ? " " : " +") + value)
+							sum += value
+							
+							if ( value > 1 ) {
+								primary.push('primary-ability-' + entry.key)
+							}
+						}
+					}
+					
+					if ( summary.length === abilities.length && sum === abilities.length ) {
+						summary = ["All +1"]
+					}
+					
+					summary.sort(function (a, b) { return +b.slice(-2) - +a.slice(-2) })
+					
+					value = object.choose
+					
+					if ( value ) {
+						summary.push("Any" + (+value.count > 1 ? " " + value.count : "") + " +1")
+					}
+					
+					if ( primary.length === 0 ) {
+						primary.push('primary-ability-none')
+					}
+					
+					subrace.summaryabilityprimary = primary.join(" ")
+					subrace.summaryabilitybonus = sum
+					subrace.summaryabilities = summary.join(", ")
+				}
+			}
+			
+			function summarizeClasses(reference) {
+				var abilities = reference.abilities
+				var supplement
+				var object, entry, array, value, index, summary, primary
+				
+				for ( object of reference.classes ) {
+					supplement = lookup.supplements[object.key]
+					object.summaryhitdice = "d" + object.hd.faces
+					
+					if ( object.casterProgression === "full" || object.casterProgression === "pact" ) {
+						object.summarycaster = "Spellcaster"
+					} else if ( object.casterProgression === "half" || object.casterProgression === "1/2" ) {
+						object.summarycaster = "Halfcaster"
+					} else {
+						object.summarycaster = "&mdash;"
+					}
+					
+					value = "No"
+					
+					if ( object.startingProficiencies && object.startingProficiencies.armor ) {
+						array = object.startingProficiencies.armor
+						
+						if ( array.indexOf('heavy') >= 0 ) { value = "Heavy" }
+						else if ( array.indexOf('medium') >= 0 ) { value = "Medium" }
+						else if ( array.indexOf('light') >= 0 ) { value = "Light" }
+					}
+					
+					object.summaryarmor = value + " armor"
+					
+					value = "Few"
+					
+					if ( object.startingProficiencies && object.startingProficiencies.weapons ) {
+						array = object.startingProficiencies.weapons
+						
+						if ( array.indexOf('martial') >= 0 ) { value = "Martial" }
+						else if ( array.indexOf('simple') >= 0 ) { value = "Simple" }
+					}
+					
+					object.summaryweapons = value + " weapons"
+					
+					primary = []
+					summary = [].concat(supplement.primary || object.proficiency)
+					
+					for ( entry of abilities ) {
+						index = summary.indexOf(entry.key)
+						
+						if ( index >= 0 ) {
+							summary[index] = entry.name
+							
+							if ( primary.length === 0 ) {
+								primary.push('primary-ability-' + entry.key)
+							}
+						}
+					}
+					
+					if ( primary.length === 0 ) {
+						primary.push('primary-ability-none')
+					}
+					
+					object.summaryabilities = summary.join(", ")
+					object.summaryabilityprimary = primary.join(" ")
+				}
+			}
+			
+			function summarizeArchetypes(reference) {
+				var object
+				
+				for ( object of reference.archetypes ) {
+				}
+			}
+			
+			////////// Populate
+			function renderCycler(key, name) {
+				var templatePicker = "" +
+					"<span class='cycle-back numeric action' onclick='handleCycler{name}(-1, \"{key}\")'></span>" +
+					"<span id='{key}' class='cycler-selection'></span>" +
+					"<span class='cycler-caption action' onclick='handleCycler{name}(0, \"{key}\")'>{name}</span>" +
+					"<span class='cycle-next numeric action' onclick='handleCycler{name}(1, \"{key}\")'></span>" +
+					""
+				
+				return libraryRenderTemplateItem(templatePicker, {'key':key, 'name':name})
+			}
+			
+			function renderPicker(key, name, items, templateRow, columns) {
+				var templatePicker = "" +
+					"<input type='checkbox' id='toggle-{key}' class='picker toggle menu' />" +
+					"<span class='cycle-back action' onclick='handlePicker{name}(true, \"{key}\")'></span>" +
+					"<label id='toggle-label-{key}' for='toggle-{key}' class='picker action'>" +
+						"<span id='{key}' class='picker-selection'></span>" +
+					"</label>" +
+					"<span class='cycle-next action' onclick='handlePicker{name}(false, \"{key}\")'></span>" +
+					"<div id='picker-{key}' class='picker toggled'><div class='picker content'>" +
+						"<table id='table-{key}' class='picker'>" +
+						"{columns}" +
+						"{rows}" +
+						"</table>" +
+					"</div></div>" +
+					""
+				
+				var rows = libraryRenderTemplateItemArray(templateRow, items).join("")
+				
+				return libraryRenderTemplateItem(templatePicker, {'key':key, 'name':name, 'rows':rows, 'columns':columns || ""})
+			}
+			
+			function populateArchetypes(reference, index, crass) {
+				var archetype, archetypes = []
+				
+				for ( archetype of reference.archetypes ) {
+					if ( archetype.crass === crass ) {
+						archetypes.push(archetype)
+					}
+				}
+				
+				if ( !archetypes.length ) {
+					archetypes = reference.archetypes
+				}
+				
+				libraryElement('class-group-' + index + '-archetype').innerHTML = renderPicker('archetype-' + index, 'Archetype', archetypes, "<tr id='picker-archetype-" + index + "-{key}' class='picker option' onclick='handlePickerArchetype(\"{key}\", \"archetype-" + index + "\")'><td class='picker-name'>{name}</td></tr>")
+			}
+			
+			function populateClasses(reference) {
+				var index
+				
+				summarizeClasses(reference)
+				summarizeArchetypes(reference)
+				
+				for ( index = 1 ; index < 2 ; ++index ) {
+					libraryElement('class-group-' + index + '-class').innerHTML = renderPicker('class-' + index, 'Class', reference.classes, "<tr id='picker-class-" + index + "-{key}' class='picker option' onclick='handlePickerClass(\"{key}\", \"class-" + index + "\")'><td class='picker-name'>{name}</td><td class='class-hit-dice numeric'>{summaryhitdice}</td><td class='class-abilities'><span class='border-underline border {summaryabilityprimary}'>{summaryabilities}</span></td><td class='class-combat'>{summaryarmor}, {summaryweapons}</td><td class='class-spellcasting'>{summarycaster}</td></tr>")
+					libraryElement('class-group-' + index + '-level').innerHTML = renderCycler('level-' + index, 'Level')
+					
+					populateArchetypes(reference, index, false)
+				}
+			}
+			
+			function populateBasics(reference) {
+				summarizeRaces(reference)
+				summarizeBackgrounds(reference)
+				
+				libraryElement('basics-race').innerHTML = renderPicker('race', 'Race', reference.subraces, "<tr id='picker-race-{key}' class='picker option' onclick='handlePickerRace(\"{key}\")'><td class='picker-name'>{racename}</td><td class='race-abilities'><span class='border-underline border {summaryabilityprimary}'>{summaryabilities}</span></td><td class='race-size'>{summarysize}</td><td class='race-speed'>{summaryspeed}</td><td class='race-darkvision'>{summaryvision}</td></tr>")
+				libraryElement('basics-background').innerHTML = renderPicker('background', 'Background', reference.backgrounds, "<tr id='picker-background-{key}' class='picker option' onclick='handlePickerBackground(\"{key}\")'><td class='picker-name'>{name}</td><td class='background-proficiencies'>{skills}</td><td class='numeric background-gold'>{gold}</td></tr>")
+				libraryElement('basics-alignment').innerHTML = renderPicker('alignment', 'Alignment', reference.alignments, "<tr id='picker-alignment-{key}' class='picker option' onclick='handlePickerAlignment(\"{key}\")'><td class='picker-name'>{name}</td></tr>")
+				libraryElement('basics-sex').innerHTML = renderPicker('sex', 'Sex', reference.sexes, "<tr id='picker-sex-{key}' class='picker option' onclick='handlePickerSex(\"{key}\")'><td class='picker-name'>{name}</td></tr>")
+				
+				libraryElement('basics-height').innerHTML = renderCycler('height', 'Height')
+				libraryElement('basics-weight').innerHTML = renderCycler('weight', 'Weight')
+				libraryElement('basics-age').innerHTML = renderCycler('age', 'Age')
+			}
+			
+			////////// Generate
+			function generateFeatures(reference) {
+				var explore = ["Fighting Style", "Draconic Ancestry"]
+				var entry, object, item, ignore, origin
+				var key, value, index, count, match, level
+				var name, byKey = []
+				var features, featuresInObject, featureMap
+				var sentence, sentences, levels, hasLevels
+				var keys, supplement = new Object()
+				var option, options = []
+				var ignoreOptions = ["Blade Flourish"]
+				
+				for ( object of reference.supplements ) {
+					supplement[object.key] = object
+				}
+				
+				features = []
+				
+				origin = 6
+				for ( object of reference.feats ) {
+					if ( !Array.isArray(object.entries) ) { continue }
+					
+					name = object.name
+					key = libraryKey(name)
+					
+					featuresInObject = []
+					featuresInObject.push({'key':key, 'name':name, 'entries':object.entries})
+					features.push(key)
+					
+					object.features = featuresInObject
+				}
+				
+				origin = 3
+				for ( object of reference.backgrounds ) {
+					if ( object.features ) { continue }
+					if ( !Array.isArray(object.entries) ) { continue }
+					
+					featuresInObject = []
+					
+					for ( entry of object.entries ) {
+						name = entry.name
+						if ( !name || !entry.entries ) { continue }
+						if ( !entry.data || !entry.data.isFeature ) { continue }
+						
+						match = name.match(/Feature:\s*(\S.*)/)
+						if ( match ) { name = match[1] }
+						
+						level = 0
+						key = object.key + '-' + libraryKey(name)
+						featuresInObject.push({'level':level, 'key':key, 'name':name, 'origin':origin, 'entries':entry.entries})
+						features.push(key)
+					}
+					
+					object.features = featuresInObject
+				}
+				
+				origin = 2
+				ignore = ["Age", "Alignment", "Size", "Speed", "Darkvision", "Language", "Languages", "Extra Language"]
+				array = reference.races.concat(reference.subraces)
+				for ( object of array ) {
+					if ( object.features || !object.included ) { continue }
+					if ( !Array.isArray(object.entries) ) { continue }
+					
+					featuresInObject = []
+					
+					if ( object.race ) {
+						for ( entry of reference.races ) {
+							if ( entry.key === object.race && entry.features ) {
+								featuresInObject.push.apply(featuresInObject, entry.features)
+								break
+							}
+						}
+					}
+					
+					for ( entry of object.entries ) {
+						name = entry.name
+						if ( !name || !entry.entries ) { continue }
+						if ( ignore.indexOf(name) >= 0 ) { continue }
+						
+						option = false
+						for ( item of entry.entries ) {
+							if ( item.type === 'options' && ignoreOptions.indexOf(name) < 0 ) {
+								options.push({'name':name, 'entries':item.entries})
+								option = true
+							}
+						}
+						
+						if ( entry.data && entry.data.overwrite ) {
+							index = featuresInObject.length
+							
+							while ( index --> 0 ) {
+								if ( featuresInObject[index].name === entry.data.overwrite ) {
+									featuresInObject.splice(index, 1)
+								}
+							}
+						}
+						
+						key = object.key + "-" + libraryKey(name)
+						
+						if ( supplement[key] && supplement[key].level ) {
+							level = supplement[key].level
+							hasLevels = 0
+						} else {
+							sentences = []
+							
+							for ( item of entry.entries ) {
+								if ( typeof item === 'string' ) {
+									sentences.push.apply(sentences, (item + '.').split(/\.+\s*/).slice(0, -1))
+								}
+							}
+							
+							level = 0
+							levels = []
+							hasLevels = 0
+							count = sentences.length
+							
+							for ( index = 0 ; index < count ; ++index ) {
+								sentence = sentences[index]
+								match = sentence.match(/(\d+)(st|nd|rd|th)\s+level/i)
+								value = match ? +match[1] : 0
+								if ( value > 0 ) { hasLevels += 1 }
+								levels[index] = value
+							}
+							
+							if ( sentences.join(". ").indexOf("{@skill") >= 0 ) {
+								if ( sentences.length === 1 && sentences[0].match(/You (are proficient|have proficiency|gain proficiency|are trained) (in|with)/) ) {
+									continue
+								}
+							}
+							
+							if ( hasLevels === 1 && levels[0] > 0 ) {
+								level = levels[0]
+								hasLevels = 0
+							}
+						}
+						
+						featuresInObject.push({'level':level, 'key':key, 'name':name, 'origin':origin, 'entries':entry.entries})
+						features.push(key)
+						
+						if ( hasLevels > 0 ) {
+							for ( index = 0 ; index < count ; ++index ) {
+								if ( levels[index] > 0 ) {
+									sentence = []
+									
+									for ( value = index ; value < count ; ++value ) {
+										if ( levels[value] === 0 || levels[value] === levels[index] ) {
+											sentence.push(sentences[value])
+										}
+									}
+									
+									sentence = sentence.join(". ") + "."
+									match = sentences[index].match(/\s*\d+(st|nd|rd|th)\s+level/g)
+									
+									if ( match && match.length > 1 ) {
+										for ( value of match ) {
+											value = parseInt(value)
+											featuresInObject.push({'level':value, 'key':key + '-' + value, 'name':name, 'origin':origin, 'entries':[sentence]})
+											features.push(key + '-' + value)
+										}
+									} else {
+										value = levels[index]
+										featuresInObject.push({'level':value, 'key':key + '-' + value, 'name':name, 'origin':origin, 'entries':[sentence]})
+										features.push(key + '-' + value)
+									}
+								}
+							}
+						}
+					}
+					
+					object.features = featuresInObject
+				}
+				
+				origin = 5
+				ignore = []
+				for ( object of reference.archetypes ) {
+					if ( object.features || !object.included ) { continue }
+					if ( !Array.isArray(object.subclassFeatures) ) { continue }
+					
+					featuresInObject = []
+					
+					for ( array of object.subclassFeatures ) {
+						if ( !Array.isArray(array) ) {
+							array = [array]
+						}
+						
+						for ( value of array ) {
+							if ( !Array.isArray(value.entries) ) { continue }
+							
+							for ( entry of value.entries ) {
+								name = entry.name
+								if ( !name || !entry.entries ) { continue }
+								if ( ignore.indexOf(name) >= 0 ) { continue }
+								if ( entry.source && entry.source.slice(0, 2) === 'UA' ) { continue }
+								
+								option = false
+								for ( item of entry.entries ) {
+									if ( item.type === 'options' && ignoreOptions.indexOf(name) < 0 ) {
+										options.push({'name':name, 'entries':item.entries})
+										option = true
+									}
+								}
+								
+								key = object.key + "-" + libraryKey(name)
+								hasLevels = 0
+								
+								if ( supplement[key] && supplement[key].exclude ) {
+									continue
+								} else if ( supplement[key] && supplement[key].level ) {
+									level = supplement[key].level
+								} else if ( name.indexOf("Restriction") === 0 || name.indexOf("Tenets") === 0 || name === "Expanded Spell List" ) {
+									level = 1
+								} else if ( name === "Oath Spells" || name === "Oathbreaker Spells" ) {
+									level = 3
+								} else {
+									sentences = []
+									
+									for ( item of entry.entries ) {
+										if ( typeof item === 'string' ) {
+											sentences.push.apply(sentences, (item + '.').split(/\.+\s*/).slice(0, -1))
+										}
+									}
+									
+									level = 0
+									levels = []
+									count = sentences.length
+									
+									for ( index = 0 ; index < count ; ++index ) {
+										sentence = sentences[index]
+										match = sentence.match(/\b(by|at|an|reach|reaches|reaching|from|i|class:)\s+(\d+)(st|nd|rd|th)([- ]+level|,\s+\d+)/i)
+										value = match ? +match[2] : 0
+										if ( value > 0 && levels.indexOf(value) < 0 ) { hasLevels += 1 }
+										if ( value > 0 && level === 0 ) { level = value }
+										levels[index] = value
+									}
+									
+									if ( hasLevels === 1 ) {
+										hasLevels = 0
+									} else if ( !level && name.indexOf("Channel Divinity:") >= 0 ) {
+										level = 3
+									} else if ( !level ) {
+										console.log(key + " has no level")
+										continue
+									}
+								}
+								
+								featuresInObject.push({'level':level, 'key':key, 'name':name, 'origin':origin, 'entries':entry.entries})
+								features.push(key)
+								
+								if ( hasLevels > 0 ) {
+									for ( index = 0 ; index < count ; ++index ) {
+										if ( levels[index] > level ) {
+											sentence = []
+											
+											for ( value = index ; value < count ; ++value ) {
+												if ( levels[value] === 0 || levels[value] === levels[index] ) {
+													sentence.push(sentences[value])
+												}
+											}
+											
+											sentence = sentence.join(". ") + "."
+											match = sentences[index].match(/\s*\d+(st|nd|rd|th)\s+level/g)
+											
+											if ( match && match.length > 1 ) {
+												for ( value of match ) {
+													value = parseInt(value)
+													featuresInObject.push({'level':value, 'key':key + '-' + value, 'name':name, 'origin':origin, 'entries':[sentence]})
+													features.push(key + '-' + value)
+												}
+											} else {
+												value = levels[index]
+												featuresInObject.push({'level':value, 'key':key + '-' + value, 'name':name, 'origin':origin, 'entries':[sentence]})
+												features.push(key + '-' + value)
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					
+					object.features = featuresInObject
+				}
+				
+				origin = 4
+				keys = ['importance', 'background_default', 'frequency']
+				for ( object of reference.classes ) {
+					if ( object.features || !object.included ) { continue }
+					if ( !Array.isArray(object.classFeatures) ) { continue }
+					
+					entry = supplement[object.key]
+					if ( entry ) {
+						for ( key of keys ) {
+							if ( entry[key] ) {
+								object[key] = entry[key]
+							}
+						}
+					}
+					
+					featuresInObject = []
+					
+					for ( array of object.classFeatures ) {
+						if ( !Array.isArray(array) ) {
+							array = [array]
+						}
+						
+						for ( entry of array ) {
+							name = entry.name
+							if ( !name || !entry.entries ) { continue }
+							if ( ignore.indexOf(name) >= 0 ) { continue }
+							if ( name.indexOf("Optional Rule") === 0 ) { continue }
+							if ( name.indexOf("Feature") > 0 || name.indexOf("feature") > 0 ) { continue }
+							if ( entry.source && entry.source.slice(0, 2) === 'UA' ) { continue }
+							
+							option = false
+							for ( item of entry.entries ) {
+								if ( item.type === 'options' && ignoreOptions.indexOf(name) < 0 ) {
+									options.push({'name':name, 'entries':item.entries})
+									option = true
+								}
+							}
+							
+							key = object.key + "-" + libraryKey(name)
+							
+							if ( supplement[key] && supplement[key].level ) {
+								level = supplement[key].level
+								hasLevels = 0
+							} else {
+								sentences = []
+								
+								for ( item of entry.entries ) {
+									if ( typeof item === 'string' ) {
+										sentences.push.apply(sentences, (item + '.').split(/\.+\s*/).slice(0, -1))
+									}
+								}
+								
+								level = 0
+								levels = []
+								hasLevels = 0
+								count = sentences.length
+								
+								for ( index = 0 ; index < count ; ++index ) {
+									sentence = sentences[index]
+									match = sentence.match(/\b(by|at|an|reach|reaches|reaching|from|i|class:)\s+(\d+)(st|nd|rd|th)([- ]+level|,\s+\d+)/i)
+									value = match ? +match[2] : 0
+									if ( value > 0 && levels.indexOf(value) < 0 ) { hasLevels += 1 }
+									if ( value > 0 && level === 0 ) { level = value }
+									levels[index] = value
+								}
+								
+								if ( hasLevels === 1 ) {
+									hasLevels = 0
+								} else if ( !level ) {
+									level = 1
+								}
+							}
+							
+							if ( name === "Ability Score Improvement" ) {
+								key = "ability"
+							}
+							
+							featuresInObject.push({'level':level, 'key':key, 'name':name, 'origin':origin, 'entries':entry.entries})
+							features.push(key)
+							
+							if ( hasLevels > 0 ) {
+								for ( index = 0 ; index < count ; ++index ) {
+									if ( levels[index] > level ) {
+										sentence = []
+										
+										for ( value = index ; value < count ; ++value ) {
+											if ( levels[value] === 0 || levels[value] === levels[index] ) {
+												sentence.push(sentences[value])
+											}
+										}
+										
+										sentence = sentence.join(". ") + "."
+										match = sentences[index].match(/\s*\d+(st|nd|rd|th)\s+level/g)
+										
+										if ( match && match.length > 1 ) {
+											for ( value of match ) {
+												value = parseInt(value)
+												featuresInObject.push({'level':value, 'key':key + '-' + value, 'name':name, 'origin':origin, 'entries':[sentence]})
+												features.push(key + '-' + value)
+											}
+										} else {
+											value = levels[index]
+											featuresInObject.push({'level':value, 'key':key + '-' + value, 'name':name, 'origin':origin, 'entries':[sentence]})
+											features.push(key + '-' + value)
+										}
+									}
+								}
+							}
+						}
+					}
+					
+					object.features = featuresInObject
+				}
+				
+				for ( object of options ) {
+					name = object.name
+					key = libraryKey(name)
+				}
+				
+				reference.featureKeys = features
+				
+				//console.log(features.join("\n"))
+			}
+			
+			function generateSubraces(reference) {
+				var skills = reference.skills
+				var languages = reference.languages
+				var abilities = reference.abilities
+				var entry, array, object, index, add, merge, list
+				var match
+				var excludeSources = ['Stream', 'Twitter', 'PSA', 'PSK', 'PSX', 'PSZ', 'AI', 'DMG']
+				var key, keys, copyKeys = ['name', 'source', 'page', 'size', 'speed', 'darkvision', 'heightAndWeight', 'srd']
+				var race, subrace, subraces = []
+				var byKey = new Object()
+				
+				reference.races.sort(compareName)
+				
+				for ( race of reference.races ) {
+					race.key = libraryKey(race.name)
+					byKey[race.key] = race
+					
+					if ( race.source && race.source.slice(0, 2) === 'UA' ) { continue }
+					if ( !race.source || excludeSources.indexOf(race.source) >= 0 ) { continue }
+					if ( race.traitTags && race.traitTags.indexOf('NPC Race') >= 0 ) { continue }
+					if ( race.traitTags && race.traitTags.indexOf('Dragonmark') >= 0 ) { continue }
+					if ( race.name.indexOf('Variant') >= 0 ) { continue }
+					
+					entry = race.heightAndWeight
+					if ( entry ) {
+						match = entry.heightMod ? entry.heightMod.match(/(\d*)d(\d+)/) : false
+						race.height = [entry.baseHeight, (match ? +match[1] : +entry.weightMod) || 1, match ? +match[2] || 0 : 1]
+						
+						match = entry.weightMod ? entry.weightMod.match(/(\d*)d(\d+)/) : false
+						race.weight = [entry.baseWeight, (match ? +match[1] : +entry.weightMod) || 1, match ? +match[2] || 0 : 1]
+					}
+					
+					if ( race.subraces && race.subraces.length > 0 ) {
+						race.subraces.sort(compareName)
+						
+						for ( subrace of race.subraces ) {
+							if ( subrace.source && subrace.source.slice(0, 2) === 'UA' ) { continue }
+							if ( subrace.source && excludeSources.indexOf(subrace.source) >= 0 ) { continue }
+							if ( subrace.traitTags && subrace.traitTags.indexOf('Dragonmark') >= 0 ) { continue }
+							if ( subrace.name === 'Variant' ) { continue }
+							
+							subrace.race = race.key
+							
+							if ( subrace.name ) {
+								if ( subrace.name.indexOf('/') >= 0 ) { continue }
+								
+								if ( subrace.name.indexOf(race.name) === 0 ) {
+									subrace.racename = subrace.name
+								} else {
+									subrace.racename = race.name + ", " + subrace.name
+								}
+								
+								subrace.key = race.key + '_' + libraryKey(subrace.name)
+							} else {
+								subrace.racename = race.name
+								subrace.name = race.name
+								subrace.key = race.key
+							}
+							
+							for ( key of ['traitTags'/*, 'entries'*/] ) {
+								if ( race[key] ) {
+									if ( !subrace[key] ) {
+										subrace[key] = race[key]
+									} else {
+										subrace[key] = race[key].concat(subrace[key])
+									}
+								}
+							}
+							
+							for ( key of copyKeys ) {
+								if ( race[key] && !subrace[key] ) {
+									subrace[key] = race[key]
+								}
+							}
+							
+							if ( !race.heightAndWeight && !subrace.heightAndWeight ) { continue }
+							
+							entry = subrace.heightAndWeight
+							if ( entry ) {
+								match = entry.heightMod ? entry.heightMod.match(/(\d*)d(\d+)/) : false
+								subrace.height = [entry.baseHeight, (match ? +match[1] : +entry.weightMod) || 1, match ? +match[2] || 0 : 1]
+								
+								match = entry.weightMod ? entry.weightMod.match(/(\d*)d(\d+)/) : false
+								subrace.weight = [entry.baseWeight, (match ? +match[1] : +entry.weightMod) || 1, match ? +match[2] || 0 : 1]
+							}
+							
+							race.included = true
+							subrace.included = true
+							subraces.push(subrace)
+						}
+					} else {
+						race.racename = race.name
+						
+						if ( !race.heightAndWeight ) { continue }
+						if ( subraces.length > 0 && subraces[subraces.length - 1].key === race.key ) { subraces.pop() }
+						
+						race.included = true
+						subraces.push(race)
+					}
+				}
+				
+				for ( subrace of subraces ) {
+					race = subrace.race ? byKey[subrace.race] : false
+					
+					for ( entry of ['languageProficiencies:languages', 'skillProficiencies:skills', 'ability:abilities'] ) {
+						array = []
+						index = entry.indexOf(':')
+						add = entry.substring(index + 1)
+						key = entry.substring(0, index)
+						merge = new Object()
+						list = []
+						
+						if ( race && race[key] && !(subrace[key] && subrace.overwrite && subrace.overwrite[key]) ) {
+							array.push.apply(array, race[key])
+						}
+						
+						if ( subrace[key] ) {
+							array.push.apply(array, subrace[key])
+						}
+						
+						for ( object of array ) {
+							keys = Object.keys(object)
+							
+							for ( key of keys ) {
+								if ( typeof object[key] === 'boolean' ) {
+									if ( key === 'other' ) { merge[key] = object[key] }
+									else if ( list.indexOf(key) < 0 ) { list.push(key) }
+								} else if ( typeof object[key] === 'number' ) {
+									merge[key] = (object[key] | 0) + (merge[key] | 0)
+								} else {
+									merge[key] = object[key]
+								}
+							}
+						}
+						
+						if ( list.length > 0 ) {
+							merge.list = list
+						}
+						
+						subrace[add] = merge
+					}
+				}
+				
+				reference.subraces = subraces
+			}
+			
+			function generateArchetypes(reference) {
+				var excludeSources = ['Stream', 'Twitter', 'PSA', 'PSK']
+				var sourcePrecedence = ['SCAG', 'XGE', 'PHB']
+				var useLongName = ['War']
+				var crass, archetype, archetypes = []
+				var name, source, precedenceByName, index, keys
+				
+				for ( crass of reference.classes ) {
+					if ( crass.source && crass.source.slice(0, 2) === 'UA' ) { continue }
+					if ( !crass.source || excludeSources.indexOf(crass.source) >= 0 ) { continue }
+					
+					crass.included = true
+					crass.key = libraryKey(crass.name)
+					
+					if ( !crass.subclasses ) { continue }
+					
+					precedenceByName = new Object()
+					keys = []
+					
+					for ( archetype of crass.subclasses ) {
+						precedenceByName[archetype.name] = Math.max(
+							sourcePrecedence.indexOf(archetype.source) + 1,
+							precedenceByName[archetype.name] || 0
+						)
+					}
+					
+					for ( archetype of crass.subclasses ) {
+						if ( !archetype.name ) { continue }
+						if ( archetype.name.indexOf('(') > 0 ) { continue }
+						if ( archetype.source && archetype.source.slice(0, 2) === 'UA' ) { continue }
+						if ( !archetype.source || excludeSources.indexOf(archetype.source) >= 0 ) { continue }
+						if ( precedenceByName[archetype.name] > sourcePrecedence.indexOf(archetype.source) + 1 ) { continue }
+						
+						if ( archetype.shortName && useLongName.indexOf(archetype.shortName) < 0 ) {
+							name = archetype.shortName
+						} else {
+							name = archetype.name
+						}
+						
+						archetype.crass = crass.key
+						archetype.key = libraryKey(name)
+						archetype.included = true
+						archetypes.push(archetype)
+						keys.push(archetype.key)
+					}
+					
+					crass.archetypes = keys
+				}
+				
+				archetypes.sort(compareName)
+				reference.archetypes = archetypes
+			}
+			
+			function generateBackgrounds(reference) {
+				var excludeSources = ['Stream', 'Twitter', 'AI', 'GGR', 'EGW']
+				var background
+				var match, entry, array, object, key, value, index
+				var names = ["Personality Trait", "Bond", "Flaw", "Ideal"]
+				var keys = ['trait', 'bond', 'flaw', 'ideal']
+				var byKey = new Object()
+				
+				index = reference.backgrounds.length
+				
+				while ( index --> 0 ) {
+					background = reference.backgrounds[index]
+					value = 0
+					
+					if ( background.source && background.source.slice(0, 2) === 'UA' ) { value = 1 }
+					if ( background.source && background.source.slice(0, 2) === 'AL' ) { value = 1 }
+					if ( !background.source || excludeSources.indexOf(background.source) >= 0 ) { value = 1 }
+					
+					if ( value ) { reference.backgrounds.splice(index, 1) }
+				}
+				
+				for ( background of reference.backgrounds ) {
+					background.key = libraryKey(background.name)
+					byKey[background.key] = background
+					
+					match = background.name.match(/Variant\s+([^()]+)\s+\(([^()]+)\)/)
+					
+					if ( match ) {
+						background.nameBase = match[1]
+						background.nameVariant = match[2]
+						background.name = match[1] + ", " + match[2]
+					}
+					
+					if ( !background.gold ) {
+						background.gold = ''
+					}
+					
+					for ( entry of background.entries ) {
+						array = entry.items
+						
+						if ( Array.isArray(array) ) {
+							for ( object of array ) {
+								if ( object.name === "Equipment" ) {
+									background.equipment = object.entry
+									
+									if ( typeof object.entry === 'string' ) {
+										match = object.entry.match(/\b(\d+)\s*([gp]p)/)
+										
+										if ( match ) {
+											value = +match[1]
+											
+											switch ( match[2] ) {
+											case 'pp': value *= 10; break
+											}
+											
+											background.gold = value
+										}
+									}
+								}
+							}
+						}
+						
+						array = entry.entries
+						
+						if ( Array.isArray(array) ) {
+							for ( object of array ) {
+								if ( typeof object === 'string' ) {
+									match = object.match(/\{@background\s+([^{}|]+)\}/)
+									
+									if ( match ) {
+										background.referenceBackground = libraryKey(match[1])
+									}
+									
+									continue
+								}
+								
+								if ( Array.isArray(object.colLabels) && Array.isArray(object.rows) && object.colLabels.length === 2 ) {
+									index = names.indexOf(object.colLabels[1])
+									if ( index < 0 ) { continue }
+									key = keys[index]
+									value = []
+									
+									for ( row of object.rows ) {
+										value.push(row[1])
+									}
+									
+									if ( value.length > 0 ) {
+										background[key] = value
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				index = reference.backgrounds.length
+				
+				while ( index --> 0 ) {
+					background = reference.backgrounds[index]
+					value = 0
+					
+					if ( background.referenceBackground ) {
+						entry = byKey[background.referenceBackground]
+						
+						if ( entry ) {
+							for ( key of keys ) {
+								if ( !background[key] && entry[key] ) {
+									background[key] = entry[key]
+								}
+							}
+						}
+					}
+					
+					for ( key of keys ) {
+						if ( !background[key] ) { value = 1 }
+					}
+					
+					if ( value ) { reference.backgrounds.splice(index, 1) }
+				}
+				
+				reference.backgrounds.sort(compareName)
+			}
+			
+			function generateLookup(reference) {
+				var needsKey = ['feats']
+				var keys = ['supplements', 'classes', 'archetypes', 'races', 'subraces', 'feats', 'backgrounds', 'abilities', 'alignments', 'sexes', 'sizes', 'tools', 'proficiencies']
+				var map, byKey, key, entry
+				
+				for ( key of needsKey ) {
+					if ( reference[key] ) {
+						for ( entry of reference[key] ) {
+							entry.key = libraryKey(entry.name)
+						}
+					}
+				}
+				
+				map = new Object()
+				
+				for ( key of keys ) {
+					if ( reference[key] ) {
+						byKey = new Object()
+						
+						for ( entry of reference[key] ) {
+							byKey[entry.key] = entry
+						}
+						
+						map[key] = byKey
+					}
+				}
+				
+				window.lookup = map
+			}
+			
+			////////// Initialize
+			function populatePage() {
+				var reference = window.reference
+				
+				generateArchetypes(reference)
+				generateSubraces(reference)
+				generateBackgrounds(reference)
+				generateFeatures(reference)
+				generateLookup(reference)
+				populateBasics(reference)
+				populateClasses(reference)
+				
+				window.addEventListener('hashchange', handleHashChanged)
+				window.addEventListener('click', handleDismissMenus)
+				
+				handleHashChanged()
+			}
+		</script>
+		
+		<style>
+			/***** Navigation *****/
+			div#navigation a#navigation-character { background:#EEF; }
+			
+			/***** Common *****/
+			@media screen {
+				.border-underline { border-bottom:solid 1px black; }
+				
+				.background.primary-ability-none { background-color:#FCFCFC; }
+				.background.primary-ability-str { background-color:#F0FCFC; }
+				.background.primary-ability-dex { background-color:#F0FCF0; }
+				.background.primary-ability-con { background-color:#FCF8F8; }
+				.background.primary-ability-int { background-color:#F0F8FC; }
+				.background.primary-ability-wis { background-color:#F8FCF0; }
+				.background.primary-ability-cha { background-color:#FCFCF0; }
+				
+				.border.primary-ability-none { border-color:#AAA; }
+				.border.primary-ability-str { border-color:#8CC; }
+				.border.primary-ability-dex { border-color:#8C8; }
+				.border.primary-ability-con { border-color:#C88; }
+				.border.primary-ability-int { border-color:#8AC; }
+				.border.primary-ability-wis { border-color:#AC8; }
+				.border.primary-ability-cha { border-color:#CC8; }
+				
+				.text.primary-ability-none { color:#333; }
+				.text.primary-ability-str { color:#366; }
+				.text.primary-ability-dex { color:#363; }
+				.text.primary-ability-con { color:#633; }
+				.text.primary-ability-int { color:#346; }
+				.text.primary-ability-wis { color:#463; }
+				.text.primary-ability-cha { color:#663; }
+			}
+			
+			input.action { display:none; }
+			div.group-border { border:2px solid #EEE; padding:0.5em 1.5em 0.5em 1.5em; border-radius:1em; }
+			div.group-with-title { position:relative; padding-top:1em; margin-top:1em; }
+			div.group-caption { position:absolute; left:1.5em; top:-1em; }
+			div.group-title { padding:0 0.5em; background:#FFF; font-size:80%; }
+			
+			@media print {
+				.extraneous { display:none; }
+				div.group-caption { display:none; }
+			}
+			
+			/***** Picker *****/
+			.picker-container { position:relative; }
+			.picker.toggled { position:absolute; z-index:1; left:0; min-width:100%; text-align:center; }
+			.picker.content { display:inline-block; text-align:left; margin:0 auto; }
+			.picker.content { background:white; padding:0.5em 0; border:1px solid #CCC; max-height:50vh; overflow-y:scroll; }
+			.picker.content { box-shadow:0 0.25em 0.25em rgba(0, 0, 0, 0.125); }
+			input.picker.toggle:not(:checked) ~ div.picker.toggled { display:none; }
+			
+			span.picker-title { display:inline-block; }
+			
+			table.picker { margin:0; padding:0; border-collapse:collapse; }
+			table.picker td { vertical-align:top; padding-right:1em; }
+			table.picker td:first-of-type { padding-left:1em; white-space:nowrap; }
+			tr.picker:hover { background:#EEE; }
+			tr.picker { cursor:pointer; }
+			td.picker-name { font-weight:500; }
+			
+			/***** Cycler *****/
+			.cycler-container { position:relative; display:inline-block; }
+			.cycler-caption { opacity:0.5; }
+			.cycler-selection:not(:empty) + .cycler-caption { position:absolute; font-size:80%; opacity:0.5; left:2em; top:-1em; }
+			
+			@media screen {
+				span.cycle-back::after, span.cycle-next::before { opacity:0.25; }
+				span.cycle-back:hover::after, span.cycle-next:hover::before { opacity:0.5; }
+				span.cycle-back::after { content:"< "; }
+				span.cycle-next::before { content:" >"; }
+			}
+			
+			/***** Basics *****/
+			div#basics { padding:3em 1em 0em 0em; margin-top:3em; }
+			div#basics > span { margin-bottom:1em; margin-left:1em; }
+			span#basics-name { position:absolute; left:1em; top:-1.8em; max-width:80vw; }
+			input#name { font-size:150%; font-family:cursive; border:2px solid #EEE; padding:0.25em 0.5em; max-width:70vw; }
+			
+			@media print {
+				div#basics { margin-top:0; }
+			}
+			
+			td.race-speed { text-align:right; }
+			td.race-speed:not(:empty)::before { content:"spd "; font-size:80%; opacity:0.5; }
+			td.race-darkvision { text-align:right; }
+			td.race-darkvision:not(:empty)::before { content:"dv "; font-size:80%; opacity:0.5; }
+			td.background-gold:not(:empty)::after { content:" gp"; font-size:80%; opacity:0.5; }
+			
+			span#race:empty::after { content:"Race"; opacity:0.5; }
+			span#alignment:empty::after { content:"Alignment"; opacity:0.5; }
+			span#background:empty::after { content:"Background"; opacity:0.5; }
+			span#sex:empty::after { content:"Sex"; opacity:0.5; }
+			span#size:not(:empty)::before { content:"Size: "; font-size:100%; }
+			span#basics-age { display:none; }
+			
+			div#basics label.action { display:inline-block; text-align:center; min-width:8em; }
+			div#basics span.cycler-selection:not(:empty),
+			div#basics span.cycler-selection:empty + .cycler-caption { display:inline-block; text-align:center; min-width:6em; }
+			
+			@media (max-width:480px) {
+				td.race-size, td.race-speed, td.race-darkvision { display:none; }
+				td.background-proficiencies { font-size:75%; }
+				td.background-gold { display:none; }
+			}
+			
+			/***** Classes *****/
+			div#classes { margin:2em 0; }
+			div#classes label.action { display:inline-block; text-align:center; min-width:10em; }
+			div#classes span.cycler-selection:not(:empty),
+			div#classes span.cycler-selection:empty + .cycler-caption { display:inline-block; text-align:center; min-width:6em; }
+			div#classes span.picker-selection, div#classes span.cycler-selection { font-size:125%; }
+			
+			span.crass span.picker-selection:empty::after { content:"Class"; opacity:0.5; }
+			span.archetype span.picker-selection:empty::after { content:"Archetype"; opacity:0.5; }
+			
+			@media (max-width:480px) {
+				td.class-combat, td.class-spellcasting { display:none; }
+			}
+			
+			/***** Abilities *****/
+			div#ability-group { position:relative; display:inline-block; padding-top:2em; padding-left:1em; }
+			div#ability-controls > label.action { border:2px solid #EEE; background:white; font-size:75%; padding:0.5em; border-radius:0.5em; }
+			div#ability-controls > label.reset { margin-right:1em; }
+			
+			@media print {
+				div#ability-group { padding-top:1em; }
+			}
+			
+			table.abilities { border-collapse:collapse; }
+			tr.abilities > th { font-size:60%; text-align:right; }
+			tr.abilities > td { width:3em; vertical-align:baseline; padding-bottom:0.25em; }
+			tr.abilities > td:first-child { font-weight:bold; }
+			tr.abilities > td.ability-modifier { position:relative; font-size:150%; }
+			tr.abilities.spellcasting > td.ability-name { font-style:oblique; }
+			tr.abilities.proficient > td.ability-save { font-weight:bold; }
+			span.ability-modifier { position:absolute; right:-0.5em; top:0.2em; display:inline-block; width:2.5em; height:1.5em; border:0.5px solid #CCC; border-radius:50%; }
+			
+			@media screen {
+				.ability-roll { cursor:move; }
+				.ability-roll.reorder { font-weight:bolder; }
+				.ability-roll.reorder::before { content:"↑↓" }
+				
+				.ability-score.increasable::before { content:"✚ "; }
+				.ability-score.increasable.limited::before { color:#48C; }
+			}
+			
+			/***** Skills *****/
+			div#skill-group { display:inline-block; }
+			table.skills { border-collapse:collapse; }
+			tr.skills:not(:first-child):not(:last-child) { border-bottom:0.5px solid #CCC; }
+			tr.skills > th { font-size:60%; text-align:right; }
+			tr.skills > td { vertical-align:baseline; }
+			tr.skills > td:not(:first-child) { padding-left:0.6em; }
+			
+			tr.skills > th.skill-ability-name { text-align:left; padding-left:1em; }
+			tr.skills > td.skill-ability-name { vertical-align:bottom; }
+			span.skill-ability-name { font-size:80%; opacity:0.75; }
+			
+			span.skill-toggle { margin-right:0.5em; font-size:90%; }
+			span.skill-toggle { display:inline-block; position:relative; bottom:-0.25em; line-height:1; width:1em; height:1em; border:0.125em solid #000; border-radius:50%; }
+			span.skill-toggle.skill-immutable { border-color:#999; }
+			span.skill-toggle.skill-half { border-left-width:0.625em; width:0.5em; }
+			span.skill-toggle.skill-full { background:#000; }
+			span.skill-toggle.skill-full.skill-immutable { background:#999; }
+			span.skill-toggle.skill-hide { display:none; }
+			
+			/***** Proficiencies *****/
+			#ability-proficiencies:not(:empty)::before { content:"Saving Throws: "; font-weight:bold; }
+			#weapon-proficiencies:not(:empty)::before { content:"Weapons: "; font-weight:bold; }
+			#armor-proficiencies:not(:empty)::before { content:"Armor: "; font-weight:bold; }
+			#tool-proficiencies:not(:empty)::before { content:"Tools: "; font-weight:bold; }
+			#language-proficiencies:not(:empty)::before { content:"Languages: "; font-weight:bold; }
+			
+			/***** Features *****/
+			#feature-group { margin-top:2em; }
+			td.feature-name { padding-left:0.5em; }
+		</style>
+	</head>
+	<body onload='populatePage()'>
+		<div id='navigation'>
+			<a id='navigation-character' href='character.html' title='Character Sheet'>👤</a>
+			<a id='navigation-bestiary' href='bestiary.html' title='Monster List'>🐉</a>
+			<a id='navigation-spellbook' href='spellbook.html' title='Spell List'>📜</a>
+			<a id='navigation-trove' href='trove.html' title='Magic Item List'>🔮</a>
+			<a id='navigation-treasure' href='treasure.html' title='Roll Treasure'>💎</a>
+			<a id='navigation-encounter' href='encounter.html' title='Roll Encounters'>🚪</a>
+			<a id='navigation-dice' href='dice.html' title='Roll Dice'>🎲</a>
+		</div>
+		
+		<h4 class='extraneous'>Character</h4>
+		
+		<form id='character-form'><div id='character'>
+			<div id='basics' class='picker-container group-border'>
+				<span id='basics-name'><input type='text' id='name' name='n' size='30' placeholder='Character Name' /></span>
+				<span id='basics-race' class='picker-title'></span>
+				<span id='basics-background' class='picker-title'></span>
+				<span id='basics-alignment' class='picker-title picker-container'></span>
+				<span id='basics-sex' class='picker-title picker-container'></span>
+				<span id='basics-height' class='cycler-container'></span>
+				<span id='basics-weight' class='cycler-container'></span>
+				<span id='basics-age' class='cycler-container'></span>
+				<span id='basics-size'><span id='size'></span></span>
+			</div>
+			
+			<div id='classes'>
+				<div id='class-group-1' class='picker-container'>
+					<span id='class-group-1-level' class='level cycler-container'></span>
+					<span id='class-group-1-class' class='crass picker-title'></span>
+					<span id='class-group-1-archetype' class='archetype picker-title picker-container'></span>
+				</div>
+			</div>
+			
+			<!-- ac hp mv pb pp vs dc ... -->
+			<div id='summary'></div>
+			
+			<!-- abilities saves -->
+			<div id='ability-group' class='group-border'>
+				<div id='ability-controls' class='group-caption'>
+					<input type='button' id='ability-reset' class='action' onclick='handleAbilityReset()' />
+					<label for='ability-reset' class='action reset'>Reset</label>
+					<input type='button' id='ability-standard' class='action' onclick='handleAbilityStandard()' />
+					<label for='ability-standard' class='action'>Standard</label>
+					<input type='button' id='ability-roll' class='action' onclick='handleAbilityRoll()' />
+					<label for='ability-roll' class='action'>4D6</label>
+					<input type='button' id='ability-arena' class='action' onclick='handleAbilityArena()' />
+					<label for='ability-arena' class='action'>Arena</label>
+				</div>
+				<div id='abilities'></div>
+			</div>
+			
+			<br />
+			<!-- skill modifiers -->
+			<div id='skill-group' class='group-border group-with-title'>
+				<div id='skill-controls' class='group-caption group-title'><span>Skills</span></div>
+				<div id='skills'></div>
+			</div>
+			
+			<!-- proficiencies weapons armor languages tools -->
+			<div id='proficiencies' class='group-border group-with-title'>
+				<div id='proficiency-controls' class='group-caption group-title'><span>Proficiencies</span></div>
+				<div id='armor-proficiencies'></div>
+				<div id='weapon-proficiencies'></div>
+				<div id='tool-proficiencies'></div>
+				<div id='ability-proficiencies'></div>
+				<div id='language-proficiencies'></div>
+			</div>
+			
+			<!-- skill modifiers -->
+			<div id='feature-group' class='group-with-title'>
+				<div id='feature-controls' class='group-caption group-title'><span>Features</span></div>
+				<div id='features'></div>
+			</div>
+			<hr />
+			
+			<!-- flat summaries -->
+			<div id='entries'></div>
+		</div></form>
+	</body>
+</html>

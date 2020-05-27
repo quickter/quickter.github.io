@@ -99,6 +99,7 @@ div.outer.details { position:relative; white-space:normal; width:0; }
 div.inner.details { position:relative; width:40em; max-width:70vw; line-height:1.5; padding:0 1em; margin:0.5em 0; border:1px solid #EEE; }
 
 /*** library table entries ***/
+div.entries.center { text-align:center; }
 span.entries.indent + span.entries { margin-left:1em }
 span.entries.italic, a.entries.italic { font-style:oblique; }
 span.entries.bold { font-weight:bold; }
