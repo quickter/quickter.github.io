@@ -57,6 +57,7 @@ div#controls > a { text-decoration:none; }
 span.bold { font-weight:bold; }
 span.taper { display:inline-block; font-size:80%; }
 span.taper:first-letter { font-size:125%; }
+input::placeholder { color:#BBB; }
 
 /*** toggle ***/
 input.toggle { display:none; }

@@ -6,6 +6,18 @@ function libraryElement(id) {
 	else return document.getElementById(id);
 }
 
+function libraryHasClass(element, c) {
+	if ( element.classList && 'function' === typeof element.classList.contains ) {
+		return element.classList.contains(c)
+	} else if ( element.className && 'function' === typeof element.className.search ) {
+		var pattern = new RegExp('(^|\\s+)'+c+'(\\s+|$)');
+		
+		return !(element.className.search(pattern) < 0)
+	} else {
+		return false
+	}
+}
+
 function libraryAssignClass(element, c) {
 	var result = 0;
 	var action = ( arguments.length > 2 ) ? arguments[2] || 0 : 1
